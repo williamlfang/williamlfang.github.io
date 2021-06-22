@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>低延时(ULL)交易系统开发框架 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="转自一个国外低延时高频交易系统开发课程的大纲。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/shared/2019-12-20-%E4%BD%8E%E5%BB%B6%E6%97%B6ull%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="低延时(ULL)交易系统开发框架" />
+<meta property="og:description" content="转自一个国外低延时高频交易系统开发课程的大纲。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/shared/2019-12-20-%E4%BD%8E%E5%BB%B6%E6%97%B6ull%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E6%A1%86%E6%9E%B6/" />
+<meta property="article:published_time" content="2019-12-20T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-12-20T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="低延时(ULL)交易系统开发框架">
+<meta itemprop="description" content="转自一个国外低延时高频交易系统开发课程的大纲。">
+
+
+<meta itemprop="datePublished" content="2019-12-20T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-12-20T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="14328">
+
+
+
+<meta itemprop="keywords" content="高频交易,低延时,交易系统," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="低延时(ULL)交易系统开发框架"/>
+<meta name="twitter:description" content="转自一个国外低延时高频交易系统开发课程的大纲。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">低延时(ULL)交易系统开发框架</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-12-20 </span>
+        <div class="post-category">
+            
+              <a href="/categories/shared/"> shared </a>
+            
+          </div>
+        <span class="more-meta"> 14328 words </span>
+        <span class="more-meta"> 29 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-12-20T00:00:00" title="December 20, 2019">December 20, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+<blockquote>
+<p><a href="https://homerunfitness.wordpress.com/2019/09/01/ull-ultra-low-latency-architectures-for-electronic-trading-sep-18-nov-7-2019-global-online-nyu-adjunct-instructor-ted-hruzd/">ULL (ULTRA LOW LATENCY) ARCHITECTURES FOR ELECTRONIC TRADING</a></p>
+</blockquote>
+
+<p><strong>ULL (Ultra Low Latency) Architectures for Electronic Trading</strong>
+*NYU SPS – <strong>Online</strong>, Adjunct Instructor: Ted Hruzd*
+<strong>FALL 2019 GLOBAL ON-LINE SEP 18 – NOV7</strong></p>
+
+<p>8 weeks with 4 modules, 5 assignments 90 minute optional weekly Google hangout sessions plus collaboration with WhatsApp with my responses within 24 hours</p>
+
+<p>On-Line Registration – <a href="https://www.sps.nyu.edu/professional-pathways/topics/finance/asset-management-and-investment-strategies/FINA1-CE9515-ull-ultra-low-latency-architectures-for-electronic-trading.html">https://www.sps.nyu.edu/professional-pathways/topics/finance/asset-management-and-investment-strategies/FINA1-CE9515-ull-ultra-low-latency-architectures-for-electronic-trading.html</a></p>
+
+<p>*** All course content will be online by Sep 16 for Sep 18 start.  WhatsApp will be set up also so we can all communicate / collaborate / discuss assignments / etc …  Then an optional 90 minute Google Hangouts session will be setup Saturday morning New York Time likely 9 am – 10:30 am</p>
+
+<h2 id="course-objectives">Course Objectives</h2>
+
+<p>Develop advanced skills in architecting electronic trading (ET) and market data applications for ultra low latency (ULL), for competitive advantage, and for positive ROI.  At end of course, one will have developed expertise in end-end architecture of ET applications and infrastructure, including:</p>
+
+<ul>
+<li>roles of FPGA’s, GPU’s, over-clocked servers, and high end Intel Cascade Lake servers and AM EPYC Rome servers</li>
+<li>Linux kernel and NIC kernel bypass tuning,</li>
+<li>options available for architecting ULL networks from infrastructure and application perspectives</li>
+<li>network performance analysis via WireShark and Corvil (hands-on tech expertise via remote access to a simulate trading app)</li>
+<li>Machine Learning (ML), AI, Neural Networks including LSTM (Long Short Term Memory) Recurrent Neural Networks via Python / Tensor Flow, Decision Trees, Random Forests, Anomaly Detection Engines, Reinforcement Learning Engines, Pattern Recognition, Classification Models with R – Studio and ML models include alpha seeking, smart order routing, fill rate predictions. Even if you have little or no experience in developing ML, you will learn subsets of R and Python to develop your own upon course completion</li>
+<li>Intro to Block Chain, exploring how to scales Block Chain for financial apps</li>
+</ul>
+
+<h3 id="module-1">MODULE-1</h3>
+
+<p><strong>MODULE-1: Hardware/Application Accelerated Architectures</strong></p>
+
+<ul>
+<li>Tick-2-Trade applications with single digit micro seconds, even with sub 1 micro seconds</li>
+<li>How to architect for deterministic latencies even in times of volume spikes</li>
+<li>Why ‘Meta-Speed’ (info how to used speed) is more important than pure speed</li>
+<li>Proper use of multi-layer ULL switches, FPGA’s, GPU’s, MicroWave wireless RF network technologies &amp; over-clocked servers</li>
+<li>Options available with FPGA’s integrated in multi-layer ULL switches (ex: Market Data normalization &amp; Book Builds)</li>
+<li>Assess advantages among the leading FPGA vendors Intel/Altera and Xilinx
+
+<ul>
+<li>Examine each for both trading &amp; analytics</li>
+<li>Assess each vendor’s capabilities for FPGA applications based on OpenCL, C++ using FPGA libraries</li>
+<li>Learn best practices in FPGA architectures for market data, order routing, Machine Learning &amp; AI</li>
+<li>Learn Engine 2/from memory optimizations on FPGA’s</li>
+</ul></li>
+<li>NVIDIA DGX-2 GPU processors role for precision analytics</li>
+<li>Compare FPGA’s vs GPU’s for ML Deep Learning</li>
+<li>Explore relevancy to ULL ET and ML of new “Processor in Memory” or PIM architectures from Intel and NVIDIA (speed up data ingestion to CPU &amp; GPU processing cycles)</li>
+<li>Alternate role Data Direct Networks (DDN) for above data/processing speedups for HPC, HFT, AI</li>
+<li>Market Data Feed Handlers in FPGA; Order Books in Intel Cores or FPGA’s – achieve 20 x’s parallelization for full depth books?</li>
+<li>Integration of FPGA’s and Intel cores via high speed caches, FPGA’s and cores on same die (Intel-Altera and Xilinx — current and upcoming enhancements)</li>
+<li>FIX engines in FPGA based NIC’s and appliances</li>
+<li>Multi core, high speed cache Intel based servers + Intel’s new MESH socket interconnects for ULL and deterministic memory I/O</li>
+<li>Leading FPGA based NIC(s) – from SolarFlare, Mellanox, ExaBlaze, Enyx</li>
+<li>SolarFlare Direct TCP</li>
+<li>Layer 1 and multi layer network switches (Arista/Metamako, ExaBlaze)</li>
+<li>Fundamentals of FPGA design and programming</li>
+<li>OpenCL and C++ for ULL programming best practices &amp; FPGA programming</li>
+<li>Intel’s optimizing C++ with deep vectors AVX-512, Thread Building blocks (TBB), and Intel’s new AVX 512 VNNI for Neural Network speedups</li>
+<li>Intel C++ best practice design pattern of internally vectorize code inside a loop or interaction, and externally parallelize the code vi pragma’s and specific code</li>
+<li>How to optimize app code performance with hardware server config (NUMA)</li>
+<li>Prospects for Application Specific Integrated Circuits (ASICs) supplanting FPGA’s in 1-3 years for most latency sensitive applications</li>
+
+<li><p>Best Practices for Market Makers &amp; High Freq Traders (HFT)</p></li>
+
+<li><ul>
+<li>Automated ULL software</li>
+</ul>
+
+<ul>
+<li>Wide range of markets</li>
+<li>Role of ML &amp; AI</li>
+<li>Direct Market Access (DMA) architectures</li>
+<li>Risk Mgt</li>
+<li>Colo Configurtions</li>
+<li>Resiliency &amp; High Availability, DR</li>
+<li>High Performance Compute Clusters</li>
+<li>News Sentiment Analytics</li>
+</ul></li>
+
+<li><p>Python development of basic Algo strategies &amp; software design/analysis for back testing Algo’s</p></li>
+
+<li><p>Intel’s new “HPAT” Python compiler with directives to parallelize Python code</p></li>
+
+<li><p>Hot right now – Chronicle: a Java based microservices framework touting superior mem mgt + horizontal scalability for FIX Engines and more</p></li>
+
+<li><p>Intro to BlockChain – can common interests least to technology to benefit all &amp; cut costs, speed up settlements – LL settlements, enhance TCA?</p>
+
+<ul>
+<li>What electronic trading applications can integrate with BlockChain?</li>
+<li>How to architect such applications</li>
+</ul></li>
+
+<li><p>ROI analysis</p></li>
+</ul>
+
+<p><strong>HOMEWORK:</strong></p>
+
+<p>Ted will present 3 Visio ULL architectures of end-end trading systems and ask class to critique all infrastructure components individually and in the aggregate, along with 1st steps to start ROI analysis.  In addition, students will be required to enhance the architecture they chose as the “best”</p>
+
+<h3 id="module-2">MODULE-2</h3>
+
+<p><strong>MODULE-2: Linux kernel tuning + NIC kernel bypass technologies and configurations</strong></p>
+
+<ul>
+<li>Detail benefits of Red Hat Linux Network-Latency profile (ex favors performance over power savings)</li>
+<li>Linux 7.3/4/5/6 and Linux 8 kernel and NIC tuning for kernel bypass –</li>
+<li>Identify niche kernel tuning for extremely high message processing</li>
+<li>Kernel bypass technologies including RDMA and LDMA</li>
+<li>Infiniband (IB) and RDMA over Ethernet (RoCE) protocols for ULL</li>
+<li>Identify additional tuning for ultimate ULL kernel and micro services frameworks</li>
+<li>How to validate tuned OS via load tests and commands such as sysctl -a</li>
+<li>SolarFlare (SF) latency benefits of Open OnLoad kernel bypass and how to further configure/ tune subsequent to analysis via sfnettest, sfjitter, SF Dump, jhickup, and performance load tests</li>
+<li>SF ef_vi, TCP Direct and role on “raw” Tick-2-Trade (T2T) times of under 100 ns via OnLoad + LDA-Tech LightFleet FPGA appliance + Penguine servers (STAC T0 benchmark) and other potential options</li>
+<li>Mellanox VMA kernel bypass, 40Gig E NICs, up to 100 Gig switches, how to integrate with IB and Exegy Market Data appliance</li>
+</ul>
+
+<p><strong>HOMEWORK:</strong></p>
+
+<p>Ted will pose several technical questions pertaining to kernel tuning and bypass for class to answer.</p>
+
+<h3 id="module-3">MODULE-3</h3>
+
+<p><strong>MODULE-3: Machine Leaning (ML) &amp; Artificial Intelligence (AI) for both ULL Electronic Trading, Wealth Mgt, and BlockChain applications</strong></p>
+
+<ul>
+<li>Math behind multiple ML models, with deep dive into Neural Networks (NN), especially LSTM Recurrent NN, Auto Encoding NN for Anomaly Detection Engines
+
+<ul>
+<li>Will learn the subset of Python &amp; Tensor Flow code to create a RNN that predicts future stock prices, fill rates, and even trading revenue; then integrate a Decision Tree model in R utilizing same input data to identify what factors may be “tuned” to render more accurate projections; also we will learn how to use the ML insights to identify options to improve fill rates / increase revenues</li>
+<li>Explore how Reinforcement Learning ML can integrate with near real time NN for competitive advantages via ULL insights to alpha, risk, routes (SOR), TCA, compliance)</li>
+</ul></li>
+<li>ML / NN for seeking alpha via basic R programming + specific ML libraries</li>
+<li>Supervised vs unsupervised ML</li>
+<li>Synergies with Data Mining</li>
+<li>Optimal Architectures for ML: Infrastructure, Software</li>
+<li>Role of SME in ML &amp; AI</li>
+<li>Determining what model to choose</li>
+<li>How to interpret results</li>
+<li>How to verify models</li>
+<li>Tensor Flow for parallelization of ML models</li>
+<li>How to tune, tweak models for greater accuracy and predictive value</li>
+<li>ML and Event Stream processing, real time analytics for seeking alpha (trade opportunities)</li>
+<li>Definition of Deep Learning (DL)</li>
+<li>DL Models and use cases</li>
+<li>Define AI; provide use cases</li>
+<li>ML and DL as inputs to AI</li>
+<li>Time-2-Market &amp; ROI projections for ML / AI initiatives end-2-end</li>
+<li>Best Practices in AI in our industry</li>
+
+<li><p>Options to integrate ML/AI alpha seeking capabilities in CoLo environments</p></li>
+
+<li><ul>
+<li>How to decrease Total Cost of Ownership (TCO) in CoLo architectures</li>
+</ul></li>
+
+<li><p>In Class (Hands-On)</p>
+
+<ul>
+<li>RStudio &amp; H20</li>
+<li>Portfolio analysis via Classification Model using R/H20</li>
+<li>Predictive analysis of new trading strategies via Decision Trees (R or Python)</li>
+<li>Pattern Recognition of Trading Patterns to provide am Alpha service for Buy-Side</li>
+</ul></li>
+
+<li><p>Blockchain – more depth than Module 1</p></li>
+
+<li><p>Blockchain scaling limitations</p></li>
+
+<li><p>Assess CFTC BlockChain plans for near real time clearing (then extend the BlockChain for low volume trading, ultimately to higher volume trading of commodities, derivatives, options)</p></li>
+
+<li><p>How to integrate real time ML and AI with BlockChain architectures</p></li>
+
+<li><p>Learn a rapidly pervasive BlockChain related protocol “Smart Contracts” that may largely solve BlockChain scaling limittions</p></li>
+
+<li><p>Assess Ant Financial Wealth Mgt BlockChain plans (examine its use of Smart Contracts)</p></li>
+</ul>
+
+<p><strong>HOMEWORK:</strong></p>
+
+<ul>
+<li>Ted will provide several “how-to” docs with all code / procedures to run to create multiple ML models. Students will run at least 1 of these models and respond with what predictive insights they provide.  ** NO Coding will be required.  But there will be one simple ML model where one will have option to alter or add code to improve accuracy or provide more meaningful insights (extra credit)</li>
+</ul>
+
+<h3 id="module-4">MODULE-4</h3>
+
+<p><strong>MODULE-4: Architecting ULL Networks + how to diagnose/resolve network problems vi Corvil and Wireshark</strong></p>
+
+<ul>
+<li>ULL network configuration best practices</li>
+<li>Spine-Leaf architectures</li>
+<li>Multicast best practices</li>
+<li>Examine ULL Multicast architectures available from lightfleet.com; determine applicability for ULL networks and how to project resulting performance (latency) improvements</li>
+<li>Network protocols including TCP, UD, BRP, OSPF, LLDP</li>
+<li>Remote access to a Corvil appliance for deep dive in network and transaction diagnostics</li>
+<li>How to utilize Corvil decoders for FIX protocol, LBM messaging, and market data feeds</li>
+<li>Wireshark – to supplement Corvil analytics with deep dive network diagnostics to identify RCA of latencies</li>
+<li>Best practices in architecting Corvil’s new App Agent software for software processing insights</li>
+<li>ULL messaging middleware (29 West LBM/UME) and 60 East Tech AMPS</li>
+<li>PTP architectures for large market data / trading application infrastructures</li>
+<li>Network appliances – detailed timings/analytics – network, market data, and order routing – Corvil, Instrumentix, SolarCapture</li>
+<li>ULL Networks, including options for integrating multi-layer switches, FPGA appliances, new approaches to ULL multi-cast market data distribution</li>
+<li>ULL storage networks, including NVMeOF fabrics, Intel Optane, 3D XPoint, EverSpin new MRAM deterministic memory + persistent storage options. Special focus on DDN and Pure Storage</li>
+<li>How ULL deterministic memory can lower end-2-end latencies for subset of application flows, especially those based on ULL analytics</li>
+<li>Correlation of ULL networks and fill rates</li>
+<li>Tools (some free, several with RH Linux) to attain network performance optimization insights</li>
+</ul>
+
+<p>HOMEWORK</p>
+
+<ul>
+<li>Specific hands on Corvil exercises for class to evaluate results and propose mitigation of network problems and strategic redesigns</li>
+<li></li>
+</ul>
+
+<p><strong>FINAL ASSIGNMENT: Architect and End-2-End ULL Eectroinic Trading App integrated with ULL ML/AI for Alpha, Risk, Routing (SOR), TCA, Complaince</strong></p>
+
+<ul>
+<li>Ted will detail requirements by Oct 23, with 2 weeks to complete</li>
+</ul>
+
+<p><strong>PreReq – (for most, expecting basic to intermediate expertise, unless noted)</strong></p>
+
+<ul>
+<li>Most important: at least 2 years working with electronic trading applications/infrastructures as Developer, SA, network admin/engineer, Architect, QA analyst, tech project mgr, operations engineer, manager, CTO, CIO, CEO, vendor or consultant providing technology to Wall Street IT,</li>
+<li>TCP/IP, UDP, multicast (basic knowledge),</li>
+<li>Linux OS and shell or scripting (ex bash, perl); at minimum basic familiarity of output and usefulness of core Linux commands such as sysctl –a, ethtool, ifconfig, top, ls, grep, awk, sed, and others listed later in this syllabus</li>
+<li>Intel servers, cores, sockets, GHz clock speed, NUMA</li>
+<li>Network routers, switches</li>
+<li>1 or more network protocols from BGP, OSPF, EIGRP, MPLS, IB</li>
+<li>FIX protocol</li>
+<li>Market Data, at minimum contents of equities consolidated feeds</li>
+<li>Visio (will use for homework assignments; HOWEVER – to save time I will accept ‘pictures’ of white board architectures / designs)</li>
+<li>R programming (nice to have. Will use basics that one can learn in 1-2 hours), then extend upon that in classes for class hands-on Machine Learning</li>
+<li>Python (very basic will be fine – a 2 hour reading assignment will be arranged for beginners). We will use a text written for traders with zero programming experience that quickly trains them how to use small set of Python for creating trading algo’s</li>
+</ul>
+
+<h2 id="course-logistics">Course Logistics</h2>
+
+<ul>
+<li>No Tech book(s) to download to kindle. Instead several tech docs and many tech links will be provided.  Most significant doc for all 4 Modules in a PPT per module</li>
+<li>Multiple web site links to technical white papers and tech analyses (ex <a href="http://www.nextplatform.com/">com</a>, <a href="http://intelligenttradingtechnology.com/">http://intelligenttradingtechnology.com/</a>, <a href="http://datamanagementreview.com/">http://datamanagementreview.com</a>, <a href="http://www.tabbforum.com/">www.tabbforum.com</a>,  <a href="http://www.tradersmagazine.com/">www.tradersmagazine.com</a></li>
+<li>Visio OR simply draw on whiteboards, send pictures (some homework assignments)</li>
+</ul>
+
+<h2 id="相关讲座">相关讲座</h2>
+
+<blockquote>
+<p><a href="https://homerunfitness.wordpress.com/2016/10/29/intro-to-ultra-low-latency-ull-architectures-for-electronic-trading/">INTRO TO ULTRA-LOW-LATENCY (ULL) ARCHITECTURES FOR ELECTRONIC TRADING</a></p>
+</blockquote>
+
+<p>Expect a 30-45 minute free session, sponsored by a tech vendor, I will lead by EOY in NYC..  This will be an intro to (1) a 2-day course I am negotiating with Queens U / Belfast Jan 2017 &amp; (2) -with NYU – 9 week – 6-9 pm Mondays Summer 2017.  Both courses will cover much more than Linux.  Belfast course details follow this intro.</p>
+
+<p><strong>WE BEGIN …. With an optimized network for ULL CoLo Trading app</strong></p>
+
+<p><strong>Chart (BELOW): optimize network latency for a CoLo Trading App</strong></p>
+
+<p><strong>Few minutes on this design, then concentrate on LINUX, Servers, Application Design</strong></p>
+
+<p><img src="https://homerunfitness.files.wordpress.com/2016/10/l11.jpg?w=474" alt="l1" /></p>
+
+<p><strong>Run with Linux 7.2 (for now) but with the network-latency profile set</strong></p>
+
+<ul>
+<li>This out-of-box kernel tuning features speed over power savings, a 2 way TCP session handshake instead of 3, and decreases kernel interrupts from disabling auto NUMA and large page management.</li>
+<li>Linux 7.4 – “internal socket” cache to priority arrays and memory objects</li>
+<li>Intel’s Vtune and PCM to identify how to optimize cache line usage to decrease memory I/O’s</li>
+</ul>
+
+<p><strong>Cache Access (Intel’s latest processors – SkyLake)</strong></p>
+
+<ul>
+<li>L1     5 ns</li>
+<li>L2    7 ns</li>
+<li>Main mem 100 ns</li>
+</ul>
+
+<p><strong>MCDRAM</strong></p>
+
+<ul>
+<li>New high bandwidth “multi channel” caches for Intel PHI Knights Landing processors</li>
+<li>Options to dedicate this cache per high priority threads</li>
+</ul>
+
+<p><strong>NEVER configure 1 NIC for both market data and order flow.</strong></p>
+
+<ul>
+<li>A spike in 1 may significantly impact latencies in the other</li>
+</ul>
+
+<p><strong>Use NICs with built in Kernel Bypass</strong>  <strong>(else get out of Electronic Trading)</strong></p>
+
+<ul>
+<li>No excuse not to use kernel bypass. If you do not heed this recommendation, you will loose fills and soon be out of business.</li>
+<li>further speed up out-of-the box kernel bypass (SolarFlare &amp; Mellanox) from approx 1 – 1.5 uSec / io, use EF_VI API for SolarFlare or VERBS for Mellanox, lower latencies by approx another 200 nanoseconds.</li>
+<li>For really ULL, utilize FPGA based NICs like those from FiberBlaze, ExaBlaze, or Enyx or SolarFlare’s version.</li>
+<li><strong>Imagine no kernel bypass and CPU core running at near 100%</strong> (largely user%). Many trading partners will take note and may NEVER trade with you again.</li>
+</ul>
+
+<p><strong>Record real time Critical performance metrics</strong></p>
+
+<ul>
+<li>Record Latencies with your trading partners under all scenarios, especially during market data spikes.</li>
+<li>Have a list of trading partners with ‘deterministic’ latencies</li>
+</ul>
+
+<p><strong>Why</strong> <strong>‘</strong><strong>deterministic</strong><strong>’</strong> <strong>latencies are CRITICAL</strong></p>
+
+<p><strong>What is ‘Speed2’ as Tabb and Corvil jointly coined and why all electronic trading firms and especially markey makers must adhere to being aware of ‘Speed2’</strong></p>
+
+<p><strong>Set up accurate time stamps – PTP or NTP</strong></p>
+
+<ul>
+<li>Important for MIFID II and upcoming US regulations</li>
+<li>For best PTP accuracy, within 10 ns, utilize hardware based time stamps;</li>
+<li>multiple network interface vendors are offering that including SolarFlare, Mellanox, ExaBlaze.</li>
+<li>They can handle inputs from GPS sources, can function as “boundary” clocks, and can function as client or server clocks. Hence they can be one source for all precise timestamps for the three main levels of timestamps within a trading network.</li>
+</ul>
+
+<p><strong>SolarFlare solution may be most impressive</strong></p>
+
+<ul>
+<li>ptp daemon “sfptpd” avoids any kernel processing for time stamps, in contrast to the default Linux ptp daemon which requires kernel and kernel interrupts</li>
+</ul>
+
+<p><strong>NTP – sync software is inferior to PTP</strong></p>
+
+<ul>
+<li>switch Q’s and latencies are more critical, and levels away from central GPS source should be kept to a minimum.</li>
+</ul>
+
+<p><strong>TIME PERMITTING WILL COVER PART OR ALL OF THIS</strong></p>
+
+<p><strong>Deep Dive into RH 7.2 LINUX TUNING –</strong> <strong>perf over power saving</strong></p>
+
+<ul>
+<li><strong>Tcp_fastopen=3 (2 way handshake – encryption of cookie of client @ init, so reconnect is 2 way, using the cookie)</strong></li>
+<li><strong>Enable Intel_pstat &amp; min_perf_pct =100 (Ghz steady; disable fluctuations)</strong></li>
+<li><strong>Disable THP (Transparent Huge Pages of 2 MB under K control)</strong></li>
+<li>Cpu_dma_latency
+
+<ul>
+<li><strong>@ c_states, keep cores from sleeping; part of QoS</strong></li>
+</ul></li>
+<li>Busy_read 50 uSec (100 uSec for large# pkts) &amp; busy_poll 50 uSec (skt poll recvQ of NIC, disable net interrupt); cores “active”
+
+<ul>
+<li><strong>BUT — K bypass much better (discuss 3 methods of K bypass)</strong></li>
+</ul></li>
+<li><strong>Numa_balance 0 (no auto NUMA mgt)</strong></li>
+<li><strong>Disable unnecessary daemons and services (ex firewalld &amp; iptables)</strong></li>
+<li>Max # ring buffer size
+
+<ul>
+<li><strong>Dev driver drains buf via soft IRQ (other tasks not interr vs hard interr)</strong></li>
+</ul></li>
+<li><strong>Set RFS (Recv Flow Steering)- increase CPU cache hits,forwards pkts to consuming app</strong></li>
+<li><strong>TCP SACK- retrains only missed bytes)- tcp_sack+1</strong></li>
+<li><strong>TCP Window scaling – up to 1 GB</strong></li>
+<li><strong>Sysctl –w net.ipv4.tcp_low_latency=1</strong></li>
+<li>Timing and scheduling:– decrease timing dispatch interrupts
+
+<ul>
+<li><strong>Sched_latency_ns (20 ms default; increase!!)</strong></li>
+<li>Sched_min_granularity (4 ms default; increase!)</li>
+<li><strong>Increase # procs, threads – formula may lower this 4 ms</strong></li>
+<li>Some applications may benefit from tickles kernel</li>
+<li><strong>(ex: small # procs, threads at no more than # cores)</strong></li>
+<li>Sched_migration_ns (default500 uS; increase!)</li>
+<li><strong>This pertains to period of “hot” cache, prevents pre task migration</strong></li>
+<li>Basic Linux and Server measures and utilities for performance analytics:</li>
+<li><strong>BIOS updates and tuning</strong></li>
+<li><strong>Turbostat</strong></li>
+<li><strong>Lstopo – cores and me caches</strong></li>
+<li><strong>Lscpu – cpu arch info from sysfs &amp; /proc/cpuinfo</strong></li>
+<li><strong>Numactl</strong></li>
+<li><strong>Numastat</strong></li>
+<li><strong>Tuned</strong></li>
+<li><strong>Tuned-admin network-latency configuration (set profile)</strong></li>
+<li><strong>Isolcpus</strong></li>
+<li><strong>Interrupt affinity or isolation</strong></li>
+<li><strong>Irqbalance</strong></li>
+<li><strong>Busy_poll — any # other than 0 say 50 RH rec, ms to wait for pkts on devQ for sock poll &amp; selects</strong></li>
+<li><strong>Check gamut of process (pid) info, much pertaining to performance in /proc/<pid>; for ex: files numa_maps, stat, syscall</strong></li>
+<li>Tuna – control processor and scheduler affinity
+
+<ul>
+<li><strong>Options: Isolate sockets from user space, push to socket 0</strong></li>
+</ul></li>
+<li>VTune Amplifier 2016
+
+<ul>
+<li><strong>CPU, GPU, threads, BW, cach, locks, spinTm, FxCalls, serial+Par Tm,</strong></li>
+<li><strong>ID code section ID for parallelization; ex: TBB – more control over OpenMP</strong></li>
+<li><strong>MPI analysis ex locks, MCDRAM analysis</strong></li>
+</ul></li>
+<li>Intel’s PCM (Performance Counter Monitor) – major enhancements
+
+<ul>
+<li><strong>Ex: times specific threads hit/miss L1-2-3 caches and measures cache times and impacts of misses; helps ID priority procs, threads for cache</strong></li>
+</ul></li>
+<li><strong>Tx Profilers – Wily, VisualJVM, BeaWLS, valgrind, custom FREE– T/S, ESP correl, ML</strong></li>
+<li>Perf: perf top –g (functions)
+
+<ul>
+<li><strong>Perf counters in hardware (cpu) , with kernel trace points (ex: cache miss, cpu-migration, softirq’s)</strong></li>
+</ul></li>
+<li><strong>strace</strong></li>
+<li>Ftrace- uses the frysk engine to trace systemcalls
+
+<ul>
+<li><strong>sycalls of procs and threads</strong></li>
+<li><strong>Dynamic kernel fx trace, including latencies (ex: how long proc wakes/starts</strong></li>
+<li><strong>/debug/tracing</strong></li>
+<li><strong>Trace_clock</strong></li>
+</ul></li>
+<li><strong>Dtrace for Linux:</strong>
+
+<ul>
+<li>Dynamic – cpu, fs, net resources by active procs, can be quite specific</li>
+<li>Procs accessing specific files</li>
+<li>what procs with most packets or bandwidth%</li>
+</ul></li>
+<li><strong>SystemTap</strong><br /></li>
+</ul></li>
+</ul>
+
+<p><strong>Oprofile uses hw counters, tracks mem access and L2 cache, hw interrupts</strong></p>
+
+<ul>
+<li>- <strong>Mpstat, vmstat, iostat, nicstat, free, top, netstat, ss [filter/script for analytics]</strong></li>
+<li><strong>VM (Virtual Memory) and page flushes, optimize market data caches</strong></li>
+</ul>
+
+<p><strong>Application Design:</strong></p>
+
+<p><strong>Programming with Multiple core multi thread, parallelism</strong></p>
+
+<ul>
+<li><strong>Vectorize application code</strong></li>
+<li><strong>Design – Internal loops with deep vector instructions, outer loops with parallelization (threads)</strong></li>
+<li></li>
+</ul>
+
+<p><strong>INTRO ENDS RIGHT HERE</strong></p>
+
+<p>———————————————————————–</p>
+
+<ul>
+<li>Explain how following Linux Tuning options will will impact latencies
+
+<ul>
+<li><strong>Swappiness =0;</strong></li>
+<li><strong>Dirty-ratio 10;</strong></li>
+<li><strong>Background- ratio 10</strong></li>
+<li><strong>NIC interrupt coalescing (pre kernel-bypass)</strong></li>
+<li><strong>Ring buffer increase</strong></li>
+<li><strong>UCP receive buffer at 32 MB</strong></li>
+<li><strong>Netdev-backup 1000000 (traf stored before TCP/IP proc; 1/core)</strong></li>
+</ul></li>
+<li>Explain what following commands produce for latency analysis:
+
+<ul>
+<li><strong>ifconfig command</strong></li>
+<li><strong>Netstat –s (send/recv Q’s)</strong></li>
+<li><strong>Ss utility</strong></li>
+</ul></li>
+<li><strong>Detail major benefits of VTune and DTrace and when you would use either</strong></li>
+</ul>
+
+<p><strong>Linux 7.4</strong></p>
+
+<ul>
+<li>Dedicate “internal socket” cache to priority arrays and memory objects</li>
+<li>Utilize Intel’s Vtune and PCM to identify how to optimize cache line usage to decrease memory I/O’s</li>
+</ul>
+
+<p><strong>Cache Access (Intel’s latest processors – SkyLake)</strong></p>
+
+<ul>
+<li>L1     5 ns</li>
+<li>L2    7 ns</li>
+<li>Main mem 100 ns</li>
+<li>Role of TLB’s</li>
+</ul>
+
+<p><strong>MCDRAM</strong></p>
+
+<ul>
+<li>New high bandwidth “multi channel” caches for Intel PHI Knights Landing processors</li>
+<li>Options to dedicate this cache per high priority threads</li>
+</ul>
+
+<p><strong>Application Design:</strong></p>
+
+<ul>
+<li>Programming with Multiple core multi thread, parallelism</li>
+<li>Vectorize application code</li>
+<li>Design – Internal loops with deep vector instructions, outer loops with parallelization (threads)</li>
+<li>Servers, sockets, cores, caches. MCDRAM (Intel Phi)</li>
+<li>Core speeds GHz vs more cores, larger and faster caches</li>
+<li>Over clocked servers – features and what applications can benefit</li>
+<li>Linux, Solaris, Windows, other ex SmartOS, Mesosphere DC OS</li>
+<li>How to benchmark performance, analyze, tune</li>
+<li>NUMA aware processes and threads</li>
+<li>Optimize cache assignments per high priority threads</li>
+<li>Intel technologies including …</li>
+<li>AVX-512 deep vector instructions (speeds up FP ops)
+
+<ul>
+<li>6-8 registers; more ops/instruction; less power</li>
+</ul></li>
+<li>TBB thread Building blocks (limit oversubscription of threads)
+
+<ul>
+<li>OpenMP- explosion of threads</li>
+</ul></li>
+<li>Omni-Path high speed / bandwidth interconnect (no HBA, fabric QoS, MTU to 10K, OFA verbs,105 ns thru switch ports, 50 GB/s bi ) &amp; QPI
+
+<ul>
+<li><strong>Uses Silicon Photonics (constant light beam, lower latencies and deterministic)</strong></li>
+</ul></li>
+<li>QuickPath: mult pairs serial links 25.6 GB/s (prior to Omni-Path)
+
+<ul>
+<li>Mem controllers integrated with microprocessors</li>
+<li>Replaced legacy bus technology</li>
+<li>Cache coherent</li>
+</ul></li>
+<li>Shared Memory is faster than Mem Maps; allows multiple procs read/write into shared mem among the procs – without OS read/write commands. Procs just access the part of shared mem of interest.
+
+<ul>
+<li><strong>Discuss ex of server proc sending HTML file to client; file is passed to mem then net function copies mem to OS mem; client calls OS function which copies to its own mem; contrast with Shared Mem</strong></li>
+</ul></li>
+<li>PCIE</li>
+<li>NVME</li>
+<li>Flash SSD Drives</li>
+<li>C ++ vs Java for ULL</li>
+<li>Lists vs vectors</li>
+<li>Iterate lists</li>
+<li>Role of FPGA, GPU, MicroWave networks for ULL</li>
+<li>C/C++, Java, Python, CUDA, FPGA – OpenCL: programming design considerations</li>
+<li>Java 8 new streams API and lambda expressions – for analytics</li>
+<li><strong>Class Ex</strong> <strong>– Explain how Quick Path &amp; Omni Path both improve latencies and advise which is preferred for ULL and why</strong></li>
+</ul>
+
+<p>End of Intro Session</p>
+
+<hr />
+
+<p>Q<em>ueens University 2 day  – course proposal – Ted Hruzd January 2017</em>
+<strong>ULL (Ultra Low Latency) Architectures for Electronic Trading</strong>
+<strong>Course Objectives</strong></p>
+
+<p>Develop advanced skills in architecting electronic trading and market data applications for ultra low latency (ULL), for competitive advantage, and for positive ROI.  At end of course one will have developed expertise in end-end architecture of electronic trading infrastructure, including architecting of:</p>
+
+<ul>
+<li>Multi core, high speed cache Intel based servers</li>
+<li><strong>Linix 7.2 kernel and NIC tuning + quick intro to upcoming Linux 7.4</strong></li>
+<li>Kernel bypass technologies including RDMA and LDMA</li>
+<li>FPGA based NIC(s) – from ExaBlaze</li>
+<li>Single tier (or simplified spine-leaf); Ex: Plexxi</li>
+<li>Layer 1 network switches (ExaBlaze &amp; Metamako)</li>
+<li>SDN (Software Defined Networks)</li>
+<li>New binary FIX protocol for ULL order routing</li>
+<li>ULL messaging middleware (29 West LBM/UME) and 60 East Tech AMPS</li>
+<li>ULL software design (deep vectors ex AVX-512 and multi threading – OpenMP, TBB)</li>
+<li>Databases – structured and unstructured</li>
+<li>Storage, including NVME Flash</li>
+<li>Tools (some free) to attain performance optimization insights</li>
+<li>Network appliances – detailed timings/analytics – network, market data, and order routing</li>
+<li>Big Data and Event Stream processing, real time analytics for seeking alpha (trade opportunities)</li>
+<li>Fundamentals of FPGA design and programming</li>
+<li>ROI analysis</li>
+</ul>
+
+<p><strong>PreReq –</strong> Intermediate – advanced knowledge of</p>
+
+<ul>
+<li>TCP/IP, UDP, multicast,</li>
+<li><strong>Linux OS and shell or scripting (ex bash, perl),</strong></li>
+<li>Intel servers</li>
+<li>Network routers, switches</li>
+<li>1 or more network protocols from BGP, OSPF, EIGRP, MPLS, IB</li>
+<li>FIX protocol</li>
+<li>Market Data, included base multicast knowledge</li>
+<li>Visio</li>
+<li>Python (very basic will be fine – a 2 hour reading assignment will be arranged for beginners)</li>
+<li>R programming (nice to have. Will use basics that one can learn in 1-2 hours),</li>
+<li>at least 2 years working with electronic trading applications/infrastructures as Developer, SA, network admin/engineer, Architect, QA analyst, tech project mgr, operations engineer, manager, CTO, CIO, CEO, vendor or consultant providing technology to Wall Street IT</li>
+</ul>
+
+<p><strong>Course Logistics</strong></p>
+
+<ul>
+<li>2 full days (8-9 hours each day)</li>
+<li>Tech book(s) to download to kindle TBD
+
+<ul>
+<li>Architects of Electronic Trading, Spephanie Hammer, Wiley 2013</li>
+<li>Ultimate Algorithmic Trading Systems ToolBox, George Pruitt, Wiley, 2016</li>
+<li>(optional) Trading and Electronic Markets: What Investment Professionals Need to Know, Larry Harris, CFA, 2015</li>
+</ul></li>
+<li>Multiple web site links to technical white papers and tech analyses (ex <a href="http://www.nextplatform.com/">nextplatform.com</a>, <a href="http://www.intelligenttradingtechnology.com/">www.intelligenttradingtechnology.com</a> , and <a href="http://www.tradersmagazine.com/">www.tradersmagazine.com</a> )</li>
+<li>Visio</li>
+<li>Extensive use of white board by instructor and students. Sessions will present students with few infrastructures to architect per specific business success criteria</li>
+</ul>
+
+<p><strong>Day-1</strong></p>
+
+<p><strong>ULL components: servers, OS, networks, software &amp; middleware, FPGA’s, market data</strong></p>
+
+<ul>
+<li>Will present a Visio diagram with a potential co-lo ULL architecture that receives orders destined for trading venues, utilizing Layer 1 switching. Goal: 500 nanosecond Ack times ingress to appliance that includes Layer1 switching to/from Trading venues).</li>
+<li>Will present an alternative architecture utilizing a Single Tier network (Plexxi)</li>
+<li>We will periodically revisit this co-lo architecture throughout this course when we cover specific architecture components in depth (Algo Trading and/or SOR that feeds this architecture, use of FPGA, multi-cores, and Layer 1 switching)</li>
+<li>Why speed of processing still matters and will for next several years at least</li>
+<li>Why Layer 1 switches</li>
+<li>Layer 1 switch with integrated cores and FPGA for risk checks</li>
+<li>High speed real time analytics for seeking alpha (trade opportunities) &amp; infrastructure analytics</li>
+<li>Exchange (Trading Venue) connectivity</li>
+<li>Layer <sup>2</sup>&frasl;<sub>3</sub> aggregation in new switch appliances</li>
+<li><strong>Role of Linux kernel tuning for ULL – use network-latency profile</strong></li>
+<li><strong>Present some Linux configurations to critique</strong></li>
+
+<li><p><strong>Class Exercise – Given few server, Linux configurations with flaws, respond with measures to optimize performance &amp; lower latencies</strong></p></li>
+
+<li><p>Deep dive into Linux 7.2 network-latency configuration</p>
+
+<ul>
+<li>Base config includes (perf over power saving):</li>
+<li><strong>Tcp_fastopen=3 (2 way handshake – encryption of cookie of client @ init, so reconnect is 2 way, using the cookie)</strong></li>
+<li><strong>Enable Intel_pstat &amp; min_perf_pct =100 (Ghz steady; disable fluctuations)</strong></li>
+<li><strong>Disable THP (Transparent Huge Pages of 2 MB under K control)</strong></li>
+<li>Cpu_dma_latency
+
+<ul>
+<li><strong>@ c_states, keep cores from sleeping; part of QoS</strong></li>
+</ul></li>
+<li>Busy_read 50 uSec (100 uSec for large# pkts) &amp; busy_poll 50 uSec (skt poll recvQ of NIC, disable net interrupt); cores “active”
+
+<ul>
+<li><strong>BUT — K bypass much better (discuss 3 methods of K bypass)</strong></li>
+</ul></li>
+<li><strong>Numa_balance 0 (no auto NUMA mgt)</strong></li>
+<li><strong>Disable unnecessary daemons and services (ex firewalld &amp; iptables)</strong></li>
+<li>Max # ring buffer size</li>
+<li><strong>Dev driver drains buf via soft IRQ (other tasks not interr vs hard interr)</strong></li>
+<li><strong>Set RFS (Recv Flow Steering)- increase CPU cache hits,forwards pkts to consuming app</strong></li>
+<li><strong>TCP SACK- retrains only missed bytes)- tcp_sack+1</strong></li>
+<li><strong>TCP Window scaling – up to 1 GB</strong></li>
+<li><strong>Sysctl –w net.ipv4.tcp_low_latency=1</strong></li>
+<li>Timing and scheduling:– decrease timing dispatch interrupts</li>
+<li><strong>Sched_latency_ns (20 ms default; increase!!)</strong></li>
+<li>Sched_min_granularity (4 ms default; increase!)
+
+<ul>
+<li><strong>Increase # procs, threads – formula may lower this 4 ms</strong></li>
+</ul></li>
+<li>Some applications may benefit from tickles kernel
+
+<ul>
+<li><strong>(ex: small # procs, threads at no more than # cores)</strong></li>
+</ul></li>
+<li>Sched_migration_ns (default500 uS; increase!)
+
+<ul>
+<li><strong>This pertains to period of “hot” cache, prevents pre task migration</strong></li>
+</ul></li>
+<li>Basic Linux and Server measures and utilities for performance analytics:
+
+<ul>
+<li><strong>BIOS updates and tuning</strong></li>
+<li><strong>Turbostat</strong></li>
+<li><strong>Lstopo – cores and me caches</strong></li>
+<li><strong>Lscpu – cpu arch info from sysfs &amp; /proc/cpuinfo</strong></li>
+<li><strong>Numactl</strong></li>
+<li><strong>Numastat</strong></li>
+<li><strong>Tuned</strong></li>
+<li><strong>Tuned-admin network-latency configuration (set profile)</strong></li>
+<li><strong>Isolcpus</strong></li>
+<li><strong>Interrupt affinity or isolation</strong></li>
+<li><strong>Irqbalance</strong></li>
+<li><strong>Busy_poll — any # other than 0 say 50 RH rec, ms to wait for pkts on devQ for sock poll &amp; selects</strong></li>
+<li><strong>Check gamut of process (pid) info, much pertaining to performance in /proc/<pid>; for ex: files numa_maps, stat, syscall</strong></li>
+<li>Tuna – control processor and scheduler affinity</li>
+<li><strong>Options: Isolate sockets from user space, push to socket 0</strong></li>
+<li>VTune Amplifier 2016</li>
+<li><strong>CPU, GPU, threads, BW, cach, locks, spinTm, FxCalls, serial+Par Tm,</strong></li>
+<li><strong>ID code section ID for parallelization; ex: TBB – more control over OpenMP</strong></li>
+<li><strong>MPI analysis ex locks, MCDRAM analysis</strong></li>
+<li>Intel’s PCM (Performance Counter Monitor) – major enhamcements</li>
+<li><strong>Ex: times specific threads hit/miss L1-2-3 caches and measures cache times and impacys of misses; helps ID priority procs, threads for cache</strong></li>
+<li><strong>Tx Profilers – Wily, VisualJVM, BeaWLS, valgrind, custom FREE– T/S, ESP correl, ML</strong></li>
+<li>Perf: perf top –g (functions)</li>
+<li><strong>Perf counters in hardware (cpu) , with kernel trace points (ex: cache miss, cpu-migration, softirq’s)</strong></li>
+<li><strong>strace</strong></li>
+<li>Ftrace- uses the frysk engine to trace systemcalls</li>
+<li><strong>sycalls of procs and threads</strong></li>
+<li><strong>Dynamic kernel fx trace, including latencies (ex: how long proc wakes/starts</strong></li>
+<li><strong>/debug/tracing</strong></li>
+<li><strong>Trace_clock</strong></li>
+<li>Dtrace for Linux:</li>
+<li><strong>Dynamic – cpu, fs, net resources by active procs, can be quite specific</strong></li>
+<li><strong>Log of args /fx</strong></li>
+<li><strong>Procs accessing specific files</strong></li>
+<li><strong># New processes with arguments</strong></li>
+<li><strong>dtrace -n ‘proc:::exec-success { trace(curpsinfo-&gt;pr_psargs); }’</strong></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<p>§  <strong># Pages paged in by process</strong>§  <strong>dtrace -n ‘vminfo:::pgpgin { @pg[execname] = sum(arg0); }’</strong>§  <strong># Syscall count by process</strong>§  <strong>dtrace -n ‘syscall:::entry { @num[pid,execname] = count(); }’      ….. specific syscall ct per process or thread</strong>§  <strong>also ‘canned’ scripts for processes with top tcp and udp traffic, ranking of processes by bandwidth</strong> o    <strong>SystemTap – ex:</strong><strong>probe</strong> <strong>tcp.setsockopt.return</strong>§  <strong>Uses strace points for kernel and user probes</strong>§  <strong>Script thief</strong><strong>.stp – interrupts by procs histogram</strong>o    <strong>dynamically instrumenting running production Linux kernel-based operating systems. System administrators can use SystemTap to extract, filter and summarize data in order to enable diagnosis of complex performance or functional problems.</strong>o    <strong>SysDig Tool – only syscalls, dump for post processing  scripting</strong></p>
+
+<p>​</p>
+
+<ul>
+<li>Oprofile uses hw counters, tracks mem access and L2 cache, hw interrupts
+
+<ul>
+<li><strong>Mpstat, vmstat, iostat, nicstat, free, top, netstat, ss [filter/script for analytics]</strong></li>
+</ul></li>
+<li><strong>VM (Virtual Memory) and page flushes, optimize market data caches</strong></li>
+<li>- <strong>Slab allocation= mem mgt for k objects, eliminates frag</strong></li>
+<li><strong>Slow network connections and packet drops</strong></li>
+<li><strong>Intro to NetPerf tool</strong></li>
+<li><strong>NIC tuning</strong></li>
+<li><strong>Kernel bypass, LDMA, RDMA</strong></li>
+
+<li><p>Kernel bypass with NIC vendors (SolarFlare, Mellanox, ExaBlaze,) – description how each work</p>
+
+<ul>
+<li><strong>SolarFlare OpenOnLoad sets up all socket calls in user space instead of kernel space, with dedicated socket connection &amp; data handled in NIC memory</strong></li>
+<li><strong>Mellanox VMA linked library to user space, also sets up user space calls to NIC; Connect-IB NIC allows non-contiguous memory transfers for app-app; RV offload – speeds up MC; MLNX OFED open fabric verbs for IB and Ethernet; PCIe switch &amp; NVMe over Fabric; MPI offloads; 2 ports at 100 Gbps; IB &amp; Ethernet connections &lt; 600 ns latency</strong></li>
+<li>Enyx NICs: differs from SF and MX network stack in user space (can be CPU intensive)</li>
+<li><strong>Enyx places full TCP stack in hardware (FPGA); reduce jitter</strong></li>
+<li>Network appliances:</li>
+<li>ExaBlaze Fusion</li>
+<li>Metamako MetaApp</li>
+<li>FixNetics ZeroLatency</li>
+<li>Precision Timing – PTP and NTP</li>
+<li>PTP Symmetricom Sync Server S300s – NTP &amp; PTP,owned by Microsemi GM</li>
+<li>GPS Satellite satisfies UTC Req.</li>
+<li>MIFIF II and PTP (software (sw) + hardware(hw) critical for accuracy; Req: 100 uSec + UTC</li>
+<li>Symmetricom PTP GM 6 ports +/- 4 ns, &lt;25ns to UTC</li>
+<li>GPS -&gt; GM-Spectracom-&gt;B-Clock(Arista7150s-FPGA timing+NAT)-&gt;servers-PTP-sw with FPGA based NIC’s ex: Exablaze ExaNIC models) – or SolarFlare NIC’s with HW timestamps
+
+<ul>
+<li>Linuxptp – ptp4I &amp; phc2sys (can act as B-Clk) sync PTP hw clock on client, including VLAN tagged interfaces and bonded interfaces to master (GM) but with kernel; Dmons can’t consume MC; K delivers pkt to bonded interface SF’s sfptpd does all in HW; can sync every SF adapter; ptpd – mult platforms but just sw.</li>
+<li>Timemaster – on start, reads NTP &amp; PTP time servers, starts daemons, can sync sys clock to all time servers in multiple PTP domains</li>
+<li>Master-slave time sync (ex:</li>
+<li>PTP Timing within 6 ns –</li>
+<li>consider disable tickless kernel :  nohz=off (for accuracy) BUT test this and app impact</li>
+<li>PTP in hardware best but costs; do ROI</li>
+<li>If multiple interfaces in diff networks, set reverse FWD mode to loose mode</li>
+<li>Cmd: ethtool –T <int> -verify timestamp —- (for hw)</li>
+<li>“timemaster” reads config of PTP time source</li>
+<li>Cmd: systemctl start timemaster</li>
+<li>ExaNIC FPGA can be programmed for extra analytics; some base programs available</li>
+<li>MC if sync msg from Master but UDP unicast delay msg from slave to Master</li>
+<li>PTP assumptions:</li>
+<li>Network path symmetry (hence switch, router, FW, OS impact this)</li>
+<li>Master and slave accurately measure when at pt of send/receive</li>
+<li>Every hop can reduce PTP accuracy</li>
+<li>PTP options:</li>
+<li>Each slave clock direct cables to master .. but complexity. Cost …</li>
+<li>Dedicate PTP switch infrastructure; switch PTP aware &amp; eliminate switch delay or act as PTP M B-Clk; do not mix traffic</li>
+<li>In dedicated LAN, PTP thru switch L2 Bcast to PTP bridge (server as B-Clk &amp; bonded interface mgr), sends MC to FW (–if no SF; FW has list MC groups, IGMPv3 config ), MC to PTP clients for Time Sync, best if clients have with SF <add PICTURE>
+
+<ul>
+<li>FW configured for IGMP3, has necessary config allowing PTP-Bridge &amp; clients to join std PTP MC group 224.0.1.129</li>
+<li>Sfptpd can work on bonded interfaces so PTP clients need specify mgt interface to get PTP TS (from PTP bridge)</li>
+</ul></li>
+<li>Hardware time stamps at every point</li>
+<li>More PTP details:</li>
+<li>Slaves periodically send messages back to Master (sync)</li>
+<li>Sfptpd à file or syslog; ptp4l à stdout</li>
+<li>Offset: amt Slave Clk off from Master</li>
+<li>Freq Adjustment: how much clock oscillator adjusts to run at same rate as Mstr</li>
+<li>Path Delay: how long to Slv &amp; VV</li>
+<li>Metrics – collectd, applies RegEx</li>
+<li>NTP – selects accurate Time servers from multiple (ex 3); polls 3 or more servers</li>
+<li>Keep stratum levels to no more than 2</li>
+<li>Keep 3 clock sources near for sync</li>
+<li>Use switches with light of no queuing</li>
+<li>Use “timekeeper” – transforms any server into a timing appliance</li>
+<li>Class Exercise–Explain different approaches to kernel bypass of following: ExaBlaze, SolarFlare, Mellanox, Enyx).  Explain strengths and advantages of each; advise what specific electronic trading applications would best benefit from each.</li>
+<li>Explain how following Linux Tuning options will will impact latencies
+
+<ul>
+<li><strong>Swappiness =0;</strong></li>
+<li><strong>Dirty-ratio 10;</strong></li>
+<li><strong>Background- ratio 10</strong></li>
+<li><strong>NIC interrupt coalescing (pre kernel-bypass)</strong></li>
+<li><strong>Ring buffer increase</strong></li>
+<li><strong>UCP receive buffer at 32 MB</strong></li>
+<li><strong>Netdev-backup 1000000 (traf stored before TCP/IP proc; 1/core)</strong></li>
+</ul></li>
+<li>Explain what following commands produce for latency analysis:
+
+<ul>
+<li><strong>ifconfig command</strong></li>
+<li><strong>Netstat –s (send/recv Q’s)</strong></li>
+<li><strong>Ss utility</strong></li>
+</ul></li>
+<li><strong>Detail major benefits of VTune and DTrace and when you would use either</strong></li>
+<li></li>
+</ul></li>
+</ul></li>
+
+<li><p><strong>OPTIONAL</strong> — Quick intro Python</p></li>
+
+<li><p>Programming with Multiple core multi thread, parallelism</p></li>
+
+<li><p>Vectorize application code</p></li>
+
+<li><p>Design – Internal loops with deep vector instructions, outer loops with parallelization (threads)</p></li>
+
+<li><p>Servers, sockets, cores, caches. MCDRAM (Intel Phi)</p></li>
+
+<li><p>Core speeds GHz vs more cores, larger and faster caches</p></li>
+
+<li><p>Over clocked servers – features and what applications can benefit</p></li>
+
+<li><p>Linux, Solaris, Windows, other ex SmartOS, Mesosphere DC OS</p></li>
+
+<li><p>How to benchmark performance, analyze, tune</p></li>
+
+<li><p>NUMA aware processes and threads</p></li>
+
+<li><p>Optimize cache assignments per high priority threads</p></li>
+
+<li><p>Intel technologies including …</p></li>
+
+<li><p>AVX-512 deep vector instructions (speeds up FP ops)</p>
+
+<ul>
+<li>6-8 registers; more ops/instruction; less power</li>
+</ul></li>
+
+<li><p>TBB thread Building blocks (limit oversubscription of threads)</p>
+
+<ul>
+<li>OpenMP- explosion of threads</li>
+</ul></li>
+
+<li><p>Omni-Path high speed / bandwidth interconnect (no HBA, fabric QoS, MTU to 10K, OFA verbs,105 ns thru switch ports, 50 GB/s bi ) &amp; QPI</p>
+
+<ul>
+<li><strong>Uses Silicon Photonics (constant light beam, lower latencies and deterministic)</strong></li>
+</ul></li>
+
+<li><p>QuickPath: mult pairs serial links 25.6 GB/s (prior to Omni-Path)</p>
+
+<ul>
+<li>Mem controllers integrated with microprocessors</li>
+<li>Replaced legacy bus technology</li>
+<li>Cache coherent</li>
+</ul></li>
+
+<li><p>Shared Memory is faster than Mem Maps; allows multiple procs read/write into shared mem among the procs – without OS read/write commands. Procs just access the part of shared mem of interest.</p>
+
+<ul>
+<li><strong>Discuss ex of server proc sending HTML file to client; file is passed to mem then net function copies mem to OS mem; client calls OS function which copies to its own mem; contrast with Shared Mem</strong></li>
+</ul></li>
+
+<li><p>PCIE</p></li>
+
+<li><p>NVME</p></li>
+
+<li><p>Flash SSD Drives</p></li>
+
+<li><p>C ++ vs Java for ULL</p></li>
+
+<li><p>Lists vs vectors</p></li>
+
+<li><p>Iterate lists</p></li>
+
+<li><p>Role of FPGA, GPU, MicroWave networks for ULL</p></li>
+
+<li><p>C/C++, Java, Python, CUDA, FPGA – OpenCL: programming design considerations</p></li>
+
+<li><p>Java 8 new streams API and lambda expressions – for analytics</p></li>
+
+<li><p><strong>Class Ex</strong> <strong>– Explain how Quick Path &amp; Omni Path both improve latencies and advise which is preferred for ULL and why</strong></p></li>
+
+<li><p>Intro to Wireshark</p></li>
+
+<li><p>Intro to FIX Protocol</p></li>
+
+<li><p>Intro to Wireshark with FIX protocol “Plug-in”</p></li>
+
+<li><p>TCP, UDP, multicast (MC), then analysis via WireShark, Corvil</p></li>
+
+<li><p>New age networks – Spine leaf to single tier</p></li>
+
+<li><p>SDN (Software Defined Networks)</p>
+
+<ul>
+<li>Cisco ACI + Tetration (<strong>ACI tells switches what to do instead of SDN SW doing it)</strong></li>
+<li>Cloudistics</li>
+<li>Plexxi</li>
+<li>NSX</li>
+</ul></li>
+
+<li><p>Pico – ULL SDN vendor</p></li>
+
+<li><p>Options-IT – colo managed ULL infrastructure</p></li>
+
+<li><p>Cisco and Arista switches for ULL</p></li>
+
+<li><p>Cisco ACI and Cisco Tetration – Deep machine Learning to automatically optimize large networks</p></li>
+
+<li><p>Switches with deep buffers, great for Big Data Analytics</p></li>
+
+<li><p>Configure Routers for ULL – LLDP, MLAG, VRRP, VARP (active-active L3 gateway)</p>
+
+<ul>
+<li><strong>LLDP = protocol for LAN devices informing of their config for Enet switches, Rtrs, wireless LAN AP, to advertise to other nodes; allow 2 systems running different network layer protocols to learn about each other</strong></li>
+</ul></li>
+
+<li><p>Network protocols – BGP, OSPF, HSRP</p></li>
+
+<li><p>Arista 7124FX with  EOS</p></li>
+
+<li><p>Plexxi switches – a disruptive technology – single tier</p></li>
+
+<li><p>Plexxi optimal bandwidth via its SDN</p></li>
+
+<li><p>Optimal VLANs configuration for analytics</p>
+
+<ul>
+<li>Use trunks from 1 switch to another switch after defining a VLAN, or use router</li>
+</ul></li>
+
+<li><p>VPLS (Virtual Private LAN Service) also for analytics</p>
+
+<ul>
+<li>Enet based multiPt-multiPt over IP or MPLS</li>
+</ul></li>
+
+<li><p>Decrease network hops for speed</p>
+
+<ul>
+<li>(ex: Slim-Fly: Low diameter network architecture if not ready for Single Tier)</li>
+</ul></li>
+
+<li><p>Network protocols:</p>
+
+<ul>
+<li>EBGP: external, distance vector, via paths, network policies, rule sets, finite state machine; BGP peering of AS-AS</li>
+<li>BGP-MP: multi protocol + IPv6, unicast &amp; MC; use for MPLS-VPN</li>
+<li>OSPF: interior within AS, link state routing with metrics of RTT, amt data thru specific links, and link reliability</li>
+<li>MOSPF: uses group membership info from IGMP + OSPF DB, builds MC trees</li>
+<li>EIGRP: OSPF + more criteria: latencies, effective BW, delays, MTU</li>
+<li>MPLS: between network nodes, short path lables – avoid complex lookups in RTE table; multi protocol- includes ATM, Frame Relay, DSL</li>
+<li>IB: hw, light wt, no pkt reordering; link level flow control, loss less, QoS virtual lanes 0-14, RDMA verbs (adds latency), UFM tool, 4000 byte MTU (adds latency as this MTU must fill before transmission)</li>
+<li>OPA: Intel’s Omni Path Architecture: 100 Gbps, new 48 ports switch silicon, silicon photonics, no HBA, 50% decrease infra vs IB, 100-110 ns / port, congestion control – reroutes traffic, MTU up to 10K</li>
+<li>FC: FiberChannel – optical pkts, units of 4 10-bit codes, 4 codes=TransWord; meta-data sets up link and Seq; tools-Agilent, CATC, Finisar,Xyratex; FC: similar to Enetpkt ex: mult frames assembled with src, dest</li>
+<li>IGMP: used by <a href="https://en.wikipedia.org/wiki/Host_(network)">hosts</a> and adjacent <a href="https://en.wikipedia.org/wiki/Router_(computing)">routers</a> on <a href="https://en.wikipedia.org/wiki/IPv4_network">IPv4 networks</a> to establish multicast group memberships</li>
+<li></li>
+</ul></li>
+
+<li><p><strong>OPTIONAL</strong></p></li>
+
+<li><p>Next Gen Firewalls (ex: Fortinet)</p>
+
+<ul>
+<li>1 platform end-2-end, with multiple security related aspects including anti-virus, malware, intrusion detection, database and OS access controls, web filtering, web app security, user ID awareness, standard rules access, internal segmentation (into functional security zones, limits spread of malware &amp; mischief, identifies mischief &amp; quarantines infected devices; shares all info via its fabric to whole network; Zero Trust Policy – places the FW in network center, in front of data</li>
+<li>Empow – Security Orchestration product</li>
+</ul></li>
+
+<li><p>Kerberos</p>
+
+<ul>
+<li>Client/server network authentication protocol via secret key cryptography, stronger than traditional firewalls as they focus on external threats whereas Kerberos focuses on internal</li>
+<li>Each KDC has copy of Kerberos DB; Master KDC has copy of realm DB, which is replicated to slave KDC’s @ regular intervals; DB password changes are in the Master; slaves grant Kerberos ticket servers / services, time series critical &amp; create ACLs too;  Kerberos daemons are started on the Master, assigns hostnames to Kerberos realms, ports, slaves</li>
+<li>Opportunity for Docker container security:</li>
+<li>Kerberos for access to multiple levels of container types (ex: checking account KYC vs withdrawal .. acct mgr vs authenticated client)</li>
+<li>IPTables – may opt to disable for ULL, rely on external FW</li>
+<li>Set up, inspect tables of IP packet filter rules; each table: built-in “chains” &amp; user defined chains; chains list rules to match set of packets</li>
+<li>Required for server “routers” NAT aware
+
+<ul>
+<li>Rte intercepts, determines NAT@</li>
+</ul></li>
+<li><strong>END- OPTIONAL</strong></li>
+<li></li>
+<li><strong>Class Exercise – Determine whether Single Tier Networks improve ULL versus Spine Leaf. If so explain why.  Several scenarios will be presented and students will architect networks on white boards.</strong></li>
+</ul></li>
+</ul>
+
+<p>FPGA’s &amp; Market Data</p>
+
+<ul>
+<li><p>Hardware accelerated appliances for ULL and deterministic performance</p></li>
+
+<li><p>OPTIONAL</p></li>
+</ul>
+
+<p>— Intro to FPGA’s including intro to FPGA design &amp; programming (I/O blocks + Logic blocks, OpenCL for creating “kernels” + synchronization for parallelism )</p>
+
+<ul>
+<li><p><strong>FPGA cache may be a limiting factor</strong></p></li>
+
+<li><p>Why performance tends to be very deterministic with FPGA’s &amp; why deterministic performance (latencies) are critical for HFT and algo traders</p></li>
+
+<li><p>Pitfalls of FPGA’s</p></li>
+
+<li><p>FPGA’s vs GPU’s, Intel Phi, and multi cores</p></li>
+
+<li><p>Feeds in FPGA –architecture, performance, design, support</p></li>
+
+<li><p>Switch crossbars or caches for fan out with TCP distribution</p></li>
+
+<li><p>Multicast (MC) performance considerations</p>
+
+<ul>
+<li>Turn on IGMP Snooping
+
+<br /></li>
+</ul>
+
+<p>on Switch</p>
+
+<ul>
+<li><p>Switch listens to IGMP conversations between hosts/routers; maps links that require MC streams; Routers periodically query; 1 member per MC group per subnet reports.</p></li>
+
+<li><p>Clients issue IGMP join requests to MC groups</p></li>
+
+<li><p>Routers solicit group member requests from direct connect hosts</p></li>
+
+<li><p>PIM-SM (Sparse Mode …low % MC) requires a Rendezvous Point (RP) router</p></li>
+
+<li><p>Routers in PIM domain provide mappings to RP (exchange info for other routers)</p></li>
+
+<li><p>PIM domain: enable PIM on each router</p></li>
+
+<li><p>Enable PIM sparse mode on each interface</p></li>
+
+<li><p>After RP, forward to receivers down shared distribution tree</p></li>
+
+<li><p>When receiver’s 1st hop router learns source, it sends join message directly to source</p></li>
+
+<li><p><a href="https://en.wikipedia.org/wiki/Protocol_Independent_Multicast">Protocol Independent Multicast</a> (PIM) is used between the local and remote MC routers, to direct MC traffic from the MC server to many MC clients.</p></li>
+</ul></li>
+
+<li><p>Message based appliances, including FPGA based</p></li>
+
+<li><p>Direct feed normalization</p></li>
+
+<li><p>Conflation to conserve bandwidth</p></li>
+
+<li><p>NBBO</p></li>
+
+<li><p>Levels 1 and 2 market data</p></li>
+
+<li><p>Depth of book builds (in FPGA’s or new multi core servers)</p></li>
+
+<li><p>Smart order routers</p></li>
+
+<li><p>Exablaze NICs and switches v Metamako switches for market data</p></li>
+
+<li><p>ENYX FPGA NICs and Appliances for market data and order flow</p></li>
+
+<li><p>Nova Sparks FPGA based market data ticker</p></li>
+
+<li><p>Fixnetics Zero latency – multi thread risk checks in FPGA and order processing in parallel on a core(a)</p></li>
+
+<li><p>Other products — Exegy, Algo logic, Redline, SR labs</p></li>
+
+<li><p>Consolidated feed vendors Bloomberg and Thomson Reuters</p></li>
+
+<li><p><strong>Class Ex</strong> <strong>– (1) white board sessions where students will design ULL market data and multi cast architectures, per specific business/application criteria. (2) Given a Visio of a large network but with only a few MC groups and subscribers, identify the likely path(s) to sources few.  Include choice of router as RP.</strong></p></li>
+</ul>
+
+<p><strong>Day-2</strong></p>
+
+<p><strong>Middleware, Analytics, Machine Learning, leading to end-end ULL Architectures</strong></p>
+
+<p>Analytics  &amp; Machine Learning:  to seek alpha and for infrastructure analytics</p>
+
+<ul>
+<li>Intro to Big Data Analytics &amp; Machine Learning (focus on neural networks)</li>
+<li>Role of Java 8 new streams API
+
+<ul>
+<li>Speeds up extracting insight from large collections via methods such as:</li>
+<li>Filter, sort, max, map, flatmap, reduce, collect</li>
+<li>Use with ArrayLists, HashMaps (does not replace them)</li>
+<li>Stream is 1-time use object</li>
+</ul></li>
+<li>Intro to Complex Event Processing (CEP) and Event Stream Processing (ESP)</li>
+<li>Databases – Never in the path of ULL</li>
+<li>Column based (contiguous memory) vs relational</li>
+<li>KDB and OneTick – leading players in high speed market data tick databases</li>
+<li>Event Stream Processing (ESP) – use ESP to seek alpha</li>
+<li>Combine market data with News sentiment analytics to seek alpha,</li>
+<li>Intro to Ravenpack news sentiment analytics</li>
+<li>Intro to Spark</li>
+<li>Role of new storage technology (ex NVMe Flash drives)</li>
+<li>In-mem analytics ex HANA, Spark</li>
+<li>Corvil – intro to how to configure Corvils and how to analyze FIX order flow with it</li>
+<li>Machine learning, neural networks in R or Python – create equations to project latencies</li>
+<li>Machine learning for Latency analysis, tuning insight, seeking alpha -trade opportunities</li>
+<li>Programming for multi threaded trading risk analytics</li>
+<li><strong>Class Ex</strong> – output from Corvil streams will be provided. Students will analyze and determine how latencies can be projected using neural networks (design only – no programming)</li>
+</ul>
+
+<p>Middleware, High Speed Messaging</p>
+
+<ul>
+<li>60 West AMPS</li>
+<li>29 East LBM (UME)</li>
+<li>New FIX Binary protocol in beta promises to lower latencies</li>
+<li>Importance of High Speed messaging for Algo Trading</li>
+<li>Intro to basic algo’s for trading equities (ex VWAP, Volume Participation, use of AVX and RSI)</li>
+<li>How to back-test algo’s for trading</li>
+<li><strong>Class Ex – output from application logs will be provided. Students will analyze and determine how AMPS can be configured for both high speed middleware and event stream processing for analytcis</strong></li>
+</ul>
+
+<p>End-End ULL Architectures &amp; Intro to Cloud Architectures</p>
+
+<ul>
+<li>Co-Lo with 500 ns order ack times (revisited with our new knowledge)</li>
+<li>Dark pools</li>
+<li>Algo Trading (servers, appliances, or FPGA’s) in the architecture</li>
+<li>Smart Order routers</li>
+<li>Prop Trading</li>
+<li>Exchanges</li>
+<li>Why traditional cloud architectures fall short for ULL</li>
+<li>Cloud for analytics – pitfalls vs best practices</li>
+<li>Micro services potential</li>
+<li>How to conduct ROI for new ULL architectures</li>
+<li><strong>Class Ex</strong> <strong>– VISIO or white boarding of a new trading system TBD, applying all learned in course</strong></li>
+</ul>
+
+<p><strong>OPTIONAL</strong></p>
+
+<p>Futures, including Cloud Architectures for ULL</p>
+
+<ul>
+<li>Brief Quiz on material covered last week + review of VISIO assignment</li>
+<li>Projections on new technologies’ impacts on ULL – may include:</li>
+<li>new Intel cores &amp; software,</li>
+<li>adoption of Single Tier networks,</li>
+<li>impact of in memory machine learning for alpha generation of trading signals,</li>
+<li>integration of deep machine learning from cloud to live trading networks via high speed interconnects, to an asynchronous Q, with NO latency impact,</li>
+<li>applicability of block chains,</li>
+<li>system reliability engineering (SRE),</li>
+</ul>
+
+<p>END-OPTIONAL</p>
+
+<p><strong>Quick Bio of Ted Hruzd</strong></p>
+
+<p>Ted has 33 years Wall Street IT experience in multiple capacities, ranging from Software Developer, SA, Manager of SA’s, Performance Architect and ULL Infrastructure Architect.  Ted started his career with SIAC  (1983-99), then progressed to firms with priorities in space of electronic trading – Instinet, Arca, Citigroup, Deutsche Bank, JP Morgan, RBC.</p>
+
+<p>Ted’s career theme has been to trade as fast and as intelligently as possible, for competitive advantage.  Ted now specializes in architecting ultra low latency electronic trading and market data infrastructures and in evangelizing disruptive technologies, with focus on ROI &amp; cost savings.  Ted keeps up to date with all latest technologies, conducts deep dive tech sessions with vendors, and can quickly architect and design new age infrastructures for any capital markets application, to increase revenues and net income.  Subsequent to developing skills in Machine Learning / Neural Networks, Ted projects a very significant role for Machine Learning for both analytics to seek alpha and risk checks and thus also speed up electronic trading.</p>
+
+<p>Ted is currently negotiating teaching the following course at NYU and Queens University (Belfast):</p>
+
+<p>ULL (Ultra Low Latency) Architectures for Electronic Trading, link below:</p>
+
+<p><a href="https://homerunfitness.wordpress.com/2016/08/19/nyu-course-proposal-ull-architectures-for-electronic-trading/">https://homerunfitness.wordpress.com/2016/08/19/nyu-course-proposal-ull-architectures-for-electronic-trading/</a>.</p>
+
+<p>Ted’s passion for ultra low latencies and high speed processing is closely matched with his main hobby – a lifetime serious athlete.  This includes being a ACSM certified Personal Trainer since 2008.  Ted trains clients very part-time and only weekends, specializing in safe strength and speed training, especially increasing speed for events from the 40 yard dash up to 10K.</p>
+
+<p>Yes – Ted is all about speed and ultra low latencies.</p>
+
+<p><strong>APPENDIX</strong></p>
+
+<p><strong>MC Protocols</strong></p>
+
+<p><strong>IGMP</strong></p>
+
+<p>A network designed to deliver a multicast service using IGMP might use this basic architecture:</p>
+
+<p>IGMP operates between the client computer and a local multicast router. <a href="https://en.wikipedia.org/wiki/Network_switch">Switches</a> featuring <a href="https://en.wikipedia.org/wiki/IGMP_snooping">IGMP snooping</a> derive useful information by observing these IGMP transactions. <a href="https://en.wikipedia.org/wiki/Protocol_Independent_Multicast">Protocol Independent Multicast</a> (PIM) is then used between the local and remote multicast routers, to direct multicast traffic from the multicast server to many multicast clients.</p>
+
+<p>IGMP operates on the <a href="https://en.wikipedia.org/wiki/Network_layer">network layer</a>, just the same as other network management protocols like <a href="https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol">ICMP</a>.[<a href="https://en.wikipedia.org/wiki/Internet_Group_Management_Protocol#cite_note-Forouzan_2012-1">1]</a></p>
+
+<p>The IGMP protocol is implemented on a particular host and within a <a href="https://en.wikipedia.org/wiki/Router_(computing)">router</a>. A host requests membership to a group through its local router while a router listens for these requests and periodically sends out subscription queries.</p>
+
+<p><strong>Spanning Tree Protocol:</strong></p>
+
+<p>subset of internetwork links are selected to define a tree structure (loop-less graph) such that there is only one active path between any two routers. Since this tree spans to all nodes in the internetwork it is called spanning tree. Whenever a router receives a multicast packet, it forwards the packet on all the links which belong to the spanning tree except the one on which the packet has arrived, guaranteeing that the multicast packet reaches all the routers in the internetwork. Obviously, the only information a router needs to keep is a boolean variable per network interface indicating whether the link belongs to the spanning tree or not. We use a small network with five nodes and six links to show different trees. For simplicity sake, we do not differentiate between hosts and routers, subnets and links. We also assume that links are symmetric and their costs are shown next to the links. The spanning tree from source node &copy; is shown in Figure 4:</p>
+
+<h4 id="reverse-path-broadcasting-rpb">Reverse Path Broadcasting (RPB)</h4>
+
+<p>The RPB algorithm which is currently being used in the <a href="http://www.cse.wustl.edu/~jain/cis788-97/ftp/ip_multicast/#MBone">MBone (Multicast Backbone)</a>, is a modification of the Spanning Tree algorithm. In this algorithm, instead of building a network-wide spanning tree, an implicit spanning tree is constructed for each source. Based on this algorithm whenever a router receives a multicast packet on link “L” and from source “S”, the router will check and see if the link L belongs to the shortest path toward S. If this is the case the packet is forwarded on all links except L. Otherwise, the packet is discarded. Three Multicast trees from two sources of our test network are shown in Figure 5.</p>
+
+<p>The RPB algorithm can be easily improved by considering the fact the if the local router is not on the shortest path between the source node and a neighbor, the packet will be discarded at the neighboring router. Therefore, if this is the case there is no need to forward the message to that neighbor. This information can be easily obtained if a link-state routing protocol is being used. If a distance-vector routing protocol is being used, a neighbor can either advertise its previous hop for the source as part of its routing update messages or “poison-reverse” the route [<a href="http://www.cse.wustl.edu/~jain/cis788-97/ftp/ip_multicast/#draft">Semeria]</a>.</p>
+
+<p>This algorithm is efficient and easy to implement. Furthermore since the packets are forwarded through the shortest path from the source to the destination nodes, it is very fast. The RPB algorithm does not need any mechanism to stop the forwarding process. The routers do not need to know about the entire spanning tree and since the packets are delivered through different spanning trees (and not a unique spanning tree) traffic is distributed over multiple tress and network is better utilized. Nevertheless, the RPB algorithm suffer from a major deficiency: it does not take into account the information about multicast group membership for constructing the distribution trees.</p>
+
+<h4 id="reverse-path-multicasting-rpm">*** Reverse Path Multicasting (RPM)</h4>
+
+<p>The RPM algorithm (also known as RPB with prunes) is an enhancement to the RPB and TRPB algorithms. RPM constructs a delivery tree that spans only: <em>1) subnetworks with group members, and 2) routers and subnetworks along the shortest path to subnetworks with group members</em> [<a href="http://www.cse.wustl.edu/~jain/cis788-97/ftp/ip_multicast/#draft">Semeria]</a>. The RPM tree can be pruned such that the multicast packets are forwarded along links which lead to members of the destination group.</p>
+
+<p>For a given pair of (source, group) the first multicast packet is forwarded based on the TRPB algorithm. The routers which do not have any downstream router in the TRPB tree are called leaf routers. If a leaf router receives a multicast packet for a (source, group) pair and it does not have any group member on its subnetworks, it will send a <strong>“prune” message to the router from which it has received the multicast packet.</strong> The prune message indicates that the multicast packets of that particular (source, group) pair should not be forwarded on the link from which the prune message has been received. It is important to note that prune messages are only sent one hop back towards the source. The upstream router is required to record the prune information in its memory. On the other hand, if the upstream router does not have any local recipient and receives prune messages from all of its children in the TRPB tree, the upstream router will send a prune message itself to its parent in the TRPB tree indicating that the multicast packets for the (source, group) pair need not be forwarded to it. The cascaded <strong>prune</strong> messages will truncate the original TRPB tree such that the multicast packets will be forwarded only on those links that will lead to a destination node(multicast group member). For showing the tree obtained after the exchange of prune messages in a network, we need to use a more complicated network. Figure 6 illustrates pruning and the obtained RPM tree.</p>
+
+<p><strong>Networks</strong></p>
+
+<p><strong>TCP PSH ACK</strong></p>
+
+<p>Sender (S)  indicates —  if Receiver ® TCP did not yet provide data, do ASAP.</p>
+
+<p>When R TCP sees PSH, R must not wait for more data.</p>
+
+<p>Receive buffer returned to user for processing.</p>
+
+<p><strong>RST</strong> – can occur if not intended pkt received</p>
+
+<p><strong>Perf Tools and tracers</strong></p>
+
+<p><a href="http://www.brendangregg.com/blog/"><strong>http://www.brendangregg.com/blog/</strong></a></p>
+
+<p><strong><a href="http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html">http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html</a></strong></p>
+
+<p><strong>Linux has available built-in:</strong></p>
+
+<p><strong>Tools – perf, ftrace, eBPF</strong></p>
+
+<p><strong>FTRACE</strong></p>
+
+<ul>
+<li><strong>Built into K</strong></li>
+<li><strong>Fx-flow walking</strong></li>
+<li>Is NOT easily programmable so can’t calc latencies, unless:
+
+<ul>
+<li><strong>Dump events to user-level, create scripts, or use eBPF</strong></li>
+</ul></li>
+<li>uses the frysk engine to trace systemcalls
+
+<ul>
+<li><strong>sycalls of procs and threads</strong></li>
+<li><strong>Dynamic kernel fx trace, including latencies (ex: how long proc wakes/starts)</strong></li>
+<li><strong>/debug/tracing</strong></li>
+<li><strong>Trace_clock</strong></li>
+</ul></li>
+<li><strong><a href="http://lwn.net/Articles/370423/">http://lwn.net/Articles/370423/</a></strong></li>
+</ul>
+
+<p><strong>Probably the most powerful tracer derived from Ftrace is the function tracer. It has the ability to trace practically every function in the kernel. It can be run not just for debugging or analyzing, but also to learn and observe the flow of the Linux kernel.</strong></p>
+
+<ul>
+<li>CONFIG_FUNCTION_TRACER</li>
+<li>CONFIG_DYNAMIC_FTRACE</li>
+
+<li><p>CONFIG_FUNCTION_GRAPH_TRACER</p></li>
+
+<li><p>here is a quick example of how to enable the function tracer.</p></li>
+</ul>
+
+<p>·            [tracing]# echo function &gt; current_tracer·            [tracing]# cat trace·                   <idle>-0     [000] 1726568.996435: hrtimer_get_next_event &lt;-get_next_timer_interrupt·                   <idle>-0     [000] 1726568.996436: _<strong>spin_lock</strong>_irqsave &lt;-hrtimer_get_next_event·                   <idle>-0     [000] 1726568.996436: _<strong>spin_unlock</strong>_irqrestore &lt;-hrtimer_get_next_event·                   <idle>-0     [000] 1726568.996437: rcu_needs_cpu &lt;-tick_nohz_stop_sched_tick·                   <idle>-0     [000] 1726568.996438: enter_idle &lt;-cpu_idle</p>
+
+<p><strong>PERF_EVENTS – source in K, usually added to tools package “perf”</strong></p>
+
+<ul>
+<li><strong>perf top –g (functions)</strong></li>
+<li><strong>does most of what ftrace does but not fx flow walking</strong></li>
+<li><strong>profiles, samples, dumps user level stack, line tracing for local variables</strong></li>
+</ul>
+
+<p><strong>SystemTap</strong></p>
+
+<ul>
+<li><strong>profile, tracepoints, k &amp; u probes</strong></li>
+<li><strong>in K programming</strong></li>
+<li><strong>compiles programs into K modules</strong></li>
+<li><strong>panics, freezes</strong></li>
+<li><strong>download, code, test in dev</strong></li>
+</ul>
+
+<p><strong>sysdig:</strong></p>
+
+<ul>
+<li><strong>syscalls (ONLY) with tcpdump-like syntax</strong></li>
+<li><strong>dumps all events to user level for post processing</strong></li>
+</ul>
+
+<p><strong>DTRACE</strong></p>
+
+<p><a href="http://www.brendangregg.com/dtrace.html"><strong>http://www.brendangregg.com/dtrace.html</strong></a></p>
+
+<h2 id="dtracetoolkit">DTraceToolkit</h2>
+
+<p>See the <a href="http://www.brendangregg.com/dtracetoolkit.html">DTraceToolkit website</a> (and please update links to point to it).</p>
+
+<h2 id="dtrace-one-liners">DTrace One Liners</h2>
+
+<p>These are handy one liners to use at the command line. <a href="http://www.brendangregg.com/DTrace/dtrace_oneliners.txt"><strong>dtrace_oneliners.txt</strong></a> contains the full listing with examples.</p>
+
+<p># New processes with arguments:dtrace -n ‘proc:::exec-success { trace(curpsinfo-&gt;pr_psargs); }’ # Files opened by process:dtrace -n ‘syscall::open*:entry { printf(“%s %s”,execname,copyinstr(arg0)); }’ # Syscall count by program:dtrace -n ‘syscall:::entry { @num[execname] = count(); }’ # Syscall count by syscall:dtrace -n ‘syscall:::entry { @num[probefunc] = count(); }’ # Syscall count by process:dtrace -n ‘syscall:::entry { @num[pid,execname] = count(); }’ # Read bytes by process:dtrace -n ‘sysinfo:::readch { @bytes[execname] = sum(arg0); }’ # Write bytes by process:dtrace -n ‘sysinfo:::writech { @bytes[execname] = sum(arg0); }’ # Read size distribution by process:dtrace -n ‘sysinfo:::readch { @dist[execname] = quantize(arg0); }’ # Write size distribution by process:dtrace -n ‘sysinfo:::writech { @dist[execname] = quantize(arg0); }’ # Disk size by process:dtrace -n ‘io:::start { printf(“%d %s %d”,pid,execname,args[0]-&gt;b_bcount); }’    # Pages paged in by process:dtrace -n ‘vminfo:::pgpgin { @pg[execname] = sum(arg0); }’  # Minor faults by process:dtrace -n ‘vminfo:::as_fault { @mem[execname] = sum(arg0); }’ # Profile user-level stacks at 99 Hertz, for PID 189:dtrace -n ‘profile-99 /pid == 189 &amp;&amp; arg1/ { @[ustack()] = count(); }’</p>
+
+<p>There are also many one-liners in the <a href="http://www.amazon.com/gp/product/0132091518/ref=as_li_ss_tl?ie=UTF8&amp;tag=deirdrestraug-20&amp;linkCode=as2&amp;camp=217145&amp;creative=399369&amp;creativeASIN=0132091518">DTrace book</a>, and as Appendix D of the <a href="http://www.amazon.com/gp/product/0133390098/ref=as_li_ss_tl?ie=UTF8&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0133390098&amp;linkCode=as2&amp;tag=deirdrestraug-20">Systems Performance book</a>.</p>
+
+<ul>
+<li><a href="http://www.brendangregg.com/psio.html">psio</a> is another DTrace enabled disk I/O tool.</li>
+</ul>
+
+<p><a href="http://www.brendangregg.com/DTrace/iotop"><strong>iotop</strong></a> display top disk I/O events by process. This tracks disk I/O by process, and prints a summary report that is refreshed every interval. Full <a href="http://www.brendangregg.com/DTrace/iotop_example.txt">example</a>. <em>first release. check for updates.</em></p>
+
+<p># iotop -CSampling… Please wait.2005 Jul 16 00:31:38,  load: 1.03,  disk_r:   5023 Kb,  disk_w:     22 Kb   UID    PID   PPID CMD              DEVICE  MAJ MIN D            BYTES    0  27740  20320 tar              cmdk0   102  16 W            23040    0  27739  20320 find             cmdk0   102   0 R           668672    0  27740  20320 tar              cmdk0   102  16 R          1512960    0  27740  20320 tar              cmdk0   102   3 R          3108864 2005 Jul 16 00:31:43,  load: 1.06,  disk_r:   8234 Kb,  disk_w:      0 Kb      UID    PID   PPID CMD              DEVICE  MAJ MIN D            BYTES    0  27739  20320 find             cmdk0   102   0 R          1402880    0  27740  20320 tar              cmdk0   102   3 R          7069696[…]</p>
+
+<p><a href="http://www.brendangregg.com/DTrace/tcpsnoop"><strong>tcpsnoop</strong></a> snoop TCP network packets by process. This analyses TCP network packets and prints the responsible PID and UID, plus standard details such as IP address and port. This captures traffic of newly created TCP connections that were established while this program was running. It can help identify which processes is causing TCP traffic. Full <a href="http://www.brendangregg.com/DTrace/tcpsnoop_example.txt">example</a>. <em>new release. check for updates.</em></p>
+
+<p># tcpsnoop.d  UID    PID LADDR           LPORT DR RADDR           RPORT  SIZE CMD  100  20892 192.168.1.5     36398 -&gt; 192.168.1.1        79    54 finger  100  20892 192.168.1.5     36398 -&gt; 192.168.1.1        79    54 finger  100  20892 192.168.1.5     36398 &lt;- 192.168.1.1        79    54 finger    0    242 192.168.1.5        23 &lt;- 192.168.1.1     54224    54 inetd    0    242 192.168.1.5        23 -&gt; 192.168.1.1     54224    54 inetd    0    242 192.168.1.5        23 &lt;- 192.168.1.1     54224    54 inetd    0    242 192.168.1.5        23 &lt;- 192.168.1.1     54224    78 inetd    0    242 192.168.1.5        23 -&gt; 192.168.1.1     54224    54 inetd    0  20893 192.168.1.5        23 -&gt; 192.168.1.1     54224    57 in.telnetd    0  20893 192.168.1.5        23 &lt;- 192.168.1.1     54224    54 in.telnetd    0  20893 192.168.1.5        23 -&gt; 192.168.1.1     54224    78 in.telnetd    0  20893 192.168.1.5        23 &lt;- 192.168.1.1     54224    57 in.telnetd    0  20893 192.168.1.5        23 -&gt; 192.168.1.1     54224    54 in.telnetd   […]</p>
+
+<ul>
+<li><a href="http://www.brendangregg.com/DTrace/tcpsnoop.d">Standalone tcpsnoop.d</a> is a DTrace only version..</li>
+</ul>
+
+<p><a href="http://www.brendangregg.com/DTrace/tcptop"><strong>tcptop</strong></a> display top TCP network packets by process. This captures traffic of newly created TCP connections that were established while this program was running. It can help identify which processes is causing TCP traffic. Full <a href="http://www.brendangregg.com/DTrace/tcptop_example.txt">example</a>. <em>first release. check for updates.</em></p>
+
+<p># tcptop -C 30Sampling… Please wait.2005 Jul  5 05:18:56,  load: 1.07,  TCPin:      3 Kb,  TCPout:    112 Kb  UID    PID LADDR           LPORT RADDR           RPORT      SIZE NAME   0    242 192.168.1.5        79 192.168.1.1     54283       272 inetd   0    242 192.168.1.5        23 192.168.1.1     54284       294 inetd   0  20929 192.168.1.5        79 192.168.1.1     54283       714 in.fingerd 100  20926 192.168.1.5     36409 192.168.1.1        79      1160 finger 100  20927 192.168.1.5     36410 192.168.1.1        79      1160 finger 100  20928 192.168.1.5     36411 192.168.1.1        23      1627 telnet   0  20313 192.168.1.5        22 192.168.1.1     54285      2798 sshd   0  20931 192.168.1.5        23 192.168.1.1     54284      4622 in.telnetd 100  20941 192.168.1.5       858 192.168.1.1       514    115712 rcp 2005 Jul  5 05:19:26,  load: 1.04,  TCPin:      0 Kb,  TCPout:      4 Kb  UID    PID LADDR           LPORT RADDR           RPORT      SIZE NAME 100  20942 192.168.1.5     36412 192.168.1.1        79      1160 finger   0  20931 192.168.1.5        23 192.168.1.1     54284      7411 in.telnetd   […]</p>
+
+<p><a href="http://www.brendangregg.com/DTrace/udpsnoop.d"><strong>udpsnoop.d</strong></a> snoop UDP network I/O by process. This analyses UCP network I/O and prints the responsible PID and UID, plus standard details such as IP address and port. This tracks UDP read/writes by payload. Full <a href="http://www.brendangregg.com/DTrace/udpsnoop_example.txt">example</a>. <em>first release! check for updates.</em></p>
+
+<p># udpsnoop.d  UID    PID LADDR           LPORT DR RADDR           RPORT  SIZE CMD    0  27127 192.168.1.5     35534 -&gt; 192.168.1.1        53    29 nslookup    0  27127 192.168.1.5     35534 &lt;- 192.168.1.1        53   181 nslookup    1    221 192.168.1.5       111 &lt;- 192.168.1.1     37524    56 rpcbind    1    221 192.168.1.5       111 -&gt; 192.168.1.1     37524    28 rpcbind    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    40 rpc.sprayd    0  27128 192.168.1.5     35116 -&gt; 192.168.1.1     37524    24 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    44 rpc.sprayd    0  27128 192.168.1.5     35116 &lt;- 192.168.1.1     37524    40 rpc.sprayd    0  27128 192.168.1.5     35116 -&gt; 192.168.1.1     37524    36 rpc.sprayd   ^C</p>
+
+<p><a href="http://www.brendangregg.com/DTrace/connections"><strong>connections</strong></a> snoop inbound TCP connections as they are established, displaying the server process that accepted the connection. Full example is <a href="http://www.brendangregg.com/DTrace/connections_example.txt">here</a>.</p>
+
+<p># connections  UID   PID CMD          TYPE  PORT IP_SOURCE    0   242 inetd         tcp    79 192.168.1.1    0   359 sshd          tcp    22 192.168.1.1  100  1532 Xorg          tcp  6000 192.168.1.1     ^C</p>
+
+<p><a href="http://www.brendangregg.com/DTrace/prustat"><strong>prustat</strong></a> This displays %CPU, %Mem, %Disk and %Net utilisation by process. To examine all four key performance areas by process in Solaris was prohibitivly difficult without DTrace. prustat also uses Perl, Kstat and the procfs structures from /proc/<em>/</em>. It is a new tool and still under development, released as a demonstration. <a href="http://www.brendangregg.com/DTrace/prustat_example.txt">Full example</a>.</p>
+
+<p># prustat -t5 5  PID   %CPU   %Mem  %Disk   %Net  COMM22301  65.01   3.17   0.00   0.00  setiathome  440   8.91  45.39   0.00   0.00  Xsun 2618   0.33  14.34   0.00   0.00  mozilla-bin  582   4.01   2.16   0.00   0.00  gnome-terminal      574   1.80   1.31   0.00   0.00  metacity  PID   %CPU   %Mem  %Disk   %Net  COMM22694   3.74   0.20  74.47   0.00  tar22301  66.70   3.17   0.00   0.00  setiathome  440   6.67  45.39   0.00   0.00  Xsun 2618   0.33  14.34   0.00   0.00  mozilla-bin22693   3.81   1.50   0.00   0.00  dtrace  PID   %CPU   %Mem  %Disk   %Net  COMM22301  63.72   3.17   0.00   0.00  setiathome  440   8.14  45.39   0.00   0.00  Xsun22694   6.47   0.20  36.47   0.00  tar22698   0.00   0.00   6.88  22.43  rcp 2618   0.34  14.34   0.00   0.00  mozilla-bin^C</p>
+
+<p><strong>dtruss</strong> This is a DTrace version of truss, designed to be less of a burden and safer than truss. In the below example, dtruss examines all processes named “bash” and prints out regular truss output plus elapsed and overhead times. See the full <a href="http://www.brendangregg.com/DTrace/dtruss_example.txt">example</a>.</p>
+
+<p># dtruss -eon bashPID/LWP    ELAPSD OVERHD SYSCALL(args)           = return <sup>3911</sup>&frasl;<sub>1</sub>:       41     26 write(0x2, “l\0”, 0x1)          = 1 0 <sup>3911</sup>&frasl;<sub>1</sub>:  1001579     43 read(0x0, “s\0”, 0x1)           = 1 0 <sup>3911</sup>&frasl;<sub>1</sub>:       38     26 write(0x2, “s\0″, 0x1)          = 1 0 <sup>3911</sup>&frasl;<sub>1</sub>:  1019129     43 read(0x0, ” \001\0″, 0x1)               = 1 0 <sup>3911</sup>&frasl;<sub>1</sub>:       38     26 write(0x2, ” \0″, 0x1)          = 1 0 <sup>3911</sup>&frasl;<sub>1</sub>:   998533     43 read(0x0, “-\0”, 0x1)           = 1 0 <sup>3911</sup>&frasl;<sub>1</sub>:       38     26 write(0x2, “-\001\0”, 0x1)              = 1 0 <sup>3911</sup>&frasl;<sub>1</sub>:  1094323     42 read(0x0, “l\0”, 0x1)           = 1 0 <sup>3911</sup>&frasl;<sub>1</sub>:       39     27 write(0x2, “l\001\0”, 0x1)              = 1 0   <sup>3911</sup>&frasl;<sub>1</sub>:  1210496     44 read(0x0, “\r\0”, 0x1)          = 1 0[…]</p>
+
+<p><a href="http://www.brendangregg.com/DTrace/hotkernel"><strong>hotkernel</strong></a> Sample on-CPU kernel-level functions and modules. This samples at 1000 Hertz, for a simple yet effective modules-level profiling tool. The output will identify which function is on the CPU the most – which is the hottest. The following examples show hotkernel analyse an x86 kernel. Full <a href="http://www.brendangregg.com/DTrace/hotkernel_example.txt">example</a>.</p>
+
+<p># ./hotkernelSampling… Hit Ctrl-C to end.^CFUNCTION                                                COUNT   PCNTunix<code>swtch                                                  1   0.1%pcplusmp</code>apic_redistribute_compute                          1   0.1%genunix<code>strrput                                             1   0.1%unix</code>sys_call                                               1   0.1%genunix<code>fsflush_do_pages                                    1   0.1%TS</code>ts_wakeup                                                1   0.1%genunix<code>callout_schedule_1                                  1   0.1%unix</code>page_create_putback                                    1   0.1%unix<code>mutex_enter                                            4   0.3%unix</code>cpu_halt                                            1575  99.2% # ./hotkernel -mSampling… Hit Ctrl-C to end.^CMODULE                                                  COUNT   PCNTusbms                                                       1   0.0%specfs                                                      1   0.0%uhci                                                        1   0.0%sockfs                                                      2   0.0%genunix                                                    28   0.6%unix                                                     4539  99.3%</p>
+
+<p>Diff MX and SF?</p>
+
+<p>What changes app for OnLoad</p>
+
+<p>/proc/pid NUMA and memory</p>
+
+<p>receive side steering</p>
+
+<p>Cross calls</p>
+
+<p>Mem map vs shared mem</p>
+
+<p><a href="http://www.solarflare.com/openonload-enterpriseonload">http://www.solarflare.com/openonload-enterpriseonload</a></p>
+
+<p>No app change</p>
+
+<p>But if sync call back for more speed</p>
+
+<p><a href="http://www.mellanox.com/related-docs/whitepapers/WP_VMA_TCP_vs_Solarflare_Benchmark.pdf">http://www.mellanox.com/related-docs/whitepapers/WP_VMA_TCP_vs_Solarflare_Benchmark.pdf</a></p>
+
+<p><a href="https://www.informatix-sol.com/low-latency.html">https://www.informatix-sol.com/low-latency.html</a></p>
+
+<p>Kernel based TCP/IP has it’s limitations, you can typically half its contribution to latency by adopting a User space implementation such as OpenOnload. This can be used in any of three modes each with decreasing latency but with increasing API complexity. The simplest is to take an existing TCP/IP socket based program, it can even be in binary format and preload onload before it is started. The next is to use TCPdirect, which uses a simplified socket API referred to as zsockets. This requires refactoring of existing <strong>Linux socket ‘C’ code. The best latency however, for Onload, is to re-write your application to use their EF_VI API. This is asynchronous, using completion events so it usually requires a complete rewrite of the send/receive modules</strong></p>
+
+<p>Where you have control of both ends of the wire then lowest latency and jitter is obtained by bypassing TCP altogether.. There are three main candidates for this – InfiniBand, RoCE and iWARP. These all share a common set of API’s known as the VERB’s so it’s possible to develop applications that will run on any of them. As with Openonload, SDP and Mellanox’s VMA all preload to accelerate an existing TCP/IP socket program. Openonload retains the TCP/IP protocol so can be used single ended. SDP and VMA both map to VERBS so must be deployed on both ends of the wire. Best latency with Openonload is achieved by receive polling, this sacrifices a core just to receieve packets on this socket but does avoid the kernel wakeup delay of the user thread. VERB based programs can run be run on Ethernet, InfiniBand or OmniPath. Verb programs over Ethernet use either RoCE or iWARP. RoCE relies on PFC’s to limit senders and the non-drop queuing for any RDMA Ethertype packets queued in the switches to provide the underlying reliability, whilst iWARP uses TCP (implemented with offload engines). Unfortunately, whilst the DCB standard includes the mechanisms to enable this, the current generation of Ethernet switches typically only enable dropless behavior for the FCoE Ethertype. Whiles RoCE programs may appear to work any drops may be undetected and result in data corruption. Large scale RDMA Ethernet deployments also need L2 mesh support to replace Spanning tree. There are a number of proprietary approaches appearing to solve this, whilst the DCB group are focusing on TRIL which we should see emerge during 2012.</p>
+
+<p><strong>OUTLINE:</strong></p>
+
+<p>3 options SF OnLoad</p>
+
+<ol>
+<li>PreLoad OnLoad (no code changes)</li>
+<li><strong>TCP Direct – zsockets / refactor Linux C code</strong></li>
+<li><strong>EF_VI API – recode send/receive modules for asynchronous / completion events</strong></li>
+</ol>
+
+<p><strong>Bypass TCP altogether</strong></p>
+
+<p>IB, RoCE, iWARP(VERB API’s)</p>
+
+<p><strong>Multi Process vs Multi Thread</strong></p>
+
+<p>In a <strong>multi-threaded program</strong>,</p>
+
+<p>Positives:</p>
+
+<p>multiple actors live in a shared program context. In multi-process systems, there are <strong>multiple actors but each lives in its own independent program context</strong></p>
+
+<p><strong>Less overhead to establish and terminate vs. a process: because very little memory copying is required</strong> (just the thread stack), threads are faster to start than processes. <strong>To start a process, the whole process area must be duplicated for the new process copy to start.</strong> While some operating systems only copy memory once it is modified (copy-on-write), this is not universally guaranteed.
+<strong>Faster task-switching</strong>: in many cases, it is faster for an operating system to switch between threads for the active CPU task than it is to switch between different processes. The <strong>CPU caches and program context can be maintained between threads in a process, rather than being reloaded as in the case of switching a CPU to a different process.</strong>Data sharing with other threads in a process: for tasks that require sharing large amounts of data, the fact that <strong>threads all share a process’s memory pool</strong> is very beneficial. Not having separate copies means that different threads can read and modify a shared pool of memory easily. While data sharing is possible with separate processes through shared memory and inter-process communication, this sharing is of an arms-length nature and is not inherently built into the process model.</p>
+
+<p><strong>Synchronization</strong> overhead of shared data: shared data that is modified requires special handling in the form of <strong>locks, mutexes</strong> and other primitives to ensure that data is not being read while written, nor written by multiple threads at the same time.
+Negatives
+Shared process memory space: all threads in a process share the same memory space. <strong>If something goes wrong in one thread and causes data corruption or an access violation, then this affects and corrupts all the threads in that process</strong></p>
+
+<p><strong>Program debugging</strong>: multi-threaded programs present difficulties in finding and resolving bugs over and beyond the normal difficulties of debugging programs. Synchronization issues, non-deterministic timing and accidental data corruption all conspire to make debugging multi-threaded programs an order of magnitude more difficult than single-threaded programs
+<strong>Processes</strong></p>
+
+<p>Positives
+Processes are a useful choice for <strong>parallel programming with workloads where tasks take significant computing power, memory</strong> or both. For example, rendering or printing complicated file formats (such as PDF) can sometimes take significant amounts of time – many milliseconds per page – and involve significant memory and I/O requirements. In this situation, using a single-threaded process and using one process per file to process allows for better throughput <strong>due to increased independence and isolation between the tasks vs. using one process with multiple threads</strong>.</p>
+
+<p><a href="http://www.tradersmagazine.com/news/buyside/buy-side-focuses-on-order-routing-115494-1.html"><strong>http://www.tradersmagazine.com/news/buyside/buy-side-focuses-on-order-routing-115494-1.html</strong></a></p>
+
+<p>Asset managers are increasingly including order routing in their best execution due diligence as <a href="http://marketsmedia.com/tag/equities/"><strong>equity</strong></a> <strong>volumes shift to</strong> <a href="http://marketsmedia.com/tag/algorithmic-trading/"><strong>algorithmic trading</strong></a><strong>.</strong></p>
+
+<p>Consultancy Greenwich Associates said in a report yesterday that large institutions are shifting trading volume to algorithmic avenues of execution which has kept the overall commission pool flat. The annual pool of cash equity commissions paid by institutional investors to brokers on US equity trades was $9.65bn (€8.7bn), down more than 30% from its peak in 2009 but 4% more than the low of $9.3bn reported in 2013.</p>
+
+<p>The largest commission-generating accounts participating in the study increased their use <strong>of</strong> <a href="http://marketsmedia.com/tag/algorithmic-trading/"><strong>algorithmic trading</strong></a> <strong>strategies/smart-order routing algorithms by almost 10% between 2015 and 2016.</strong> Greenwich Associates interviewed 223 US equity portfolio managers and 321 US equity traders between November 2015 and February 2016 for the report ‘Flat E-Trading Volumes in U.S. Equities Mask Increase Among Larger Accounts’.</p>
+
+<p>Greenwich added that although notional dollar volumes traded via algorithms have not been more than a third of total volume since 2012, recent bouts of <a href="http://marketsmedia.com/tag/volatility/">volatility</a> and the approval of IEX’s exchange application are likely to force a <strong>refocus on the use of algo-driven routing logic to help navigate an increasingly complex</strong> <a href="http://marketsmedia.com/tag/Market-structure/"><strong>market structure</strong></a><strong>.</strong></p>
+
+<p>The US Securities and Exchange Commission controversially approved IEX Group as a stock exchange last month. The venue, featured in bestseller “Flash Boys” incorporates a speed bump – a 350 microseconds delay between matching an order and publicly displaying the match – in order to make it more difficult for <a href="http://marketsmedia.com/tag/high-frequency-trading/">high-frequency trading</a> strategies to interact with its order flow.</p>
+
+<p>Pragma Securities, a provider of <a href="http://marketsmedia.com/tag/algorithmic-trading/">algorithmic trading</a> tools, also said in a report yesterday that the <a href="http://marketsmedia.com/tag/buy-side/"><strong>buyside</strong></a> <strong>is paying increasing attention to order routing practices.</strong></p>
+
+<p>“This increasing diligence is appropriate,” said Pragma. “<strong>Ultimately most high-touch order flow also ends up being traded algorithmically</strong>, and algo routing logic can compromise execution quality for high-touch trades in the same ways as self-directed trading.”</p>
+
+<p><a href="http://www.therealizationgroup.com/Downloads/FPGA_beyond_market_data_140529.pdf"><strong>http://www.therealizationgroup.com/Downloads/FPGA_beyond_market_data_140529.pdf</strong></a></p>
+
+<p>“However, despite the marketing messages you might hear, this approach to kernel</p>
+
+<p>bypass is not a miracle cure because it remains CPU-intensive. Some network hardware</p>
+
+<p>vendors now use kernel bypass technology in their ‘low-latency’ NICs to try to avoid</p>
+
+<p>bottlenecks by taking the whole network stack out of the kernel and into the user space.</p>
+
+<p>But the problem with this approach is that the network stack is still running on the CPU</p>
+
+<p>and is therefore loading the CPU”, says de Barry.</p>
+
+<p>See figure one below</p>
+
+<p>.</p>
+
+<p>“Everything you can offload from the CPU helps improve latency and – more importantly</p>
+
+<p>– reduce jitter”, continues de Barry. “So our solution is to place the full TCP stack in</p>
+
+<p>hardware. That way the CPU doesn’t have to worry about TCP any more as all of those</p>
+
+<p>processes are offloaded to the FPGA”.</p>
+
+<p>See figure two below</p>
+
+<p>.</p>
+
+<p>The main advantage with this approach is that we don’t use the CPU at all, it’s all done on</p>
+
+<p>the FPGA card”, says de Barry</p>
+
+<h5 id="scalable-broadcast">Scalable Broadcast</h5>
+
+<p>The traditional approach to broadcasting data is to use a multicast switch or regenerative in-line network taps. Neither approach scales very well with increased port counts with respect to performance and manageability. In contrast, MetaConnect can replicate an input to all of its ports in an extremely low 4ns. Each signal is regenerated to avoid degradation in signal quality. With two layers of cascading 48 port MetaConnects it is possible to scale out to over 2000 feed copies within 16 nanoseconds (including fibers).</p>
+
+<p>Here is a trading example: a router is connecting through MetaConnect to a WAN from which it can receive routing information (BGP), multicast subcription (PIM) and other negotiations. Any downstream packets from the WAN to the router will be replicated and sent to each of the trader machines, with a latency between the WAN and the Trader machines of less than 4ns. Orders can be placed via a second network port on each trading machine.</p>
+
+<p>More links, doc, and PICTURES:</p>
+
+<p><a href="http://www.fixnetix.com/">http://www.fixnetix.com/</a></p>
+
+<p><a href="http://www.fixnetix.com/perch/resources/cscfixnetixzerolatencypov-1.pdf">http://www.fixnetix.com/perch/resources/cscfixnetixzerolatencypov-1.pdf</a></p>
+
+<p><a href="http://www.fixnetix.com/services/trading-and-risk-solutions/">http://www.fixnetix.com/services/trading-and-risk-solutions/</a></p>
+
+<p><a href="http://www.netcope.com/en"><strong>http://www.netcope.com/en</strong></a></p>
+
+<p>100 Gig E adapter</p>
+
+<p>process all incoming network traffic within the FPGA chip at wire speed and transfer more than 100G of user data over PCI Express to the software.</p>
+
+<p>Ethernet variants like 25G/50G, recently announced by Google, Microsoft and Arista Networks, are supported as well.</p>
+
+<p>Network link speed, performance of on-board network controller, throughput of PCI Express bus, performance of host system – these are all factors that influence the whole solution and we paid maximum attention to make all links of this chain as strong as possible.</p>
+
+<p>FPGA cards are equipped with the latest PCI Express Gen 3 bus. 100G variants have x16 wide PCI Express interface and in combination with support of PCI Express bifurcation feature, they are able to achieve sustainable throughput of more than 100Gbps to host system. Learn more in the <a href="https://forums.xilinx.com/t5/Xcell-Daily-Blog/Need-to-get-100G-Ethernet-data-stream-into-a-host-Intel-CPU-PCIe/ba-p/508823"><strong>Xilinx blog</strong></a>.</p>
+
+<ul>
+<li>PPS (pulse per second) input for precise hardware timestamping</li>
+<li>Xilinx Virtex 7 Series FPGA chip</li>
+<li>QDR/DDR memories</li>
+</ul>
+
+<p><a href="http://www.netcope.com/en/products/tradecope">http://www.netcope.com/en/products/tradecope</a></p>
+
+<p>a <strong>tick-to-trade engine directly in FPGA hardware</strong>:</p>
+
+<p><strong>Write your decision logic in C/C++</strong>.</p>
+
+<p>performance of software implementations of feed handlers, trading strategies’ logic or order generation usually shows a slow-down caused by the operating system running on the machine. There are several clear latency bottlenecks virtually on every common system running an OS.</p>
+
+<p>Tradecope successfully overcomes these latency bottlenecks by implementing
+a <strong>tick-to-trade engine directly in FPGA hardware</strong>:</p>
+
+<ul>
+<li>The network communication containing the market data does not need to be forwarded to software, but instead is processed inside the FPGA network interface card eliminating OS kernel network stack latency and latency of PCIe transfers.</li>
+<li>True parallelism is a natural feature of FPGA hardware which can handle many distinct jobs at the same time.</li>
+</ul>
+
+<h4 id="tradecope-features">TradeCope Features</h4>
+
+<table>
+<thead>
+<tr>
+<th>·         Input traffic filtering</th>
+<th>·         A-B channel arbitrage</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>·         Sequence number gap detection</td>
+<td>·         Sending orders to market</td>
+</tr>
+
+<tr>
+<td>·         Message and symbol filtering</td>
+<td>·         Pre-trade risk check</td>
+</tr>
+
+<tr>
+<td>·         Computation of pre-defined statistics (EMA, MID, etc.)</td>
+<td>·         Trading strategy triggered by market update</td>
+</tr>
+
+<tr>
+<td>·         Building an order book representation in FPGA</td>
+<td>·         FIX/FAST and binary decoding</td>
+</tr>
+</tbody>
+</table>
+
+<p>whole trading pipeline starting from receiving market data, through packet arbitration, message decoding, book building, trading strategy execution, risk check and order generation is implemented and runs directly in the hardware. This allows us to fine tune every single processing step and achieve <strong>sub-microsecond tick-to-trade latency</strong>.</p>
+
+<p><strong>Strategies and API in C++</strong>. We provide a latency optimized API allowing the user to easily communicate with the card and build software routines for further management of the trading behaviour. The latency insensitive part of the trading strategy should run on the CPU to keep the latency sensitive part in FPGA as fast as possible. Using the optimized API, the software can send parameters to the logic in FPGA to modify its behaviour on the fly.</p>
+
+<p><strong>Write your decision logic in C/C++</strong>. From the end user point of view, the only requirement is to provide decision making logic written in C/C++ language (or optionally in HDL). This code is automatically transformed into a hardware representation and connected to the hardware pipeline in FPGA. After this the Tradecope is ready to trade. This includes statistics gathering, trading parameter updates, or offloading the latency insensitive parts of trading strategy to the CPU to keep the latency sensitive part in FPGA as fast as possible.</p>
+
+<p>?? how switch?</p>
+
+<p>Metamako</p>
+
+<p>ExaBlaze Fusion</p>
+
+<p>FixNetix ZeroLatency</p>
+
+<p>API with examples of software applications</p>
+
+<p>FIX, Arca Direct and OTTO</p>
+
+<p><strong>Accelerated feed handler.</strong> Tradecope processes market data directly (filtering, decoding) in the FPGA and creates an order book. Predefined statistics are computed as well. All the data is accessible from the software using a highly optimized API.</p>
+
+<p><strong>Accurate market data recording &amp; replaying</strong></p>
+
+<p>user code is automatically transformed into an FPGA representation</p>
+
+<p><strong>Pre-trade risk checks and TCP injection.</strong> Tradecope includes cores for the processing and decoding of Order entry protocols, which makes it possible to perform wire-speed risk checks in the high-performance FPGA chip transparently to the user. A <strong>packet with an order may be dropped if risk checks do not pass</strong>, or a <strong>TCP packet may be injected if a specific event is detected.</strong> For instance, it is possible to specify thresholds for open positions or traded volume. Tradecope is able to <strong>cancel orders on the book with ultra-low latency when the threshold is breached.</strong></p>
+
+<p><strong>TradeCope part of NetCope FPGA Boards (NFB)?</strong></p>
+
+<p><strong>NetCope Pkt Capture (NPC)</strong></p>
+
+<p>filtering-based packet manipulation, and throughput to the host system. Standard PCI Express form factor makes it suitable for <strong>commodity multi-core servers</strong>. Multiple cards can be plugged into a single server to build a high-density solution.</p>
+
+<p><strong>Vs Corvil?</strong></p>
+
+<p>hardware filter that supports up to eight thousand filtering rules. L3 and L4 header fields can be used to express conditions. Corresponding action can transfer a packet to the host system, send it to an output network interface, or drop it. Intelligent transfer to the host system can be used to distribute the traffic over CPU cores based on hashing in flow-aware fashion.</p>
+
+<p>zero-copy API for high-speed transfers to the memories of the host system</p>
+
+<p>Interconnection of two cards to achieve overall throughput of 200Gbps to software with load balancing</p>
+
+<p>Acceleration of IDS/IPS (Intrusion Detection/Prevention Systems)</p>
+
+<p><strong>NPC-100G2</strong></p>
+
+<p><strong>Separate products?</strong></p>
+
+<p>products are ideal for all OEM vendors, R&amp;D customers and end customers to build, develop and deploy hardware-accelerated solutions</p>
+
+<p>ware-accelerated solutions</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-12-20</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E9%AB%98%E9%A2%91%E4%BA%A4%E6%98%93/">高频交易</a>
+          
+          <a href="/tags/%E4%BD%8E%E5%BB%B6%E6%97%B6/">低延时</a>
+          
+          <a href="/tags/%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F/">交易系统</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/shared/2019-12-20-solarflare%E8%B5%84%E6%BA%90%E6%B1%87%E6%80%BB/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">SolarFlare资源汇总</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/shared/2019-12-20-%E6%9C%AC%E5%91%A8%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/">
+            <span class="next-text nav-default">本周阅读清单</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>交易所数据爬虫之中金所 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="交易所数据爬虫之中金所" />
+<meta property="og:description" content="针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" />
+<meta property="article:published_time" content="2017-10-23T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2017-10-24T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="交易所数据爬虫之中金所">
+<meta itemprop="description" content="针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。">
+
+
+<meta itemprop="datePublished" content="2017-10-23T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-10-24T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3545">
+
+
+
+<meta itemprop="keywords" content="R,数据,爬虫,交易所," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="交易所数据爬虫之中金所"/>
+<meta name="twitter:description" content="针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">交易所数据爬虫之中金所</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-10-23 </span>
+        <div class="post-category">
+            
+              <a href="/categories/data/"> Data </a>
+            
+          </div>
+        <span class="more-meta"> 3545 words </span>
+        <span class="more-meta"> 8 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2017-10-24T00:00:00" title="October 24, 2017">October 24, 2017</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div class="figure">
+<img src="/images/2017-10-23-交易所数据爬虫之中金所/cffex01.png" alt="中金所网站提供股指期货相关的重要数据" />
+<p class="caption">中金所网站提供股指期货相关的重要数据</p>
+</div>
+<p>从<a href="http://www.cffex.com.cn/sj/hqsj/rtj/">中金所网站</a>可以得到大量股指期货、国债以及国债期货相关的重要交易数据，如日行情数据、期货公司持仓排名数据、仓单数据等。 通过网络爬虫技术，我们可以下载得到历史的所有数据，为后期的量化建模与收益率回测提供数据支持。本篇文章讨论了</p>
+<ul>
+<li>如何识别中金所网址，找到对应的数据文件链接</li>
+<li>使用并行计算模式下载所有的历史数据文件</li>
+</ul>
+<hr />
+<div id="配置文件" class="section level1">
+<h1>配置文件</h1>
+<p>配置文件位于 <code>myInit.R</code>，如果没有安装相关的软件包，我这里已经写好一个命令行，会自动启动安装程序。</p>
+<pre class="r"><code>################################################################################
+## myInit.R
+## 初始化设置
+# __1. 账号、密码__
+# 2. 文件路径
+# 3. 需要的软件包
+# __4. 参数设置__
+################################################################################
+## =============================================================================
+pkgs &lt;- c(&quot;data.table&quot;,&quot;parallel&quot;,&quot;downloader&quot;,&quot;magrittr&quot;)
+##------------------------------------------------------------------------------
+if(length(pkgs[!pkgs %in% installed.packages()]) != 0){
+  sapply(pkgs[!pkgs %in% installed.packages()], install.packages)
+}
+##------------------------------------------------------------------------------
+sapply(pkgs, require, character.only = TRUE)</code></pre>
+<p>同时，我建议使用 <code>Chrome</code> 浏览器，并安装一款非常好用的<code>HTML</code> 页面解析插件 <code>SelectGadget</code>，可以用来探测网页元素，方便我们查找相应的路径。</p>
+<hr />
+</div>
+<div id="日行情数据" class="section level1">
+<h1>日行情数据</h1>
+<p>中金所网站提供了所有股指期货的历史行情数据：</p>
+<ul>
+<li><code>IC</code></li>
+<li><code>IF</code></li>
+<li><code>IH</code></li>
+<li><code>T</code></li>
+<li><code>TF</code></li>
+</ul>
+<div id="识别文件链接" class="section level2">
+<h2>识别文件链接</h2>
+<p>为了找到行情数据对应的文件链接，我们首先点击左栏的 <code>行情数据</code>/<code>日统计</code>，得到当日收盘后统计的理日行情数据列表。</p>
+<div class="figure">
+<img src="/images/2017-10-23-交易所数据爬虫之中金所/daily01.png" alt="日行情数据所在" />
+<p class="caption">日行情数据所在</p>
+</div>
+<p>这里，我们可以有两种方法来下载得到数据</p>
+<ul>
+<li>直接读取页面数据，但只适用获得当日的收盘日行情数据，对于历史的数据，则无法读取。</li>
+<li>查找相关的文件链接，查看交易所是否提供了直接可下载的链接。一般而言，文件命令规则会与交易日期相关，从而满足我们下载历史数据的要求。</li>
+</ul>
+<p>让我们把页面往下拽一拽，会有惊喜哦。</p>
+<div class="figure">
+<img src="/images/2017-10-23-交易所数据爬虫之中金所/daily02.png" alt="中金所提供了附件下载" />
+<p class="caption">中金所提供了附件下载</p>
+</div>
+<p>这个链接即是中金所存储日行情数据的文件所在，可以直接点击下载。</p>
+<blockquote>
+<p>当然，如果只是手动点击下载的话（估计右手要变残废），这么简单粗暴的手段，我们就不用在花费大力气来探讨了。</p>
+</blockquote>
+<p>怎么去查找这个文件的具体链接地址呢？我们现在只是看到一个网页页面，似乎无从下手。如果就这样轻易放弃，那也太不是我的风格了。幸好，我对网页设计也是有所了解，也独立搭建过个人博客（包括但不限于本博客网站），其实这个看似页面的“东西”，后面隐藏了许多我们看不到的“东西”。</p>
+<p>这里我使用 <code>Chrome</code>，可以右击鼠标，选择 <code>Inspect</code>，会弹出网页的具体元素。有没有被惊喜到？原来我们看见的网站页面，竟然是有这样一对代码组合而成的。使用 <code>Ctrl + F</code> 查找关键字 <code>日行情数据</code>，我们发现，原来这个文件确实指向了一个具体的链接地址。</p>
+<div class="figure">
+<img src="/images/2017-10-23-交易所数据爬虫之中金所/daily03.png" alt="查看HTML元素" />
+<p class="caption">查看HTML元素</p>
+</div>
+<p>对于链接地址，一般有两种形式</p>
+<ul>
+<li>静态链接：即链接指向一个相对路径，这个路径是显式的。比如我们在上面看到的链接，显示一个相对根目录的相对路径，<code>href=&quot;./201710/17/20171017_1.csv&quot;</code>，文件路径是显式、具体的。我们可以直接在浏览器打开这个文件来查看，或者使用 <code>R</code> 直接读取文件数据。</li>
+<li>动态链接：即由一段 <code>Javascript</code> 来控制操作，只有鼠标点击才能进行下一步的操作如下载。对于这类链接的解析，我们需要使用脚本解析或者模拟鼠标操作（我会在另外一篇博客讨论如何使用 <code>Selenium</code> 模拟鼠标下载大商所的数据）。</li>
+</ul>
+<p>如此一来，我们便知道需要下载的文件链接全称是</p>
+<ul>
+<li><code>根目录</code>：<code>http://www.cffex.com.cn/sj/hqsj/rtj</code></li>
+<li><code>相对路径</code>：<code>/201710/17/20171017_1.csv</code></li>
+</ul>
+</div>
+<div id="文件命名规则" class="section level2">
+<h2>文件命名规则</h2>
+<p>文件的命令规律果然是以交易日为基础，在上面稍作变动，即 <code>/yyyymm/dd/yyyymmdd_1.csv</code>。对于历史的数据，我们只要使用循环来编写后面的相对文件路径，即可获取所有的历史数据文件所对应的网页链接。</p>
+<p>这里我使用到了之前介绍的<a href="https://williamlfang.github.io/post/2017-10-10-%E4%B8%AD%E5%9B%BD%E6%9C%9F%E8%B4%A7%E4%BA%A4%E6%98%93%E6%97%A5%E5%8E%86/">中国期货交易日历表</a>，使用这个日历表来生成相应的文件路径。</p>
+</div>
+<div id="行情数据" class="section level2">
+<h2>行情数据</h2>
+<p>我们先来看看现实是不是真是如我们所预想的，包含所有的行情数据。首先来读取某一天的数据文件看看</p>
+<pre class="r"><code>Sys.setlocale(&quot;LC_ALL&quot;, &#39;en_US.UTF-8&#39;)</code></pre>
+<pre><code>[1] &quot;LC_CTYPE=en_US.UTF-8;LC_NUMERIC=C;LC_TIME=en_US.UTF-8;LC_COLLATE=en_US.UTF-8;LC_MONETARY=en_US.UTF-8;LC_MESSAGES=en_US.UTF-8;LC_PAPER=en_US.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=en_US.UTF-8;LC_IDENTIFICATION=C&quot;</code></pre>
+<pre class="r"><code>library(magrittr)
+library(readr)
+
+exchURL &lt;- &#39;http://www.cffex.com.cn/sj/hqsj/rtj&#39;
+tempURL &lt;- &#39;/201710/17/20171017_1.csv&#39;
+
+dataFile &lt;- paste(exchURL, tempURL, sep = &#39;&#39;)
+dt &lt;- dataFile %&gt;% read_csv(., locale = locale(encoding = &quot;GB18030&quot;))</code></pre>
+<pre><code>Parsed with column specification:
+cols(
+  合约代码 = col_character(),
+  今开盘 = col_double(),
+  最高价 = col_double(),
+  最低价 = col_double(),
+  成交量 = col_double(),
+  成交金额 = col_double(),
+  持仓量 = col_double(),
+  持仓变化 = col_double(),
+  今收盘 = col_double(),
+  今结算 = col_double(),
+  前结算 = col_double(),
+  涨跌1 = col_double(),
+  涨跌2 = col_double(),
+  `隐含波动率(%)` = col_character(),
+  Delta = col_character()
+)</code></pre>
+<pre><code>Warning: 6 parsing failures.
+row col   expected     actual                                                           file
+  5  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+ 10  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+ 15  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+ 19  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+ 23  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+... ... .......... .......... ..............................................................
+See problems(...) for more details.</code></pre>
+<pre class="r"><code>print(dt)</code></pre>
+<pre><code># A tibble: 24 x 15
+   合约代码 今开盘 最高价 最低价 成交量 成交金额 持仓量 持仓变化 今收盘 今结算 前结算 涨跌1 涨跌2 `隐含波动率(%)` Delta
+   &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;
+ 1 IC1710    6600   6653.  6584.  10644 1407964.  13681    -2199  6592.  6604.  6628. -35.8 -23.4 --              --   
+ 2 IC1711    6568.  6618   6553.   3270  430422.   6064     1692  6561.  6571.  6597. -36.6 -26   --              --   
+ 3 IC1712    6544   6597.  6523.   1041  136429.   7769      236  6531   6542   6572. -41.2 -30.2 --              --   
+ 4 IC1803    6489   6525.  6463.    277   35942.   2124       55  6470   6480.  6511. -40.8 -30.4 --              --   
+ 5 小计        NA     NA     NA   15232 2010756.  29638     -216    NA     NA     NA   NA    NA   &lt;NA&gt;            &lt;NA&gt; 
+ 6 IF1710    3914   3928.  3909.  10887 1279659.  16859    -3096  3911   3917.  3924  -13    -7.4 --              --   
+ 7 IF1711    3913   3925   3906    3723  437320.   7226     2224  3906   3913   3922. -15.6  -8.6 --              --   
+ 8 IF1712    3911   3923.  3904    1293  151760.  12518      170  3906   3910.  3919. -13.2  -8.8 --              --   
+ 9 IF1803    3918.  3923   3904.    298   34976.   3509       10  3907.  3911   3920. -13.2  -8.8 --              --   
+10 小计        NA     NA     NA   16201 1903714.  40112     -692    NA     NA     NA   NA    NA   &lt;NA&gt;            &lt;NA&gt; 
+# … with 14 more rows</code></pre>
+</div>
+<div id="并行下载" class="section level2">
+<h2>并行下载</h2>
+<p>哦科，到此为止，所有的材料已经准备完毕：</p>
+<ul>
+<li>使用交易日历表生成相对路径，并与根目录结合，生成<strong>所有的历史日行情数据文件链接</strong></li>
+<li>读取的文件确认为目标数据</li>
+</ul>
+<p>接下来，我们只需要打开 <code>R</code> 中的并行计算模式，即可开启下载中金所所有的日行情数据了。</p>
+<ul>
+<li><code>dataPath</code> 是下载文件的保存路径，根据需要来修改</li>
+<li>可以根据操作系统的性能不同，设置开启的并行计算核数，使用命令 <code>detectCores()</code> 来获取当前操作系统的最大 <code>CPU</code> 核数</li>
+<li>我使用的是 <code>Linux</code> 操作系统，在该操作系统下，<code>parallel</code> 开启 <code>FORK</code> 并行计算模式，能够增强性能。如果是在 <code>Windows</code> 操作系统，需要开启 <code>PSOCK</code> 模式，同时记得在工作区添加软件包与变量</li>
+<li><code>download.file</code> 有一个参数 <code>mode</code>，在 <code>Linux</code> 操作系统休不需要设置，当时在 <code>Windows</code> 操作系统下需要设置为 <code>wb</code>， 否则保存的文件是空的。我这里为了跨平台使用，统一设置为 <code>wb</code></li>
+<li>运行完成后，记得使用命令 <code>stopCluster()</code> 关闭并行模式，否则后续的运算会比较占用资源</li>
+</ul>
+<pre class="r"><code>################################################################################
+## STEP 1: 获取对应的交易日期
+################################################################################
+ChinaFuturesCalendar &lt;- fread(&quot;./data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv&quot;,
+                              colClasses = list(character = c(&quot;nights&quot;,&quot;days&quot;))) %&gt;% 
+                              .[days &lt; format(Sys.Date(),&#39;%Y%m%d&#39;)]
+
+exchCalendar &lt;- ChinaFuturesCalendar[,&quot;:=&quot;(calendarYear = substr(days,1,4),
+                                           calendarYearMonth = substr(days,1,6),
+                                           calendarDay = substr(days,7,8))]
+exchURL &lt;- &quot;http://www.cffex.com.cn/sj/hqsj/rtj/&quot;
+
+dataPath &lt;- &#39;/home/william/Documents/Exchange/CFFEX/&#39;
+# dataPath &lt;- &quot;./data/Bar/Exchange/CFFEX/&quot;
+################################################################################
+
+
+################################################################################
+## STEP 2: 开启并行计算模式，下载数据 
+################################################################################
+cl &lt;- makeCluster(round(detectCores()/4), type=&#39;FORK&#39;)
+parSapply(cl, 1:nrow(ChinaFuturesCalendar), function(i){
+    tempDir &lt;- paste0(dataPath,exchCalendar[i,calendarYear])
+
+    if (!dir.exists(tempDir)) dir.create(tempDir)
+
+    tempURL &lt;- paste0(exchURL, exchCalendar[i,calendarYearMonth],&#39;/&#39;,
+                      exchCalendar[i,calendarDay],&#39;/&#39;,
+                      exchCalendar[i,days],&#39;_1.csv&#39;)
+    destFile &lt;- paste0(tempDir,&#39;/&#39;,exchCalendar[i,days],&#39;.csv&#39;)
+
+    while ( !file.exists(destFile) | file.size(destFile) &lt; 200) {
+      try(download.file(tempURL, destFile, mode = &#39;wb&#39;))
+    }
+})
+stopCluster(cl)</code></pre>
+<hr />
+</div>
+</div>
+<div id="成交持仓排名" class="section level1">
+<h1>成交持仓排名</h1>
+<p>利用相同的技术手段，我们也可以从中金所网站下载当日收盘后的期货公司成交持仓排名数据。这份数据包含了<strong>成交量与当日收盘后持仓排名前20</strong>的期货公司详细数据。通过分析持仓数量变动，我们可以挖掘到各个期货公司主力资金对市场走势的情绪判断，从而对未来的期货价格走势产生一定的影响。</p>
+<div class="figure">
+<img src="/images/2017-10-23-交易所数据爬虫之中金所/oi01.png" alt="中金所在每日收盘后公布成交排名" />
+<p class="caption">中金所在每日收盘后公布成交排名</p>
+</div>
+<div id="识别文件链接-1" class="section level2">
+<h2>识别文件链接</h2>
+<p>我们点击某一天的交易日期，然后点击查询，即可看到当日的各股指期货品种的成交持仓排名数据。</p>
+<div class="figure">
+<img src="/images/2017-10-23-交易所数据爬虫之中金所/oi02.png" alt="显示排名前20的期货公司成交数据" />
+<p class="caption">显示排名前20的期货公司成交数据</p>
+</div>
+<p>参考日行情部分的方法，我们使用 <code>Chrome</code> 的 <code>Inspect</code> 功能来解析数据文件所对应的链接。可以看到，成交持仓排名的数据文件命名规则是 <code>yyyymm/dd/&lt;id&gt;_1.csv</code>，其中 <code>id</code> 就是合约品种代码。如此一来，我们也是可以利用中国期货交易日历来生成所有的历史文件对应的网站链接。</p>
+<div class="figure">
+<img src="/images/2017-10-23-交易所数据爬虫之中金所/oi03.png" alt="查看数据文件的相对链接路径" />
+<p class="caption">查看数据文件的相对链接路径</p>
+</div>
+<p>与日行情数据不同，成交持仓排名的数据是分合约品种来设定的，即每一个合约品种单独保存为一个数据文件。由于不同的股指期货品种上市日期不一样，这里我们需要单独设置。</p>
+<pre class="r"><code>################################################################################
+## CFFEX: 中期所 
+##        
+## 1. IC：中证500       --&gt; 2015-04-16
+## 2. IF：沪深300       --&gt; 2010-04-16
+## 3. IH：上证50        --&gt; 2015-04-16
+## 4. T ：10年期国债    --&gt; 2015-03-20
+## 5. TF：5年期国债     --&gt; 2013-09-06
+################################################################################
+
+## -----------------------------------------------------------------------------
+productSet &lt;- data.table(productID = c(&#39;IC&#39;,&#39;IF&#39;,&#39;IH&#39;,&#39;T&#39;,&#39;TF&#39;),
+                         startDate = c(&#39;20150416&#39;,&#39;20100416&#39;,&#39;20150416&#39;,
+                                       &#39;20150320&#39;,&#39;20130906&#39;))
+
+productCalenar &lt;- lapply(productSet[,productID], function(id) {
+  res &lt;- exchCalendar[days &gt;= productSet[productID == id, startDate]] %&gt;% 
+        .[, productID := id]
+}) %&gt;% rbindlist()
+## -----------------------------------------------------------------------------</code></pre>
+</div>
+<div id="成交持仓排名数据" class="section level2">
+<h2>成交持仓排名数据</h2>
+<p>我们来检查一下数据是不是正确的。</p>
+<pre class="r"><code>exchURL &lt;- &#39;http://www.cffex.com.cn/sj/ccpm&#39;
+tempURL &lt;- &#39;/201710/17/IF_1.csv&#39;
+
+dataFile &lt;- paste(exchURL, tempURL, sep = &#39;&#39;)
+dt &lt;- dataFile %&gt;% read_csv(., locale = locale(encoding = &quot;GB18030&quot;))
+
+print(dt)</code></pre>
+<pre><code># A tibble: 46 x 9
+   交易日   合约   会员类别   总成交量   比上交易日增减 总持买单量       比上交易日增减_1 总持卖单量 比上一交易日增减
+   &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;      &lt;chr&gt;           
+ 1 20171017 IF1710 期货公司   21774      -1166          16859            -3096            16859      -3096           
+ 2 20171017 IF1710 非期货公司 0          0              0                0                0          0               
+ 3 20171017 IF1712 期货公司   2586       -530           12518            170              12518      170             
+ 4 20171017 IF1712 非期货公司 0          0              0                0                0          0               
+ 5 交易日   合约   排名       成交量排名 &lt;NA&gt;           &lt;NA&gt;             持买单量排名     &lt;NA&gt;       &lt;NA&gt;            
+ 6 &lt;NA&gt;     &lt;NA&gt;   &lt;NA&gt;       会员简称   成交量         比上一交易日增减 会员简称         持买单量   比上一交易日增减
+ 7 20171017 IF1710 1          中信期货   2670           19               中信期货         1704       -444            
+ 8 20171017 IF1710 2          国泰君安   1269           -100             五矿经易         1595       -73             
+ 9 20171017 IF1710 3          银河期货   1163           172              国泰君安         1448       -63             
+10 20171017 IF1710 4          海通期货   1055           -6               申银万国         721        -197            
+# … with 36 more rows</code></pre>
+</div>
+<div id="并行下载-1" class="section level2">
+<h2>并行下载</h2>
+<p>具体的说明参照日行情的并行下载说明。这里直接上干货。</p>
+<pre class="r"><code>################################################################################
+## cffex.R
+## 用于下载中金所期货公司持仓排名数据
+##
+## Author: William Fang
+## Date  : 2017-08-21
+################################################################################
+
+################################################################################
+## STEP 0: 初始化，载入包，设定初始条件
+################################################################################
+rm(list = ls())
+logMainScript &lt;- c(&quot;cffex.R&quot;)
+
+setwd(&#39;/home/fl/myData/&#39;)
+suppressMessages({
+  source(&#39;./R/Rconfig/myInit.R&#39;)
+})
+
+################################################################################
+## STEP 1: 获取对应的交易日期
+################################################################################
+ChinaFuturesCalendar &lt;- fread(&quot;./data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv&quot;,
+                              colClasses = list(character = c(&quot;nights&quot;,&quot;days&quot;))) %&gt;% 
+                              .[days &lt; format(Sys.Date(),&#39;%Y%m%d&#39;)]
+
+exchCalendar &lt;- ChinaFuturesCalendar[,&quot;:=&quot;(calendarYear = substr(days,1,4),
+                                           calendarYearMonth = substr(days,1,6),
+                                           calendarMonth = substr(days,5,6),
+                                           calendarDay = substr(days,7,8))]
+exchURL &lt;- &quot;http://www.cffex.com.cn/fzjy/ccpm/&quot;
+
+dataPath &lt;- &#39;/home/william/Documents/oiRank/CFFEX/&#39;
+# dataPath &lt;- &quot;./data/oiRank/CFFEX/&quot;
+
+################################################################################
+## CFFEX: 中期所 
+##        
+## 1. IC：中证500       --&gt; 2015-04-16
+## 2. IF：沪深300       --&gt; 2010-04-16
+## 3. IH：上证50        --&gt; 2015-04-16
+## 4. T ：10年期国债    --&gt; 2015-03-20
+## 5. TF：5年期国债     --&gt; 2013-09-06
+################################################################################
+
+## -----------------------------------------------------------------------------
+productSet &lt;- data.table(productID = c(&#39;IC&#39;,&#39;IF&#39;,&#39;IH&#39;,&#39;T&#39;,&#39;TF&#39;),
+                         startDate = c(&#39;20150416&#39;,&#39;20100416&#39;,&#39;20150416&#39;,
+                                       &#39;20150320&#39;,&#39;20130906&#39;))
+
+productCalenar &lt;- lapply(productSet[,productID], function(id) {
+  res &lt;- exchCalendar[days &gt;= productSet[productID == id, startDate]] %&gt;% 
+        .[, productID := id]
+}) %&gt;% rbindlist()
+## -----------------------------------------------------------------------------
+
+## -----------------------------------------------------------------------------
+cffexData &lt;- function(calendarYear, calendarMonth, calendarDay, productID) {
+    tempURL &lt;- paste0(exchURL, paste0(calendarYear, calendarMonth), &#39;/&#39;, calendarDay, &#39;/&#39;,
+                      productID,&#39;_1.csv&#39;)
+
+    destFile &lt;-  paste0(dataPath, calendarYear, &#39;/&#39;, 
+                      paste0(calendarYear, calendarMonth, calendarDay),
+                      &#39;_&#39;,productID,&#39;.csv&#39;)
+
+    ## -------------------------------------------------------------------------
+    while(! file.exists(destFile) | file.size(destFile) &lt; 1000){
+      try(download.file(tempURL, destFile, mode = &#39;wb&#39;))
+    }
+    ## -------------------------------------------------------------------------
+}
+## -----------------------------------------------------------------------------
+
+
+################################################################################
+## STEP 2: 开启并行计算模式，下载数据 
+################################################################################
+cl &lt;- makeCluster(max(round(detectCores()*3/4),4), type=&#39;FORK&#39;)
+parSapply(cl, 1:nrow(productCalenar), function(i){
+  ## ---------------------------------------------------------------------------
+  tempDir &lt;- paste0(dataPath, productCalenar[i, calendarYear])
+  if (!dir.exists(tempDir)) dir.create(tempDir, recursive = TRUE)
+
+  productCalenar[i, cffexData(calendarYear, calendarMonth, calendarDay, productID)]
+  ## ---------------------------------------------------------------------------
+})
+stopCluster(cl)</code></pre>
+</div>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2017-10-24</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/r/">R</a>
+          
+          <a href="/tags/%E6%95%B0%E6%8D%AE/">数据</a>
+          
+          <a href="/tags/%E7%88%AC%E8%99%AB/">爬虫</a>
+          
+          <a href="/tags/%E4%BA%A4%E6%98%93%E6%89%80/">交易所</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2017-10-25-pkd/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">PKD</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2017-10-21-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-mysql-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%A1%E7%90%86/">
+            <span class="next-text nav-default">期货数据：MySQL 数据库管理</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

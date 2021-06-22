@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Sublime 编译 运行 c/c&#43;&#43; 文件 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="在 Sublime Text 3 编辑器里实现对 C/C&#43;&#43; 文件的编译与运行。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Sublime 编译 运行 c/c&#43;&#43; 文件" />
+<meta property="og:description" content="在 Sublime Text 3 编辑器里实现对 C/C&#43;&#43; 文件的编译与运行。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/" />
+<meta property="article:published_time" content="2019-01-05T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-01-05T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Sublime 编译 运行 c/c&#43;&#43; 文件">
+<meta itemprop="description" content="在 Sublime Text 3 编辑器里实现对 C/C&#43;&#43; 文件的编译与运行。">
+
+
+<meta itemprop="datePublished" content="2019-01-05T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-01-05T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="992">
+
+
+
+<meta itemprop="keywords" content="Sublime,C&#43;&#43;,编译," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Sublime 编译 运行 c/c&#43;&#43; 文件"/>
+<meta name="twitter:description" content="在 Sublime Text 3 编辑器里实现对 C/C&#43;&#43; 文件的编译与运行。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">Sublime 编译 运行 c/c&#43;&#43; 文件</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-01-05 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 992 words </span>
+        <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-01-05T00:00:00" title="January 5, 2019">January 5, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div id="干中学" class="section level1">
+<h1>干中学</h1>
+<p>最近在学习一个 <code>C++</code> 项目，需要重新把以前的课本拿起来。学习的最好方法，尤其是编程技能的学习，就是对照着教材，边学边练，即 「Learning by doing」。这是我多年以来领悟到的最好经验。</p>
+<p>对于 <code>c/C++</code> 这类<strong>编译语言</strong>，需要在编写完源文件(source file)后，使用编译器进行编译，生成相应的可执行文件(executable file)。因此，一个既能提供高效文本编辑环境、同时又能提供快速编译功能的「软件」，对于实现项目开发是极为关键的。</p>
+</div>
+<div id="sublime编辑神器" class="section level1">
+<h1><code>Sublime</code>编辑神器</h1>
+<p>基于使用习惯，我一般都是在 <code>Sublime</code> 进行文本的编辑，然后通过使用支持相关语言处理的配套插件，进行程序开发。这么多年来，<code>Sublime</code> 已经发展成了我得心应手的编辑器与<strong>开发环境</strong>。我之前有介绍过<a href="https://williamlfang.github.io/post/2017-10-13-我的-sublime-text-设置">如何配置</a>，今天这篇文章则介绍如何配置 <code>C/C++</code> 开发环境。</p>
+<div id="新建配置文件" class="section level2">
+<h2>新建配置文件</h2>
+<p>在 &quot;Tools -&gt; Build System&quot;，点击 “New Build System”，会自动弹出一个文件，我们在这里写入相应的配置方案：</p>
+<pre class="bash"><code>{
+    &quot;cmd&quot;: [&quot;g++ -ggdb3 -std=c++11 -Wall ${file} -o ${file_base_name}&quot;],
+    &quot;file_regex&quot;: &quot;^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$&quot;,
+    &quot;working_dir&quot;: &quot;${file_path}&quot;,
+    &quot;selector&quot;: &quot;source.c, source.c++&quot;,
+    &quot;shell&quot;: true,
+    &quot;variants&quot;:
+    [
+        {
+            &quot;name&quot;: &quot;Run&quot;,
+            &quot;cmd&quot;: [&quot;${file_path}/${file_base_name}&quot;]
+        },
+        // ,
+        // {
+        //     &quot;name&quot;: &quot;RunInShell&quot;,
+        //     &quot;cmd&quot;: [&quot;gnome-terminal -x bash -c &#39;${file_path}/${file_base_name};read&#39; &quot;]
+        // }
+        {
+         &quot;name&quot;: &quot;Build_Project&quot;,
+         &quot;cmd&quot;: [&quot;g++ -ggdb3 -std=c++11 -Wall ${file_path}/*.cpp -o ${file_base_name}&quot;]
+        }
+    ]
+}
+</code></pre>
+<p>命令后保存到默认的文件夹<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>。在这里：</p>
+<ul>
+<li>在 <code>cmd</code> 命令里设置 <code>gcc/g++</code> 需要指定的参数，如 <code>-ggdb3</code>、<code>-std=c++11</code>、<code>-Wall</code> 等，可以方便的我们需要的配置集合到一个命令里</li>
+<li>指定运行 <code>shell</code></li>
+<li>同时，我们还指定其他的可选 <code>variants</code>，即这里使用到的 <code>Run</code> 模式，可以在源文件编译结束后，执行程序，并把结果直接输出到 <code>Sublime</code> 的 <code>console</code> 界面。</li>
+<li>当然，如何需要调试带有<strong>输入(cin)</strong>的程序，我们也可以再添加 <code>RunInShell</code> 模式。</li>
+</ul>
+<p>同样，我们也可以相应的配置 <code>c11</code> 运行环境</p>
+<pre class="bash"><code>{
+    &quot;cmd&quot;: [&quot;gcc -ggdb3 -std=c11 -Wall ${file} -o ${file_base_name}&quot;],
+    // 如果是工程项目
+    // &quot;cmd&quot;: [&quot;gcc -ggdb3 -std=c11 -Wall ${file_path}/*.c -o ${file_base_name}&quot;],
+    &quot;file_regex&quot;: &quot;^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$&quot;,
+    &quot;working_dir&quot;: &quot;${file_path}&quot;,
+    &quot;selector&quot;: &quot;source.c&quot;,
+    &quot;shell&quot;: true,
+    &quot;variants&quot;:
+    [
+        {
+            &quot;name&quot;: &quot;Run&quot;,
+            &quot;cmd&quot;: [&quot;${file_path}/${file_base_name}&quot;]
+        },
+        // ,
+        // {
+        //     &quot;name&quot;: &quot;RunInShell&quot;,
+        //     &quot;cmd&quot;: [&quot;gnome-terminal -x bash -c &#39;${file_path}/${file_base_name};read&#39; &quot;]
+        // }，
+        {
+         &quot;name&quot;: &quot;Build_Project&quot;,
+         &quot;cmd&quot;: [&quot;gcc -ggdb3 -std=c11 -Wall ${file_path}/*.c -o ${file_base_name}&quot;]
+        }
+    ]
+}</code></pre>
+</div>
+<div id="调试" class="section level2">
+<h2>调试</h2>
+<p>我们可以在编辑一个 <code>C/C++</code> 文件后，直接调用 <code>Ctrl+B</code> 来编译文件，使用 <code>Ctrl+Shift+B</code> 选择指定的运行方式。</p>
+<div class="figure">
+<img src="/images/2019-01-05-Sublime-编译-运行-cpp/Selection_027.png" alt="build system" />
+<p class="caption">build system</p>
+</div>
+</div>
+<div id="设置快捷键" class="section level2">
+<h2>设置快捷键</h2>
+<p>在 <code>Sublime</code> 里，我们可以十分方便的根据个人偏好，设置我们常用的一些快捷键。比如，运行一个已经编译好的 <code>C/C++</code> 可执行文件，我们就可以使用 <code>F1</code> 实现直接运行该文件。</p>
+<pre class="bash"><code>{&quot;keys&quot;: [&quot;f1&quot;], &quot;command&quot;: &quot;build&quot;, &quot;args&quot;: {&quot;variant&quot;: &quot;Run&quot;}}</code></pre>
+<p>其中，参数 <code>Run</code> 就是我们在 <code>Build System</code> 里面设置的 'variant'。</p>
+<p>终结一下，我现在处理 <code>C/C++</code> 项目的基本流程：</p>
+<ul>
+<li>编辑一个源文件<code>.cpp</code></li>
+<li>使用 <code>Ctrl+B</code> 编译该文件</li>
+<li>使用 <code>F1</code> 运行文件，直接把相应的结果显示出来。</li>
+</ul>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>一般在<code>~/.config/sublime-text-3/Packages/User</code><a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-01-05</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/sublime/">Sublime</a>
+          
+          <a href="/tags/c&#43;&#43;/">C&#43;&#43;</a>
+          
+          <a href="/tags/%E7%BC%96%E8%AF%91/">编译</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-01-13-%E6%96%B0%E4%B8%80%E5%B9%B4%E7%9A%84%E8%AE%A1%E5%88%92/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">新一年的计划</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2018-12-11-centos7-%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%BE%E7%BD%AE%E5%88%86%E8%BE%A8%E7%8E%87/">
+            <span class="next-text nav-default">CentOS7 命令行设置分辨率</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>CentOS7 LLVM 扩展逻辑磁盘 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="CentOS 进行 LLVM 逻辑磁盘扩容操作" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2018-12-06-centos7-llvm-%E6%89%A9%E5%B1%95%E9%80%BB%E8%BE%91%E7%A3%81%E7%9B%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="CentOS7 LLVM 扩展逻辑磁盘" />
+<meta property="og:description" content="CentOS 进行 LLVM 逻辑磁盘扩容操作" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2018-12-06-centos7-llvm-%E6%89%A9%E5%B1%95%E9%80%BB%E8%BE%91%E7%A3%81%E7%9B%98/" />
+<meta property="article:published_time" content="2018-12-06T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2018-12-06T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="CentOS7 LLVM 扩展逻辑磁盘">
+<meta itemprop="description" content="CentOS 进行 LLVM 逻辑磁盘扩容操作">
+
+
+<meta itemprop="datePublished" content="2018-12-06T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2018-12-06T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="883">
+
+
+
+<meta itemprop="keywords" content="CentOS,LLVM,磁盘扩容," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CentOS7 LLVM 扩展逻辑磁盘"/>
+<meta name="twitter:description" content="CentOS 进行 LLVM 逻辑磁盘扩容操作"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">CentOS7 LLVM 扩展逻辑磁盘</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-12-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 883 words </span>
+        <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2018-12-06T00:00:00" title="December 6, 2018">December 6, 2018</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p><code>CentOS</code> 已经创建 <code>LLVM</code> 逻辑磁盘<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>。现在需要对 <code>/data</code> 下面的磁盘进行扩容。</p>
+<p>首先，需要获取当前磁盘的物理路径：</p>
+<pre class="bash"><code>[root@localhost ~]# df
+Filesystem               Size  Used Avail Use% Mounted on
+/dev/mapper/centos-root  100G   12G   89G  12% /
+devtmpfs                  32G     0   32G   0% /dev
+tmpfs                     32G     0   32G   0% /dev/shm
+tmpfs                     32G   35M   32G   1% /run
+tmpfs                     32G     0   32G   0% /sys/fs/cgroup
+/dev/sda2                 10G  317M  9.7G   4% /boot
+/dev/sda1                5.0G   12M  5.0G   1% /boot/efi
+/dev/mapper/centos-var    90G  1.8G   89G   2% /var
+/dev/mapper/centos-data  5.5T  5.0T  565G  90% /data
+/dev/mapper/centos-home  1.5T  758G  743G  51% /home
+tmpfs                    6.3G   12K  6.3G   1% /run/user/42
+tmpfs                    6.3G     0  6.3G   0% /run/user/1002
+tmpfs                    6.3G     0  6.3G   0% /run/user/0
+tmpfs                    6.3G     0  6.3G   0% /run/user/1005</code></pre>
+<p>查看当前逻辑磁盘的空间大小：</p>
+<pre class="bash"><code>[root@localhost ~]# lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/centos/swap
+  LV Name                swap
+  VG Name                centos
+  LV UUID                ZnzTJq-S1Wx-1ekF-6Fed-R7Je-3USD-P1vO07
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2017-01-23 11:22:16 +0800
+  LV Status              available
+  # open                 2
+  LV Size                128.00 GiB
+  Current LE             32768
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:1
+   
+  --- Logical volume ---
+  LV Path                /dev/centos/var
+  LV Name                var
+  VG Name                centos
+  LV UUID                FnQrvF-vWs6-Szls-yQ0q-4yt3-MJ2r-ZB1Of9
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2017-01-23 11:22:20 +0800
+  LV Status              available
+  # open                 1
+  LV Size                90.00 GiB
+  Current LE             23040
+  Segments               2
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:2
+   
+  --- Logical volume ---
+  LV Path                /dev/centos/home
+  LV Name                home
+  VG Name                centos
+  LV UUID                joPrpf-idEH-C8ow-A0ep-5cfS-sYsX-7qldlE
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2017-01-23 11:22:41 +0800
+  LV Status              available
+  # open                 1
+  LV Size                1.46 TiB
+  Current LE             384000
+  Segments               4
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:3
+   
+  --- Logical volume ---
+  LV Path                /dev/centos/root
+  LV Name                root
+  VG Name                centos
+  LV UUID                N9gO4N-tBbz-TJUW-sSeJ-NKER-ix2d-O3r3Rt
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2017-01-23 11:23:08 +0800
+  LV Status              available
+  # open                 1
+  LV Size                100.00 GiB
+  Current LE             25600
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:0
+   
+  --- Logical volume ---
+  LV Path                /dev/centos/data
+  LV Name                data
+  VG Name                centos
+  LV UUID                5TEGzT-w8qs-h66v-r1ob-5Ld1-wbrq-ONWmja
+  LV Write Access        read/write
+  LV Creation host, time localhost, 2017-01-23 11:23:45 +0800
+  LV Status              available
+  # open                 1
+  LV Size                &lt;5.47 TiB
+  Current LE             1433600
+  Segments               2
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:4</code></pre>
+<p>查看系统可用空间大小：</p>
+<pre class="bash"><code>[root@localhost ~]# vgdisplay
+  --- Volume group ---
+  VG Name               centos
+  System ID             
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  18
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                5
+  Open LV               5
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               7.26 TiB
+  PE Size               4.00 MiB
+  Total PE              1903358
+  Alloc PE / Size       1899008 / 7.24 TiB
+  Free  PE / Size       4350 / 16.99 GiB
+  VG UUID               e7VekS-Jrrx-CMvZ-dqoC-jI6z-2Gs9-gIkstg以三</code></pre>
+<p>以上这个信息是已经分配过的磁盘空间，当前仅剩余 <code>4350 / 16.99 GiB</code>。</p>
+<p>开始进行磁盘扩展，增加 <code>500G</code> 到 <code>/dev/mapper/centos-data</code>（也就是 <code>/data</code>）：</p>
+<pre class="bash"><code>[root@localhost ~]# lvextend -L +500G /dev/mapper/centos-data
+  Size of logical volume centos/data changed from 4.98 TiB (1305600 extents) to &lt;5.47 TiB (1433600 extents).
+  Logical volume centos/data successfully resized.</code></pre>
+<p>最后，需要调整文件系统大小：</p>
+<pre class="bash"><code>[root@localhost ~]# xfs_growfs /dev/mapper/centos-data
+## CentOS6 使用命令 resize2fs
+
+meta-data=/dev/mapper/centos-data isize=256    agcount=7, agsize=196608000 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=0        finobt=0 spinodes=0
+data     =                       bsize=4096   blocks=1336934400, imaxpct=5
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=0
+log      =internal               bsize=4096   blocks=384000, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+data blocks changed from 1336934400 to 1468006400</code></pre>
+<p>重新查看磁盘空间，已经显示增加了 <code>500G</code>，当前 <code>/data/</code> 大小为 <code>5.5TB</code>:</p>
+<pre class="bash"><code>[root@localhost ~]# df -h
+Filesystem               Size  Used Avail Use% Mounted on
+/dev/mapper/centos-root  100G   12G   89G  12% /
+devtmpfs                  32G     0   32G   0% /dev
+tmpfs                     32G     0   32G   0% /dev/shm
+tmpfs                     32G   35M   32G   1% /run
+tmpfs                     32G     0   32G   0% /sys/fs/cgroup
+/dev/sda2                 10G  317M  9.7G   4% /boot
+/dev/sda1                5.0G   12M  5.0G   1% /boot/efi
+/dev/mapper/centos-var    90G  1.8G   89G   2% /var
+/dev/mapper/centos-data  5.5T  5.0T  565G  90% /data
+/dev/mapper/centos-home  1.5T  758G  742G  51% /home
+tmpfs                    6.3G   12K  6.3G   1% /run/user/42
+tmpfs                    6.3G     0  6.3G   0% /run/user/1002
+tmpfs                    6.3G     0  6.3G   0% /run/user/0
+tmpfs                    6.3G     0  6.3G   0% /run/user/1005</code></pre>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>以后会重新写一篇文章讨论这个<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2018-12-06</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/centos/">CentOS</a>
+          
+          <a href="/tags/llvm/">LLVM</a>
+          
+          <a href="/tags/%E7%A3%81%E7%9B%98%E6%89%A9%E5%AE%B9/">磁盘扩容</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2018-12-11-%E4%BF%AE%E6%94%B9mysql%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E7%9B%AE%E5%BD%95/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">修改MySQL数据存储目录</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2018-10-25-centos7-%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE/">
+            <span class="next-text nav-default">CentOS7 系统配置</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

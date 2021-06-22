@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用 github 发布 gitbook 电子书 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="gitbook 是一个用于生成现代电子书的工具，进过处理后可以得到`mobi`、`pdf`、静态网页等多种类型的书籍形式。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-10-29-%E4%BD%BF%E7%94%A8-github-%E5%8F%91%E5%B8%83-gitbook-%E7%94%B5%E5%AD%90%E4%B9%A6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="使用 github 发布 gitbook 电子书" />
+<meta property="og:description" content="gitbook 是一个用于生成现代电子书的工具，进过处理后可以得到`mobi`、`pdf`、静态网页等多种类型的书籍形式。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-10-29-%E4%BD%BF%E7%94%A8-github-%E5%8F%91%E5%B8%83-gitbook-%E7%94%B5%E5%AD%90%E4%B9%A6/" />
+<meta property="article:published_time" content="2019-10-29T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-10-29T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="使用 github 发布 gitbook 电子书">
+<meta itemprop="description" content="gitbook 是一个用于生成现代电子书的工具，进过处理后可以得到`mobi`、`pdf`、静态网页等多种类型的书籍形式。">
+
+
+<meta itemprop="datePublished" content="2019-10-29T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-10-29T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="935">
+
+
+
+<meta itemprop="keywords" content="github,gitbook,blog,知识共享," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用 github 发布 gitbook 电子书"/>
+<meta name="twitter:description" content="gitbook 是一个用于生成现代电子书的工具，进过处理后可以得到`mobi`、`pdf`、静态网页等多种类型的书籍形式。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">使用 github 发布 gitbook 电子书</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-10-29 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 935 words </span>
+        <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-10-29T00:00:00" title="October 29, 2019">October 29, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p><code>gitbook</code> 是一个用于生成现代电子书的工具，进过处理后可以得到<code>mobi</code>、<code>pdf</code>、静态网页等多种类型的书籍形式。对于生成后得到的静态网页，我们可以将其托管在 <code>github</code> 上面，使用 <code>gh-pages</code> 发布到网上，从而实现制作文档、发布知识分享。</p>
+<p>本篇博客总结了如何配置 <code>gitbook</code>、如何制作静态网页、如何使用 <code>github</code> 托管等方面的技巧。</p>
+<!--  -->
+<div id="安装软件" class="section level2">
+<h2>安装软件</h2>
+<div id="安装-gitbook" class="section level3">
+<h3>安装 gitbook</h3>
+<p>需要使用 <code>npm</code> 执行命令</p>
+<pre class="bash"><code>npm install gitbook -g</code></pre>
+<p>安装完成后，可以使用命令查找具体的可执行文件所在目录</p>
+<pre class="bash"><code>whereis gitbook</code></pre>
+<p>查看具体的版本号</p>
+<pre class="bash"><code>/opt/node-v12.10.0-linux-x64/bin/gitbook -V</code></pre>
+</div>
+<div id="基本命令" class="section level3">
+<h3>基本命令</h3>
+<ul>
+<li><p>初始化，会自动生成 README.md 以及 SUMMARY.md</p>
+<pre class="bash"><code>gitbook init</code></pre></li>
+<li><p>生成静态网页，会得到 <code>_book</code> 的目录</p>
+<pre class="bash"><code>gitbook build</code></pre></li>
+<li><p>本地预览</p>
+<pre class="bash"><code>gitbook serve</code></pre></li>
+</ul>
+</div>
+<div id="安装插件" class="section level3">
+<h3>安装插件</h3>
+<p>由于使用的插件需要嵌入到静态网站，通常的做法是直接配置一个 <code>book.json</code> 的文件，里面会填入托管网站相关的信息，以及需要使用的配置参数。比如</p>
+<pre class="json"><code>{
+    &quot;author&quot;: &quot;方莲&quot;,
+    &quot;description&quot;: &quot;To be betteR.&quot;,
+    &quot;title&quot;: &quot;betteR&quot;,
+    &quot;variables&quot;: {},
+    &quot;extension&quot;: null,
+    &quot;generator&quot;: &quot;site&quot;,
+    &quot;isbn&quot;: &quot;&quot;,
+    &quot;links&quot;: {
+        &quot;sharing&quot;: {
+            &quot;all&quot;: null,
+            &quot;facebook&quot;: null,
+            &quot;google&quot;: null,
+            &quot;twitter&quot;: null,
+            &quot;weibo&quot;: null
+        },
+        &quot;sidebar&quot;: {
+            &quot;William&#39;s Blog&quot;: &quot;https://williamlfang.github.io/&quot;
+        }
+    },
+    &quot;output&quot;: null,
+    &quot;pdf&quot;: {
+        &quot;fontSize&quot;: 12,
+        &quot;footerTemplate&quot;: null,
+        &quot;headerTemplate&quot;: null,
+        &quot;margin&quot;: {
+            &quot;bottom&quot;: 36,
+            &quot;left&quot;: 62,
+            &quot;right&quot;: 62,
+            &quot;top&quot;: 36
+        },
+        &quot;pageNumbers&quot;: false,
+        &quot;paperSize&quot;: &quot;a4&quot;
+    },
+    &quot;plugins&quot;: [&quot;chapter-fold&quot;,
+                &quot;expandable-chapters-small&quot;,
+                &quot;expandable-chapters&quot;,
+                &quot;advanced-emoji&quot;,
+                &quot;github&quot;,
+                &quot;splitter&quot;,
+                &quot;-sharing&quot;, &quot;sharing-plus&quot;,
+                &quot;simple-page-toc&quot;,
+                &quot;copy-code-button&quot;,
+                &quot;page-toc-button&quot;,
+                &quot;klipse&quot;,
+                &quot;pageview-count&quot;,
+                &quot;popup&quot;,
+                &quot;tbfed-pagefooter&quot;,
+                &quot;todo&quot;,
+                &quot;prism&quot;, &quot;-highlight&quot;
+                ],
+    &quot;pluginsConfig&quot;: {
+        &quot;github&quot;: {&quot;url&quot;: &quot;https://github.com/williamlfang&quot;},
+        &quot;sharing&quot;: {
+                   &quot;douban&quot;: true,
+                   &quot;google&quot;: true,
+                   &quot;twitter&quot;: true,
+                   &quot;weibo&quot;: true,
+                   &quot;all&quot;: [
+                       &quot;google&quot;, &quot;twitter&quot;, &quot;weibo&quot;
+                   ]
+               },
+        &quot;simple-page-toc&quot;: {
+                &quot;maxDepth&quot;: 3,
+                &quot;skipFirstH1&quot;: true
+                },
+        &quot;page-toc-button&quot;: {
+            &quot;maxTocDepth&quot;: 3,
+            &quot;minTocSize&quot;: 3
+           },
+        &quot;tbfed-pagefooter&quot;: {
+                    &quot;copyright&quot;:&quot;&quot;,
+                    &quot;modify_label&quot;: &quot;该文件最后修改时间：&quot;,
+                    &quot;modify_format&quot;: &quot;YYYY-MM-DD HH:mm:ss&quot;
+                },
+        &quot;prism&quot;: {
+          &quot;css&quot;: [
+            &quot;prismjs/themes/prism-dracula.css&quot;
+          ]
+        }
+    }
+}</code></pre>
+<p>在这个配置文件，我使用了一些外部插件。对于这些插件，我们可以在项目的<code>根目录</code>下执行命令进行安装</p>
+<pre class="bash"><code>gitbook install ./</code></pre>
+</div>
+</div>
+<div id="搭建-github-网页" class="section level2">
+<h2>搭建 github 网页</h2>
+<p><code>github</code> 提供 <code>gh-pages</code> 功能，可以生成静态网站托管。</p>
+<ul>
+<li>在<code>github</code>创建新仓库，默认为 <code>master</code> 主干枝</li>
+<li><p>在本地拷贝远程仓库</p>
+<pre class="bash"><code>git clone git@github.com:williamlfang/ProjectName.git</code></pre></li>
+<li><p>在本地仓库搭建 <code>gitbook</code></p>
+<pre class="bash"><code>cd ProjectName
+## 开始搭建静态网页
+gitbook build</code></pre></li>
+<li><p>建立分支 <code>gh-pages</code> 用于显示静态网页</p>
+<pre class="bash"><code>git checkout -b gh-pages</code></pre></li>
+<li><p>同步拷贝 <code>master</code> 目录得到的 <code>_book</code> 到 <code>gh-pages</code></p>
+<pre class="bash"><code>git checkout master -- _book
+cp -r _book/* ./</code></pre></li>
+<li><p>提交更新</p>
+<pre class="bash"><code>git add ./*
+git commit -m &#39;update gh-pages&#39;
+git push origin gh-pages</code></pre></li>
+<li><p>这样，我们便在 <code>gh-pages</code> 存放了生成的静态网页，通过浏览器访问可查看具体的<a href="https://williamlfang.github.io/betteR/">项目网页</a></p></li>
+</ul>
+</div>
+<div id="一键脚本" class="section level2">
+<h2>一键脚本</h2>
+<p>我写了一个简单的脚本 <code>deploy.sh</code>，实现一键执行相关的操作</p>
+<pre class="bash"><code>#!/usr/bin/env bash
+
+# Set the English locale for the `date` command.
+export LC_TIME=en_US.UTF-8
+
+# GitHub username.
+USERNAME=williamlfang
+# Name of the branch containing the Hugo source files.
+SOURCE=betteR
+# The commit message.
+MESSAGE=&quot;Gitbook rebuild $(date)&quot;
+
+## -------------------------------------------
+msg() {
+    printf &quot;\033[1;32m :: %s\n\033[0m&quot; &quot;$1&quot;
+}
+## -------------------------------------------
+
+
+## -------------------------------------------
+## 切换到 master
+git checkout master
+msg &quot;Pulling down from ${SOURCE}&lt;master&gt;&quot;
+#从github更新原文件并生成静态页面
+# git pull
+
+## 使用 R 制作 md
+Rscript -e &#39;blogdown::build_dir(dir = &quot;.&quot;, force = FALSE, ignore = &quot;[.]Rproj$&quot;)&#39;  2&gt;&amp;1 &gt;/dev/null
+
+msg &quot;Rebuild gitbook&quot;
+## 安装插件
+# /opt/node-v12.10.0-linux-x64/bin/gitbook install ./
+## 建立静态网页
+/opt/node-v12.10.0-linux-x64/bin/gitbook build
+
+git add -A 
+git commit -m &quot;update master&quot;
+git push origin master
+## -------------------------------------------
+
+
+## -------------------------------------------
+msg &quot;Pushing new info to gh-pages&quot;
+## 创建分支
+# git checkout -b gh-pages
+git checkout gh-pages
+## 同步 master 的 _book 到 gh-pages
+git checkout master -- _book
+
+cp -r _book/* . 
+echo &quot;node_modules
+_book&quot;&gt;.gitignore
+
+git add -A 
+git commit -m &quot;update gh-pages&quot;
+git push origin gh-pages
+
+git checkout master
+msg &quot;We&#39;ve happily done.&quot;</code></pre>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-10-29</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/github/">github</a>
+          
+          <a href="/tags/gitbook/">gitbook</a>
+          
+          <a href="/tags/blog/">blog</a>
+          
+          <a href="/tags/%E7%9F%A5%E8%AF%86%E5%85%B1%E4%BA%AB/">知识共享</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-11-12-centos7-gcc7.3%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%8D%87%E7%BA%A7/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">CentOS7:gcc7.3源代码编译升级</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-10-22-centos7-%E5%8D%87%E7%BA%A7-gcc/">
+            <span class="next-text nav-default">CentOS7 升级 gcc</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

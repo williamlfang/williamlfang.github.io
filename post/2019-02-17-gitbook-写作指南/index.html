@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>gitbook 写作指南 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" />
+  <meta name="description" content="介绍如何使用 gitbook 编写技术手册，并配置 github 实现对内容的版本控制。
+" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-02-17-gitbook-%E5%86%99%E4%BD%9C%E6%8C%87%E5%8D%97/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="gitbook 写作指南" />
+<meta property="og:description" content="介绍如何使用 gitbook 编写技术手册，并配置 github 实现对内容的版本控制。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-02-17-gitbook-%E5%86%99%E4%BD%9C%E6%8C%87%E5%8D%97/" />
+<meta property="article:published_time" content="2019-02-17T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-02-17T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="gitbook 写作指南">
+<meta itemprop="description" content="介绍如何使用 gitbook 编写技术手册，并配置 github 实现对内容的版本控制。">
+
+
+<meta itemprop="datePublished" content="2019-02-17T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-02-17T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="893">
+
+
+
+<meta itemprop="keywords" content="gitbook,github,博客," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="gitbook 写作指南"/>
+<meta name="twitter:description" content="介绍如何使用 gitbook 编写技术手册，并配置 github 实现对内容的版本控制。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">gitbook 写作指南</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-02-17 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 893 words </span>
+        <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-02-17T00:00:00" title="February 17, 2019">February 17, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      <p>介绍如何使用 <code>gitbook</code> 编写技术手册，并配置 <code>github</code> 实现对内容的版本控制。</p>
+
+<p><code>gitbook</code> 是在线文本的展示与管理网站，提供了独立主页、项目结构、文本形式等规范化的项目格式，从而使得我们只需要专注于内容的生产，无需处理格式化的问题，从而实现了快速发布文档。</p>
+
+<p><img src="/images/2019-02-17-gitbook-写作指南/gitbook_website.png" alt="gitbook website" /></p>
+
+<h1 id="安装-gitbook">安装 <code>gitbook</code></h1>
+
+<pre><code class="language-bash">## 如果提示没有 npm，则需要安装 node
+## -------------------------------
+## Ubuntu 使用 apt 安装
+sudo apt install npm
+## Mac 使用 brew 安装 node
+## 会附带 npm 工具
+sudo brew install node
+## -------------------------------
+
+## 使用 root 权限
+sudo npm install gitbook -g
+sudo npm install gitbook-cli -g
+</code></pre>
+
+<h1 id="gitbook-搭建主页">GitBook 搭建主页</h1>
+
+<h2 id="注册账户">注册账户</h2>
+
+<p>首先，我们需要通过 <a href="https://legacy.gitbook.com/"><code>gitbook</code> 官网</a>注册一个账户，用于管理文档。</p>
+
+<p><img src="/images/2019-02-17-gitbook-写作指南/gitbook_register.png" alt="gitbook 注册" /></p>
+
+<h2 id="登录账户">登录账户</h2>
+
+<p>注册完成后，便可以登录账户了。</p>
+
+<p><img src="/images/2019-02-17-gitbook-写作指南/gitbook_login.png" alt="gitbook 登录" /></p>
+
+<h2 id="建立项目">建立项目</h2>
+
+<h1 id="管理内容">管理内容</h1>
+
+<h2 id="关联-github-仓库">关联<code>github</code>仓库</h2>
+
+<h2 id="同步更新">同步更新</h2>
+
+<h1 id="写作指引">写作指引</h1>
+
+<h2 id="初始化书籍">初始化书籍</h2>
+
+<pre><code class="language-bash">## 初始化，根据 SUMMARY.md 生成对应的目录
+gitbook init
+</code></pre>
+
+<p>得到</p>
+
+<pre><code class="language-bash">info: create math/readme.md 
+info: create stat/prob.md 
+info: create stat/eda.md 
+info: create programming/linux/cli.md 
+info: create programming/linux/ubuntu.md 
+info: create programming/linux/centos.md 
+info: create programming/c/why-c.md 
+info: create programming/c/pointer.md 
+info: create programming/c++/why-c++.md 
+info: create programming/c++/class.md 
+info: create programming/python/why-python.md 
+info: create programming/python/numpy.md 
+info: create programming/python/pandas.md 
+info: create programming/r/why-r.md 
+info: create programming/r/data.table.md 
+info: create SUMMARY.md 
+info: initialization is finished
+</code></pre>
+
+<p>可以看到，<code>gitbook</code> 自动根据 <code>SUMMARY.md</code> 的大纲，为我们生成了目录</p>
+
+<pre><code class="language-bash">tree     
+.
+├── math
+│   └── readme.md
+├── programming
+│   ├── c
+│   │   ├── pointer.md
+│   │   └── why-c.md
+│   ├── c++
+│   │   ├── class.md
+│   │   └── why-c++.md
+│   ├── linux
+│   │   ├── centos.md
+│   │   ├── cli.md
+│   │   └── ubuntu.md
+│   ├── python
+│   │   ├── numpy.md
+│   │   ├── pandas.md
+│   │   └── why-python.md
+│   └── r
+│       ├── data.table.md
+│       └── why-r.md
+├── README.md
+├── stat
+│   ├── eda.md
+│   └── prob.md
+└── SUMMARY.md
+
+8 directories, 17 files
+</code></pre>
+
+<h2 id="配置-book-json">配置<code>book.json</code></h2>
+
+<p><code>gitbook</code> 在编译书籍的时候会读取书籍源码顶层目录 <code>repo/</code> 中的 <code>book.json</code>，支持如下配置：</p>
+
+<p>由于我们在 <code>book.json</code> 使用了插件，因此需要让 <code>gitbook</code> 安装：</p>
+
+<pre><code class="language-bash">gitbook install .
+
+info: installing 16 plugins using npm@3.9.2 
+info:  
+</code></pre>
+
+<h2 id="本地预览">本地预览</h2>
+
+<p>当我们编辑完成相关的文档后，可以在本地先対书籍进行预览</p>
+
+<pre><code class="language-bash">gitbook serve .
+Live reload server started on port: 35729
+Press CTRL+C to quit ...
+
+info: 7 plugins are installed 
+info: loading plugin &quot;livereload&quot;... OK 
+info: loading plugin &quot;highlight&quot;... OK 
+info: loading plugin &quot;search&quot;... OK 
+info: loading plugin &quot;lunr&quot;... OK 
+info: loading plugin &quot;sharing&quot;... OK 
+info: loading plugin &quot;fontsettings&quot;... OK 
+info: loading plugin &quot;theme-default&quot;... OK 
+info: found 16 pages 
+info: found 0 asset files 
+info: &gt;&gt; generation finished with success in 2.2s ! 
+
+Starting server ...
+Serving book on http://localhost:4000
+</code></pre>
+
+<p>在浏览器打开 <code>http://localhost:4000</code> 就能看到书籍完成后的模样了．</p>
+
+<p><img src="/images/2019-02-17-gitbook-写作指南/gitbook-local.png" alt="gitbook 本地预览" /></p>
+
+<p>如果有提示报错，则需要把已经占用的端口线程杀掉，再重新开始预览</p>
+
+<pre><code class="language-bash">... Uhoh. Got error listen EADDRINUSE :::35729 ...
+Error: listen EADDRINUSE :::35729
+    at Object._errnoException (util.js:1022:11)
+    at _exceptionWithHostPort (util.js:1044:20)
+    at Server.setupListenHandle [as _listen2] (net.js:1367:14)
+    at listenInCluster (net.js:1408:12)
+    at Server.listen (net.js:1492:7)
+    at Server.listen (/home/william/.gitbook/versions/3.2.3/node_modules/tiny-lr/lib/server.js:164:15)
+    at Promise.apply (/home/william/.gitbook/versions/3.2.3/node_modules/q/q.js:1165:26)
+    at Promise.promise.promiseDispatch (/home/william/.gitbook/versions/3.2.3/node_modules/q/q.js:788:41)
+    at /home/william/.gitbook/versions/3.2.3/node_modules/q/q.js:1391:14
+    at runSingle (/home/william/.gitbook/versions/3.2.3/node_modules/q/q.js:137:13)
+
+You already have a server listening on 35729
+You should stop it and try again.
+
+</code></pre>
+
+<p>使用命令</p>
+
+<pre><code class="language-bash">fuser -k 35729/tcp
+
+35729/tcp:           18217
+</code></pre>
+
+<h2 id="发布">发布</h2>
+
+<p>由于我们使用了 <code>gitbook</code> 与 <code>github</code> 同步关联功能，因此，只需要把改动后的文档同步到 <code>github</code> 项目，就可以自动完成対 <code>gitbook</code> 的改动，从而实现书籍自动发布的目的。</p>
+
+<pre><code class="language-bash">## 重新编译，准备发布
+gitbook build
+</code></pre>
+
+<p><img src="/images/2019-02-17-gitbook-写作指南/gitbook-server.png" alt="gitbook 远程发布" /></p>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-02-17</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/gitbook/">gitbook</a>
+          
+          <a href="/tags/github/">github</a>
+          
+          <a href="/tags/%E5%8D%9A%E5%AE%A2/">博客</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-02-18-sublimerepl-%E5%AE%9A%E5%88%B6%E4%B8%8E%E6%94%B9%E9%80%A0/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">SublimeREPL: 定制与改造</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-02-14-jupyterlab-%E6%96%B0%E4%B8%80%E4%BB%A3%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%A5%97%E4%BB%B6/">
+            <span class="next-text nav-default">jupyterlab: 新一代的数据分析套件</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

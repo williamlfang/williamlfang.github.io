@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>CentOS7 命令行设置分辨率 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="通过命令行修改 CentOS 操作系统的屏幕分辨率大小。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2018-12-11-centos7-%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%BE%E7%BD%AE%E5%88%86%E8%BE%A8%E7%8E%87/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="CentOS7 命令行设置分辨率" />
+<meta property="og:description" content="通过命令行修改 CentOS 操作系统的屏幕分辨率大小。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2018-12-11-centos7-%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%BE%E7%BD%AE%E5%88%86%E8%BE%A8%E7%8E%87/" />
+<meta property="article:published_time" content="2018-12-11T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2018-12-11T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="CentOS7 命令行设置分辨率">
+<meta itemprop="description" content="通过命令行修改 CentOS 操作系统的屏幕分辨率大小。">
+
+
+<meta itemprop="datePublished" content="2018-12-11T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2018-12-11T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="528">
+
+
+
+<meta itemprop="keywords" content="CentOS,xrandr,分辨率," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CentOS7 命令行设置分辨率"/>
+<meta name="twitter:description" content="通过命令行修改 CentOS 操作系统的屏幕分辨率大小。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">CentOS7 命令行设置分辨率</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-12-11 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 528 words </span>
+        <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2018-12-11T00:00:00" title="December 11, 2018">December 11, 2018</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      <pre class="bash"><code>[trader@localhost ~]$ xrandr --help
+usage: xrandr [options]
+  where options are:
+  --display &lt;display&gt; or -d &lt;display&gt;
+  --help
+  -o &lt;normal,inverted,left,right,0,1,2,3&gt;
+            or --orientation &lt;normal,inverted,left,right,0,1,2,3&gt;
+  -q        or --query
+  -s &lt;size&gt;/&lt;width&gt;x&lt;height&gt; or --size &lt;size&gt;/&lt;width&gt;x&lt;height&gt;
+  -r &lt;rate&gt; or --rate &lt;rate&gt; or --refresh &lt;rate&gt;
+  -v        or --version
+  -x        (reflect in x)
+  -y        (reflect in y)
+  --screen &lt;screen&gt;
+  --verbose
+  --current
+  --dryrun
+  --nograb
+  --prop or --properties
+  --fb &lt;width&gt;x&lt;height&gt;
+  --fbmm &lt;width&gt;x&lt;height&gt;
+  --dpi &lt;dpi&gt;/&lt;output&gt;
+  --output &lt;output&gt;
+      --auto
+      --mode &lt;mode&gt;
+      --preferred
+      --pos &lt;x&gt;x&lt;y&gt;
+      --rate &lt;rate&gt; or --refresh &lt;rate&gt;
+      --reflect normal,x,y,xy
+      --rotate normal,inverted,left,right
+      --left-of &lt;output&gt;
+      --right-of &lt;output&gt;
+      --above &lt;output&gt;
+      --below &lt;output&gt;
+      --same-as &lt;output&gt;
+      --set &lt;property&gt; &lt;value&gt;
+      --scale &lt;x&gt;x&lt;y&gt;
+      --scale-from &lt;w&gt;x&lt;h&gt;
+      --transform &lt;a&gt;,&lt;b&gt;,&lt;c&gt;,&lt;d&gt;,&lt;e&gt;,&lt;f&gt;,&lt;g&gt;,&lt;h&gt;,&lt;i&gt;
+      --off
+      --crtc &lt;crtc&gt;
+      --panning &lt;w&gt;x&lt;h&gt;[+&lt;x&gt;+&lt;y&gt;[/&lt;track:w&gt;x&lt;h&gt;+&lt;x&gt;+&lt;y&gt;[/&lt;border:l&gt;/&lt;t&gt;/&lt;r&gt;/&lt;b&gt;]]]
+      --gamma &lt;r&gt;:&lt;g&gt;:&lt;b&gt;
+      --brightness &lt;value&gt;
+      --primary
+  --noprimary
+  --newmode &lt;name&gt; &lt;clock MHz&gt;
+            &lt;hdisp&gt; &lt;hsync-start&gt; &lt;hsync-end&gt; &lt;htotal&gt;
+            &lt;vdisp&gt; &lt;vsync-start&gt; &lt;vsync-end&gt; &lt;vtotal&gt;
+            [flags...]
+            Valid flags: +HSync -HSync +VSync -VSync
+                         +CSync -CSync CSync Interlace DoubleScan
+  --rmmode &lt;name&gt;
+  --addmode &lt;output&gt; &lt;name&gt;
+  --delmode &lt;output&gt; &lt;name&gt;
+  --listproviders
+  --setprovideroutputsource &lt;prov-xid&gt; &lt;source-xid&gt;
+  --setprovideroffloadsink &lt;prov-xid&gt; &lt;sink-xid&gt;
+  --listmonitors
+  --listactivemonitors
+  --setmonitor &lt;name&gt; {auto|&lt;w&gt;/&lt;mmw&gt;x&lt;h&gt;/&lt;mmh&gt;+&lt;x&gt;+&lt;y&gt;} {none|&lt;output&gt;,&lt;output&gt;,...}
+  --delmonitor &lt;name&gt;</code></pre>
+<div id="显示当前桌面的分辨率" class="section level2">
+<h2>显示当前桌面的分辨率</h2>
+<p>直接使用命令 <code>xrandr</code> 来查看当前的分辨率大小：</p>
+<pre class="bash"><code>VGA-1 connected primary 1920x1080+0+0 (normal left inverted right x axis y axis) 476mm x 267mm
+   1600x900      60.00  
+   1280x1024     75.02    60.02  
+   1152x864      75.00  
+   1024x768      75.03    60.00  
+   800x600       75.00    60.32  
+   640x480       75.00    59.94  
+   1920x1080_60.00  59.96* </code></pre>
+<p>其中标记 <code>*</code> 的就是当前的参数设置。我们可以看到当前系统可以支持多个显示设置。</p>
+</div>
+<div id="选择某个设置" class="section level2">
+<h2>选择某个设置</h2>
+<p>使用选项 <code>-s</code> 来指定某个设置</p>
+<pre class="bash"><code>xrandr -s 0 // 1600x900</code></pre>
+</div>
+<div id="直接设置分辨率" class="section level2">
+<h2>直接设置分辨率</h2>
+<p>也可以在命令行直接指定设置：</p>
+<pre class="bash"><code>xrandr -s 1920x1080_60.00</code></pre>
+</div>
+<div id="errors.-badname" class="section level2">
+<h2><code>errors. BadName</code></h2>
+<p><code>bash Xrandr errors. BadName (named color or font does not exist)</code>bash</p>
+<p>出现这个问题，一般是由于之前已经有一个显示的配置了，导致重命名。</p>
+<blockquote>
+<p>I had a similar problem, I believe it was because I had already created that setting before (then rebooted). If I skip that stage and go straight to:</p>
+</blockquote>
+<p>可以参考 <a href="https://stackoverflow.com/questions/851704/xrandr-errors-badname-named-color-or-font-does-not-exist">SO: Xrandr errors. BadName (named color or font does not exist) [closed]</a></p>
+</div>
+<div id="集成脚本display.sh" class="section level2">
+<h2>集成脚本<code>display.sh</code></h2>
+<pre class="bash"><code>## 首次需要建立一个 --newmode
+## 以后就不需要了，可以注释掉
+## ------------------------
+xrandr --newmode &quot;1920x1080_20.00&quot;  173.00  1920 2048 2248 2576  1080 1083 1088 1120 -hsync +vsync
+
+xrandr --addmode VGA-1 &quot;1920x1080_20.00&quot;
+
+xrandr -s 1920x1080</code></pre>
+</div>
+<div id="开机自动调整分辨率" class="section level2">
+<h2>开机自动调整分辨率</h2>
+<p>把以上的 <code>display.sh</code> 添加到 <code>~/.bashrc</code> 配置文件(run configure)。这样，每次开机后，会优先读取 <code>.bashrc</code> 文件，然后启动 <code>display.sh</code>。</p>
+<pre class="bash"><code>echo &quot;bash ~/Desktop/display.sh&quot; &gt;&gt; ~/.bashrc</code></pre>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2018-12-11</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/centos/">CentOS</a>
+          
+          <a href="/tags/xrandr/">xrandr</a>
+          
+          <a href="/tags/%E5%88%86%E8%BE%A8%E7%8E%87/">分辨率</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Sublime 编译 运行 c/c&#43;&#43; 文件</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2018-12-11-%E4%BD%BF%E7%94%A8-ssh-key-%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/">
+            <span class="next-text nav-default">使用 ssh key 免密码登录</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

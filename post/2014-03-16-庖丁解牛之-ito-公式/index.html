@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>庖丁解牛之 Ito 公式 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" />
+  <meta name="description" content="假设股票价格的变化服从以下运动方程（随机微分方程，SDE）： \[ \begin{align} d S_t = \mu S_t dt &#43; \sigma S_t dW_t, \end{align} \] 其中 \(dW_t\) 是一个（连续的）Brownian motion，" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2014-03-16-%E5%BA%96%E4%B8%81%E8%A7%A3%E7%89%9B%E4%B9%8B-ito-%E5%85%AC%E5%BC%8F/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="庖丁解牛之 Ito 公式" />
+<meta property="og:description" content="假设股票价格的变化服从以下运动方程（随机微分方程，SDE）： \[ \begin{align} d S_t = \mu S_t dt &#43; \sigma S_t dW_t, \end{align} \] 其中 \(dW_t\) 是一个（连续的）Brownian motion，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2014-03-16-%E5%BA%96%E4%B8%81%E8%A7%A3%E7%89%9B%E4%B9%8B-ito-%E5%85%AC%E5%BC%8F/" />
+<meta property="article:published_time" content="2014-03-16T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2014-03-16T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="庖丁解牛之 Ito 公式">
+<meta itemprop="description" content="假设股票价格的变化服从以下运动方程（随机微分方程，SDE）： \[ \begin{align} d S_t = \mu S_t dt &#43; \sigma S_t dW_t, \end{align} \] 其中 \(dW_t\) 是一个（连续的）Brownian motion，">
+
+
+<meta itemprop="datePublished" content="2014-03-16T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2014-03-16T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2930">
+
+
+
+<meta itemprop="keywords" content="Ito," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="庖丁解牛之 Ito 公式"/>
+<meta name="twitter:description" content="假设股票价格的变化服从以下运动方程（随机微分方程，SDE）： \[ \begin{align} d S_t = \mu S_t dt &#43; \sigma S_t dW_t, \end{align} \] 其中 \(dW_t\) 是一个（连续的）Brownian motion，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">庖丁解牛之 Ito 公式</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2014-03-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/quant/"> Quant </a>
+            
+          </div>
+        <span class="more-meta"> 2930 words </span>
+        <span class="more-meta"> 6 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2014-03-16T00:00:00" title="March 16, 2014">March 16, 2014</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p>假设股票价格的变化服从以下运动方程（随机微分方程，SDE）： <span class="math display">\[
+\begin{align}
+ d S_t = \mu S_t dt + \sigma S_t dW_t,
+\end{align}
+\]</span> 其中 <span class="math inline">\(dW_t\)</span> 是一个（连续的）<strong>Brownian motion</strong>，<span class="math inline">\(W_t \sim \mathcal{N} (0, t)\)</span>。等价的，我们可以得到股票价格变化率： <span class="math display">\[
+\begin{align}
+ d \ln S_t = \frac{ d S_t }{ S_t } = \mu dt + \sigma dW_t.
+\end{align}
+\]</span></p>
+<p>下面我们来推导股票价格 <span class="math inline">\(S_t\)</span> 的动态方程，这主要是使用著名的 <strong>Ito 公式</strong>。过于理论的东西我在这里不推导了，主要是利用一个简单的例子来说明如何使用 <strong>Ito 公式</strong> 解 <strong>SDE</strong> 类问题。</p>
+<!-- more -->
+<div id="ito-公式求解" class="section level2">
+<h2>Ito 公式求解</h2>
+<p>首先，令 <span class="math inline">\(Y_t = ln S_t\)</span>，由简单的偏微分求导得到 <span class="math display">\[
+\begin{align}
+\frac{ \partial Y }{ \partial t} &amp;= 0  \\
+\frac{ \partial Y }{ \partial S} &amp;= \frac{ 1 }{ S }  \\
+\frac{ \partial^2 Y }{ \partial S^2} &amp;= - \frac{ 1 }{ S^2 }  \\
+\end{align}
+\]</span> 则根据 <strong>Ito 公式</strong>，我们可以推出以下方程 <span class="math display">\[
+\begin{align}
+ d \ln S_t = d Y_t 
+  &amp;= \frac{ \partial Y }{ \partial t} dt + \frac{ \partial Y }{ \partial S} dS_t + \frac{1}{2} \frac{ \partial^2 Y }{ \partial S^2} dS_t dS_t \nonumber\\
+  &amp;= 0 · dt + \frac{ 1 }{ S_t } dS_t - \frac{1}{2} · \frac{ 1 }{ S_t^2 } dS_t dS_t \nonumber\\
+  &amp;=  \frac{ 1 }{ S_t } · S_t · (\mu dt + \sigma dW_t) - \frac{1}{2} · \frac{ 1 }{ S_t^2 } · \sigma^2 S_t^2 dt
+ \nonumber\\
+  &amp;= (\mu - \frac{1}{2} \sigma^2) dt + \sigma dW_t. \\
+\end{align}
+\]</span> 两边求积分，得到如下式子 <span class="math display">\[
+\begin{align}
+ \int_{0}^{t} d \ln S_u = \int_{0}^{t} d Y_u 
+    &amp;= \int_{0}^{t}  (\mu - \frac{1}{2} \sigma^2) du + \int_{0}^{t}  \sigma dW_u \\
+\Rightarrow \ln S_t - \ln S_0 = Y_t - Y_0 &amp;= (\mu - \frac{1}{2} \sigma^2) t + \int_{0}^{t}  \sigma dW_u.
+\end{align}
+\]</span> 我们知道，<strong>Brownian Motion</strong> 表示在一定时间段内随机游走走过的路径，并且如果我们假定在初始阶段为 <span class="math inline">\(W(0)=0\)</span>，那么，上面等式的最后一项是 <span class="math display">\[
+\begin{align}
+\int_{0}^{t}  \sigma dW_u &amp;= \sigma (W_t - W_0 ) = \sigma W_t.
+\end{align}
+\]</span></p>
+<p>因此，我们有 <span class="math display">\[
+\begin{align}
+ \ln S_t - \ln S_0 = Y_t - Y_0 &amp;= (\mu - \frac{1}{2} \sigma^2) t + \sigma W_t \nonumber\\
+  \Rightarrow Y_t &amp;= Y_0 + (\mu - \frac{1}{2} \sigma^2) t + \sigma W_t \nonumber\\
+ \Rightarrow S_t &amp;= S_0 · \exp\{  (\mu - \frac{1}{2} \sigma^2) t + \sigma W_t  \}.
+\end{align}
+\]</span></p>
+</div>
+<div id="几何布朗运动" class="section level2">
+<h2>几何布朗运动</h2>
+<p>我们知道，对于任何一个正态分布做线性转换后依然服从正态分布。由于布朗运动 <span class="math inline">\(W_t \sim \mathcal{N} (0, t)\)</span>，则 <span class="math display">\[
+\begin{align}
+  Y_t &amp;= Y_0 + (\mu - \frac{1}{2} \sigma^2) t + \sigma W_t \nonumber\\
+\Rightarrow E[Y_t|Y_0] &amp;= E[ Y_0 + (\mu - \frac{1}{2} \sigma^2) t + \sigma W_t] \nonumber\\
+                       &amp;= Y_0 + (\mu - \frac{1}{2} \sigma^2) t + \underbrace{E[\sigma W_t]}_{0} = Y_0 + (\mu - \frac{1}{2} \sigma^2) t \\
+\Rightarrow Var[Y_t|Y_0] &amp;= Var [\sigma W_t] = \sigma^2 Var(Wt) = \sigma^2 ·t \nonumber\\
+\Rightarrow Y_t &amp;\sim \mathcal{N}(  Y_0 + (\mu - \frac{1}{2} \sigma^2) t, \sigma^2 t  ) \label{gbm_norm}
+\end{align} 
+\]</span></p>
+<p>那么，<span class="math inline">\(\ln S_t = Y_t\)</span> 则服从 <strong>正态分布</strong>，则 <span class="math inline">\(S_t = e^{Y_t}\)</span>服从 <em>log-normal disctribution</em>，即 <span class="math inline">\(\ln S_t \sim \mathcal{N} (E[S_t], Var[S_t])\)</span>.</p>
+<p>下面我们来推导 <span class="math inline">\(S_t\)</span> 的分布特征。</p>
+<div id="moment-generation-function" class="section level3">
+<h3>Moment Generation Function</h3>
+<p>我们知道，对于对任何一个随机变量建模，往往需要假设该变量服从某一类随机过程，而这个随机过程由分布函数（distribution function）给定。可是，有些时候，我们并不一定需要知道整个分布函数的具体形式，而只是关注该随机变量的几个「统计特征」，如一阶矩、二阶矩等。下面要介绍的「矩条件生成函数」就针对这种情况提出的。随机变量的矩条件可以在 <strong>Moment Generation Function</strong> (MGF) 十分方便的推导出来。比如，对于正态分布，我们只需要知道一阶矩和二阶矩条件就可以对变量做统计推断（method of moment, MM，还有更一般的 GMM）。</p>
+<p>对于一个<strong>可测空间</strong> <span class="math inline">\((\Omega, \mathcal{F}, P)\)</span>，随机变量 <span class="math inline">\(X \in \sigma(\mathcal{F})\)</span> 的 MGF 定义为 <span class="math display">\[
+\begin{align}
+ M_{X}(\tau) &amp;= E[ e^{x\tau}] = \int_{\Omega} e^{x(\omega)\tau} dP(\omega)
+\end{align}
+\]</span> 其任一 <span class="math inline">\(m-\)</span> 阶的矩公式可以对 <span class="math inline">\(\tau\)</span> 在 <span class="math inline">\(\tau = 0\)</span> 处求 <span class="math inline">\(m\)</span> 次导数得到 <span class="math display">\[
+\begin{align}
+  \frac{\partial M_{X}(\tau)}{\partial \tau}|_{\tau = 0} 
+  &amp;=   \frac{\partial}{\partial \tau} E[ e^{x\tau}] |_{\tau = 0}  
+  =  E[ x · e^{x\tau}] |_{\tau = 0}    \nonumber\\
+  &amp;= E[x] \\
+   \frac{\partial ^2 M_{X}(\tau)}{\partial \tau ^2 }|_{\tau = 0} 
+ &amp;= E[x^2] \\
+ \frac{\partial ^m M_{X}(\tau)}{\partial \tau ^m }|_{\tau = 0} 
+ &amp;= E[x^m]
+\end{align}
+\]</span> 特别的，对于一个正态分布，<span class="math inline">\(X \sim \mathcal{N}(\mu, \sigma^2)\)</span>，有 <span class="math display">\[
+\begin{align}
+  M_{X}(\tau) &amp;= E[ e^{x\tau}] = \exp\{ \mu \tau + \frac{1}{2} \sigma^2 \tau^2 \}
+\end{align} \\
+\]</span></p>
+</div>
+<div id="期望与方差" class="section level3">
+<h3>期望与方差</h3>
+<p>这个特征对于求一个「对数正态分布」十分有用。由<span class="math inline">\(\eqref{gbm_norm}\)</span> <span class="math display">\[
+\begin{align}
+  Y_t &amp;\sim \mathcal{N}(  Y_0 + (\mu - \frac{1}{2} \sigma^2) t, \sigma^2 t  ) 
+\end{align}
+\]</span> 则其 MGF 为 <span class="math display">\[
+\begin{align}
+ M_{Y}(\tau) &amp;= E[e^{y\tau}] = \exp\{ \tilde{\mu} \tau + \frac{1}{2} \tilde{\sigma}^2 \tau^2 \},
+\end{align}
+\]</span> 其中，<span class="math inline">\(\tilde{\mu} = Y_0 + (\mu - \frac{1}{2} \sigma^2) t\)</span>，<span class="math inline">\(\tilde{\sigma}^2= \sigma ^2 t\)</span> .</p>
+<p>因此，我们可以得到如下公式 <span class="math display">\[
+ \begin{align}
+  E[S^{\tau}] &amp;=  E[e^{y\tau}]  = \exp\{ \tilde{\mu} \tau + \frac{1}{2} \tilde{\sigma}^2 \tau^2 \}
+ \end{align}
+\]</span></p>
+<p>即，期望可以表示为 <span class="math display">\[
+ \begin{align}
+  E[S_t] &amp;=  E[e^{y\tau}]|_{\tau = 1}  = \exp\{ \tilde{\mu}  + \frac{1}{2} \tilde{\sigma}^2  \}  \nonumber\\
+        &amp;= \exp\{ Y_0 + (\mu - \frac{1}{2} \sigma^2) t + \frac{1}{2} \sigma^2 t  \} \nonumber\\
+        &amp;= S_0 · e^{\mu t } \\
+\end{align}
+\]</span></p>
+<p><span class="math display">\[
+ \begin{align}
+  E[S^2] &amp;= E[e^{y\tau}]|_{\tau = 2}  = \exp\{ 2 \tilde{\mu}  + 2 \tilde{\sigma}^2  \} \nonumber\\
+  &amp;= \exp\{ 2 [Y_0 + (\mu - \frac{1}{2} \sigma^2) t ] + 2 \sigma^2 t \}   \nonumber\\
+  &amp;= S_0^2 · \exp\{ 2 \mu t + \sigma^2 t\}
+ \end{align}
+\]</span></p>
+<p>因此，<span class="math inline">\(S_t\)</span> 的方差可以表示为 <span class="math display">\[
+ \begin{align}
+  Var[S_t] 
+  &amp;=   E[S^2] -  ( E[S] )^2 \nonumber\\
+  &amp;= S_0^2 · \exp\{ 2 \mu t + \sigma^2 t\} - S_0^2 · \exp\{ 2 \mu t \} \nonumber\\
+  &amp;= S_0^2 · e^{ 2 \mu t } · (e^{ \sigma^2 t - 1 })
+ \end{align}
+\]</span></p>
+</div>
+</div>
+<div id="o-u-process" class="section level2">
+<h2>O-U Process</h2>
+<p>其实，我们同样可是使用这种方法来解一类更加广义的随机过程——O-U过程。这个过程为 <span class="math display">\[
+ \begin{align}
+  d X(t) &amp;=  - \kappa (X(t) - \theta) d t + \sigma dW(t). \label{ou}
+ \end{align}
+\]</span> 在式子<span class="math inline">\(\eqref{ou}\)</span>中，我们注意到参数 <span class="math inline">\((\kappa, \theta, \sigma)\)</span> 决定了整个随机过程的特征：</p>
+<ul>
+<li><span class="math inline">\(\kappa\)</span>：是随机过程的「变化率」，即控制了整个随机过程向长期均值回归的快慢程度;</li>
+<li><span class="math inline">\(\theta\)</span>：代表了随机过程的「长期均值水平」，O-U 过程最显著的特征是其具有了「均值回复」，即在变化率 <span class="math inline">\(\kappa\)</span> 的控制下变量趋于稳定的状态。这个在利率期限结构建模中经常使用，如最早的 Vasicek 利率模型就是一个典型的 O-U 过程。</li>
+<li><span class="math inline">\(\sigma\)</span>：表示随机过程的「瞬时方差」。</li>
+</ul>
+<p>下面我们来求解显示解。</p>
+<p>首先对方程<span class="math inline">\(\eqref{ou}\)</span>在区域 <span class="math inline">\([0, t]\)</span> 进行积分得到 <span class="math display">\[
+  \begin{align}
+   \int_{0}^{t} d X(u) &amp;= -\int_{0}^{t} \kappa X(u) du + \int_{0}^{t}  \kappa \theta du +  \int_{0}^{t}  \sigma  dW(u),
+  \end{align}
+\]</span> 然后两边同时乘以 <span class="math inline">\(e^{\kappa u}\)</span> 得到 <span class="math display">\[
+\begin{align}
+    \int_{0}^{t} e^{\kappa u} d X(u) &amp;= -\int_{0}^{t} \kappa X(u) e^{\kappa u} du + \int_{0}^{t}  \kappa \theta e^{\kappa u} du +  \int_{0}^{t} \sigma  e^{\kappa u} dW(u). \label{ou-int}
+\end{align}
+\]</span> 我们分开求解等式两边。</p>
+<ul>
+<li><p>先是对左边进行<strong>分步积分</strong>得到 <span class="math display">\[
+ \begin{align}
+   LHS &amp;= e^{\kappa u} X(u) |_{u=0}^{t} - \int_{0}^{t} \kappa X(u) e^{\kappa u} du \nonumber \\
+   &amp;= e^{\kappa t } X(t) - X(0) - \int_{0}^{t} \kappa X(u) e^{\kappa u} du . \label{lhs}
+ \end{align}
+\]</span></p></li>
+<li><p>同样的，我们也可以求出右边式子 <span class="math display">\[
+ \begin{align}
+   RHS &amp;= - \int_{0}^{t} \kappa X(u) e^{\kappa u} du + \int_{0}^{t} \theta de^{\kappa u} + \int_{0}^{t}  \sigma  e^{\kappa u} dW(u) \nonumber\\
+   &amp;= - \int_{0}^{t} \kappa X(u) e^{\kappa u} du + \theta (e^{\kappa t} - 1) + \int_{0}^{t}  \sigma  e^{\kappa u} dW(u)  \label{rhs}
+ \end{align}
+\]</span></p></li>
+<li><p>对比<span class="math inline">\(\eqref{lhs}\)</span>与<span class="math inline">\(\eqref{rhs}\)</span>， <span class="math display">\[
+ \begin{align}
+   e^{\kappa t } X(t) - X(0) - \int_{0}^{t} \kappa X(u) e^{\kappa u} du
+   &amp;= 
+   -\int_{0}^{t} \kappa X(u) e^{\kappa u} du + \theta (e^{\kappa t} - 1) + \int_{0}^{t}  \sigma  e^{\kappa u} dW(u)  \nonumber \\
+   e^{\kappa t } X(t) - X(0)
+   &amp;= 
+   \theta (e^{\kappa t} - 1) + \int_{0}^{t}  \sigma  e^{\kappa u} dW(u)   \nonumber \\
+\Rightarrow 
+X(t)  &amp;= e^{-\kappa t} (X(0)-\theta) + \theta + \int_{0}^{t}  \sigma  e^{-\kappa (t-u)} dW(u)  \label{oup} \\
+ \end{align}
+\]</span></p></li>
+</ul>
+<div id="期望" class="section level3">
+<h3>期望</h3>
+<p>由<span class="math inline">\(\eqref{oup}\)</span>得到 <span class="math display">\[
+ \begin{align}
+  X(t)  &amp;= e^{-\kappa t} (X(0)-\theta) + \theta + \int_{0}^{t}  \sigma  e^{-\kappa (t-u)} dW(u) . \nonumber
+ \end{align}
+\]</span> 则其期望可以表示为 <span class="math display">\[
+ \begin{align}
+   E[X(t)|X(0)] &amp;= E[ e^{-\kappa t} (X(0)-\theta) + \theta + \int_{0}^{t}  \sigma  e^{-\kappa (t-u)} dW(u) ] \nonumber \\
+   &amp;= e^{-\kappa t} (X(0)-\theta) + \theta. \label{exp}
+ \end{align}
+\]</span> 最后一项由 <span class="math inline">\(W_t \sim \mathcal{N} (0, t)\)</span> 得到。</p>
+<p>利用<span class="math inline">\(\eqref{exp}\)</span>，我们可以求出 O-U 过程在长期的一个均值回复项，即 <span class="math display">\[
+ \begin{align}
+   \lim_{t \rightarrow + \infty } e^{-\kappa t} (X(0)-\theta) + \theta = \theta.
+ \end{align}
+\]</span></p>
+</div>
+<div id="协方差" class="section level3">
+<h3>协方差</h3>
+<p>任一区间内 <span class="math inline">\([s,t]\)</span> 协方差可以由以下求出。 <span class="math display">\[
+ \begin{align}
+   cov(X_s, X_t) 
+   &amp;= E[ (X_s-E[X_s])·(X_t-E[X_t])] \nonumber\\
+   &amp;= \sigma^2 E\bigg[ 
+        \int_{0}^{s}    e^{-\kappa (s-u)} dW(u) ·
+         \int_{0}^{t}   e^{-\kappa (t-v)} dW(v)
+            \bigg] \label{cov}
+ \end{align}
+\]</span></p>
+<p>这里我们需要使用到两个基本的概念</p>
+<ul>
+<li><p>布朗运动的「独立增量」(indepdent increasement)，即任何一个布朗运动在不同期间内的增量是相互独立的，即对于区间 <span class="math inline">\([0,t], 0 \leq t_0 \leq t_1 \leq \cdots \leq t_n \leq t\)</span>, <span class="math inline">\(W(t_1)-W(t_0)\)</span>, <span class="math inline">\(W(t_2)-W(t_1)\)</span>,<span class="math inline">\(\cdots\)</span>, <span class="math inline">\(W(t_n)-W(t_{n-1})\)</span> 是相互独立的增量过程。</p></li>
+<li><p><strong>Ito Isometry</strong> 性质：即对于一个布朗运动的独立增量，<span class="math inline">\(dW_t\)</span>，有关其多项式有如下性质 <span class="math display">\[
+ \begin{align}
+   E\bigg[ \bigg( \int_{0}^{t} F(u) dW(u) \bigg)^2\bigg]
+   &amp;= \int_{0}^{t} E \big[ F^2(u) \big] du
+ \end{align}
+\]</span></p></li>
+</ul>
+<p>利用这两个性质，对于<span class="math inline">\(\eqref{cov}\)</span>，如果 <span class="math inline">\(s \geq t\)</span> (反之，<span class="math inline">\(s \leq t\)</span>，则令二者调换，即 <span class="math inline">\(t=\min\{s,t\}\)</span>)，我们有 <span class="math display">\[
+ \begin{align}
+   cov(X_s, X_t)
+   &amp;=  \sigma^2
+   E\bigg[ 
+        \bigg( \int_{0}^{t}  e^{-\kappa (s-u)} dW(u)  + \int_{t}^{s}   e^{-\kappa (s-u)} dW(u)
+        \bigg)
+        ·
+         \int_{0}^{t}  e^{-\kappa (t-v)} dW(v)
+            \bigg] \\
+    &amp;=  \sigma^2
+    E\bigg[ 
+          \int_{0}^{t}  e^{-\kappa (s-u)} dW(u)  · \int_{0}^{t}  e^{-\kappa (t-v)} dW(v) 
+           \nonumber \\
+        &amp; \qquad + \int_{t}^{s}   e^{-\kappa (s-u)} dW(u) · \int_{0}^{t}  e^{-\kappa (t-v)} dW(v)
+            \bigg] \\
+     &amp;=  \sigma^2 \Bigg\{
+     E\bigg[ 
+          \int_{0}^{t}  e^{-\kappa (s-u)} dW(u)  · \int_{0}^{t}  e^{-\kappa (t-v)} dW(v) 
+          \bigg] 
+          \nonumber \\
+    &amp; \qquad +  E\bigg[ 
+          \int_{t}^{s}   e^{-\kappa (s-u)} dW(u) · \int_{0}^{t}  e^{-\kappa (t-v)} dW(v)
+          \bigg]  
+    \Bigg\}，    \label{cov1}   \\
+ \end{align}
+\]</span></p>
+<ul>
+<li><p>对于第一项我们需要使用 <strong>Ito Isometry</strong> 性质, <span class="math display">\[
+ \begin{align}
+   E\bigg[ 
+      \int_{0}^{t}  e^{-\kappa (s-u)} dW(u)  · \int_{0}^{t}  e^{-\kappa (t-v)} dW(v) 
+      \bigg]
+&amp;=
+E\bigg[ 
+      \int_{0}^{t}  e^{-\kappa (s-u)} · e^{-\kappa (t-u)}  du 
+      \bigg] \\
+ \end{align}
+\]</span></p></li>
+<li><p>而第二向可以由布朗运动的独立增量性质消除， <span class="math display">\[
+ \begin{align}
+   &amp; E\bigg[ 
+      \int_{t}^{s}   e^{-\kappa (s-u)} dW(u) · \int_{0}^{t}  e^{-\kappa (t-v)} dW(v)
+      \bigg] &amp; \nonumber \\
+=&amp; E\bigg[ 
+      \int_{t}^{s}   e^{-\kappa (s-u)} dW(u) 
+      \bigg] 
+      ·
+   E\bigg[ 
+     \int_{0}^{t}  e^{-\kappa (t-v)} dW(v)
+      \bigg] 
+= 0 
+ \end{align}
+\]</span> 因此，方程<span class="math inline">\(\eqref{cov1}\)</span>变为 <span class="math display">\[
+ \begin{align}
+   cov(X_s, X_t)
+   &amp;= \sigma^2 \Bigg\{
+ E\bigg[ 
+      \int_{0}^{t}  e^{-\kappa (s-u)} · e^{-\kappa (t-u)}  du 
+      \bigg]
+ \Bigg\}   \label{cov2} \\
+  &amp;= \sigma^2 \Bigg\{
+  e^{-\kappa (s+t)}
+  E\bigg[ 
+      \int_{0}^{t}  e^{2\kappa u}  du 
+      \bigg]
+   \Bigg\}  
+= \sigma^2 ·
+  e^{-\kappa (s+t)}
+  ·
+  \frac{1}{2\kappa}
+  ·  e^{2\kappa u}\bigg|_{u=0}^{t} \\
+&amp;= \frac{\sigma^2}{2\kappa} e^{-\kappa (s+t)} · \Bigg( e^{2\kappa t} -1 \Bigg).
+ \end{align}
+\]</span> 也就是说，对于任何一个协方差，我们都有 <span class="math display">\[
+ \begin{align}
+   cov(X_s, X_t) 
+   &amp;= \frac{\sigma^2}{2\kappa} e^{-\kappa (s+t)} · \Bigg( e^{2\kappa · \min\{s,t\} } -1 \Bigg).
+ \end{align}
+\]</span></p></li>
+</ul>
+</div>
+<div id="方差" class="section level3">
+<h3>方差</h3>
+<p>方差也就是0阶协方差， <span class="math display">\[
+ \begin{align}
+   Var(X_t)
+   &amp;= cov(X_t, X_t)
+   = \frac{\sigma^2}{2\kappa} e^{-\kappa (t+t)} · \Bigg( e^{2\kappa · \min\{t,t\} } -1 \Bigg) \nonumber\\
+   &amp;= \frac{\sigma^2}{2\kappa} \Bigg( 1 - e^{ -2\kappa t } \Bigg) 
+ \end{align}
+\]</span></p>
+</div>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2014-03-16</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/ito/">Ito</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2014-03-26-%E8%BF%9C%E6%9C%9F%E5%88%A9%E7%8E%87%E4%BA%92%E6%8D%A2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">远期利率互换</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2014-02-12-%E7%BE%8E%E8%81%94%E5%82%A8%E7%9A%84%E5%8D%9A%E5%A3%AB%E7%B3%BB/">
+            <span class="next-text nav-default">美联储的博士系</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

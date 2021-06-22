@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>码农的假期 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="在国信做过的一个小项目，用于处理各个分析师预测股票收益率的准确性。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2014-10-03-%E7%A0%81%E5%86%9C%E7%9A%84%E5%81%87%E6%9C%9F/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="码农的假期" />
+<meta property="og:description" content="在国信做过的一个小项目，用于处理各个分析师预测股票收益率的准确性。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2014-10-03-%E7%A0%81%E5%86%9C%E7%9A%84%E5%81%87%E6%9C%9F/" />
+<meta property="article:published_time" content="2014-10-03T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2014-10-03T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="码农的假期">
+<meta itemprop="description" content="在国信做过的一个小项目，用于处理各个分析师预测股票收益率的准确性。">
+
+
+<meta itemprop="datePublished" content="2014-10-03T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2014-10-03T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="4138">
+
+
+
+<meta itemprop="keywords" content="R,LaTex,Finance," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="码农的假期"/>
+<meta name="twitter:description" content="在国信做过的一个小项目，用于处理各个分析师预测股票收益率的准确性。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">码农的假期</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2014-10-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 4138 words </span>
+        <span class="more-meta"> 9 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2014-10-03T00:00:00" title="October 3, 2014">October 3, 2014</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+<h1 id="又一个-劫日">又一个「劫日」</h1>
+
+<p>我历来对假期没有特别的概念。以前读书的时候，基本上是天天在图书馆泡着，要么是在发呆要么是在准备发呆的状态中。一方面是自己的借口，不大好动，喜欢宅，也不怎么喜欢出去游山玩水之类的，毕竟读书时候生活费总共就没几个子；另一方面，总是感觉有许多的东西要在假期这段时间好好弥补一下，刚好趁着假期有充分完整的时间可以利用。总而言之，以前自己特么像个书呆子。所以至今开始工作后，我也没觉得假期是多么一个「神圣不可剥夺」的权利。</p>
+
+<p>家里老婆和孩子去顺德母校参加活动，家里只有留自己一个人在耗着。一边感慨厦门一到假期就人满为患，先前读书的时候也是因为假期学校被游客「占领」，食堂没个吃饭的位，溜圈没个歇脚的地，甚至有一段时间厦大的图书馆都开始警报说「有一大波僵尸在靠近」。印象中我曾经固执的认为假期就如同我的死期似的，整个人没法子活了。所以老婆一说我可以趁这个时间出去走走的想法时，我连忙表示「誓死反对」。也罢，以前读书时候留下的老毛病，那也就重拾书本，开始书呆子的「宅期」了。</p>
+
+<!-- more -->
+
+<hr />
+
+<h1 id="码农在行动">码农在行动</h1>
+
+<p>突然想起放假前有同事给我下了个命令，要用 R 来写一个小小的程序，帮其减少体力活。我本来想说的是，我又不是个专业码农，干嘛有事没事非得都往这边推呢。不过，至少是半个码农的我，平日里最看不得那些愚蠢的、浪费大量时间和精力去做一个重复的体力活了。比如我这个同事，她需要每天统计部门推荐的股票，然后在收盘时间登记相应的收盘信息，计算每支股票的收益情况，并最终汇总。其实我一开始看到这个「又脏又累」的苦逼活时，表示了强烈的鄙视感与完全没有和谐美的道义谴责。这些活一来是高度重复、机械的，没有必要每天花那么多的时间去重复消耗时间；二来，其实可以在事前先花一点时间好好设计一套程序，让代码自动运行给给出想要的结果，而且还能保证不出差错（她每天都担心是不是计算结果有误，结果在 Excel 运行结束后又得使用计算器再次验证结果）。当时有跟她商量过是不是可以考虑使用代码来实现。可是她嫌麻烦，又怕事，也不懂编程，觉得没有必要。在说完她的 N 个理由后，我那仅存的一丁点的码农精神彻底无语。也就罢了，自己还有一堆的事情要去完成。</p>
+
+<p>这几天正值假期空闲，又想起这件事情。手痒痒的，便自觉不自觉的拿起键盘，开始稀里哗啦的敲击。以下是事后的备忘录，以防这位同事日后问起程序的任何问题，我好歹还能把这篇博客拿出来。</p>
+
+<h2 id="基本思路">基本思路</h2>
+
+<p>其实整个程序的思路应该是很明朗的：使用股票代码作为参数输入，经过函数转换，得到想要的结果。具体点，就是个股的收益率计算，比赛排名与得分，总体的平均收益率。另外最好能够添加个股的基本情况介绍，如主营业务，当日行情，累计收益率等。</p>
+
+<h3 id="输入参数">输入参数</h3>
+
+<p>要求输入的参数越少越好，中间的格式转换全交给代码去处理。我想了一下，最简单的输入参数必须包括（姐们，实在不能再少了）：</p>
+
+<ul>
+<li>股票代码，如 <code>600562</code></li>
+<li>股票推荐价格。由于第一支股票是在开盘时间推荐，故而可以直接使用开盘价格作为推荐价。那么我们只需要输入第二支股票的价格即可。</li>
+</ul>
+
+<p>一言以蔽之，就是形如以下格式的代码</p>
+
+<pre><code>FL &lt;- c(&quot;600990&quot;, &quot;300020&quot;, 29.3)
+
+WW &lt;- c(&quot;300168&quot;, &quot;600562&quot;, 40)
+
+LYJ &lt;- c(&quot;002594&quot;, &quot;000768&quot;, 16)
+
+WXZ &lt;- c(&quot;601766&quot;, &quot;601818&quot;, 2.74)
+
+YYY &lt;- c(&quot;600967&quot;, &quot;601002&quot;, 11.25)
+</code></pre>
+
+<p>其中，需要注意的是：由于深圳股市的股票有部分是从 <code>00</code> 开头的，这要求我们在输入股票代码的时候，不能以数值形式储存，不然前面的 <code>00</code> 就会消失。因此，我使用字符型来保存。可看</p>
+
+<pre><code>str(FL)
+
+##  chr [1:3] &quot;600990&quot; &quot;300020&quot; &quot;29.3&quot;
+
+is.character(FL)
+
+## [1] TRUE
+</code></pre>
+
+<h3 id="默认参数">默认参数</h3>
+
+<p>现在，我们得到了有关股票的代码与推荐价格的信息。接下来就是如何利用这少得可怜的输入参数来获得信息。</p>
+
+<h3 id="数据库选择">数据库选择</h3>
+
+<p>首先遇到的难题就是使用哪个数据库来获取股票信息。其实，现在网上有很多的免费数据可以提供了股票 <code>OHLC</code> 以及成交量的信息。但是信息不够齐全，要求我们在不同的数据库来回折腾。所幸，公司给我们配置了万得数据库。目前这个数据库自带的提供了 <code>R</code> 软件包，同时还提供了一系列的接口可以获取信息。这些信息囊括了股票行情、三大报表、公司基本情况等，算是做的不错的。因此，我觉得使用软件包 <code>WindR</code> 来解决数据的问题。</p>
+
+<blockquote>
+<p>注意：由于我是在 <code>Linux</code> 上面写博客，而现在万得只能运行在 <code>Windows</code> 系统下面。因此具体的代码运行结果也就无法实时展示。我尽量把在 <code>Windows</code> 系统下运行的结果转移过来。</p>
+</blockquote>
+
+<p>下面代码是启动宏包：</p>
+
+<pre><code>library(WindR)
+w.start(waitTime=60,showmenu=F)
+</code></pre>
+
+<h3 id="代码转换">代码转换</h3>
+
+<p><code>WindR</code> 要求的股票代码必须以尾缀 <code>.SH</code> 或者 <code>.SZ</code> 来表示，而我们最初的输入代码只有数字（字符型），因此虚影相应的转换函数。</p>
+
+<pre><code>## 用于 WindR 代码格式转换
+STOCK.CODE.WindR &lt;- function(ticker){
+  if(substr(ticker, 1, 1) == 0|3)
+    TICKER &lt;- paste(substr(ticker, 1, 6),&quot;.SZ&quot;, sep=&quot;&quot;)
+  if(substr(ticker, 1, 1) == 6)
+    TICKER &lt;- paste(substr(ticker, 1, 6),&quot;.SH&quot;, sep=&quot;&quot;)
+  return(TICKER)
+}
+
+## 转换代码格式
+ticker.transform &lt;- function(x){
+  for(i in 1:2){
+    x[i] = STOCK.CODE.WindR(x[i])
+  }
+  return(x)
+}
+
+FL &lt;- ticker.transform(FL)
+WW &lt;- ticker.transform(WW)
+LYJ &lt;- ticker.transform(LYJ)
+WXZ &lt;- ticker.transform(WXZ)
+YYY &lt;- ticker.transform(YYY)
+###
+
+R&gt; FL
+[1] &quot;600990.SH&quot; &quot;300020.SZ&quot; &quot;29.3&quot;  
+R&gt; WW
+[1] &quot;300168.SZ&quot; &quot;600562.SH&quot; &quot;40&quot; 
+R&gt; LYJ
+[1] &quot;002594.SZ&quot; &quot;000768.SZ&quot; &quot;16&quot; 
+R&gt; WXZ
+[1] &quot;601766.SH&quot; &quot;601818.SH&quot; &quot;2.74&quot; 
+R&gt; YYY
+[1] &quot;600967.SH&quot; &quot;601002.SH&quot; &quot;11.25&quot; 
+</code></pre>
+
+<h2 id="行情信息">行情信息</h2>
+
+<p>下面就是这个函数的核心部分，以代码作为输入，来获取股票的行情信息。为了日后数据维护的方便，我把数据库分解开来，即第一支股票的基本情况，第二支股票的基本情况，以后两只股票汇总后的情况，这包括平均收益率，排名，得分等等。</p>
+
+<h3 id="第一支股票">第一支股票</h3>
+
+<p>第一支股票把股票的开盘价作为推荐价，因此可以没有推荐价显示。这个也方便平时同事们输入便捷、快速的习惯。</p>
+
+<pre><code>#########################################################################
+## 第一支股票的基本情况：
+## ticker1
+#########################################################################
+ticker1=c(FL[1], WW[1], LYJ[1], WXZ[1], YYY[1])
+inf1 &lt;- data.frame(ticker1,
+               name1 = rep(NA,5),
+               open1 = rep(0,5),
+               close1 = rep(0,5),
+               return1 = rep(0,5),
+               rank1  = rep(0,5),
+               Add.Score = rep(0,5))
+##      
+for(i in 1:5){
+  inf1$name1[i] = w.wss(inf1$ticker1[i], 'sec_name')$Data$SEC_NAME            ## 股票名称
+  inf1$open1[i] = w.wss(inf1$ticker1[i], 'pre_close,open,high,low,close',     ## 开盘价
+                        tradeDate = TradeDate)$Data$OPEN                     
+  inf1$close1[i] = w.wss(inf1$ticker1[i], 'pre_close,open,high,low,close',    ## 收盘价
+                         tradeDate = TradeDate)$Data$CLOSE
+  inf1$return1[i] = ( inf1$close1[i] - inf1$open1[i] ) / inf1$open1[i] * 100  ## 收益率
+}
+
+## 加分项设置
+for(i in 1:5){
+  inf1$rank1[i] = which(sort(inf1$return1, decreasing = TRUE) == inf1$return1[i])   ## ticker1 排名 
+  if(inf1$return1[i] &gt;= 15){inf1$Add.Score[i] = 5}
+  else{
+    if(inf1$return1[i] &gt;= 10){inf1$Add.Score[i] = 3}
+    else{
+      if(inf1$return1[i] &gt;= 5){inf1$Add.Score[i] = 1}
+      else{
+        if(inf1$return1[i] &gt; -5){inf1$Add.Score[i] = 0}
+        else{
+          if(inf1$return1[i] &gt;= -10){inf1$Add.Score[i] = -1.5}
+          else inf1$Add.Score[i] = -3
+        }
+      }
+    }
+  }
+}
+</code></pre>
+
+<h3 id="第二支股票">第二支股票</h3>
+
+<p>第二支需要选择一个合适的时间点推荐的，因此需要把推荐价格当作输入。具体代码如下</p>
+
+<pre><code>#########################################################################
+## 第二支股票的基本情况：
+## ticker2
+#########################################################################
+ticker2 = c(FL[2], WW[2], LYJ[2], WXZ[2], YYY[2])
+buy2 = as.numeric(c(FL[3], WW[3], LYJ[3], WXZ[3], YYY[3]))      ## 第二支股票的建仓价： buy2
+inf2 &lt;- data.frame(ticker2,
+                   name2 = rep(NA,5),
+                   open2 = rep(0,5),
+                   buy2,
+                   close2 = rep(0,5),
+                   return2 = rep(0,5),
+                   rank2  = rep(0,5))
+##
+for(i in 1:5){
+  inf2$name2[i] = w.wss(inf2$ticker2[i], 'sec_name')$Data$SEC_NAME            ## 股票名称
+  inf2$open2[i] = w.wss(inf2$ticker2[i], 'pre_close,open,high,low,close',     ## 开盘价
+                        tradeDate = TradeDate)$Data$OPEN
+  inf2$close2[i] = w.wss(inf2$ticker2[i], 'pre_close,open,high,low,close',    ## 收盘价
+                         tradeDate = TradeDate)$Data$CLOSE
+  inf2$return2[i] = ( inf2$close2[i] - inf2$buy2[i] ) / inf2$buy2[i] * 100    ## 收益率
+}
+
+for(i in 1:5){
+  inf2$rank2[i] = which(sort(inf2$return2, decreasing = TRUE) == inf2$return2[i])   ## ticker2 排名
+}
+</code></pre>
+
+<h3 id="汇总">汇总</h3>
+
+<p>下面就是把两只股票的信息做一个汇总</p>
+
+<pre><code>#########################################################################
+## 两支股票的汇总情况: inf
+## ticker1 + ticker2
+#########################################################################
+inf &lt;- data.frame(Avr.Return = rep(0,5),             ## 平均收益率
+                  Rank = rep(0,5),                   ## 总排名
+                  Rank.Score  = rep(0,5),            ## 排名得分
+                  Total.Score = rep(0,5))            ## 总得分
+for(i in 1:5){
+  inf$Avr.Return[i] = ( inf1$return1[i] + inf2$return2[i]) / 2
+}
+### 
+for(i in 1:5){
+  inf$Rank[i] = which(sort(inf$Avr.Return, decreasing = TRUE) == inf$Avr.Return[i])
+  if(inf$Rank[i] == 1)
+    inf$Rank.Score[i] = 2
+  else{
+    if(inf$Rank[i] == 2)
+      inf$Rank.Score[i] = 1
+    else
+      inf$Rank.Score[i] = 0
+  }
+}
+#########################################################################
+##  汇总情况: df
+## inf1 + inf2 + inf
+#########################################################################
+df &lt;- data.frame()
+df &lt;- data.frame(t(rep(0,5)))
+
+df &lt;- cbind(inf1, inf2, inf)
+for(i in 1:5){
+  df[i,18] = df[i,7] + df[i,17]
+}
+</code></pre>
+
+<p>下面我们来看一下有什么惊喜呢。以下是我随意模拟的一个投资组合，看看他们在某个交易日的收益情况。从目前的结果来看，基本符合我们前期想要达到的效果。</p>
+
+<pre><code>R&gt; df
+    ticker1    name1 open1 close1 return1 rank1 Add.Score
+1 600990.SH 四创电子 44.68  44.93   0.560     1         0
+2 300168.SZ 万达信息 27.49  27.60   0.400     2         0
+3 002594.SZ   比亚迪 49.15  48.83  -0.651     5         0
+4 601766.SH 中国南车  5.27   5.26  -0.190     3         0
+5 600967.SH 北方创业 16.00  15.94  -0.375     4         0
+    ticker2    name2 open2  buy2 close2 return2 rank2
+1 300020.SZ 银江股份 29.00 29.30  30.65    4.61     1
+2 600562.SH 国睿科技 41.11 40.00  40.54    1.35     3
+3 000768.SZ 中航飞机 15.79 16.00  15.79   -1.31     5
+4 601818.SH 光大银行  2.77  2.74   2.77    1.09     4
+5 601002.SH 晋亿实业 11.29 11.25  11.41    1.42     2
+  Avr.Return Rank Rank.Score Total.Score
+1      2.584    1          2           2
+2      0.875    2          1           1
+3     -0.982    5          0           0
+4      0.453    4          0           0
+5      0.524    3          0           0
+</code></pre>
+
+<h2 id="结果输入">结果输入</h2>
+
+<p>以上我们得到了一个初步的结果。如何把我们实现的结果输入到合适的文本，这是一个一直困扰我的问题。</p>
+
+<p>本人倾向于使用网页 （Html5 + css3），一来简单大方，可以使用 <code>markdown</code> 语法输入，二者通用性极强，基本上任何一台笔记本和手持移动设备都可以查看。可是我所在的公司似乎对这个先进性极强的新鲜事物抱着莫须有的排斥。也罢，道不同不相为谋。</p>
+
+<p>他们更习惯习惯 MS 那套极其低效率与奇丑无比的 Office 套装。后来我能想到的唯一解就是放弃使用 Html， 改走 PDF 路线。也就是，PDF 也可以佯装 Word 的模样，既不灭了自己的志气，还涨了他人的威风，可谓一举两得。</p>
+
+<h3 id="latex">LaTeX</h3>
+
+<p>以前读书的时候，把老师折磨的不行了，非得使用 <code>Beamer</code> 来制作 slide。幸好，也因此有缘结识 <code>LaTeX</code> 这个神一样的文档处理系统。她特别擅长与制作科学类的文档，同时也由于其具有良好的可控性，比较适合制作严格版面设计的文稿，这些文档具有高度的可重复利用价值，因此国际上几乎所有的期刊都要求作者提供 <code>.tex</code> 格式的论文稿件。</p>
+
+<p>我一个初步的想法是使用 <code>LaTeX</code> 内在的编辑系统来生成 PDF 文件，通过设计一个文件模板使得这个文件具有可重复利用，以后每次要生成报告，就只需要输入股票代码就可以了，其他的版面控制全部交由模板来处理。</p>
+
+<p>可是真正的使用 <code>LaTeX</code> 还是挺麻烦的，以前为了写一个助教课件，都得整整在图书馆泡着。满屏幕的代码，而且稍不注意，缺少个 <code>}</code> 啥的就彻底崩溃了，还得一个个检查看在哪一行出错。当年就是这样被虐千百遍才慢慢开始对其有了些许的驾驭能力。如今我已不入江湖，此般神功怕是荒废了时日，功力减退，深感「廉颇老矣」、屠龙不宜。</p>
+
+<h3 id="markdown">markdown</h3>
+
+<p>可是我这个人又喜欢「偷懒」，如果一件事情可以通过代码来事先，而不是机械的体力劳动，那么我会欣然去设计这样的程序的。作为半个码农的孩子又暴露了。</p>
+
+<p>在目前我使用的文档编辑语言里面，<code>markdown</code> 可以是最简单明了、通俗易懂、老少咸宜，算得上了每个 hacker 必备的，可谓「居家旅行、杀人灭口、走亲访友、把妹泡茶」的神器。那么，我想要达到的效果就是</p>
+
+<blockquote>
+<p>既可以享受 <code>markdown</code> 带来的便捷，有可以利用  <code>LaTeX</code> 强大的文档编辑功能，达到「事半功倍」的效果。</p>
+</blockquote>
+
+<h3 id="latex-markdown">LaTeX + markdown</h3>
+
+<p>冥冥之中必要答案！</p>
+
+<p>以前陈海强老师给我们上时间序列课程的时候，使用 <code>R</code> 作为程序语言。可是陈老师似乎不怎么谈「用户体验」的高深问题，本来 <code>R</code> 自带的 GUI 就很丑，他还当着全班同学「群众贼亮的眼睛」、通过投影仪无极限的放大给大家看。当时我就很无言了。</p>
+
+<p>后来有个叫做 <code>Rstudio</code> 的公司（神公司=大神+神器，以后有时间再详细讨论）开发了一款极其强调用户体用的 GUI，从知道的那一瞬间，我深深的「着迷」了。直到现在，还是一个在使用。</p>
+
+<p>方为引子。下面进入正题。</p>
+
+<p>刚才有提到我一直在使用 <code>Rstudio</code>。可是这有一个问题，一旦用习惯了某款极其好用的软件，便不舍得去改变，也不怎么去更新。以至于 <code>Rstudio</code> 后来增添了许多新功能，我也没来得及尝试。现在，<code>Rstudio</code> 已经高度融合了 <code>knitr</code> 与 <code>markdown</code> 的特征，通过软件包 <code>rmarkdown</code> 实现  <code>LaTeX</code> 与 <code>markdown</code> 的完美结合。整体的思路是：</p>
+
+<ul>
+<li>首先建议一个 <code>.Rmd</code> 的文件，里面可以使用 <code>markdown</code>，同时配合 <code>R</code> 代码实现文学编程（literate programming）。</li>
+<li>然后使用 <code>pandoc</code> 转换 <code>.Rmd</code> 的文件，生成的是一个 <code>.tex</code> 文件。</li>
+<li>最后，使用  <code>LaTeX</code> 来实现 PDF 输出。</li>
+</ul>
+
+<p>下面是一个例子，我们可以事先建立一个模板。</p>
+
+<pre><code>---
+title: &quot;荐股大赛&quot;
+author: 方莲
+date:   \cntoday
+output:
+  pdf_document:
+    highlight: tango
+    keep_tex: yes
+    latex_engine: xelatex
+    number_sections: yes
+    template: set\advice_default.tex
+    toc: yes
+    toc_depth: 3
+    fig_height: 7
+    fig_width: 8
+  html_document:
+    toc: yes
+pagecolor: aliceblue
+---
+</code></pre>
+
+<hr />
+
+<h1 id="有图有真相">有图有真相</h1>
+
+<h2 id="模板截图">模板截图</h2>
+
+<p>模板（可以点击查看大图）：</p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig01.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig01.jpg" alt="latex-markdown1" /></a></p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig02.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig02.jpg" alt="latex-markdown2" /></a></p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig03.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig03.jpg" alt="latex-markdown1" /></a></p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig04.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig04.jpg" alt="latex-markdown1" /></a></p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig05.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig05.jpg" alt="latex-markdown1" /></a></p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig06.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig06.jpg" alt="latex-markdown1" /></a></p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig08.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig08.jpg" alt="latex-markdown1" /></a></p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig09.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig09.jpg" alt="latex-markdown1" /></a></p>
+
+<h2 id="成果展示">成果展示</h2>
+
+<p>通过以上模板，我们每次只需要输入参数，然后通过 <code>Rstudio</code> 即可自动生成一个像样的文件了。</p>
+
+<p><a href="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig07.jpg"><img src="/cn/assets/images/r-figures/2014-10-03-ma-nong-de-jia-qi/fig07.jpg" alt="latex-markdown1" /></a></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2014-10-03</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/r/">R</a>
+          
+          <a href="/tags/latex/">LaTex</a>
+          
+          <a href="/tags/finance/">Finance</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2015-07-26-%E7%BD%91%E9%A1%B5%E6%98%BE%E7%A4%BA-pdf/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">网页显示 PDF</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2014-03-26-%E8%BF%9C%E6%9C%9F%E5%88%A9%E7%8E%87%E4%BA%92%E6%8D%A2/">
+            <span class="next-text nav-default">远期利率互换</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

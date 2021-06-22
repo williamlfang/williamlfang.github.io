@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>samba文件配置与访问权限 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="samba 提供了从 Windows 操作系统访问 Linux 文件的服务。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-12-03-samba%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="samba文件配置与访问权限" />
+<meta property="og:description" content="samba 提供了从 Windows 操作系统访问 Linux 文件的服务。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-12-03-samba%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/" />
+<meta property="article:published_time" content="2019-12-03T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-12-03T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="samba文件配置与访问权限">
+<meta itemprop="description" content="samba 提供了从 Windows 操作系统访问 Linux 文件的服务。">
+
+
+<meta itemprop="datePublished" content="2019-12-03T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-12-03T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1179">
+
+
+
+<meta itemprop="keywords" content="centos7,samba,windows,权限,selinux," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="samba文件配置与访问权限"/>
+<meta name="twitter:description" content="samba 提供了从 Windows 操作系统访问 Linux 文件的服务。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">samba文件配置与访问权限</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-12-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1179 words </span>
+        <span class="more-meta"> 3 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-12-03T00:00:00" title="December 3, 2019">December 3, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p>注意，<code>samba</code> 在不同的操作系统下的服务名称是不一样的：</p>
+<ul>
+<li><code>Ubuntu</code>: <code>smbd</code></li>
+<li><code>CentOS</code>: <code>smb</code></li>
+</ul>
+<div id="安装" class="section level1">
+<h1>安装</h1>
+<div id="安装软件" class="section level2">
+<h2>安装软件</h2>
+<pre class="bash"><code>## Ubuntu
+sudo apt update
+sudo apt-get install samba
+
+## CentOS
+yum install samba</code></pre>
+</div>
+<div id="查看状态" class="section level2">
+<h2>查看状态</h2>
+<div id="ubuntu" class="section level3">
+<h3>Ubuntu</h3>
+<pre class="bash"><code>apt show samba
+Package: samba
+Version: 2:4.7.6+dfsg~ubuntu-0ubuntu2.14
+Priority: optional
+Section: net
+Origin: Ubuntu
+Maintainer: Ubuntu Developers &lt;ubuntu-devel-discuss@lists.ubuntu.com&gt;
+Original-Maintainer: Debian Samba Maintainers &lt;pkg-samba-maint@lists.alioth.debian.org&gt;
+Bugs: https://bugs.launchpad.net/ubuntu/+filebug
+Installed-Size: 11.3 MB
+Pre-Depends: dpkg (&gt;= 1.15.6~)
+Depends: adduser, libpam-modules, libpam-runtime (&gt;= 1.0.1-11), lsb-base (&gt;= 4.1+Debian), procps, python (&lt;&lt; 2.8), python-dnspython, python-samba, samba-common (= 2:4.7.6+dfsg~ubuntu-0ubuntu2.14), samba-common-bin (= 2:4.7.6+dfsg~ubuntu-0ubuntu2.14), tdb-tools, python (&gt;= 2.7~), python2.7:any, python:any (&lt;&lt; 2.8), python:any (&gt;= 2.7~), libattr1 (&gt;= 1:2.4.46-8), libbsd0 (&gt;= 0.0), libc6 (&gt;= 2.14), libldb1 (&gt;= 0.9.21), libpopt0 (&gt;= 1.14), libpython2.7 (&gt;= 2.7), libtalloc2 (&gt;= 2.0.4~git20101213), libtdb1 (&gt;= 1.2.7+git20101214), libtevent0 (&gt;= 0.9.16), samba-libs (= 2:4.7.6+dfsg~ubuntu-0ubuntu2.14)
+Recommends: attr, logrotate, samba-dsdb-modules, samba-vfs-modules
+Suggests: bind9 (&gt;= 1:9.5.1), bind9utils, ctdb, ldb-tools, ntp | chrony (&gt;= 3.0-1), smbldap-tools, ufw, winbind
+Enhances: bind9, ntp
+Homepage: http://www.samba.org
+Task: samba-server, ubuntu-budgie-desktop
+Supported: 5y
+Download-Size: 854 kB
+APT-Manual-Installed: yes
+APT-Sources: http://archive.ubuntu.com/ubuntu bionic-updates/main amd64 Packages
+Description: SMB/CIFS file, print, and login server for Unix
+ Samba is an implementation of the SMB/CIFS protocol for Unix systems,
+ providing support for cross-platform file and printer sharing with
+ Microsoft Windows, OS X, and other Unix systems.  Samba can also function
+ as an NT4-style domain controller, and can integrate with both NT4 domains
+ and Active Directory realms as a member server.
+ .
+ This package provides the components necessary to use Samba as a stand-alone
+ file and print server or as an NT4 or Active Directory domain controller.
+ For use in an NT4 domain or Active Directory realm, you will also need the
+ winbind package.
+ .
+ This package is not required for connecting to existing SMB/CIFS servers
+ (see smbclient) or for mounting remote filesystems (see cifs-utils).
+
+N: There is 1 additional record. Please use the &#39;-a&#39; switch to see it</code></pre>
+</div>
+<div id="centos" class="section level3">
+<h3>Centos</h3>
+<pre class="bash"><code>rpm -qa |grep samba
+samba-client-libs-4.8.3-4.el7.x86_64
+samba-4.8.3-4.el7.x86_64
+samba-common-libs-4.8.3-4.el7.x86_64
+samba-common-tools-4.8.3-4.el7.x86_64
+samba-common-4.8.3-4.el7.noarch
+samba-libs-4.8.3-4.el7.x86_64</code></pre>
+</div>
+</div>
+<div id="启动服务" class="section level2">
+<h2>启动服务</h2>
+<div id="ubuntu-1" class="section level3">
+<h3>Ubuntu</h3>
+<pre class="bash"><code>sudo systemctl start smbd
+sudo systemctl status smbd
+
+## 允许防火墙通过
+sudo ufw allow &#39;Samba&#39;</code></pre>
+</div>
+<div id="centos-1" class="section level3">
+<h3>CentOS</h3>
+<pre class="bash"><code>## start/ stop/ restart
+systemctl start smb</code></pre>
+</div>
+</div>
+<div id="查看服务进程" class="section level2">
+<h2>查看服务进程</h2>
+<div id="ubuntu-2" class="section level3">
+<h3>Ubuntu</h3>
+<pre class="bash"><code>sudo systemctl status smbd
+● smbd.service - Samba SMB Daemon
+   Loaded: loaded (/lib/systemd/system/smbd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Sat 2019-12-14 15:19:43 CST; 6min ago
+     Docs: man:smbd(8)
+           man:samba(7)
+           man:smb.conf(5)
+ Main PID: 4232 (smbd)
+   Status: &quot;smbd: ready to serve connections...&quot;
+    Tasks: 4 (limit: 4915)
+   CGroup: /system.slice/smbd.service
+           ├─4232 /usr/sbin/smbd --foreground --no-process-group
+           ├─4236 /usr/sbin/smbd --foreground --no-process-group
+           ├─4237 /usr/sbin/smbd --foreground --no-process-group
+           └─4238 /usr/sbin/smbd --foreground --no-process-group
+
+Dec 14 15:19:43 william-pc systemd[1]: Starting Samba SMB Daemon...
+Dec 14 15:19:43 william-pc systemd[1]: Started Samba SMB Daemon.</code></pre>
+</div>
+<div id="centos-2" class="section level3">
+<h3>CentOS</h3>
+<pre class="bash"><code>service smb status
+Redirecting to /bin/systemctl status smb.service
+● smb.service - Samba SMB Daemon
+   Loaded: loaded (/usr/lib/systemd/system/smb.service; enabled; vendor preset: disabled)
+   Active: active (running) since Tue 2019-12-03 10:34:47 CST; 17min ago
+     Docs: man:smbd(8)
+           man:samba(7)
+           man:smb.conf(5)
+ Main PID: 36896 (smbd)
+   Status: &quot;smbd: ready to serve connections...&quot;
+    Tasks: 5
+   CGroup: /system.slice/smb.service
+           ├─36896 /usr/sbin/smbd --foreground --no-process-group
+           ├─36901 /usr/sbin/smbd --foreground --no-process-group
+           ├─36902 /usr/sbin/smbd --foreground --no-process-group
+           ├─36903 /usr/sbin/smbd --foreground --no-process-group
+           └─37042 /usr/sbin/smbd --foreground --no-process-group
+
+Dec 03 10:34:47 hicloud systemd[1]: Starting Samba SMB Daemon...
+Dec 03 10:34:47 hicloud smbd[36896]: [2019/12/03 10:34:47.207282,  0] ../lib/util/become_daemon.c:1...ady)
+Dec 03 10:34:47 hicloud smbd[36896]:   daemon_ready: STATUS=daemon &#39;smbd&#39; finished starting up and ...ions
+Dec 03 10:34:47 hicloud systemd[1]: Started Samba SMB Daemon.
+Hint: Some lines were ellipsized, use -l to show in full.</code></pre>
+</div>
+</div>
+<div id="设置开机启动" class="section level2">
+<h2>设置开机启动</h2>
+<pre class="bash"><code>systemctl enable smb</code></pre>
+</div>
+<div id="临时关闭-selinux" class="section level2">
+<h2>临时关闭 SeLinux</h2>
+<p>需要关闭 <code>SeLinux</code> 才可以让 Windows 用户访问 <code>samba</code></p>
+<pre class="bash"><code>setenforce 0</code></pre>
+<p>查看 <code>SeLinux</code> 状态</p>
+<pre class="bash"><code>sestatus            
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             targeted
+Current mode:                   permissive
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Max kernel policy version:      31</code></pre>
+</div>
+<div id="永久关闭-selinux" class="section level2">
+<h2>永久关闭 SeLinux</h2>
+<p>修改配置文件/etc/selinux/config，将SELINU置为disabled</p>
+<pre class="bash"><code>cat /etc/selinux/config
+
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+#     enforcing - SELinux security policy is enforced.
+#     permissive - SELinux prints warnings instead of enforcing.
+#     disabled - No SELinux policy is loaded.
+## SELINUX=enforcing
+SELINUX=disabled
+# SELINUXTYPE= can take one of three values:
+#     targeted - Targeted processes are protected,
+#     minimum - Modification of targeted policy. Only selected processes are protected. 
+#     mls - Multi Level Security protection.
+SELINUXTYPE=targeted </code></pre>
+<p>重启后可以查看<code>SeLinux</code>状态</p>
+<pre class="bash"><code>sestatus
+SELinux status:                 disabled</code></pre>
+</div>
+</div>
+<div id="用户设置" class="section level1">
+<h1>用户设置</h1>
+<div id="添加用户" class="section level2">
+<h2>添加用户</h2>
+<pre class="bash"><code>useradd fl</code></pre>
+</div>
+<div id="设置密码" class="section level2">
+<h2>设置密码</h2>
+<pre class="bash"><code>smbpasswd -a fl</code></pre>
+<p>然后重启 <code>samba</code></p>
+<pre class="bash"><code>systemctl restart samba</code></pre>
+</div>
+</div>
+<div id="设置访问" class="section level1">
+<h1>设置访问</h1>
+<p>有关访问权限配置参数在</p>
+<pre class="bash"><code>vim /etc/samba/smb.conf
+
+# See smb.conf.example for a more detailed config file or
+# read the smb.conf manpage.
+# Run &#39;testparm&#39; to verify the config is correct after
+# you modified it.
+
+[global]
+    workgroup = SAMBA
+    security = user
+
+    passdb backend = tdbsam
+
+    printing = cups
+    printcap name = cups
+    load printers = yes
+    cups options = raw
+
+[homes]
+    comment = Home Directories
+    valid users = %S, %D%w%S
+    browseable = No
+    read only = No
+    inherit acls = Yes
+
+[printers]
+    comment = All Printers
+    path = /var/tmp
+    printable = Yes
+    create mask = 0600
+    browseable = No
+
+[fl]
+    comment= fl files
+    path = /home/fl/
+    browseable = yes
+    writable = yes
+    available = yes
+    valid users = fl,root
+    
+[pc]
+    comment= pc files
+    path = /home/pc/
+    browseable = yes
+    writable = yes
+    available = yes
+    valid users = pc,root
+
+[shared]
+    comment = share files
+    path = /shared/
+    browseable = yes 
+    writable = yes 
+    available = yes 
+    valid users = root,fl,pc</code></pre>
+<p>一般而言，我们对某个用户进行设置</p>
+<pre class="bash"><code>[fl]
+    comment= fl files
+    path = /home/fl/
+    browseable = yes
+    writable = yes
+    available = yes
+    valid users = fl,root</code></pre>
+</div>
+<div id="windows-连接" class="section level1">
+<h1>Windows 连接</h1>
+<ol style="list-style-type: decimal">
+<li><code>网络连接</code></li>
+<li>填写 <code>\\192.168.1.199\fl</code> （对应于以上的用户，直接访问 <code>/home/fl</code>），注意 Windows 使用 <code>\\</code></li>
+<li>然后使用账户、密码即可登录</li>
+</ol>
+</div>
+<div id="windows-没有权限访问的解决方法" class="section level1">
+<h1>Windows 没有权限访问的解决方法</h1>
+<p>有可能是 <code>Centos</code> 打开了 <code>selinux</code>， 需要关闭即可</p>
+<pre class="bash"><code>setenforce 0</code></pre>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-12-03</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/centos7/">centos7</a>
+          
+          <a href="/tags/samba/">samba</a>
+          
+          <a href="/tags/windows/">windows</a>
+          
+          <a href="/tags/%E6%9D%83%E9%99%90/">权限</a>
+          
+          <a href="/tags/selinux/">selinux</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">tmux:终端神器</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-12-02-jupyter%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+            <span class="next-text nav-default">Jupyter端口转发运行远程服务器</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

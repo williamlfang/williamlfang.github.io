@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux 调整 cstate 实现cpu超频 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="为了实现高频交易对性能的要求，我们往往会“榨干”CPU。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-12-11-linux-%E8%B0%83%E6%95%B4-cstate-%E5%AE%9E%E7%8E%B0cpu%E8%B6%85%E9%A2%91/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Linux 调整 cstate 实现cpu超频" />
+<meta property="og:description" content="为了实现高频交易对性能的要求，我们往往会“榨干”CPU。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-12-11-linux-%E8%B0%83%E6%95%B4-cstate-%E5%AE%9E%E7%8E%B0cpu%E8%B6%85%E9%A2%91/" />
+<meta property="article:published_time" content="2019-12-11T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-12-11T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Linux 调整 cstate 实现cpu超频">
+<meta itemprop="description" content="为了实现高频交易对性能的要求，我们往往会“榨干”CPU。">
+
+
+<meta itemprop="datePublished" content="2019-12-11T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-12-11T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1310">
+
+
+
+<meta itemprop="keywords" content="Linux,cpu,cstate,超频,高频交易,HFT," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux 调整 cstate 实现cpu超频"/>
+<meta name="twitter:description" content="为了实现高频交易对性能的要求，我们往往会“榨干”CPU。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">Linux 调整 cstate 实现cpu超频</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-12-11 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1310 words </span>
+        <span class="more-meta"> 3 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-12-11T00:00:00" title="December 11, 2019">December 11, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p>随着技术的发展，现在主流的 Intel CPU 的主频都能达到 3GHz 以上，而且还支持超频技术。为了最大的获取 CPU 的性能，我们可以对 <code>cstate</code> 进行调整。</p>
+<div id="ubuntu-设置" class="section level1">
+<h1>Ubuntu 设置</h1>
+<p>与开机项有关的参数设置在 <code>/etc/default/grub</code>，可以对其进行调整</p>
+<pre class="bash"><code>cat /etc/default/grub
+
+# If you change this file, run &#39;update-grub&#39; afterwards to update
+# /boot/grub/grub.cfg.
+# For full documentation of the options in this file, see:
+#   info -f grub -n &#39;Simple configuration&#39;
+
+GRUB_DEFAULT=0
+GRUB_TIMEOUT_STYLE=hidden
+GRUB_TIMEOUT=10
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2&gt; /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet splash&quot;
+GRUB_CMDLINE_LINUX=&quot;&quot;
+
+# Uncomment to enable BadRAM filtering, modify to suit your needs
+# This works with Linux (no patch required) and with any kernel that obtains
+# the memory map information from GRUB (GNU Mach, kernel of FreeBSD ...)
+#GRUB_BADRAM=&quot;0x01234567,0xfefefefe,0x89abcdef,0xefefefef&quot;
+
+# Uncomment to disable graphical terminal (grub-pc only)
+#GRUB_TERMINAL=console
+
+# The resolution used on graphical terminal
+# note that you can use only modes which your graphic card supports via VBE
+# you can see them in real GRUB with the command `vbeinfo&#39;
+#GRUB_GFXMODE=640x480
+
+# Uncomment if you don&#39;t want GRUB to pass &quot;root=UUID=xxx&quot; parameter to Linux
+#GRUB_DISABLE_LINUX_UUID=true
+
+# Uncomment to disable generation of recovery mode menu entries
+#GRUB_DISABLE_RECOVERY=&quot;true&quot;
+
+# Uncomment to get a beep at grub start
+#GRUB_INIT_TUNE=&quot;480 440 1&quot;</code></pre>
+<p>然后找到 <code>GRUB_CMDLINE_LINUX_DEFAULT</code> 所在的那行，增加配置</p>
+<ul>
+<li>processor.max_cstate=0</li>
+<li>intel_idle.max_cstate=0</li>
+</ul>
+<pre class="bash"><code>sudo vim /etc/default/grub
+
+GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet splash  processor.max_cstate=0 intel_idle.max_cstate=0&quot;</code></pre>
+<p>然后更新 <code>grub</code></p>
+<pre class="bash"><code>sudo update-grub</code></pre>
+<p>另外可以设置CPU的scale-governor</p>
+<pre class="bash"><code>cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+
+## 设置CPU模式, 分别根据CPU 0-n 的编号进行设置
+echo performance &gt; /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo performance &gt; /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor
+echo performance &gt; /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor
+echo performance &gt; /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+
+systemctl disable ondemand
+/etc/rc.local
+
+cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq</code></pre>
+<p>重启后即可实现超频。</p>
+<pre class="bash"><code>sudo reboot now</code></pre>
+<p>使用命令</p>
+<ul>
+<li><code>cpufreq-info</code> 查看当前 CPU 运行</li>
+<li><code>cpufreq-set</code> 也可以进行单独设置</li>
+<li><code>cpufreq-aperf</code> 用于计算一段时间内的平均频率</li>
+</ul>
+<pre class="bash"><code>sudo apt install cpufrequtils
+
+## 查看当前运行
+cpufreq-info
+
+cpufrequtils 008: cpufreq-info (C) Dominik Brodowski 2004-2009
+Report errors and bugs to cpufreq@vger.kernel.org, please.
+analyzing CPU 0:
+  driver: intel_pstate
+  CPUs which run at the same hardware frequency: 0
+  CPUs which need to have their frequency coordinated by software: 0
+  maximum transition latency: 4294.55 ms.
+  hardware limits: 800 MHz - 3.60 GHz
+  available cpufreq governors: performance, powersave
+  current policy: frequency should be within 800 MHz and 3.60 GHz.
+                  The governor &quot;performance&quot; may decide which speed to use
+                  within this range.
+  current CPU frequency is 1.52 GHz.
+analyzing CPU 1:
+  driver: intel_pstate
+  CPUs which run at the same hardware frequency: 1
+  CPUs which need to have their frequency coordinated by software: 1
+  maximum transition latency: 4294.55 ms.
+  hardware limits: 800 MHz - 3.60 GHz
+  available cpufreq governors: performance, powersave
+  current policy: frequency should be within 800 MHz and 3.60 GHz.
+                  The governor &quot;performance&quot; may decide which speed to use
+                  within this range.
+  current CPU frequency is 2.66 GHz.
+analyzing CPU 2:
+  driver: intel_pstate
+  CPUs which run at the same hardware frequency: 2
+  CPUs which need to have their frequency coordinated by software: 2
+  maximum transition latency: 4294.55 ms.
+  hardware limits: 800 MHz - 3.60 GHz
+  available cpufreq governors: performance, powersave
+  current policy: frequency should be within 800 MHz and 3.60 GHz.
+                  The governor &quot;performance&quot; may decide which speed to use
+                  within this range.
+  current CPU frequency is 960 MHz.
+analyzing CPU 3:
+  driver: intel_pstate
+  CPUs which run at the same hardware frequency: 3
+  CPUs which need to have their frequency coordinated by software: 3
+  maximum transition latency: 4294.55 ms.
+  hardware limits: 800 MHz - 3.60 GHz
+  available cpufreq governors: performance, powersave
+  current policy: frequency should be within 800 MHz and 3.60 GHz.
+                  The governor &quot;performance&quot; may decide which speed to use
+                  within this range.
+  current CPU frequency is 1.05 GHz.</code></pre>
+</div>
+<div id="centos-设置" class="section level1">
+<h1>CentOS 设置</h1>
+<pre class="bash"><code>sudo vim /etc/default/grub
+
+## 找到 GRUB_CMDLINE_LINUX_DEFAULT 
+## 然后增加 processor.max_cstate=1 intel_idle.max_cstate=0
+GRUB_CMDLINE_LINUX_DEFAULT=&quot;${GRUB_CMDLINE_LINUX_DEFAULT:+$GRUB_CMDLINE_LINUX_DEFAULT }\$tuned_params processor.max_cstate=1 intel_idle.max_cstate=0&quot;
+
+## 更新配置
+sudo grub2-mkconfig –o /boot/grub2/grub.cfg
+
+## 重启即可，有可能会报警 CPU 温度过热，在启动项里忽略即可运行
+sudo reboot now</code></pre>
+<p>查看当前运行情况</p>
+<pre class="bash"><code>sudo cpupower monitor -m Idle_Stats
+    |Idle_Stats                                                    
+CPU | POLL | C1-S | C1E- | C3-S | C6-S | C7s- | C8-S | C9-S | C10- 
+   0|  0.00| 99.39|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00
+   1|  0.00| 98.98|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00
+   2|  0.00| 95.21|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00
+   3|  0.00| 97.58|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00
+   4|  0.00| 99.88|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00
+   5|  0.00| 99.38|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00|  0.00
+
+sudo cpupower frequency-info       
+analyzing CPU 0:
+ driver: intel_pstate
+ CPUs which run at the same hardware frequency: 0
+ CPUs which need to have their frequency coordinated by software: 0
+ maximum transition latency:  Cannot determine or is not supported.
+ hardware limits: 800 MHz - 4.10 GHz
+ available cpufreq governors: performance powersave
+ current policy: frequency should be within 800 MHz and 4.10 GHz.
+                 The governor &quot;performance&quot; may decide which speed to use
+                 within this range.
+ current CPU frequency: 3.54 GHz (asserted by call to hardware)
+ boost state support:
+   Supported: yes
+   Active: yes
+
+## 查看当前cpu模式
+cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+performance
+performance
+performance
+performance
+performance
+performance
+
+## 设置CPU模式, 分别根据CPU 0-n 的编号进行设置
+echo performance &gt; /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor</code></pre>
+</div>
+<div id="c-state-各种状态表" class="section level1">
+<h1>c-state 各种状态表</h1>
+<table style="width:100%;">
+<colgroup>
+<col width="4%" />
+<col width="14%" />
+<col width="40%" />
+<col width="40%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">mode</th>
+<th align="left">Name</th>
+<th align="left">What id does</th>
+<th align="left">CPUs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">C1</td>
+<td align="left">Operating State</td>
+<td align="left">CPU fully turned on</td>
+<td align="left">All CPUs</td>
+</tr>
+<tr class="even">
+<td align="left">C1E</td>
+<td align="left">Halt</td>
+<td align="left">Stops CPU main internal clocks via software; bus interface unit and APIC are kept running at full speed</td>
+<td align="left">486DX4 and above</td>
+</tr>
+<tr class="odd">
+<td align="left">C1E</td>
+<td align="left">Enhanced Halt</td>
+<td align="left">Stops CPU main internal clocks via software and reduces CPU voltage; bus interface unit and APIC are kept running at full speed</td>
+<td align="left">All socket 775 CPUs</td>
+</tr>
+<tr class="even">
+<td align="left">C1E</td>
+<td align="left">--</td>
+<td align="left">Stops all CPU internal clocks</td>
+<td align="left">Turion 64, 65-nm Athlon X2 and Phenom CPUs</td>
+</tr>
+<tr class="odd">
+<td align="left">C2</td>
+<td align="left">Stop Grant</td>
+<td align="left">Stops CPU main internal clocks via hardware; bus interface unit and APIC are kept running at full speed</td>
+<td align="left">486DX4 and above</td>
+</tr>
+<tr class="even">
+<td align="left">C2</td>
+<td align="left">Stop Clock</td>
+<td align="left">Stops CPU internal and external clocks via hardware</td>
+<td align="left">Only 486DX4, Pentium, Pentium MMX, K5, K6, K6-2, K6-III</td>
+</tr>
+<tr class="odd">
+<td align="left">C2E</td>
+<td align="left">Extended Stop Grant</td>
+<td align="left">Stops CPU main internal clocks via hardware and reduces CPU voltage; bus interface unit and APIC are kept running at full speed</td>
+<td align="left">Core 2 Duo and above (Intel only)</td>
+</tr>
+<tr class="even">
+<td align="left">C3</td>
+<td align="left">Sleep</td>
+<td align="left">Stops all CPU internal clocks</td>
+<td align="left">Pentium II, Athlon and above, but not on Core 2 Duo E4000 and E6000</td>
+</tr>
+<tr class="odd">
+<td align="left">C3</td>
+<td align="left">Deep Sleep</td>
+<td align="left">Stops all CPU internal and external clocks</td>
+<td align="left">Pentium II and above, but not on Core 2 Duo E4000 and E6000; Turion 64</td>
+</tr>
+<tr class="even">
+<td align="left">C3</td>
+<td align="left">AltVID</td>
+<td align="left">Stops all CPU internal clocks and reduces CPU voltage</td>
+<td align="left">AMD Turion 64</td>
+</tr>
+<tr class="odd">
+<td align="left">C4</td>
+<td align="left">Deeper Sleep</td>
+<td align="left">Reduces CPU voltage</td>
+<td align="left">Pentium M and above, but not on Core 2 Duo E4000 and E6000 series; AMD Turion 64</td>
+</tr>
+<tr class="even">
+<td align="left">C4E/C5</td>
+<td align="left">Enhanced Deeper Sleep</td>
+<td align="left">Reduces CPU voltage even more and turns off the memory cache</td>
+<td align="left">Core Solo, Core Duo and 45-nm mobile Core 2 Duo only</td>
+</tr>
+<tr class="odd">
+<td align="left">C6</td>
+<td align="left">Deep Power Down</td>
+<td align="left">Reduces the CPU internal voltage to any value, including 0 V</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-12-11</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">Linux</a>
+          
+          <a href="/tags/cpu/">cpu</a>
+          
+          <a href="/tags/cstate/">cstate</a>
+          
+          <a href="/tags/%E8%B6%85%E9%A2%91/">超频</a>
+          
+          <a href="/tags/%E9%AB%98%E9%A2%91%E4%BA%A4%E6%98%93/">高频交易</a>
+          
+          <a href="/tags/hft/">HFT</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-12-17-cmake-%E8%A6%81%E7%82%B9%E6%80%BB%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">cmake 要点总结</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/">
+            <span class="next-text nav-default">Solarflare网卡开发：openonload 安装与调试</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

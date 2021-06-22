@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>CLion：最好用的 C-C&#43;&#43; IDE - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="CLion 是当前最好用的一款 c/cpp 的 IDE，真的没有之一。本文介绍如何安装并使用 CLion(2017.3)。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2017-12-10-clion-%E6%9C%80%E5%A5%BD%E7%94%A8%E7%9A%84-c-c&#43;&#43;-ide/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="CLion：最好用的 C-C&#43;&#43; IDE" />
+<meta property="og:description" content="CLion 是当前最好用的一款 c/cpp 的 IDE，真的没有之一。本文介绍如何安装并使用 CLion(2017.3)。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2017-12-10-clion-%E6%9C%80%E5%A5%BD%E7%94%A8%E7%9A%84-c-c&#43;&#43;-ide/" />
+<meta property="article:published_time" content="2017-12-10T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2017-12-10T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="CLion：最好用的 C-C&#43;&#43; IDE">
+<meta itemprop="description" content="CLion 是当前最好用的一款 c/cpp 的 IDE，真的没有之一。本文介绍如何安装并使用 CLion(2017.3)。">
+
+
+<meta itemprop="datePublished" content="2017-12-10T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-12-10T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1241">
+
+
+
+<meta itemprop="keywords" content="Cpp,IDE," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CLion：最好用的 C-C&#43;&#43; IDE"/>
+<meta name="twitter:description" content="CLion 是当前最好用的一款 c/cpp 的 IDE，真的没有之一。本文介绍如何安装并使用 CLion(2017.3)。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">CLion：最好用的 C-C&#43;&#43; IDE</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-12-10 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1241 words </span>
+        <span class="more-meta"> 3 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2017-12-10T00:00:00" title="December 10, 2017">December 10, 2017</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p><code>C/Cpp</code> 编程常常使程序员感到懊恼，一方面是编程语言本身的难度较高，另一方面，我认为也是因为没有比较好用的 <code>IDE</code>。不像 <code>R</code> 或者 <code>Python</code> 这些解释性编程语言，不需要经过编译即可运行 <code>REPL</code>(read-evaluate-print-loop)，提供实时互动的编程环境；<code>C/Cpp</code> 是一种静态的、需要经过编译的编程语言，这增加了我们查找代码错误的难度，也就是无法提供实时的纠错功能，而只能是在整个项目运行结束后才把相关的错误提示给到程序员。因此，对一款「好用IDE」的向往应该是一家有抱负的科技企业的奋斗动力。</p>
+<p>神奇的 <code>JetBrain</code> 就是这么一家牛逼的公司，最早开发了 <code>CLion</code> 造福广大的 <code>C/Cpp</code> 程序员，后来又陆陆续续的开发了 <code>PyCharm</code> 等多款好用又好看的 <code>IDE</code>，可以说功德千秋、造福万代啊。今天我们来看看怎么在操作系统安装和使用这么好用的 <code>C/Cpp</code> IDE。</p>
+<div id="安装" class="section level1">
+<h1>安装</h1>
+<p>所谓「工欲善其事必先利其器」，我们得先把软件安装起来了才能敲代码嘛。</p>
+<div id="下载" class="section level2">
+<h2>下载</h2>
+<p><code>CLion</code> 是一款跨平台的软件，提供了 <code>Linux</code>、<code>Mac</code> 和 <code>Windows</code> 三种操作系统下的安装。当然，我平时基本不用 <code>Windows</code>，主要的开发环境都是在 <code>Linux/Ubuntu/CentOS</code>，或者偶尔会使用 <code>Mac</code> 来开发。基本的安装流程跟其他软件都差不多。</p>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig01.png" alt="CLion 网页" />
+<p class="caption">CLion 网页</p>
+</div>
+<div id="linux" class="section level3">
+<h3><code>Linux</code></h3>
+<div id="下载-1" class="section level4">
+<h4>下载</h4>
+<p>在 <code>Linux</code> 操作系统下，下载源代码包 <code>*.tar.gz</code>，并将其解压到安装目录。</p>
+<pre class="bash"><code>cd /home/william
+wget https://download.jetbrains.8686c.com/cpp/CLion-2017.3.tar.gz
+
+tar -zcvf CLion-2017.3.tar.gz
+cd CLion-2017.3</code></pre>
+</div>
+<div id="设置环境变量" class="section level4">
+<h4>设置环境变量</h4>
+<p>然后再配置环境变量，把软件包添加到系统</p>
+<pre class="bash"><code>vim ~/.bashrc
+
+## 添加到系统路径
+export PATH=/home/william/clion-2017.3/bin:${PATH}</code></pre>
+</div>
+<div id="命令行启动" class="section level4">
+<h4>命令行启动</h4>
+<p>经过把 <code>CLion</code> 添加到系统环境后，我们可以直接启动</p>
+<pre class="bash"><code>clion.sh</code></pre>
+<p>当然，也可以通过添加桌面图标的方式来启动 <code>CLion</code>。</p>
+</div>
+<div id="图标启动" class="section level4">
+<h4>图标启动</h4>
+<p>新建立一个文件 <code>CLion.desktop</code>, 保存到 <code>~/.local/share/applications</code>，里面的内容为</p>
+<pre class="bash"><code>[Desktop Entry]
+Name=CLion
+Exec=/home/william/clion-2017.3/bin/clion.sh
+Icon=/home/william/clion-2017.3/bin/clion.png
+Terminal=false
+Type=Application</code></pre>
+</div>
+</div>
+<div id="mac-安装" class="section level3">
+<h3><code>Mac</code> 安装</h3>
+<p>在 <code>Mac</code> 操作系统下安装其实就是一建「傻瓜式」，直接下载 <code>*.dmg</code> 然后点击安装即可，默认已经帮我们把环境路径设置好了。</p>
+</div>
+</div>
+<div id="首次使用" class="section level2">
+<h2>首次使用</h2>
+<p>第一次打开 <code>CLion</code> 后，会出现一个界面询问是否需要导入偏好，通常我们不需要导入。</p>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig02.png" alt="不需要导入偏好设置" />
+<p class="caption">不需要导入偏好设置</p>
+</div>
+<p>接下来是激活软件，这个我们在后面的激活部分再解释，这里默认已经经过激活了。</p>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig03.png" alt="正在激活" />
+<p class="caption">正在激活</p>
+</div>
+<p>可以选择一款钟意的主题，我一般是使用暗色的编程主题，这里提供了 <code>Darcula</code>。</p>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig04.png" alt="不需要导入偏好设置" />
+<p class="caption">不需要导入偏好设置</p>
+</div>
+<p>设置 <code>C/Cpp</code> 的默认编译器，这里一般也不需要多做设置，等需要改变的时候再进行配置即可。</p>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig05.png" alt="设置编译器" />
+<p class="caption">设置编译器</p>
+</div>
+<p>提供了可拓展的插件，可根据需要来选择安装</p>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig06.png" alt="选择安装插件" />
+<p class="caption">选择安装插件</p>
+</div>
+<p>经过以上几个简单的配置步骤，我们便可以正式使用 <code>CLion</code> 了。这里提供了两种启动项目的方式</p>
+<ul>
+<li>从已存在的项目导入</li>
+<li>新建一个项目</li>
+</ul>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig07.png" alt="启动项目" />
+<p class="caption">启动项目</p>
+</div>
+<p>如果选择新建项目，我们需要做一个简单的配置</p>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig08.png" alt="新项目配置" />
+<p class="caption">新项目配置</p>
+</div>
+<p>最好，我们终于可以愉快的写代码了。</p>
+<div class="figure">
+<img src="/images/2017-12-10-CLion-最好用的-C-C++-IDE/fig09.png" alt="开始欢快的敲代码" />
+<p class="caption">开始欢快的敲代码</p>
+</div>
+</div>
+</div>
+<div id="破解" class="section level1">
+<h1>破解</h1>
+<p>我们知道，<code>CLion</code> 并非是一个免费的软件，而是收费的，且价格不菲。之前有公司同事购买过一个注册码，大约是 <code>$80</code>，相比于其提供的便利性而言，还是很值得的。</p>
+<p>不过也有大神通过搭建服务器的方式来提供许可证共享，具体的链接可以参考 <a href="http://xclient.info/a/f0b9738a-36fd-8a97-a966-0d3db497092d.html?_=f93a5bdea18006637eea16701ce2163f">JetBrains IDEA 系列产品通用xx方法</a>。</p>
+<p>具体的操作如下：</p>
+<ul>
+<li>打开激活窗口</li>
+<li>选择 Activate new license with License server （用license server 激活）</li>
+<li>在 License sever address 处填入 <code>http://xidea.online</code></li>
+<li>点击 Activate 进行认证</li>
+<li>done！</li>
+</ul>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2017-12-10</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/cpp/">Cpp</a>
+          
+          <a href="/tags/ide/">IDE</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2017-12-18-centos-%E8%B0%83%E7%94%A8%E6%98%BE%E7%A4%BA%E5%99%A8/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">CentOS 调用显示器</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2017-12-06-mac-%E5%90%AF%E5%8A%A8-ipv6/">
+            <span class="next-text nav-default">Mac 启动 IPV6</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>搭建阿里云Git服务器 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="通过在私有服务器搭建 git 服务，实现团队之间的代码贡献与版本控制。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-11-29-%E6%90%AD%E5%BB%BA%E9%98%BF%E9%87%8C%E4%BA%91git%E6%9C%8D%E5%8A%A1%E5%99%A8/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="搭建阿里云Git服务器" />
+<meta property="og:description" content="通过在私有服务器搭建 git 服务，实现团队之间的代码贡献与版本控制。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-11-29-%E6%90%AD%E5%BB%BA%E9%98%BF%E9%87%8C%E4%BA%91git%E6%9C%8D%E5%8A%A1%E5%99%A8/" />
+<meta property="article:published_time" content="2019-11-29T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-11-29T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="搭建阿里云Git服务器">
+<meta itemprop="description" content="通过在私有服务器搭建 git 服务，实现团队之间的代码贡献与版本控制。">
+
+
+<meta itemprop="datePublished" content="2019-11-29T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-11-29T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2766">
+
+
+
+<meta itemprop="keywords" content="Git,Ali,Cloud,Server,version,Coding," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="搭建阿里云Git服务器"/>
+<meta name="twitter:description" content="通过在私有服务器搭建 git 服务，实现团队之间的代码贡献与版本控制。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">搭建阿里云Git服务器</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-11-29 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 2766 words </span>
+        <span class="more-meta"> 6 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-11-29T00:00:00" title="November 29, 2019">November 29, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div class="figure">
+<img src="/images/git.jpeg" alt="Git:版本控制系统" />
+<p class="caption"><a href="Git:版本控制系统" class="uri">Git:版本控制系统</a></p>
+</div>
+<div id="搭建-git-服务器" class="section level1">
+<h1>搭建 Git 服务器</h1>
+<p>第一步，安装git：</p>
+<pre class="bash"><code>$ sudo apt-get install git</code></pre>
+<p>第二步，创建一个git用户，用来运行git服务：</p>
+<pre class="bash"><code>$ sudo adduser git</code></pre>
+<p>第三步，创建证书登录：</p>
+<p>收集所有需要登录的用户的公钥，就是他们自己的id_rsa.pub文件，把所有公钥导入到/home/git/.ssh/authorized_keys文件里，一行一个。</p>
+<pre class="bash"><code>cat ~/.ssh/id_rsa.pub
+
+## 复制公钥到 /home/git/.ssh/authorized_keys</code></pre>
+<p>第四步，初始化Git仓库：</p>
+<p>先选定一个目录作为Git仓库，假定是/srv/test.git，在/srv目录下输入命令：</p>
+<pre class="bash"><code>sudo git init --bare test.git</code></pre>
+<p>Git就会创建一个裸仓库，裸仓库没有工作区，因为服务器上的Git仓库纯粹是为了共享，所以不让用户直接登录到服务器上去改工作区，并且服务器上的Git仓库通常都以.git结尾。然后，把owner改为git：</p>
+<pre><code>sudo chown -R git:git test.git</code></pre>
+<p>第五步，禁用shell登录：</p>
+<p>出于安全考虑，第二步创建的git用户不允许登录shell，这可以通过编辑/etc/passwd文件完成。找到类似下面的一行：</p>
+<pre class="bash"><code>git❌1001:1001:,,,:/home/git:/bin/bash</code></pre>
+<p>改为：</p>
+<pre class="bash"><code>git❌1001:1001:,,,:/home/git:/usr/bin/git-shell</code></pre>
+<p>这样，git用户可以正常通过ssh使用git，但无法登录shell，因为我们为git用户指定的git-shell每次一登录就自动退出。</p>
+<p>第六步，克隆远程仓库：</p>
+<p>现在，可以通过git clone命令克隆远程仓库了，在各自的电脑上运行：</p>
+<pre class="bash"><code>$ git clone git@server:/srv/sample.git
+Cloning into &#39;sample&#39;...
+warning: You appear to have cloned an empty repository.</code></pre>
+<p>剩下的推送就简单了。</p>
+</div>
+<div id="版本控制" class="section level1">
+<h1>版本控制</h1>
+<pre class="bash"><code>## 如果没有使用 gitosis
+## git clone git@47.98.117.71:/home/git/codebase/test.git
+
+## 如果使用 gitosis, 默认存放在 /home/git/repositories
+git clone git@47.98.117.71:test.git
+
+git checkout master
+git pull
+
+git branch dev
+git checkout dev
+git add ./*
+git commit -m &quot;modify dev&quot;
+git push origin dev
+
+git checkout master
+git merge dev
+git add ./*
+git commit -m &quot;modify master&quot;
+git push origin master
+
+## 本地获取其他分支
+## 将远程git仓库里的指定分支拉取到本地（本地不存在的分支）
+git checkout -b 本地分支名 origin/远程分支名
+
+## 如果出现提示：
+## fatal: Cannot update paths and switch to branch &#39;dev2&#39; at the same time.
+## Did you intend to checkout &#39;origin/dev2&#39; which can not be resolved as commit?
+## 表示拉取不成功。需要先执行
+git fetch
+## 然后再执行
+git checkout -b 本地分支名 origin/远程分支名</code></pre>
+</div>
+<div id="团队管理" class="section level1">
+<h1>团队管理</h1>
+<div id="使用-gitosis-管理权限" class="section level2">
+<h2><del>使用 gitosis 管理权限</del></h2>
+<blockquote>
+<p>gitosis 现已经被改写升级成 gitolite, 更好得支持在 branch 级别的权限控制</p>
+</blockquote>
+<p>把团队成员的公钥保存到 <code>/home/git/.ssh/authorized_keys</code> 文件的做法，对于小规模的队伍是可行的。但是，这样的弊端也是十分明显：</p>
+<ol style="list-style-type: decimal">
+<li>随着团队规模的扩大、成员的离开，需要重复的增加/删除成员的公钥，这样比较繁琐，而且存在安全隐患</li>
+<li><code>git</code>默认的权限是对于所有成员开放的，即所有成员都拥有对项目的读写权限，如果是非管理员用户，不小心在分支修改了代码，但是提交到了<code>master</code>上面，有可能导致整个项目崩盘</li>
+<li>此外，我们还希望给部分成员拥有管理权限，部分成员拥有可读可写权限，而剩下的[实习]成员则只有可读权限，这个需要通过项目的权限管理机制实现。</li>
+</ol>
+<div id="安装-gitosis" class="section level3">
+<h3>安装 gitosis</h3>
+<p><code>gitosis</code> 是 <code>python</code> 项目，需要安装 <code>python-setuptools</code> 模块</p>
+<pre class="bash"><code>apt-get install python-setuptools</code></pre>
+<p>然后安装 <code>gitosis</code></p>
+<pre class="bash"><code>cd ~
+git clone https://github.com/tv42/gitosis.git
+cd gitosis
+sudo python setup.py install</code></pre>
+<p>默认情况下，<code>gitosis</code> 会把项目放在 <code>/home/git/repositories</code></p>
+<pre class="bash"><code>total 16                                                                                                       
+drwxr-x--- 8 git git 4096 Nov 30 13:22 gitosis-admin.git                                                    
+drwxr-x--- 7 git git 4096 Nov 30 13:05 solarflare.git                                                       
+drwxr-x--- 7 git git 4096 Nov 30 13:22 test2.git
+drwxr-x--- 7 git git 4096 Nov 30 13:06 test.git</code></pre>
+<p>如果原来代码已经放在别的文件夹，可以使用 <code>ln</code></p>
+<pre class="bash"><code>ln -s /opt/git /home/git/repositories</code></pre>
+<p>Gitosis 将会帮我们管理用户公钥，所以先把当前控制文件改名备份，以便稍后重新添加，准备好让 Gitosis 自动管理 <code>authorized_keys</code> 文件：</p>
+<pre class="bash"><code>mv /home/git/.ssh/authorized_keys /home/git/.ssh/authorized_keys_bk</code></pre>
+<p>接下来，修改 <code>git</code> 通过 <code>shell</code> 登录</p>
+<pre class="bash"><code>vim /etc/passwd
+
+## 修改成如下
+git❌1000:1000::/home/git:/bin/sh</code></pre>
+</div>
+<div id="增加管理员" class="section level3">
+<h3>增加管理员</h3>
+<p><code>gitosis</code> 默认会搭建一个 <code>gitosis-admin.git</code> 的仓库用来管理所有的用户权限。因此，我们需要增加一个<strong>代码管理员</strong>来管理这个<code>repo</code>，即只有这个用户才有权限修改项目的权限归属。 比如，我(<code>william</code>)的本地机器作为 <code>gitosis-admin.git</code> 的所有者，需要把本地的 <code>id_rsa.pub</code> 加入到 <code>gitosis-admin.git</code>，然后开始初始化仓库</p>
+<pre class="bash"><code>scp ~/.ssh/id_rsa.pub root@47.98.117.71:/tmp 
+
+sudo -H -u git gitosis-init &lt; /tmp/id_rsa.pub</code></pre>
+<p>这样，我(<code>william</code>)的本地机器变成了 <code>gitosis-admin.git</code> 的所有者，管理所有仓库的权限。</p>
+<p>接下来，需要手工对该仓库中的 post-update 脚本加上可执行权限：</p>
+<pre class="bash"><code>sudo chmod 755 /home/git/gitosis-admin.git/hooks/post-update</code></pre>
+<p>试着登录服务器的<code>git</code></p>
+<pre class="bash"><code>ssh git@47.98.117.71
+
+PTY allocation request failed on channel 0
+ERROR:gitosis.serve.main:Need SSH_ORIGINAL_COMMAND in environment.
+Connection to 47.98.117.71 closed.</code></pre>
+<p>说明 Gitosis 认出了该用户的身份，但由于没有运行任何 Git 命令，所以它切断了连接。那么，现在运行一个实际的 Git 命令 — 克隆 Gitosis 的控制仓库</p>
+<pre class="bash"><code>cd ~/Documents
+git clone git@47.98.117.71:gitosis-admin.git
+cd gitosis-admin
+
+gitosis.conf  keydir
+
+On branch master
+Your branch is up to date with &#39;origin/master&#39;.
+
+nothing to commit, working tree clean
+
+total 20K
+drwxrwxr-x  4 william william 4.0K Nov 30 13:22 ./
+drwxr-xr-x 50 william william 4.0K Nov 30 12:57 ../
+drwxrwxr-x  8 william william 4.0K Nov 30 15:29 .git/
+-rw-rw-r--  1 william william  399 Nov 30 13:22 gitosis.conf
+drwxrwxr-x  2 william william 4.0K Nov 30 13:10 keydir/</code></pre>
+<p>其中 1. <code>gitosis.conf</code>是配置文件 2. <code>keydir</code>存放公钥<code>.pub</code></p>
+<pre class="bash"><code>cat gitosis.conf 
+
+[gitosis]
+
+[group gitosis-admin]
+members = william.lian.fang@gmail.com
+writable = gitosis-admin
+
+[group hicloud-hft]
+members = william.lian.fang@gmail.com
+writable = solarflare
+
+[group hicloud-hft]
+members = william.lian.fang@gmail.com fl166
+writable = test
+
+[group hicloud-test]
+members = william.lian.fang@gmail.com
+writable = test2
+
+[group hicloud-test-readonly]
+members = fl166
+readonly = test2</code></pre>
+<pre class="bash"><code>cd keydir
+ll 
+
+total 16K
+drwxrwxr-x 2 william william 4.0K Nov 30 13:10  ./
+drwxrwxr-x 4 william william 4.0K Nov 30 13:22  ../
+-rw-rw-r-- 1 william william 1.2K Nov 30 13:10  fl166.pub
+-rw-rw-r-- 1 william william  409 Nov 30 12:42 &#39;william.lian.fang@gmail.com.pub&#39;</code></pre>
+<p>看到上面的文件，如 <code>fl166.pub</code>，存放的便是公钥，这个文件名需要对应以上的 <code>members</code> 才能够被识别。</p>
+<p>我们可以看出</p>
+<ol style="list-style-type: decimal">
+<li>对于 <code>test.git</code>, <code>william.lian.fang@gmail.com</code>和<code>fl166</code> 拥有 <code>writable</code> 的可读可写权限。</li>
+<li><p>而对于 <code>test2.git</code>, <code>william.lian.fang@gmail.com</code> 拥有 <code>writable</code> 的可读可写权限, 而 <code>fl166</code> 只有读的权限，即不可参与项目代码修改，如果推送修改会报错</p>
+<pre class="bash"><code>ERROR:gitosis.serve.main:Repository write access denied 
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights 
+and the repository exists.</code></pre></li>
+</ol>
+</div>
+</div>
+<div id="使用-gitolite-管理权限" class="section level2">
+<h2>使用 gitolite 管理权限</h2>
+<div id="安装-gitolite" class="section level3">
+<h3>安装 gitolite</h3>
+<p>由于 <code>gitolite</code> 使用 <code>Perl</code> 编写，因此我们需要先安装</p>
+<pre class="bash"><code>sudo yum install perl</code></pre>
+<p>同样，我们需要修改</p>
+<pre class="bash"><code>vim /etc/passwd
+
+## 修改成如下
+git:x :1000:1000::/home/git:/bin/sh</code></pre>
+<p>然后切换到用户 <code>git</code> 安装</p>
+<pre class="bash"><code>su git
+cd /home/git
+git clone git://github.com/sitaramc/gitolite
+
+## 安装到 /home/git/bin 目录下
+mkdir -p /home/git/bin
+./gitolite/install -to /home/git/bin/</code></pre>
+</div>
+<div id="添加管理员" class="section level3">
+<h3>添加管理员</h3>
+<p>可以有两种方式添加管理员</p>
+<ol style="list-style-type: decimal">
+<li>服务器作为管理员</li>
+<li>第三方用户作为管理员</li>
+</ol>
+<p>我更倾向第二种方法，因为这样可以避免频繁的登录服务器操作。</p>
+<pre class="bash"><code>## !!! 在本地机器操作
+scp ~/.ssh/id_rsa.pub root@47.98.117.71:/home/git/.ssh/william.pub</code></pre>
+<p>Gitolite 将会帮我们管理用户公钥，所以先把当前控制文件改名备份，以便稍后重新添加，准备好让 Gitosis 自动管理 <code>authorized_keys</code> 文件：</p>
+<pre class="bash"><code>cd ~/
+chmod 700 -R .ssh
+chmod 600 authorized_keys  
+mv /home/git/.ssh/authorized_keys /home/git/.ssh/authorized_keys_bk</code></pre>
+<p>然后在服务器终端操作</p>
+<pre class="bash"><code>/home/git/bin/gitolite setup -pk /home/git/.ssh/william.pub
+
+Initialized empty Git repository in /home/git/repositories/gitolite-admin.git/
+Initialized empty Git repository in /home/git/repositories/testing.git/</code></pre>
+<p>出现以上消息说明操作成功，我们可以看到在 <code>/home/git/repositories</code> 初始化了两个repo</p>
+<pre class="bash"><code>ll                                                                                     
+total 8
+drwx------ 8 git git 4096 Dec  1 15:15 gitolite-admin.git
+drwx------ 7 git git 4096 Dec  1 15:15 testing.git</code></pre>
+<p>如此一来，我们便可以在 <code>william</code> 的这台电脑上设置用户权限了。</p>
+</div>
+<div id="设置用户权限" class="section level3">
+<h3>设置用户权限</h3>
+<p>我们在本地机器（<code>william</code>）终端操作</p>
+<pre class="bash"><code>## 本地机器 william
+
+cd ~/Documents
+git clone git@47.98.117.71:gitolite-admin.git
+
+cd gitolite-admin
+ll                                                                                           
+total 20K      
+drwxrwxr-x  5 william william 4.0K Dec  1 14:24 ./
+drwxr-xr-x 52 william william 4.0K Dec  1 14:34 ../
+drwxrwxr-x  2 william william 4.0K Dec  1 15:07 conf/
+drwxrwxr-x  8 william william 4.0K Dec  1 15:43 .git/
+drwxrwxr-x  2 william william 4.0K Dec  1 15:15 keydir/</code></pre>
+<p>其中：</p>
+<ol style="list-style-type: decimal">
+<li><p><code>keydir</code> 用来存放用户的 <code>id_rsa.pub</code> 公钥，文件名字对应用户名称，如 <code>fl166.pub</code> 则对应 <code>fl166</code> 这个用户，需要在 <code>gitolite.conf</code> 配置文件使用到。</p>
+<pre class="bash"><code>cd keydir
+ll
+total 16K
+drwxrwxr-x 2 william william 4.0K Dec  1 15:15 ./
+drwxrwxr-x 5 william william 4.0K Dec  1 14:24 ../
+-rw-rw-r-- 1 william william  409 Dec  1 14:28 fl166.pub
+-rw-rw-r-- 1 william william  409 Dec  1 14:24 git_admin_william.pub</code></pre></li>
+<li><p><code>conf</code> 是配置文件，修改用户所属项目的读写权限</p>
+<pre class="bash"><code>cd conf
+ll
+
+total 12K
+drwxrwxr-x 2 william william 4.0K Dec  1 15:07 ./
+drwxrwxr-x 5 william william 4.0K Dec  1 14:24 ../
+-rw-rw-r-- 1 william william  210 Dec  1 15:15 gitolite.conf
+
+cat gitolite.conf
+
+repo gitolite-admin
+    RW+     =       git_admin_william
+
+repo testing
+    RW+     =       @all
+
+repo test1
+    RW+     =       @all
+
+repo test2
+    RW+          =      git_admin_william
+    R   master   =      fl166
+    RW+ from166  =      fl166</code></pre></li>
+</ol>
+<p>这里，以 <code>test2</code> 为例，说明各个用户的权限</p>
+<ul>
+<li><code>git_admin_william</code> 拥有顶级的可读（<code>R</code>）、可写（<code>W</code>）、以及强制更新（<code>+</code>）权限</li>
+<li><code>fl166</code> 只拥有对 <code>master</code> 分支的读取权限，没有其他（写）权限</li>
+<li><code>fl166</code> 还拥有对的分支 <code>from166</code> 的可读（<code>R</code>）、可写（<code>W</code>）、以及强制更新（<code>+</code>）权限</li>
+</ul>
+</div>
+</div>
+<div id="开发项目结构" class="section level2">
+<h2>开发项目结构</h2>
+</div>
+</div>
+<div id="参考链接" class="section level1">
+<h1>参考链接</h1>
+<ol style="list-style-type: decimal">
+<li><a href="https://blog.csdn.net/Suo_ivy/article/details/79941323">gitosis 安装使用及错误整理</a>：步骤讲解比较详细</li>
+<li><a href="%5Bhttp://www.xiaocai.name/2017/06/14/Gitolite%E6%90%AD%E5%BB%BAgit%E4%BB%93%E5%BA%93%E5%AE%9E%E7%8E%B0%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/%5D(http://www.xiaocai.name/2017/06/14/Gitolite搭建git仓库实现权限控制/)">Gitolite搭建git仓库实现权限控制</a>：介绍使用 gitolite 替代 gitosis</li>
+<li><a href="https://www.liaoxuefeng.com/wiki/896043488029600/900375748016320">git 团队协作</a>：快速入门必备</li>
+</ol>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-11-29</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/git/">Git</a>
+          
+          <a href="/tags/ali/">Ali</a>
+          
+          <a href="/tags/cloud/">Cloud</a>
+          
+          <a href="/tags/server/">Server</a>
+          
+          <a href="/tags/version/">version</a>
+          
+          <a href="/tags/coding/">Coding</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-12-02-%E8%A7%A3%E5%86%B3ssh%E4%B8%8A%E4%BC%A0%E5%85%AC%E9%92%A5%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BB%8D%E9%9C%80%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">解决ssh上传公钥到服务器仍需输入密码的问题</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/">
+            <span class="next-text nav-default">本地终端运行远程R命令，并输出图像</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

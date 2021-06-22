@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Unix编程 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2017-09-29-unix%E7%BC%96%E7%A8%8B/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Unix编程" />
+<meta property="og:description" content="以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2017-09-29-unix%E7%BC%96%E7%A8%8B/" />
+<meta property="article:published_time" content="2017-09-29T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2017-10-15T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Unix编程">
+<meta itemprop="description" content="以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。">
+
+
+<meta itemprop="datePublished" content="2017-09-29T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-10-15T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1688">
+
+
+
+<meta itemprop="keywords" content="Unix,Shell,Programming," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Unix编程"/>
+<meta name="twitter:description" content="以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">Unix编程</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-09-29 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1688 words </span>
+        <span class="more-meta"> 4 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2017-10-15T00:00:00" title="October 15, 2017">October 15, 2017</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      </p>
+<div class="figure">
+<img src="/images/UNIX%20HD%20Wallpaper.png" alt="Unix" />
+<p class="caption">Unix</p>
+</div>
+<div id="unix-常用命令行" class="section level1">
+<h1><code>Unix</code> 常用命令行</h1>
+<hr />
+<div id="用户管理" class="section level2">
+<h2>用户管理</h2>
+<div id="用户权限" class="section level3">
+<h3>用户权限</h3>
+<ul>
+<li><code>root</code>：超级权限，是系统的管理员</li>
+<li><code>sudo su</code>：允许当前用户使用系统管理员权限，主要是修改系统相关配置、安装软件包等</li>
+<li>增加用户：<code>sudo adduser</code></li>
+</ul>
+</div>
+<div id="修改文件权限" class="section level3">
+<h3>修改文件权限</h3>
+<ul>
+<li><code>chmod +x file.sh</code>：给予文件可执行权限</li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="文件操作" class="section level2">
+<h2>文件操作</h2>
+<div id="cd" class="section level3">
+<h3><code>cd</code></h3>
+<p>指向文件路径</p>
+<ul>
+<li><code>cd ~</code> / <code>cd</code>：这指向当前用户的主目录 <code>/home/you</code></li>
+<li><code>cd ..</code>：返回上一级父目录</li>
+</ul>
+</div>
+<div id="pwd" class="section level3">
+<h3><code>pwd</code></h3>
+<p>打印/显示<em>当前绝对路径</em></p>
+</div>
+<div id="ls" class="section level3">
+<h3><code>ls</code></h3>
+<p>显示当前目录下的文件</p>
+<ul>
+<li><code>-a</code>：等同于 <code>ll</code>，显示所有的文件，包含隐藏的文件</li>
+<li><code>-h</code>：显示文件大小</li>
+</ul>
+<pre class="bash"><code>Usage: ls [OPTION]... [FILE]...
+List information about the FILEs (the current directory by default).
+Sort entries alphabetically if none of -cftuvSUX nor --sort.
+
+Mandatory arguments to long options are mandatory for short options too.
+  -a, --all                  do not ignore entries starting with .
+  -A, --almost-all           do not list implied . and ..
+      --author               with -l, print the author of each file
+  -b, --escape               print octal escapes for nongraphic characters
+      --block-size=SIZE      use SIZE-byte blocks.  See SIZE format below
+  -B, --ignore-backups       do not list implied entries ending with ~
+  -c                         with -lt: sort by, and show, ctime (time of last
+                               modification of file status information)
+                               with -l: show ctime and sort by name
+                               otherwise: sort by ctime
+  -C                         list entries by columns
+      --color[=WHEN]         colorize the output.  WHEN defaults to `always&#39;
+                               or can be `never&#39; or `auto&#39;.  More info below
+  -d, --directory            list directory entries instead of contents,
+                               and do not dereference symbolic links
+  -D, --dired                generate output designed for Emacs&#39; dired mode
+  -f                         do not sort, enable -aU, disable -ls --color
+  -F, --classify             append indicator (one of */=&gt;@|) to entries
+      --file-type            likewise, except do not append `*&#39;
+      --format=WORD          across -x, commas -m, horizontal -x, long -l,
+                               single-column -1, verbose -l, vertical -C
+      --full-time            like -l --time-style=full-iso
+  -g                         like -l, but do not list owner
+      --group-directories-first
+                             group directories before files.
+                               augment with a --sort option, but any
+                               use of --sort=none (-U) disables grouping
+  -G, --no-group             in a long listing, don&#39;t print group names
+  -h, --human-readable       with -l, print sizes in human readable format
+                               (e.g., 1K 234M 2G)
+      --si                   likewise, but use powers of 1000 not 1024
+  -H, --dereference-command-line
+                             follow symbolic links listed on the command line
+      --dereference-command-line-symlink-to-dir
+                             follow each command line symbolic link
+                             that points to a directory
+      --hide=PATTERN         do not list implied entries matching shell PATTERN
+                               (overridden by -a or -A)
+      --indicator-style=WORD  append indicator with style WORD to entry names:
+                               none (default), slash (-p),
+                               file-type (--file-type), classify (-F)
+  -i, --inode                print the index number of each file
+  -I, --ignore=PATTERN       do not list implied entries matching shell PATTERN
+  -k                         like --block-size=1K
+  -l                         use a long listing format
+  -L, --dereference          when showing file information for a symbolic
+                               link, show information for the file the link
+                               references rather than for the link itself
+  -m                         fill width with a comma separated list of entries
+  -n, --numeric-uid-gid      like -l, but list numeric user and group IDs
+  -N, --literal              print raw entry names (don&#39;t treat e.g. control
+                               characters specially)
+  -o                         like -l, but do not list group information
+  -p, --indicator-style=slash
+                             append / indicator to directories
+  -q, --hide-control-chars   print ? instead of non graphic characters
+      --show-control-chars   show non graphic characters as-is (default
+                             unless program is `ls&#39; and output is a terminal)
+  -Q, --quote-name           enclose entry names in double quotes
+      --quoting-style=WORD   use quoting style WORD for entry names:
+                               literal, locale, shell, shell-always, c, escape
+  -r, --reverse              reverse order while sorting
+  -R, --recursive            list subdirectories recursively
+  -s, --size                 print the allocated size of each file, in blocks
+  -S                         sort by file size
+      --sort=WORD            sort by WORD instead of name: none -U,
+                             extension -X, size -S, time -t, version -v
+      --time=WORD            with -l, show time as WORD instead of modification
+                             time: atime -u, access -u, use -u, ctime -c,
+                             or status -c; use specified time as sort key
+                             if --sort=time
+      --time-style=STYLE     with -l, show times using style STYLE:
+                             full-iso, long-iso, iso, locale, +FORMAT.
+                             FORMAT is interpreted like `date&#39;; if FORMAT is
+                             FORMAT1&lt;newline&gt;FORMAT2, FORMAT1 applies to
+                             non-recent files and FORMAT2 to recent files;
+                             if STYLE is prefixed with `posix-&#39;, STYLE
+                             takes effect only outside the POSIX locale
+  -t                         sort by modification time
+  -T, --tabsize=COLS         assume tab stops at each COLS instead of 8
+  -u                         with -lt: sort by, and show, access time
+                               with -l: show access time and sort by name
+                               otherwise: sort by access time
+  -U                         do not sort; list entries in directory order
+  -v                         natural sort of (version) numbers within text
+  -w, --width=COLS           assume screen width instead of current value
+  -x                         list entries by lines instead of by columns
+  -X                         sort alphabetically by entry extension
+  -1                         list one file per line
+
+SELinux options:
+
+  --lcontext                 Display security context.   Enable -l. Lines
+                             will probably be too wide for most displays.
+  -Z, --context              Display security context so it fits on most
+                             displays.  Displays only mode, user, group,
+                             security context and file name.
+  --scontext                 Display only security context and file name.
+      --help     display this help and exit
+      --version  output version information and exit
+
+SIZE may be (or may be an integer optionally followed by) one of following:
+KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G, T, P, E, Z, Y.
+
+Using color to distinguish file types is disabled both by default and
+with --color=never.  With --color=auto, ls emits color codes only when
+standard output is connected to a terminal.  The LS_COLORS environment
+variable can change the settings.  Use the dircolors command to set it.</code></pre>
+</div>
+<div id="du" class="section level3">
+<h3><code>du</code></h3>
+<p>显示文件夹小小：</p>
+<ul>
+<li><code>-h</code></li>
+<li><code>--max-depth=1</code>:显示当前文件夹占用的磁盘空间</li>
+<li><code>du -h ./file_path/ --max-depth=0</code>：显示当前文件夹的占用磁盘空间大小</li>
+</ul>
+<pre class="bash"><code>Usage: du [OPTION]... [FILE]...
+  or:  du [OPTION]... --files0-from=F
+Summarize disk usage of each FILE, recursively for directories.
+
+Mandatory arguments to long options are mandatory for short options too.
+  -a, --all             write counts for all files, not just directories
+      --apparent-size   print apparent sizes, rather than disk usage; although
+                          the apparent size is usually smaller, it may be
+                          larger due to holes in (`sparse&#39;) files, internal
+                          fragmentation, indirect blocks, and the like
+  -B, --block-size=SIZE  use SIZE-byte blocks
+  -b, --bytes           equivalent to `--apparent-size --block-size=1&#39;
+  -c, --total           produce a grand total
+  -D, --dereference-args  dereference only symlinks that are listed on the
+                          command line
+      --files0-from=F   summarize disk usage of the NUL-terminated file
+                          names specified in file F;
+                          If F is - then read names from standard input
+  -H                    equivalent to --dereference-args (-D)
+  -h, --human-readable  print sizes in human readable format (e.g., 1K 234M 2G)
+      --si              like -h, but use powers of 1000 not 1024
+  -k                    like --block-size=1K
+  -l, --count-links     count sizes many times if hard linked
+  -m                    like --block-size=1M
+  -L, --dereference     dereference all symbolic links
+  -P, --no-dereference  don&#39;t follow any symbolic links (this is the default)
+  -0, --null            end each output line with 0 byte rather than newline
+  -S, --separate-dirs   do not include size of subdirectories
+  -s, --summarize       display only a total for each argument
+  -x, --one-file-system    skip directories on different file systems
+  -X, --exclude-from=FILE  exclude files that match any pattern in FILE
+      --exclude=PATTERN    exclude files that match PATTERN
+      --max-depth=N     print the total for a directory (or file, with --all)
+                          only if it is N or fewer levels below the command
+                          line argument;  --max-depth=0 is the same as
+                          --summarize
+      --time            show time of the last modification of any file in the
+                          directory, or any of its subdirectories
+      --time=WORD       show time as WORD instead of modification time:
+                          atime, access, use, ctime or status
+      --time-style=STYLE  show times using style STYLE:
+                          full-iso, long-iso, iso, +FORMAT
+                          FORMAT is interpreted like `date&#39;
+      --help     display this help and exit
+      --version  output version information and exit
+
+Display values are in units of the first available SIZE from --block-size,
+and the DU_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables.
+Otherwise, units default to 1024 bytes (or 512 if POSIXLY_CORRECT is set).</code></pre>
+</div>
+<div id="tree" class="section level3">
+<h3><code>tree</code></h3>
+<p>以树形显示当前目录下的文件结构</p>
+<ul>
+<li><code>-L 0-9</code>：需要显示的级别数量</li>
+</ul>
+</div>
+<div id="rm" class="section level3">
+<h3><code>rm</code></h3>
+<p>删除文件</p>
+<ul>
+<li><code>-r</code>：以递归形式删除指定目录下的所有文件</li>
+<li><code>-f</code>：系统不会发出询问，直接删除，<strong>谨慎使用</strong></li>
+</ul>
+<hr />
+</div>
+</div>
+</div>
+<div id="shell-编程" class="section level1">
+<h1><code>shell</code> 编程</h1>
+<div id="文件表头" class="section level2">
+<h2>文件表头</h2>
+<p>最好在文件表头添加：</p>
+<pre class="bash"><code>#!/bin/bash</code></pre>
+</div>
+<div id="执行文件" class="section level2">
+<h2>执行文件</h2>
+<p>需要通过 <strong>增加执行权限</strong>：</p>
+<pre class="bash"><code>chmod +x file.sh
+./file.sh</code></pre>
+</div>
+<div id="获取变量" class="section level2">
+<h2>获取变量</h2>
+<p>变量赋值使用 <code>=</code> 时，不能有空格！！！</p>
+<pre class="bash"><code>v=$(date +&quot;%Y-%m-%d %M:%H:%S&quot;)
+echo $v
+
+## 也可以使用 `{}` 把变量包围起来
+echo ${v}
+
+## 使用 `-e` 增加 `echo` 转义字符
+echo -e &quot;\n Hello, world! \n&quot;</code></pre>
+</div>
+<div id="日期格式命名的文件" class="section level2">
+<h2>日期格式命名的文件</h2>
+<ul>
+<li>使用 <code>+</code> 来拼接</li>
+<li>使用 <code>-d &quot;1 days&quot;</code> 来增加或者 <code>-d &quot;-1 days&quot;</code>减少日期</li>
+</ul>
+<pre class="bash"><code>dataFile=$(date -d &quot;-$i days&quot; +&quot;%Y%m%d&quot;)
+
+echo $dataFile</code></pre>
+</div>
+<div id="for-循环" class="section level2">
+<h2><code>for</code> 循环</h2>
+<pre class="bash"><code>for colo in XiFu YY1;
+do
+    for info in ContractInfo TickData;
+    do 
+        for i in {1..0}
+        do
+        dataFile=$(date -d &quot;-$i days&quot; +&quot;%Y%m%d.csv&quot;)
+        echo -e &quot;\n$colo :==&gt; $info :==&gt; $dataFile&quot;
+        done
+    done
+done</code></pre>
+</div>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2017-10-15</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/unix/">Unix</a>
+          
+          <a href="/tags/shell/">Shell</a>
+          
+          <a href="/tags/programming/">Programming</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2017-10-09-%E4%BA%A6%E8%88%92-%E8%BF%B7%E8%BF%AD%E9%A6%99/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">亦舒：迷迭香</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2017-08-12-%E5%AE%BD%E5%AE%A2%E4%BA%BA%E7%94%9F/">
+            <span class="next-text nav-default">宽客人生</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

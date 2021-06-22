@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>v2ray Ubuntu 配置教程 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" />
+  <meta name="description" content="安装 v2ray 服务器 bash &amp;lt;(curl -s -L https://git.io/v2ray.sh) 可以顺便给 vps 测速 ## superspeed bash &amp;lt;(curl -Lso- https://git.io/superspeed) ————————————————————————SuperSpeed 全面测速版——————" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2020-03-08-v2ray-ubuntu-%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="v2ray Ubuntu 配置教程" />
+<meta property="og:description" content="安装 v2ray 服务器 bash &lt;(curl -s -L https://git.io/v2ray.sh) 可以顺便给 vps 测速 ## superspeed bash &lt;(curl -Lso- https://git.io/superspeed) ————————————————————————SuperSpeed 全面测速版——————" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2020-03-08-v2ray-ubuntu-%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/" />
+<meta property="article:published_time" content="2020-03-08T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-03-08T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="v2ray Ubuntu 配置教程">
+<meta itemprop="description" content="安装 v2ray 服务器 bash &lt;(curl -s -L https://git.io/v2ray.sh) 可以顺便给 vps 测速 ## superspeed bash &lt;(curl -Lso- https://git.io/superspeed) ————————————————————————SuperSpeed 全面测速版——————">
+
+
+<meta itemprop="datePublished" content="2020-03-08T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-03-08T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1872">
+
+
+
+<meta itemprop="keywords" content="翻墙,v2ray,Ubuntu," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="v2ray Ubuntu 配置教程"/>
+<meta name="twitter:description" content="安装 v2ray 服务器 bash &lt;(curl -s -L https://git.io/v2ray.sh) 可以顺便给 vps 测速 ## superspeed bash &lt;(curl -Lso- https://git.io/superspeed) ————————————————————————SuperSpeed 全面测速版——————"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">v2ray Ubuntu 配置教程</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-08 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1872 words </span>
+        <span class="more-meta"> 4 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2020-03-08T00:00:00" title="March 8, 2020">March 8, 2020</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div id="安装-v2ray-服务器" class="section level1">
+<h1>安装 v2ray 服务器</h1>
+<pre class="bash"><code>bash &lt;(curl -s -L https://git.io/v2ray.sh)</code></pre>
+<p>可以顺便给 <code>vps</code> 测速</p>
+<pre class="bash"><code>## superspeed
+bash &lt;(curl -Lso- https://git.io/superspeed)
+
+————————————————————————SuperSpeed 全面测速版—————————————————————————
+     使用方法:      bash &lt;(curl -Lso- https://git.io/superspeed)
+     查看全部节点:  https://git.io/superspeedList
+     节点更新日期:  2019/12/23       脚本更新日期:  2020/03/09
+——————————————————————————————————————————————————————————————————————
+     选择测速类型:
+     1. 三网测速 (各取部分节点)                2. 取消本次测速
+     3. 电信节点测速      4. 联通节点测速      5. 移动节点测速
+     请输入数字选择: 1
+——————————————————————————————————————————————————————————————————————
+ID    测速服务器信息        上传速度        下载速度        延迟
+3633  电信|上海　　　　　　 128.98 Mbit/s   384.05 Mbit/s   160.994 ms
+24012 电信|内蒙古呼和浩特　　　　　　 66.38 Mbit/s    49.28 Mbit/s    198.881 ms
+27377 电信|北京５Ｇ　　　　　　 116.61 Mbit/s   321.02 Mbit/s   161.536 ms
+17145 电信|安徽安徽合肥　　　　　　 124.96 Mbit/s   373.35 Mbit/s   144.317 ms
+27594 电信|广东广州５Ｇ　　　　　　 4.84 Mbit/s     23.16 Mbit/s    197.118 ms
+27810 电信|广西南宁　　　　　　 60.62 Mbit/s    119.87 Mbit/s   172.267 ms
+27575 电信|新疆乌鲁木齐　　　　　　 71.01 Mbit/s    147.04 Mbit/s   206.973 ms
+26352 电信|江苏南京５Ｇ　　　　　　 141.18 Mbit/s   365.73 Mbit/s   138.398 ms
+5396  电信|江苏苏州　　　　　　 141.03 Mbit/s   335.99 Mbit/s   138.572 ms
+7509  电信|浙江杭州　　　　　　 112.69 Mbit/s   63.09 Mbit/s    210.463 ms
+28225 电信|湖南长沙　　　　　　 98.16 Mbit/s    135.78 Mbit/s   188.638 ms
+3973  电信|甘肃兰州　　　　　　 65.89 Mbit/s    30.87 Mbit/s    181.112 ms
+19076 电信|重庆　　　　　　 55.81 Mbit/s    111.58 Mbit/s   252.101 ms
+24447 联通|上海５Ｇ　　　　　　 117.29 Mbit/s   107.46 Mbit/s   187.886 ms
+5103  联通|云南昆明　　　　　　 18.49 Mbit/s    7.01 Mbit/s     341.216 ms
+5145  联通|北京　　　　　　 114.97 Mbit/s   278.81 Mbit/s   160.176 ms
+9484  联通|吉林长春　　　　　　 111.22 Mbit/s   273.19 Mbit/s   174.654 ms
+2461  联通|四川成都　　　　　　 78.93 Mbit/s    190.73 Mbit/s   201.194 ms
+27154 联通|天津５Ｇ　　　　　　 129.92 Mbit/s   342.59 Mbit/s   155.246 ms
+——————————————————————————————————————————————————————————————————————
+     测试完成, 本次测速耗时: 7 分 52 秒
+     当前时间: 2020-03-18 18:02:46
+     # 三网测速中为避免节点数不均及测试过久，每部分未使用所有节点，
+     # 如果需要使用全部节点，可分别选择三网节点检测。</code></pre>
+<pre class="bash"><code># Superspeed.sh
+wget https://raw.githubusercontent.com/oooldking/script/master/superspeed.sh
+chmod +x superspeed.sh
+./superspeed.sh</code></pre>
+<pre class="bash"><code>## SuperBench.sh
+## 一键检测VPS的CPU、内存、负载、IO读写、机房带宽等脚本
+wget -qO- https://raw.githubusercontent.com/oooldking/script/master/superbench.sh | bash
+#或者
+curl -Lso- https://raw.githubusercontent.com/oooldking/script/master/superbench.sh | bash</code></pre>
+<pre class="bash"><code>## Zench
+## Zench可以看作是Bench.sh 和 SuperBench的结合版本，加入 Ping 以及 路由测试 功能，会生成测评报告，可以很方便地分享给其他朋友看自己的测评数据
+wget -N --no-check-certificate https://raw.githubusercontent.com/FunctionClub/ZBench/master/ZBench-CN.sh &amp;&amp; bash ZBench-CN.sh
+# 项目：https://github.com/FunctionClub/ZBench
+
+--------------------------------------------------------------------------
+CPU 型号             : QEMU Virtual CPU version (cpu64-rhel6)
+CPU 核心数           : 2
+CPU 频率             : 2699.998 MHz
+总硬盘大小           : 20.4 GB (2.6 GB Used)
+总内存大小           : 1007 MB (240 MB Used)
+SWAP大小             : 259 MB (3 MB Used)
+开机时长             : 0 days, 3 hour 42 min
+系统负载             : 1.78, 0.57, 0.20
+系统                 : CentOS 7.7.1908
+架构                 : x86_64 (64 Bit)
+内核                 : 4.10.4-1.el7.elrepo.x86_64
+虚拟化平台           : kvm
+--------------------------------------------------------------------------
+硬盘I/O (第一次测试) : 389 MB/s
+硬盘I/O (第二次测试) : 622 MB/s
+硬盘I/O (第三次测试) : 568 MB/s
+--------------------------------------------------------------------------
+节点名称                  IP地址            下载速度            延迟
+CacheFly                  205.234.175.175   112MB/s             0.433 ms
+ping: speedtest.tokyo.linode.com: Name or service not known
+Usage: ping [-aAbBdDfhLnOqrRUvV64] [-c count] [-i interval] [-I interface]
+            [-m mark] [-M pmtudisc_option] [-l preload] [-p pattern] [-Q tos]
+            [-s packetsize] [-S sndbuf] [-t ttl] [-T timestamp_option]
+            [-w deadline] [-W timeout] [hop1 ...] destination
+Usage: ping -6 [-aAbBdDfhLnOqrRUvV] [-c count] [-i interval] [-I interface]
+             [-l preload] [-m mark] [-M pmtudisc_option]
+             [-N nodeinfo_option] [-p pattern] [-Q tclass] [-s packetsize]
+             [-S sndbuf] [-t ttl] [-T timestamp_option] [-w deadline]
+             [-W timeout] destination
+Linode, Tokyo, JP                                                ms
+Linode, Singapore, SG     139.162.23.4      12.1MB/s            180.628 ms
+Linode, London, UK        176.58.107.39     17.6MB/s            135.277 ms
+Linode, Frankfurt, DE     139.162.130.8     15.5MB/s            144.360 ms
+Linode, Fremont, CA       50.116.14.9       58.2MB/s            10.185 ms
+Softlayer, Dallas, TX     173.192.68.18     54.2MB/s            32.237 ms
+Softlayer, Seattle, WA    67.228.112.250    62.5MB/s            26.613 ms
+Softlayer, Frankfurt, DE  159.122.69.4      4.32MB/s            144.804 ms
+Softlayer, Singapore, SG  119.81.28.170     10.6MB/s            183.570 ms
+Softlayer, HongKong, CN   119.81.130.170    10.7MB/s            154.140 ms
+--------------------------------------------------------------------------
+节点名称                  上传速度          下载速度            延迟
+上海电信                  144.60 Mbit/s     380.44 Mbit/s       157.919 ms
+西安电信                  77.58 Mbit/s      172.21 Mbit/s       335.629 ms
+北京联通                  120.90 Mbit/s     293.52 Mbit/s       158.144 ms
+--------------------------------------------------------------------------
+合肥        : 135.61 ms  北京        : 149.33 ms  武汉        : 162.61 ms
+昌吉        : Fail       成都        : Fail       上海        : Fail
+太原        : 0.56 ms    杭州        : 131.26 ms  宁夏        : 191.48 ms
+呼和浩特    : 168.02 ms  南昌        : Fail       拉萨        : Fail
+乌鲁木齐    : 206.72 ms  天津        : 163.47 ms  襄阳        : Fail
+郑州        : 156.75 ms  沈阳        : Fail       兰州        : 192.39 ms
+哈尔滨      : Fail       宁波        : Fail       苏州        : Fail
+济南        : 138.37 ms  西安        : 179.44 ms  西宁        : Fail
+重庆        : 234.12 ms  深圳        : Fail       南京        : Fail
+长沙        : Fail       长春        : 161.75 ms  福州        : 154.07 ms
+--------------------------------------------------------------------------</code></pre>
+</div>
+<div id="安装-v2ray-客户端" class="section level1">
+<h1>安装 v2ray 客户端</h1>
+<ol style="list-style-type: decimal">
+<li>下载客户端安装包，去<a href="https://github.com/v2ray/v2ray-core/releases">官网</a>下载相应的版本，即在 <code>Linux</code> 操作系统需要下载 <code>v2ray-linux-64.zip</code></li>
+<li>把下载得到的安装包解压后，复制到 <code>/usr/local/v2ray</code></li>
+<li>编辑配置文件 <code>config.json</code></li>
+<li>创建配置文件目录 <code>/etc/v2ray</code>，并将以上的配置文件 <code>config.json</code> 拷贝到此目录</li>
+<li>开始启动</li>
+</ol>
+<pre class="bash"><code>## 下载安装包
+cd ~/Downloads
+## https://github.com/v2ray/v2ray-core/releases
+wget https://github.com/v2ray/v2ray-core/releases/download/v4.22.1/v2ray-linux-64.zip
+unzip v2ray-linux-64.zip
+
+## 拷贝安装包到 /usr/local
+sudo cp -r v2ray-linux-64 /usr/local/v2ray
+
+## 复制配置文件 ----------------------------------
+mkdir -p /etc/v2ray
+sudo cp ~/Documents/config.json /usr/local/v2ray
+#sudo cp ~/Documents/config.json /etc/v2ray
+
+## 启动客户端
+cd /usr/local/v2ray
+nohup sudo ./v2ray &amp;
+#sudo ./v2ray --config=/etc/v2ray/config.json</code></pre>
+</div>
+<div id="配置命令行代理" class="section level1">
+<h1>配置命令行代理</h1>
+<pre class="bash"><code>## 1.安装 proxychains
+cd ~/Downloads
+git clone https://github.com/rofl0r/proxychains-ng
+cd proxychains-ng
+sudo ./configure --prefix=/usr --sysconfdir=/etc
+sudo make -j
+sudo make install
+sudo make install-config ## (安装proxychains.conf配置文件)
+
+
+## 2. 配置 proxychains
+sudo vim /etc/proxychains.conf
+## 在 在proxychains.conf文件末尾修改你的socks5服务地址,可以把sock4删除
+## 注意：可以通过查看 /etc/v2ray/config.json 查看端口，这里假定端口号是 1086
+[ProxyList]
+# add proxy here ...
+# meanwile
+# defaults set to &quot;tor&quot;
+#socks4         127.0.0.1 9050
+socks5  127.0.0.1 1086
+
+## 使用命令
+proxychains4 程序 参数
+
+curl www.twitter.com
+proxychains4 curl www.twitter.com
+
+[proxychains] config file found: /etc/proxychains.conf
+[proxychains] preloading /usr/lib/libproxychains4.so
+[proxychains] DLL init: proxychains-ng 4.14-git-8-gb8fa2a7
+[proxychains] Strict chain  ...  127.0.0.1:1086  ...  www.twitter.com:80  ...  OK</code></pre>
+</div>
+<div id="配置桌面客户端" class="section level1">
+<h1>配置桌面客户端</h1>
+<ol style="list-style-type: decimal">
+<li><p>在目录<code>/home/william/.local/share/applications</code> 下建立桌面客户端 `<code>v2ray.desktop</code></p></li>
+<li><p>内容填写</p>
+<pre class="bash"><code>[Desktop Entry]
+Categories=Network;Internet;
+Comment=A platform for building proxies to bypass network restrictions.
+Exec=/usr/local/v2ray/v2ray
+GenericName=V2Ray Client
+Icon=/home/william/.local/share/applications/v2ray.png
+Name=V2Ray
+Terminal=false
+Type=Application
+X-Deepin-Vendor=user-custom
+Name[en_US]=v2ray.desktop</code></pre></li>
+</ol>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2020-03-08</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E7%BF%BB%E5%A2%99/">翻墙</a>
+          
+          <a href="/tags/v2ray/">v2ray</a>
+          
+          <a href="/tags/ubuntu/">Ubuntu</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2020-03-10-ctp%E4%BD%8E%E5%BB%B6%E6%97%B6%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E7%A0%94%E7%A9%B6%E7%AC%94%E8%AE%B0/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">CTP低延时交易系统研究笔记</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2020-02-04-windows-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE-sublime-text-3/">
+            <span class="next-text nav-default">Windows: 安装与配置 Sublime Text 3</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

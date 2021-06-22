@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Docker 使用总结 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="使用 Docker 封装程序的运行环境，实现开发-测试的快速部署。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2020-06-24-docker-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Docker 使用总结" />
+<meta property="og:description" content="使用 Docker 封装程序的运行环境，实现开发-测试的快速部署。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2020-06-24-docker-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/" />
+<meta property="article:published_time" content="2020-06-24T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-06-24T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Docker 使用总结">
+<meta itemprop="description" content="使用 Docker 封装程序的运行环境，实现开发-测试的快速部署。">
+
+
+<meta itemprop="datePublished" content="2020-06-24T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-06-24T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2248">
+
+
+
+<meta itemprop="keywords" content="Linux,Docker,开发,封装,测试,c&#43;&#43;," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker 使用总结"/>
+<meta name="twitter:description" content="使用 Docker 封装程序的运行环境，实现开发-测试的快速部署。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">Docker 使用总结</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-06-24 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 2248 words </span>
+        <span class="more-meta"> 5 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2020-06-24T00:00:00" title="June 24, 2020">June 24, 2020</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div id="安装" class="section level1">
+<h1>安装</h1>
+<div id="ubuntu" class="section level2">
+<h2>Ubuntu</h2>
+<p><code>Ubuntu</code> 操作系统的安装步骤可以参考<a href="https://docs.docker.com/engine/install/ubuntu/">官网说明</a></p>
+<ol style="list-style-type: decimal">
+<li><p>卸载旧版本</p>
+<pre class="bash"><code>sudo apt-get remove docker docker-engine docker.io containerd runc
+
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+Package &#39;docker-engine&#39; is not installed, so not removed
+Package &#39;docker&#39; is not installed, so not removed
+Package &#39;containerd&#39; is not installed, so not removed
+Package &#39;docker.io&#39; is not installed, so not removed
+Package &#39;runc&#39; is not installed, so not removed
+0 upgraded, 0 newly installed, 0 to remove and 43 not upgraded.</code></pre></li>
+<li><p>添加软件源</p>
+<pre class="bash"><code>sudo apt-get update
+
+sudo apt-get install \
+   apt-transport-https \
+   ca-certificates \
+   curl \
+   gnupg-agent \
+   software-properties-common
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+echo $(lsb_release -cs)
+Linux Mint Releases
+Version Codename    Package base
+19.1    Tessa   Ubuntu Bionic
+19  Tara    Ubuntu Bionic
+18.3    Sylvia  Ubuntu Xenial
+18.2    Sonya   Ubuntu Xenial
+
+# sudo add-apt-repository &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable&quot;
+sudo add-apt-repository &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu Bionic stable&quot;</code></pre></li>
+<li><p>开始安装</p>
+<pre class="bash"><code>sudo apt-get update
+sudo apt install docker.io</code></pre></li>
+<li><p>设置启动服务</p>
+<pre class="bash"><code>sudo systemctl start docker
+
+## 添加开机启动
+sudo systemctl enable docker</code></pre></li>
+<li><p>查看 <code>Docker</code> 版本</p>
+<pre class="bash"><code>docker --version
+
+Docker version 19.03.6, build 369ce74a3c</code></pre></li>
+<li><p><code>Docker</code> 后台服务需要具有 <code>sudo</code> 权限。为了避免每次命令都输入<code>sudo</code>，可以把用户加入 Docker 用户组（<a href="https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user">官方文档</a>）。</p>
+<pre class="bash"><code>## 建立 docker 组
+sudo groupadd docker
+## 把当前用户添加到 docker 组
+sudo usermod -aG docker $USER</code></pre>
+<p>然后先退出账户(logout)，再次登录(login)即可使用 <code>docker</code> 命令了</p></li>
+<li><p>运行试试看</p>
+<pre class="bash"><code>docker run hello-world
+
+Unable to find image &#39;hello-world:latest&#39; locally
+
+latest: Pulling from library/hello-world
+0e03bdcc26d7: Pull complete
+Digest: sha256:d58e752213a51785838f9eed2b7a498ffa1cb3aa7f946dda11af39286c3db9a9
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+1. The Docker client contacted the Docker daemon.
+2. The Docker daemon pulled the &quot;hello-world&quot; image from the Docker Hub.
+   (amd64)
+3. The Docker daemon created a new container from that image which runs the
+   executable that produces the output you are currently reading.
+4. The Docker daemon streamed that output to the Docker client, which sent it
+   to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+$ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+https://hub.docker.com/
+
+For more examples and ideas, visit:
+https://docs.docker.com/get-started/</code></pre>
+<p>如果还有出现以下的报错，需要修改权限</p>
+<pre class="bash"><code>WARNING: Error loading config file: /home/william/.docker/config.json: stat /home/william/.docker/config.json: permission denied
+
+sudo chown william:william /home/william/.docker -R</code></pre></li>
+<li><p>由于某些原因，国内访问 <code>Docker</code> 的软件源速度是比较慢的。幸好，我们可以更改指定的源，使用国内阿里云或者网易可以大大的加速访问速度。</p>
+<pre class="bash"><code>## 修改 docker 配置文件
+sudo vim /etc/docker/daemon.json
+
+{
+ &quot;registry-mirrors&quot; : [
+   &quot;http://ovfftd6p.mirror.aliyuncs.com&quot;,
+   &quot;http://registry.docker-cn.com&quot;,
+   &quot;http://docker.mirrors.ustc.edu.cn&quot;,
+   &quot;http://hub-mirror.c.163.com&quot;
+ ],
+ &quot;insecure-registries&quot; : [
+   &quot;registry.docker-cn.com&quot;,
+   &quot;docker.mirrors.ustc.edu.cn&quot;
+ ],
+ &quot;debug&quot; : true,
+ &quot;experimental&quot; : true
+}
+
+sudo systemctl restart docker.service</code></pre></li>
+</ol>
+</div>
+<div id="centos" class="section level2">
+<h2>CentOS</h2>
+<ol style="list-style-type: decimal">
+<li><p>删除旧版本</p>
+<pre class="bash"><code>sudo yum remove docker \
+                 docker-client \
+                 docker-client-latest \
+                 docker-common \
+                 docker-latest \
+                 docker-latest-logrotate \
+                 docker-logrotate \
+                 docker-engine</code></pre></li>
+<li><p>添加软件源</p>
+<pre class="bash"><code>sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+sudo yum update</code></pre></li>
+<li><p>安装</p>
+<pre class="bash"><code>sudo yum install docker.io</code></pre></li>
+<li><p>也可以使用国内 daocloud 一键安装命令：</p>
+<pre><code>## 阿里
+curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+
+## daocloud
+curl -sSL https://get.daocloud.io/docker | sh</code></pre></li>
+<li><p>加入 docker 用户组命令</p>
+<pre class="bash"><code>sudo usermod -aG docker trader</code></pre></li>
+<li><p>添加启动</p>
+<pre class="bash"><code>sudo systemctl enable docker
+sudo systemctl start docker</code></pre></li>
+<li><p>运行测试</p>
+<pre class="bash"><code>sudo docker run hello-world</code></pre></li>
+</ol>
+</div>
+</div>
+<div id="基础概念" class="section level1">
+<h1>基础概念</h1>
+</div>
+<div id="编写-dockerfile" class="section level1">
+<h1>编写 Dockerfile</h1>
+<p>可以使用一下的模板来编写一个测试使用的 <code>CentOS7</code> 开发环境</p>
+<pre class="dockerfile"><code>FROM centos:7
+
+MAINTAINER WilliamFang
+LABEL Remarks=&quot;CentOS7.5 Develop&amp;Testing Environment&quot;
+
+RUN yum -y install vim git sudo &amp;&amp; yum -y install make &amp;&amp; \
+    yum -y install gcc gcc-c++ kernel-devel &amp;&amp; \
+    yum -y install cmake bzip2 htop tldr pigz pbzip2 &amp;&amp; \
+    yum -y install bzip2-devel.x86_64 &amp;&amp; \
+    yum -y install libxslt-devel libffi-devel openssl-devel libcurl-devel
+
+ENV PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+ENV LANG=en_US.UTF-8
+ENV BASH_ENV=~/.bashrc  \
+    ENV=~/.bashrc  \
+    PROMPT_COMMAND=&quot;source ~/.bashrc&quot;</code></pre>
+<p>然后使用命令开始搭建</p>
+<pre class="bash"><code>sudo docker build -t myctp:v1.0 .</code></pre>
+<p>然后就可以看到</p>
+<pre class="bash"><code>docker image ls
+
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+myctp               v1.0                91b0c32f2935        2 minutes ago       564MB
+centos              7                   b5b4d78bc90c        7 weeks ago         203MB</code></pre>
+<p>现在，我们就可以愉快的使用 <code>Docker</code> 进行测试了</p>
+<pre class="bash"><code>## 查看当前运行的 docker container
+docker ps -a
+
+CONTAINER ID    IMAGE    COMMAND    CREATED    STATUS    PORTS    NAMES</code></pre>
+<p>说明当前还没有生成相应的实例。我们可以启动使用命令启动</p>
+<pre class="bash"><code>## 使用 REPOSITORY:TAG
+## 使用 -v 可以挂载主机文件
+docker run -dit -v /home/william:/mnt myctp:v1.0 /bin/bash
+
+CONTAINER ID    IMAGE       COMMAND         CREATED         STATUS          PORTS   NAMES
+2b40845d0309    myctp:v1.0  &quot;/bin/bash&quot;     4 seconds ago   Up 3 seconds            upbeat_montalcini</code></pre>
+<p>然后开始启动</p>
+<pre class="bash"><code>## 挂载到实例
+docker exec -it b3c220b3c9c6 /bin/bash
+
+[root@b3c220b3c9c6 /]# whoami
+root
+
+[root@b3c220b3c9c6 /]# gcc -v
+Using built-in specs.
+COLLECT_GCC=gcc
+COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/4.8.5/lto-wrapper
+Target: x86_64-redhat-linux
+Configured with: ../configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=http://bugzilla.redhat.com/bugzilla --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,go,lto --enable-plugin --enable-initfini-array --disable-libgcj --with-isl=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/isl-install --with-cloog=/builddir/build/BUILD/gcc-4.8.5-20150702/obj-x86_64-redhat-linux/cloog-install --enable-gnu-indirect-function --with-tune=generic --with-arch_32=x86-64 --build=x86_64-redhat-linux
+Thread model: posix
+gcc version 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC) 
+[root@b3c220b3c9c6 /]# </code></pre>
+<p>退出会依然可以看到程序在运行中</p>
+<pre class="bash"><code>CONTAINER ID    IMAGE       COMMAND         CREATED         STATUS          PORTS   NAMES
+b3c220b3c9c6    myctp:v1.0  &quot;/bin/bash&quot;     2 minutes ago   Up 2 minutes            gallant_bell</code></pre>
+<div id="删除" class="section level2">
+<h2>删除</h2>
+<pre class="bash"><code>## 列出所有
+docker ps -aq
+#＃ 删除指定 id
+docker rm
+## 删除 image
+docker rmi</code></pre>
+<p>列出所有容器 ID</p>
+<pre><code>docker ps -aq</code></pre>
+<p>查看所有运行或者不运行容器</p>
+<pre><code>docker ps -a</code></pre>
+<p>停止所有的 container（容器），这样才能够删除其中的 images：</p>
+<pre><code>docker stop $(docker ps -a -q) 或者 docker stop $(docker ps -aq)</code></pre>
+<p>如果想要删除所有 container（容器）的话再加一个指令：</p>
+<pre><code>docker rm $(docker ps -a -q) 或者 docker rm $(docker ps -aq)</code></pre>
+<p>查看当前有些什么 images</p>
+<pre><code>docker images</code></pre>
+<p>删除 images（镜像），通过 image 的 id 来指定删除谁</p>
+<pre><code>docker rmi &lt;image id&gt;</code></pre>
+<p>想要删除 untagged images，也就是那些 id 为的 image 的话可以用</p>
+<pre><code>docker rmi $(docker images | grep &quot;^&lt;none&gt;&quot; | awk &quot;{print $3}&quot;)</code></pre>
+<p>要删除全部 image（镜像）的话</p>
+<pre><code>docker rmi $(docker images -q)</code></pre>
+<p>强制删除全部 image 的话</p>
+<pre><code>docker rmi -f $(docker images -q)</code></pre>
+<p>从容器到宿主机复制</p>
+<pre><code>docker cp tomcat：/webapps/js/text.js /home/admin
+ docker  cp 容器名:  容器路径       宿主机路径</code></pre>
+<p>从宿主机到容器复制</p>
+<pre><code>docker cp /home/admin/text.js tomcat：/webapps/js
+ docker cp 宿主路径中文件      容器名  容器路径</code></pre>
+<p>删除所有停止的容器</p>
+<pre><code>docker container prune</code></pre>
+<p>删除所有不使用的镜像</p>
+<pre><code>docker image prune --force --all或者docker image prune -f -a</code></pre>
+<p>停止、启动、杀死、重启一个容器</p>
+<pre><code>docker stop Name或者ID  
+docker start Name或者ID  
+docker kill Name或者ID  
+docker restart name或者ID</code></pre>
+</div>
+</div>
+<div id="发布-docker" class="section level1">
+<h1>发布 docker</h1>
+<p>为了方便移植，<code>Docker</code> 允许我们通过两个方式来分享配置好的运行环境。</p>
+<div id="docker-hub" class="section level2">
+<h2>Docker Hub</h2>
+<p>通过使用 <code>Docker Hub</code> 来发布。</p>
+</div>
+<div id="提交" class="section level2">
+<h2>提交</h2>
+<pre class="bash"><code>docker commit -a &quot;william&quot; -m &quot;myctp:v0.1&quot; -p myctp.new myctp:v0.1</code></pre>
+</div>
+<div id="导出" class="section level2">
+<h2>导出</h2>
+<pre class="bash"><code>docker save -o myctp.v0.1.tar myctp:v0.1</code></pre>
+</div>
+<div id="导入" class="section level2">
+<h2>导入</h2>
+<pre class="bash"><code>docker run -d --name myctp -it -v /home/william:/mnt myctp:v0.1 /bin/zsh</code></pre>
+</div>
+<div id="运行" class="section level2">
+<h2>运行</h2>
+<pre class="bash"><code>docker exec -it myctp.new /bin/zsh</code></pre>
+</div>
+<div id="提交-docker-hub" class="section level2">
+<h2>提交 Docker Hub</h2>
+<pre class="bash"><code>docker login
+UserName: williamlfnag
+Password: ************
+
+## 标记需要处理的image
+docker tag myctp:v0.1.2 williamlfang/myctp
+
+
+REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+myctp                v0.1.2              9c41f991a440        13 minutes ago      4.57GB
+williamlfang/myctp   latest              9c41f991a440        13 minutes ago      4.57GB
+myctp                v0.1.1              59c7bc923b02        3 days ago          4.02GB
+myctp                v0.1                e8a31774a8c6        4 days ago          2.49GB
+centos               7                   b5b4d78bc90c        8 weeks ago         203MB
+
+docker push williamlfang/myctp
+
+docker pull williamlfang/myctp</code></pre>
+</div>
+</div>
+<div id="使用-williamlfang" class="section level1">
+<h1>使用 <code>williamlfang</code></h1>
+<pre class="bash"><code>## 显示当前可用镜像
+docker image ls
+
+## 如果没有 williamlfang/myctp
+docker pull williamlfang/myctp
+
+## 再次确认已经下载到本地
+docker image ls
+
+## 基于此镜像生成 container
+docker run -d --name myctp.dockerhub -it williamlfang/myctp /bin/zsh
+## 查看 docker 目前的所有 container
+docker ps -a
+
+
+CONTAINER ID        IMAGE                COMMAND             CREATED             STATUS                       PORTS               NAMES
+dcc7924f4c1a        williamlfang/myctp   &quot;/bin/zsh&quot;          4 seconds ago       Up 3 seconds                                     myctp.dockerhub
+c57d4de5205b        f03a8c4cf617         &quot;/bin/zsh&quot;          12 days ago         Exited (255) 4 minutes ago                       myctp
+b50399b23d5b        myctp:v0.1           &quot;/bin/zsh&quot;          13 days ago         Exited (137) 13 days ago                         myctp.test
+11953e12a6b5        e2c0099752c8         &quot;/bin/zsh&quot;          13 days ago         Exited (137) 13 days ago                         myctp.new
+
+## 进入 container 操作
+docker exec -it myctp.dockerhub /bin/zsh</code></pre>
+<p>以下就是进入我们的操作系统后的截图显示</p>
+<pre class="bash"><code>⚡ root@centos7  /  j myctp
+anaconda-post.log  bin  data  dev  etc  home  lib  lib64  log  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+
+/root/myCTP
+build  CMakeLists.txt  config  CTP踩坑记.md  data  deps  include  libs  log  scripts  src
+
+⚡ root@centos7  myCTP  ll
+build  CMakeLists.txt  config  CTP踩坑记.md  data  deps  include  libs  log  scripts  src
+
+total 64K
+drwxr-xr-x 11 root root 4.0K Jul  4 17:06 .
+dr-xr-x---  1 root root 4.0K Jul 13 17:27 ..
+drwxr-xr-x  4 root root 4.0K Jul  4 16:59 build
+-rw-r--r--  1 root root 5.6K Jul  4 16:51 CMakeLists.txt
+drwxr-xr-x  2 root root 4.0K Jul  4 16:37 config
+-rw-r--r--  1 root root 5.0K Jul  4 16:37 CTP踩坑记.md
+drwx------  3 root root 4.0K Jul  4 17:06 data
+drwxr-xr-x  5 root root 4.0K Jul  4 16:42 deps
+drwxr-xr-x 10 root root 4.0K Jul  4 16:37 include
+drwxr-xr-x 11 root root 4.0K Jul  4 16:59 libs
+drwx------  4 root root 4.0K Jul  4 17:06 log
+drwxr-xr-x  2 root root 4.0K Jul  4 16:39 scripts
+drwxr-xr-x 10 root root 4.0K Jul  4 16:37 src</code></pre>
+</div>
+<div id="使用技巧" class="section level1">
+<h1>使用技巧</h1>
+<p>可以执行变量名称</p>
+<pre class="bash"><code>## 增加额外运行参数
+docker run -d \
+    --name ctpmd -it \
+    --restart=always \
+    --log-driver json-file \
+    --log-opt max-size=1000m \
+    --log-opt max-file=30 \
+    --network=&quot;host&quot; \
+    --ipc=&quot;host&quot; \
+    -e ACCOUNT=local_simnow \
+    -v /home/william/mkdata:/data \
+    registry.corp.highfortfunds.com/highfort/ctpmd:v0.1
+
+## 重新打 tag
+docker tag 8557026cb47e[原来的image id] registry.corp.highfortfunds.com/highfort/ctpmd:v0.1
+
+## 报错无法删除
+## Ref: https://stackoverflow.com/questions/38118791/can-t-delete-docker-image-with-dependent-child-images
+docker rmi $(docker images --filter &quot;dangling=true&quot; -q --no-trunc)
+docker rmi c565603bc87f
+
+# 设置日志文件
+
+docker tag 29db0d77705f  registry.corp.highfortfunds.com/highfort/ctpmd:v0.1
+
+docker push registry.corp.highfortfunds.com/highfort/ctpmd:v0.1
+docker pull registry.corp.highfortfunds.com/highfort/ctpmd:v0.1
+
+docker run -d \
+    --name ctpmd -it \
+    --restart=always \
+    --log-driver json-file \
+    --log-opt max-size=1000m \
+    --log-opt max-file=30 \
+    --network=&quot;host&quot; \
+    --ipc=&quot;host&quot; \
+    -e ACCOUNT=colo_gtja \
+    -v /data:/data \
+    registry.corp.highfortfunds.com/highfort/ctpmd:v0.1
+
+docker run -d \
+    --name ctpmd -it \
+    --restart=always \
+    --log-driver json-file \
+    --log-opt max-size=1000m \
+    --log-opt max-file=30 \
+    --network=&quot;host&quot; \
+    --ipc=&quot;host&quot; \
+    -e ACCOUNT=local_hf \
+    -v /data:/data \
+    registry.corp.highfortfunds.com/highfort/ctpmd:v0.1
+
+docker run -d \
+    --name ctpmd -it \
+    --restart=always \
+    --log-driver json-file \
+    --log-opt max-size=1000m \
+    --log-opt max-file=30 \
+    --network=&quot;host&quot; \
+    --ipc=&quot;host&quot; \
+    -e ACCOUNT=local_zz \
+    -v /data:/data \
+    registry.corp.highfortfunds.com/highfort/ctpmd:v0.1
+
+docker exec -it ctpmd /bin/bash</code></pre>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2020-06-24</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">Linux</a>
+          
+          <a href="/tags/docker/">Docker</a>
+          
+          <a href="/tags/%E5%BC%80%E5%8F%91/">开发</a>
+          
+          <a href="/tags/%E5%B0%81%E8%A3%85/">封装</a>
+          
+          <a href="/tags/%E6%B5%8B%E8%AF%95/">测试</a>
+          
+          <a href="/tags/c&#43;&#43;/">c&#43;&#43;</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2020-06-26-%E4%BE%AF%E6%8D%B7-c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">侯捷: C&#43;&#43; 面向对象高级编程</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2020-06-16-mysql-%E6%8C%87%E5%AE%9A%E5%AE%89%E8%A3%85%E7%89%88%E6%9C%AC5.5/">
+            <span class="next-text nav-default">MySQL: 指定安装版本5.5</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

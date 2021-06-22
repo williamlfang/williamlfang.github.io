@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>frp 实现域名解析 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="使用 frp 配合 godday 实现内网服务直接解析成二级域名。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="frp 实现域名解析" />
+<meta property="og:description" content="使用 frp 配合 godday 实现内网服务直接解析成二级域名。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" />
+<meta property="article:published_time" content="2020-09-11T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-09-11T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="frp 实现域名解析">
+<meta itemprop="description" content="使用 frp 配合 godday 实现内网服务直接解析成二级域名。">
+
+
+<meta itemprop="datePublished" content="2020-09-11T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-09-11T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1209">
+
+
+
+<meta itemprop="keywords" content="frp,godaddy,内网,穿透,端口,域名,解析,网站," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="frp 实现域名解析"/>
+<meta name="twitter:description" content="使用 frp 配合 godday 实现内网服务直接解析成二级域名。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">frp 实现域名解析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-11 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1209 words </span>
+        <span class="more-meta"> 3 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2020-09-11T00:00:00" title="September 11, 2020">September 11, 2020</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div id="godday-域名解析" class="section level1">
+<h1>godday 域名解析</h1>
+<p><code>godaddy</code> 提供了<strong>泛域名解析</strong>，即通过二级域名即可匹配在服务器特定端口运行的后台服务，如 <code>8080</code> 对应的 <code>gitlab</code> 端口服务。</p>
+<p>使用 godaddy 的 DNS Management 面板，增加一条域名</p>
+<table>
+<tbody>
+<tr class="odd">
+<td align="left">类型</td>
+<td align="left">名称</td>
+<td align="left">值</td>
+<td align="left">TTL</td>
+<td align="left">操作</td>
+</tr>
+<tr class="even">
+<td align="left">A</td>
+<td align="left">@</td>
+<td align="left">Parked</td>
+<td align="left">600 秒</td>
+<td align="left">编辑</td>
+</tr>
+<tr class="odd">
+<td align="left">A</td>
+<td align="left">*</td>
+<td align="left">80.251.219.73</td>
+<td align="left">999999999 秒</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<div class="figure">
+<img src="/images/2020-09-11-frp-实现域名解析/godaddy.png" />
+
+</div>
+</div>
+<div id="vps-开启-804437500-端口" class="section level1">
+<h1>vps 开启 80,443,7500 端口</h1>
+<p>为了能够在浏览器支持直接打开网页地址，我们需要通过 vps 上运行的 frp <code>80</code> 端口去自动匹配相关的转发端口。这样，在客户端，只需要记住相应的二级域名即可。</p>
+<pre class="bash"><code>systemctl start firewalld.service
+
+## http
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+## https
+firewall-cmd --zone=public --add-port=443/tcp --permanent
+## frp 管理端口
+firewall-cmd --zone=public --add-port=7500/tcp --permanent
+
+systemctl stop firewalld.service</code></pre>
+</div>
+<div id="frps-设置" class="section level1">
+<h1>frps 设置</h1>
+<p>在服务器上面，设置 <code>frps.ini</code></p>
+<pre class="bash"><code>[common]
+# A literal address or host name for IPv6 must be enclosed
+# in square brackets, as in &quot;[::1]:80&quot;, &quot;[ipv6-host]:http&quot; or &quot;[ipv6-host%zone]:80&quot;
+bind_addr = 0.0.0.0
+bind_port = 7000
+
+# udp port to help make udp hole to penetrate nat
+#bind_udp_port = 9001
+
+# udp port used for kcp protocol, it can be same with &#39;bind_port&#39;
+# if not set, kcp is disabled in frps
+#kcp_bind_port = 9000
+
+# specify which address proxy will listen for, default value is same with bind_addr
+# proxy_bind_addr = 127.0.0.1
+
+# if you want to support virtual host, you must set the http port for listening (optional)
+# Note: http port and https port can be same with bind_port
+vhost_http_port = 80
+vhost_https_port = 433
+
+# response header timeout(seconds) for vhost http server, default is 60s
+# vhost_http_timeout = 60
+
+# set dashboard_addr and dashboard_port to view dashboard of frps
+# dashboard_addr&#39;s default value is same with bind_addr
+# dashboard is available only if dashboard_port is set
+dashboard_addr = 0.0.0.0
+dashboard_port = 7500
+
+# dashboard user and passwd for basic auth protect, if not set, both default value is admin
+dashboard_user = *********
+dashboard_pwd = *********
+
+# dashboard assets directory(only for debug mode)
+# assets_dir = ./static
+# console or real logFile path like ./frps.log
+#log_file = ./frps.log
+
+# trace, debug, info, warn, error
+log_level = trace
+
+log_max_days = 3
+
+# disable log colors when log_file is console, default is false
+disable_log_color = false
+
+# auth token
+token = *********
+
+# heartbeat configure, it&#39;s not recommended to modify the default value
+# the default value of heartbeat_timeout is 90
+# heartbeat_timeout = 90
+
+# only allow frpc to bind ports you list, if you set nothing, there won&#39;t be any limit
+#allow_ports = 5000-5010,8080
+
+# pool_count in each proxy will change to max_pool_count if they exceed the maximum value
+max_pool_count = 10
+
+# max ports can be used for each client, default value is 0 means no limit
+max_ports_per_client = 0
+
+# if subdomain_host is not empty, you can set subdomain when type is http or https in frpc&#39;s configure file
+# when subdomain is test, the host used by routing is test.frps.com
+subdomain_host = williamlfang.com
+
+# if tcp stream multiplexing is used, default is true
+tcp_mux = true
+
+# custom 404 page for HTTP requests
+# custom_404_page = /path/to/404.html
+
+[plugin.user-manager]
+#addr = 127.0.0.1:9000
+#path = /handler
+#ops = Login
+
+[plugin.port-manager]
+#addr = 127.0.0.1:9001
+#path = /handler
+#ops = NewProxy</code></pre>
+<p>然后运行</p>
+<pre class="bash"><code>nohup ./frps -c frps.ini &amp;</code></pre>
+<p>现在，我们便可以登录网址：<a href="http://frp.williamlfang.com:7500/" class="uri">http://frp.williamlfang.com:7500/</a> ，可视化的管理 frp 窗口了。</p>
+<div class="figure">
+<img src="/images/2020-09-11-frp-实现域名解析/frp管理界面.png" />
+
+</div>
+</div>
+<div id="frpc-设置" class="section level1">
+<h1>frpc 设置</h1>
+<p>在客户端设置 <code>frpc</code></p>
+<pre class="bash"><code>[common]
+server_addr = frp.williamlfang.com
+server_port = 7000
+token = 
+
+[ssh135]
+type = tcp
+local_ip = 192.168.1.135
+local_port = 22
+remote_port = 6135
+
+[ssh199]
+type = tcp
+local_ip = 192.168.1.199
+local_port = 22
+remote_port = 6199
+
+[ssh135_gitlab]
+type = http
+local_ip = 192.168.1.135
+local_port = 58080
+subdomain = gitlab
+
+[ssh135_docker]
+type = http
+local_ip = 192.168.1.135
+local_port = 5000
+subdomain = docker
+
+[ssh135_docker_web]
+type = http
+local_ip = 192.168.1.135
+local_port = 5001
+subdomain = dockerweb</code></pre>
+<p>这里的关键步骤是，我们需要把远程的 `<code>server_addr</code> 设置成 <code>frp.williamlfang.com</code>，这个是一级域名，然后通过底下的二级域名 <code>gitlab</code> 找到对应的端口服务。</p>
+<p>可以试着打开 <code>http://gitlab.williamlfang.com/</code>，发现不需要记住端口，即可访问服务器的 <code>gitlab</code> 服务项目了。</p>
+</div>
+<div id="gitlab-如何-clone" class="section level1">
+<h1>gitlab 如何 clone</h1>
+<p>由于 <code>gitlab</code> 是处理当前内部网络，无法直接通过 <code>ssh</code> 进行 <code>git clone</code>，我们可以指定 <code>https</code> 的形式，把相应的端口转发出来。这里，<code>http://192.168.1.135:58080/fl/myctp.git</code> 对应的是 <code>http://gitlab.williamlfang.com/fl/myctp.git</code></p>
+<pre class="bash"><code>git clone http://gitlab.williamlfang.com/fl/myctp.git</code></pre>
+<p>然后可以通过 <code>.git/config</code> 设置账户密码，下次就不用再输入了</p>
+<pre class="bash"><code>vim .git/config
+
+[core]
+    repositoryformatversion = 0
+    filemode = true
+    bare = false
+    logallrefupdates = true
+[remote &quot;origin&quot;]
+    url = http://用户名:密码@gitlab.williamlfang.com/fl/myctp.git
+    fetch = +refs/heads/*:refs/remotes/origin/*
+[branch &quot;master&quot;]
+    remote = origin
+    merge = refs/heads/master</code></pre>
+</div>
+<div id="docker-访问" class="section level1">
+<h1>Docker 访问</h1>
+<p>类似的，我们也可以设置 docker 的访问</p>
+<pre class="bash"><code>## 编辑 /etc/docker/daemon.json
+## 添加 &quot;insecure-registries&quot; 里面的 &quot;docker.williamlfang.com&quot;
+sudo vim /etc/docker/daemon.json
+
+{
+  &quot;registry-mirrors&quot; : [
+    &quot;http://ovfftd6p.mirror.aliyuncs.com&quot;,
+    &quot;http://registry.docker-cn.com&quot;,
+    &quot;http://docker.mirrors.ustc.edu.cn&quot;,
+    &quot;http://hub-mirror.c.163.com&quot;
+  ],
+  &quot;insecure-registries&quot; : [
+    &quot;registry.docker-cn.com&quot;,
+    &quot;docker.mirrors.ustc.edu.cn&quot;,
+    &quot;docker.williamlfang.com&quot;
+  ],
+  &quot;debug&quot; : true,
+  &quot;experimental&quot; : true,
+  &quot;log-driver&quot;: &quot;json-file&quot;,
+  &quot;log-opts&quot;: {
+    &quot;max-size&quot;: &quot;1m&quot;,
+    &quot;max-file&quot;: &quot;10&quot;
+  }
+}
+sudo systemctl restart docker
+## 获取镜像
+docker pull docker.williamlfang.com/testing</code></pre>
+</div>
+<div id="参考链接" class="section level1">
+<h1>参考链接</h1>
+<ul>
+<li><a href="http://iytc.net/wordpress/?p=3299">frp内网穿透服务器搭建及免费frp服务器提供</a></li>
+</ul>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2020-09-11</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/frp/">frp</a>
+          
+          <a href="/tags/godaddy/">godaddy</a>
+          
+          <a href="/tags/%E5%86%85%E7%BD%91/">内网</a>
+          
+          <a href="/tags/%E7%A9%BF%E9%80%8F/">穿透</a>
+          
+          <a href="/tags/%E7%AB%AF%E5%8F%A3/">端口</a>
+          
+          <a href="/tags/%E5%9F%9F%E5%90%8D/">域名</a>
+          
+          <a href="/tags/%E8%A7%A3%E6%9E%90/">解析</a>
+          
+          <a href="/tags/%E7%BD%91%E7%AB%99/">网站</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2020-09-21-clickhouse-%E9%AB%98%E6%80%A7%E8%83%BD%E5%88%97%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Clickhouse 高性能列式数据库</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2020-09-06-centos7-%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-dockerhub/">
+            <span class="next-text nav-default">CentOS7 搭建私有 DockerHub</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

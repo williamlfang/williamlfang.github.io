@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux 多网卡 bond - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="通过把 Linux 多个网卡绑定成一个虚拟网卡，可以实现多网卡带宽叠加、负载均衡、主从备用等多种功能。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2021-03-27-linux-%E5%A4%9A%E7%BD%91%E5%8D%A1-bond/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Linux 多网卡 bond" />
+<meta property="og:description" content="通过把 Linux 多个网卡绑定成一个虚拟网卡，可以实现多网卡带宽叠加、负载均衡、主从备用等多种功能。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2021-03-27-linux-%E5%A4%9A%E7%BD%91%E5%8D%A1-bond/" />
+<meta property="article:published_time" content="2021-03-27T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2021-03-27T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Linux 多网卡 bond">
+<meta itemprop="description" content="通过把 Linux 多个网卡绑定成一个虚拟网卡，可以实现多网卡带宽叠加、负载均衡、主从备用等多种功能。">
+
+
+<meta itemprop="datePublished" content="2021-03-27T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2021-03-27T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1363">
+
+
+
+<meta itemprop="keywords" content="Linux,bond,网卡,网络," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux 多网卡 bond"/>
+<meta name="twitter:description" content="通过把 Linux 多个网卡绑定成一个虚拟网卡，可以实现多网卡带宽叠加、负载均衡、主从备用等多种功能。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">Linux 多网卡 bond</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-03-27 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1363 words </span>
+        <span class="more-meta"> 3 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="hint">
+      <p>[NOTE] Updated <span class="timeago" datetime="2021-03-27T00:00:00" title="March 27, 2021">March 27, 2021</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p><code>bond</code> 可以将多个网卡绑定到一起，可以让两个或多个接口作为一个接口，同时提高带宽，并提供网络链路的冗余，当有其中一块网卡故障的时候，不会中断服务器的业务。</p>
+<div id="查看系统-bond" class="section level1">
+<h1>查看系统 bond</h1>
+<pre class="bash"><code>###bond模块常用信息
+## 查看bond模块信息
+modinfo bonding
+ 
+## 查看bond模块是否加载
+lsmod | grep bonding
+ 
+## 加载bond模块
+modprobe --first-time bonding        ##临时加载，重启失效
+modprobe bonding                     ##永久加载
+
+## 可以卸载模块
+modprobe -r bonding</code></pre>
+</div>
+<div id="设置网卡bond" class="section level1">
+<h1>设置网卡bond</h1>
+<p><code>CentOS7</code> 的网卡配置位于 `<code>/etc/sysconfig/network-scripts</code></p>
+<pre class="bash"><code>cd /etc/sysconfig/network-scripts
+
+-rw-r--r--. 1 root root   363 Mar 23 07:52 ifcfg-em1
+-rw-r--r--. 1 root root   100 Mar 26 05:56 ifcfg-em2
+-rw-r--r--. 1 root root   100 Mar 26 05:56 ifcfg-em3
+-rw-r--r--. 1 root root   275 Mar 20 02:45 ifcfg-em4
+-rw-r--r--. 1 root root   254 Aug 24  2018 ifcfg-lo
+-rw-r--r--. 1 root root   281 Mar 22 08:42 ifcfg-p1p1
+-rw-r--r--. 1 root root   312 Mar 25 06:27 ifcfg-p1p2
+lrwxrwxrwx. 1 root root    24 Mar 20 02:42 ifdown -&gt; ../../../usr/sbin/ifdown
+-rwxr-xr-x. 1 root root   654 Aug 24  2018 ifdown-bnep
+-rwxr-xr-x. 1 root root  6532 Aug 24  2018 ifdown-eth
+-rwxr-xr-x. 1 root root  6190 Oct 30  2018 ifdown-ib
+-rwxr-xr-x. 1 root root   781 Aug 24  2018 ifdown-ippp
+-rwxr-xr-x. 1 root root  4540 Aug 24  2018 ifdown-ipv6
+lrwxrwxrwx. 1 root root    11 Mar 20 02:42 ifdown-isdn -&gt; ifdown-ippp
+-rwxr-xr-x. 1 root root  2130 Aug 24  2018 ifdown-post
+-rwxr-xr-x. 1 root root  1068 Aug 24  2018 ifdown-ppp
+-rwxr-xr-x. 1 root root   870 Aug 24  2018 ifdown-routes
+-rwxr-xr-x. 1 root root  1456 Aug 24  2018 ifdown-sit
+-rwxr-xr-x. 1 root root  1621 Mar 17  2017 ifdown-Team
+-rwxr-xr-x. 1 root root  1556 Mar 17  2017 ifdown-TeamPort
+-rwxr-xr-x. 1 root root  1462 Aug 24  2018 ifdown-tunnel
+lrwxrwxrwx. 1 root root    22 Mar 20 02:42 ifup -&gt; ../../../usr/sbin/ifup
+-rwxr-xr-x. 1 root root 12415 Aug 24  2018 ifup-aliases
+-rwxr-xr-x. 1 root root   910 Aug 24  2018 ifup-bnep
+-rwxr-xr-x. 1 root root 13475 Aug 24  2018 ifup-eth
+-rwxr-xr-x. 1 root root 10114 Oct 30  2018 ifup-ib
+-rwxr-xr-x. 1 root root 12075 Aug 24  2018 ifup-ippp
+-rwxr-xr-x. 1 root root 11893 Aug 24  2018 ifup-ipv6
+lrwxrwxrwx. 1 root root     9 Mar 20 02:42 ifup-isdn -&gt; ifup-ippp
+-rwxr-xr-x. 1 root root   650 Aug 24  2018 ifup-plip
+-rwxr-xr-x. 1 root root  1064 Aug 24  2018 ifup-plusb
+-rwxr-xr-x. 1 root root  4997 Aug 24  2018 ifup-post
+-rwxr-xr-x. 1 root root  4154 Aug 24  2018 ifup-ppp
+-rwxr-xr-x. 1 root root  2001 Aug 24  2018 ifup-routes
+-rwxr-xr-x. 1 root root  3303 Aug 24  2018 ifup-sit
+-rwxr-xr-x. 1 root root  1755 Mar 17  2017 ifup-Team
+-rwxr-xr-x. 1 root root  1876 Mar 17  2017 ifup-TeamPort
+-rwxr-xr-x. 1 root root  2711 Aug 24  2018 ifup-tunnel
+-rwxr-xr-x. 1 root root  1836 Aug 24  2018 ifup-wireless
+-rw-r--r--. 1 root root  2206 Mar 26 05:50 inactive
+-rwxr-xr-x. 1 root root  5419 Aug 24  2018 init.ipv6-global
+-rw-r--r--. 1 root root 20671 Aug 24  2018 network-functions
+-rw-r--r--. 1 root root 31027 Aug 24  2018 network-functions-ipv6</code></pre>
+<p>可以看到，当前系统有4个 <code>em</code> 千兆网卡，已经2个 <code>p1</code> 万兆网卡，接下来我们把 <code>em2</code> 和 <code>em3</code> bond 到一个虚拟网卡上。注意，最好先备份网卡配置信息，因为我们做 bond 的时候不需要网卡 <code>mac</code> 地址，所以原来的信息会被删除，备份一个原来的文件比较安全。</p>
+<p>说明：把原有的配置 ip 信息去掉，把 BOOTPROTO 修改成 none，然后新加 MASTER=bond0，SLAVE=yes 即可</p>
+<pre class="bash"><code>## 网卡 em2，不需要 mac 地址，绑定到 bond0
+vim ifcfg-em2
+
+NAME=em2
+DEVICE=em2
+TYPE=Ethernet
+BOOTPROTO=none
+NM_CONTROLLED=no
+ONBOOT=yes
+MASTER=bond0
+SLAVE=yes
+
+## 网卡 em3，不需要 mac 地址，绑定到 bond0
+vim ifcfg-em3
+
+NAME=em3
+DEVICE=em3
+TYPE=Ethernet
+BOOTPROTO=none
+NM_CONTROLLED=no
+ONBOOT=yes
+MASTER=bond0
+SLAVE=yes
+
+## 开始设置 bond0，设置模式 6：负载均衡
+vim ifcfg-bond0
+
+DEVICE=bond0
+TYPE=Ethernet
+BOOTPROTO=static
+BONDING_MASTER=yes
+ONBOOT=yes
+BOOTPROTO=none
+BONDING_OPTS=&quot;mode=6 miimon=100&quot;  ## 配置此项就无需创建modprobe.conf文件
+IPADDR=192.168.1.213
+PREFIX=24
+GATEWAY=192.168.1.1
+DNS1=8.8.8.8
+DNS2=114.114.114.114</code></pre>
+<p>现在，我们可以重启网络</p>
+<pre class="bash"><code># 重启网络
+systemctl restart network
+
+## 如果报错 Failed to start LSB: Bring up/down networking
+## 可能跟 NetworkManager 服务有冲突
+systemctl stop NetworkManager
+chkconfig NetworkManager off
+
+# 查看bond信息
+cat /proc/net/bonding/bond0</code></pre>
+<p>看到，目前的模式已经是 <code>adaptive load balancing</code></p>
+<pre class="bash"><code>Bonding Mode: adaptive load balancing
+Primary Slave: None
+Currently Active Slave: em2
+MII Status: up
+MII Polling Interval (ms): 100
+Up Delay (ms): 0
+Down Delay (ms): 0
+
+Slave Interface: em2
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 2c:ea:7f:ea:9b:29
+Slave queue ID: 0
+
+Slave Interface: em3
+MII Status: up
+Speed: 1000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: 2c:ea:7f:ea:9b:2a
+Slave queue ID: 0</code></pre>
+<p>我们可以查看一下当前 bond0 的网络配置，看出来网卡已经可以使用叠加后的网速了</p>
+<pre class="bash"><code>ethtool bond0
+Settings for bond0:
+        Supported ports: [ ]
+        Supported link modes:   Not reported
+        Supported pause frame use: No
+        Supports auto-negotiation: No
+        Supported FEC modes: Not reported
+        Advertised link modes:  Not reported
+        Advertised pause frame use: No
+        Advertised auto-negotiation: No
+        Advertised FEC modes: Not reported
+        Speed: 13000Mb/s
+        Duplex: Full
+        Port: Other
+        PHYAD: 0
+        Transceiver: internal
+        Auto-negotiation: off
+        Link detected: yes</code></pre>
+</div>
+<div id="bond-的配置参数详解" class="section level1">
+<h1>bond 的配置参数详解</h1>
+<pre class="bash"><code>miimon    指定链路监控频率，单位毫秒，默认值为0(关闭),一般设置100以上
+ 
+mode      指定一种绑定策略，默认值为0(balance-rr)轮询。
+    0    balance-rr    轮询策略(round-robin)
+    1    active-backup 主备策略(当主网卡不可用时，启动备用)
+    2    balance-xor   XOR策略
+    3    broadcast     广播策略
+    4    802.3ad       动态链接聚合,创建具有相同速度的聚合组和双工设置
+    5    balance-tlb   发送负载均衡
+    6    balance-alb   收发负载均衡(各个网络实现负载均衡，我们选择此模式)
+ 
+max_bonds    指定创建bond的数量，默认1
+ 
+更多帮助查看/usr/share/doc/iputils-20160308/README.bonding</code></pre>
+</div>
+<div id="常用命令" class="section level1">
+<h1>常用命令</h1>
+<pre><code>ifdown em1
+ifup em1
+
+ethtool em1
+
+ethtool bond0
+
+cat /proc/net/bonding/bond0</code></pre>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2021-03-27</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">Linux</a>
+          
+          <a href="/tags/bond/">bond</a>
+          
+          <a href="/tags/%E7%BD%91%E5%8D%A1/">网卡</a>
+          
+          <a href="/tags/%E7%BD%91%E7%BB%9C/">网络</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2021-03-28-autossh-%E5%AE%9E%E7%8E%B0%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">autossh 实现反向代理自动重连</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2021-03-19-docker-%E6%90%AD%E5%BB%BA-openwrt/">
+            <span class="next-text nav-default">Docker 搭建 openwrt</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

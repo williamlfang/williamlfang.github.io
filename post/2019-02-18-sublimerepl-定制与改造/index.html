@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>SublimeREPL: 定制与改造 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" />
+  <meta name="description" content="Sublime 是一款提供了可自定义的强大编辑器。我们可以根据个人的使用习惯，通过修改相应的参数配置，就可以搭建一个得心应手的编程环境。
+" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-02-18-sublimerepl-%E5%AE%9A%E5%88%B6%E4%B8%8E%E6%94%B9%E9%80%A0/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="SublimeREPL: 定制与改造" />
+<meta property="og:description" content="Sublime 是一款提供了可自定义的强大编辑器。我们可以根据个人的使用习惯，通过修改相应的参数配置，就可以搭建一个得心应手的编程环境。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-02-18-sublimerepl-%E5%AE%9A%E5%88%B6%E4%B8%8E%E6%94%B9%E9%80%A0/" />
+<meta property="article:published_time" content="2019-02-18T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-02-18T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="SublimeREPL: 定制与改造">
+<meta itemprop="description" content="Sublime 是一款提供了可自定义的强大编辑器。我们可以根据个人的使用习惯，通过修改相应的参数配置，就可以搭建一个得心应手的编程环境。">
+
+
+<meta itemprop="datePublished" content="2019-02-18T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-02-18T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1711">
+
+
+
+<meta itemprop="keywords" content="sublime,REPL,IDE,python,R,改造,编辑器," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SublimeREPL: 定制与改造"/>
+<meta name="twitter:description" content="Sublime 是一款提供了可自定义的强大编辑器。我们可以根据个人的使用习惯，通过修改相应的参数配置，就可以搭建一个得心应手的编程环境。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">SublimeREPL: 定制与改造</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-02-18 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1711 words </span>
+        <span class="more-meta"> 4 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-02-18T00:00:00" title="February 18, 2019">February 18, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      <p><code>Sublime</code> 是一款提供了可自定义的强大<strong>编辑器</strong>。我们可以根据个人的使用习惯，通过修改相应的参数配置，就可以搭建一个得心应手的编程环境。</p>
+
+<p>对于现代（c以后）的解释型编程语言，基本上都是支持 <code>REPL</code> 的，即 <code>read-evalue-print-loop</code><sup class="footnote-ref" id="fnref:wiki-read-evalue"><a href="#fn:wiki-read-evalue">1</a></sup>，简单来说，就是可以在源文件与解释器之间进行实时的交互。这一点尤其是对于数据分析工作意义重大。一般而言，我们使用 <code>R</code> 或则 <code>python</code> 対数据进行探索性分析时，往往需要在程序与结果之间进行多次的交互分析，通过程序来查看结果，同时又通过结果来修改程序。很难想象如果没有 <code>REPL</code> 的支持，仅凭借编译语言，每次修改程序后都需要重新编译、执行，工作量是多么的巨大。</p>
+
+<p>而做为一款现代的、优秀的编辑器，<code>Sublime Text</code> 当然夜提供了支持 <code>REPL</code> 的功能了。通过安装相关的插件，并设置一定的参数，我们便可以把 <code>sublime</code> 改造成为一个称心如意的数据分析套件了。</p>
+
+<h1 id="安装插件">安装插件</h1>
+
+<p>可以通过调用 <code>shift+ctrl+p</code> 来安装需要的插件：</p>
+
+<ul>
+<li><code>SublimeREPl</code>：支持 <code>REPL</code> 交互</li>
+<li><code>SendCode</code>：发送代码到 <code>SublimeREPL</code></li>
+</ul>
+
+<p>安装完成后，我们可以在 <code>sublime</code> 的菜单中，打开 <code>Preferences -&gt; Browse Packages</code> 查看已安装的插件，这也是后面改造插件的配置文件所在。</p>
+
+<h1 id="改造">改造</h1>
+
+<p>下面，我们一步步地完成対 <code>SublimeREPL</code> 进行改造。</p>
+
+<h2 id="执行终端显示代码">执行终端显示代码</h2>
+
+<p>可以在执行的终端显示已发送的代码。打开 <code>Preference -&gt; Package Setting</code>，然后找到 <code>SublimeREPL</code>，打开 <code>Settigns-User</code>：</p>
+
+<pre><code class="language-bash">{
+	&quot;show_transferred_text&quot;: true,
+}
+</code></pre>
+
+<p>这样，我们便可以在终端看到已经执行了哪些代码。</p>
+
+<h2 id="修改快捷键">修改快捷键</h2>
+
+<p>可以配置快捷键，用于打开特定的编程环境，如 <code>R</code>、<code>python</code>。同时，我们还可以通过 <code>ssh</code> 直接连接到远程服务器，实现在本地编辑器修改源文件、在远程服务器执行代码。</p>
+
+<p>打开 <code>Preference -&gt; Key Bindings</code></p>
+
+<h3 id="r-编程">R 编程</h3>
+
+<ul>
+<li><p>local machine</p>
+
+<pre><code class="language-bash">// 使用 F5 打开 本地R
+  { &quot;keys&quot;: [&quot;f5&quot;],
+  &quot;caption&quot;: &quot;SublimeREPL: R&quot;,
+  &quot;command&quot;:&quot;repl_open&quot;,&quot;args&quot;:
+  {
+  &quot;type&quot;: &quot;subprocess&quot;,
+  &quot;external_id&quot;: &quot;r&quot;,
+  &quot;additional_scopes&quot;: [&quot;tex.latex.knitr&quot;],
+  &quot;encoding&quot;: {
+  &quot;windows&quot;: &quot;$win_cmd_encoding&quot;,
+  &quot;linux&quot;: &quot;utf8&quot;,
+  &quot;osx&quot;: &quot;utf8&quot;
+  },
+  &quot;soft_quit&quot;: &quot;\nquit(save=\&quot;no\&quot;)\n&quot;,
+  &quot;cmd&quot;: {
+        &quot;linux&quot;: [&quot;R&quot;, &quot;--interactive&quot;, &quot;--no-readline&quot;],
+        &quot;osx&quot;:   [&quot;R&quot;, &quot;--interactive&quot;, &quot;--no-readline&quot;],
+        &quot;windows&quot;: [&quot;Rterm.exe&quot;, &quot;--ess&quot;, &quot;--encoding=$win_cmd_encoding&quot;]
+        },
+  &quot;cwd&quot;: &quot;$file_path&quot;,
+  &quot;extend_env&quot;: {&quot;osx&quot;: {&quot;PATH&quot;: &quot;{PATH}:/usr/local/bin&quot;},
+  &quot;linux&quot;: {&quot;PATH&quot;: &quot;{PATH}:/usr/local/bin&quot;},
+  &quot;windows&quot;: {}},
+  &quot;cmd_postfix&quot;: &quot;\n&quot;,
+  &quot;suppress_echo&quot;: {&quot;osx&quot;: true,
+  &quot;linux&quot;: true,
+  &quot;windows&quot;: false},
+  &quot;syntax&quot;: &quot;Packages/R/R Console.tmLanguage&quot;
+  }
+  },
+</code></pre>
+
+<ul>
+<li>remote server</li>
+</ul>
+
+<pre><code class="language-bash">// 使用 F6 打开 远程R
+  { &quot;keys&quot;: [&quot;f6&quot;],
+  &quot;caption&quot;: &quot;SublimeREPL: Rssh135&quot;,
+  &quot;command&quot;:&quot;repl_open&quot;,&quot;args&quot;:
+  {
+  &quot;type&quot;: &quot;subprocess&quot;,
+  &quot;external_id&quot;: &quot;r&quot;,
+  &quot;additional_scopes&quot;: [&quot;tex.latex.knitr&quot;],
+  &quot;encoding&quot;: {
+  &quot;windows&quot;: &quot;$win_cmd_encoding&quot;,
+  &quot;linux&quot;: &quot;utf8&quot;,
+  &quot;osx&quot;: &quot;utf8&quot;
+  },
+  &quot;soft_quit&quot;: &quot;\nquit(save=\&quot;no\&quot;)\n&quot;,
+  &quot;cmd&quot;: {
+    &quot;linux&quot;: [&quot;ssh&quot;,&quot;fl@192.168.1.135&quot;,&quot;-p22&quot;,&quot;R&quot;,&quot;--interactive&quot;, &quot;--no-readline&quot;],
+    &quot;osx&quot;:   [&quot;ssh&quot;,&quot;fl@gczhang.imwork.net&quot;, &quot;-p58873&quot;,&quot;R&quot;,&quot;--interactive&quot;, &quot;--no-readline&quot;]
+        },
+  &quot;cwd&quot;: &quot;$file_path&quot;,
+  &quot;extend_env&quot;: {&quot;osx&quot;: {&quot;PATH&quot;: &quot;{PATH}:/usr/local/bin&quot;},
+  &quot;linux&quot;: {&quot;PATH&quot;: &quot;{PATH}:/usr/local/bin&quot;},
+  &quot;windows&quot;: {}},
+  &quot;cmd_postfix&quot;: &quot;\n&quot;,
+  &quot;suppress_echo&quot;: {&quot;osx&quot;: true,
+  &quot;linux&quot;: true,
+  &quot;windows&quot;: false},
+  &quot;syntax&quot;: &quot;Packages/R/R Console.tmLanguage&quot;
+  }
+  },
+</code></pre></li>
+</ul>
+
+<h3 id="python-编程">python 编程</h3>
+
+<ul>
+<li><p><code>python2</code></p>
+
+<pre><code class="language-bash">// 使用 F2 打开 本地python2
+  { &quot;keys&quot;: [&quot;f2&quot;],
+  &quot;caption&quot;: &quot;SublimeREPL: Python2&quot;,
+  &quot;command&quot;:&quot;repl_open&quot;,&quot;args&quot;:
+  {
+  &quot;type&quot;: &quot;subprocess&quot;,
+  &quot;encoding&quot;: &quot;utf8&quot;,
+  //&quot;cmd&quot;: [&quot;python&quot;, &quot;-i&quot;, &quot;-u&quot;],
+  &quot;cmd&quot;: [&quot;/home/william/anaconda2/bin/python&quot;, &quot;-i&quot;, &quot;-u&quot;],
+  &quot;cwd&quot;: &quot;$file_path&quot;,
+  &quot;syntax&quot;: &quot;Packages/Python/Python.tmLanguage&quot;,
+  &quot;external_id&quot;: &quot;python&quot;,
+  &quot;extend_env&quot;: {&quot;PYTHONIOENCODING&quot;: &quot;utf-8&quot;}
+  }
+  },
+</code></pre>
+
+<ul>
+<li><code>python3</code></li>
+</ul>
+
+<pre><code class="language-bash">// 使用 F3 打开 本地python3
+  { &quot;keys&quot;: [&quot;f3&quot;],
+  &quot;caption&quot;: &quot;SublimeREPL: Python3&quot;,
+  &quot;command&quot;:&quot;repl_open&quot;,&quot;args&quot;:
+  {
+  &quot;type&quot;: &quot;subprocess&quot;,
+  &quot;encoding&quot;: &quot;utf8&quot;,
+  //&quot;cmd&quot;: [&quot;python&quot;, &quot;-i&quot;, &quot;-u&quot;],
+  &quot;cmd&quot;: [&quot;/home/william/anaconda3/bin/python&quot;, &quot;-i&quot;, &quot;-u&quot;],
+  &quot;cwd&quot;: &quot;$file_path&quot;,
+  &quot;syntax&quot;: &quot;Packages/Python/Python.tmLanguage&quot;,
+  &quot;external_id&quot;: &quot;python&quot;,
+  &quot;extend_env&quot;: {&quot;PYTHONIOENCODING&quot;: &quot;utf-8&quot;}
+  }
+  },
+</code></pre></li>
+
+<li><p>远程 <code>python</code></p>
+
+<pre><code class="language-bash">// 使用 F4 打开 远程python2
+  { &quot;keys&quot;: [&quot;f4&quot;],
+  &quot;caption&quot;: &quot;SublimeREPL: PySSH166&quot;,
+  &quot;command&quot;:&quot;repl_open&quot;,&quot;args&quot;:
+  {
+  &quot;type&quot;: &quot;subprocess&quot;,
+  &quot;encoding&quot;: &quot;utf8&quot;,
+  &quot;cmd&quot;: {&quot;linux&quot;: [&quot;ssh&quot;,&quot;fl@192.168.1.166&quot;,&quot;-p22&quot;,&quot;python2&quot;, &quot;-i&quot;, &quot;-u&quot;]},
+  &quot;cwd&quot;: &quot;$file_path&quot;,
+  &quot;syntax&quot;: &quot;Packages/Python/Python.tmLanguage&quot;,
+  &quot;suppress_echo&quot;: false,
+  &quot;external_id&quot;: &quot;python&quot;,
+  &quot;extend_env&quot;: {&quot;PYTHONIOENCODING&quot;: &quot;utf-8&quot;},
+  &quot;cmd_postfix&quot;: &quot;\n&quot;,
+  &quot;suppress_echo&quot;: {&quot;osx&quot;: true,
+  &quot;linux&quot;: true,
+  &quot;windows&quot;: false}
+  }
+  },
+</code></pre>
+
+<h3 id="repl-restart">repl-restart</h3>
+
+<p>对于一个完整的分析项目，我们有时候想重启终端，以便查看修改后的程序是否依然能完整的运行。这个可以通过调用 <code>shift-ctrl-p</code> 来实现</p>
+
+<p><img src="/images/2019-02-18-SublimeREPL--定制与改造/repl-restart.gif" alt="" /></p>
+
+<p>当然，这个略显笨拙，尤其是对于一个需要多次重启的过程，十分的耗费时间与精力。做为一个「懒惰」的程序员，当然需要一键搞定全过程了。</p>
+
+<ul>
+<li>我们可以找到 <code>~/.config/sublime-text-3/Packages/SublimeREPL</code>，查看 <code>repl:restart</code> 是由 <code>Context.sublime-menu</code> 控制</li>
+</ul>
+
+<pre><code class="language-bash">vim ~/.config/sublime-text-3/Packages/SublimeREPL/Context.sublime-menu
+    
+[
+    {&quot;caption&quot;: &quot;-&quot;},
+    {&quot;command&quot;: &quot;repl_kill&quot;, &quot;caption&quot;: &quot;Kill&quot;},
+    {&quot;command&quot;: &quot;repl_restart&quot;, &quot;caption&quot;: &quot;Restart&quot;},
+    {&quot;command&quot;: &quot;subprocess_repl_send_signal&quot;, &quot;caption&quot;: &quot;Send other SIGNAL&quot;}
+]
+</code></pre></li>
+
+<li><p>既然这样，我们就可以设置一个快捷键来映射这个命令</p>
+
+<pre><code class="language-bash">// 使用 F12 实现 repl:restart 功能
+  { &quot;keys&quot;: [&quot;f12&quot;],
+  &quot;caption&quot;: &quot;SublimeREPL: Restart&quot;,
+  &quot;command&quot;: &quot;repl_restart&quot;, &quot;caption&quot;: &quot;Restart&quot;
+  },
+</code></pre>
+
+<ul>
+<li>同时，我们还观察到每次重启终端后，都会有窗口询问是否确定需要关闭。这个其实也是冗余的操作，同样可以去掉。找到 <code>~/.config/sublime-text-3/Packages/SublimeREPL/sublimerepl.py</code>，这是控制整个插件的核心功能模块。找到</li>
+</ul>
+
+<pre><code class="language-bash">def restart(self, view, edit):
+    repl_restart_args = view.settings().get(&quot;repl_restart_args&quot;)
+    if not repl_restart_args:
+        sublime.message_dialog(&quot;No restart parameters found&quot;)
+        return False
+    ## ---------------------------------------------------------------------
+    rv = self.repl_view(view)
+    if rv:
+        if rv.repl and rv.repl.is_alive() and not sublime.ok_cancel_dialog(&quot;Still running. Really restart?&quot;):
+            return False
+        rv.on_close()  # yes on_close, delete rv from
+    ## ---------------------------------------------------------------------
+    
+    view.insert(edit, view.size(), RESTART_MSG)
+    repl_restart_args[&quot;view_id&quot;] = view.id()
+    self.open(view.window(), **repl_restart_args)
+    return True
+</code></pre>
+
+<p>可以看到，其实询问的窗口是一个 <code>rv = self.repl_view(view)</code> 的对象。我们直接把这个注释掉，以后每次重启终端就不会再有提示了。</p>
+
+<pre><code class="language-bash">def restart(self, view, edit):
+    repl_restart_args = view.settings().get(&quot;repl_restart_args&quot;)
+    if not repl_restart_args:
+        sublime.message_dialog(&quot;No restart parameters found&quot;)
+        return False
+    ## ---------------------------------------------------------------------
+    # rv = self.repl_view(view)
+    # if rv:
+    #     if rv.repl and rv.repl.is_alive() and not sublime.ok_cancel_dialog(&quot;Still running. Really restart?&quot;):
+    #         return False
+    #     rv.on_close()  # yes on_close, delete rv from
+    ## ---------------------------------------------------------------------
+
+    view.insert(edit, view.size(), RESTART_MSG)
+    repl_restart_args[&quot;view_id&quot;] = view.id()
+    self.open(view.window(), **repl_restart_args)
+    return True
+</code></pre>
+
+<p>再次运行 <code>F12</code>，确实是没有提示了，直接重启终端。</p>
+
+<p><img src="/images/2019-02-18-SublimeREPL--定制与改造/repl-f12.gif" alt="" /></p></li>
+</ul>
+<div class="footnotes">
+
+<hr />
+
+<ol>
+<li id="fn:wiki-read-evalue"><a href="https://www.wikiwand.com/en/Read–eval–print_loop">wiki:read-evalue-print-loop</a>，这些语言包括：APL、BASIC、Clojure、F#、Haskell、J、Julia、Perl、PHP、Prolog、Python、R、Ruby、Scala、Smalltalk、Standard ML、Swift、Tcl、Javascript、Java这样的编程语言所拥有的类似的编程环境。 <a class="footnote-return" href="#fnref:wiki-read-evalue"><sup>[return]</sup></a></li>
+</ol>
+</div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-02-18</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/sublime/">sublime</a>
+          
+          <a href="/tags/repl/">REPL</a>
+          
+          <a href="/tags/ide/">IDE</a>
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/r/">R</a>
+          
+          <a href="/tags/%E6%94%B9%E9%80%A0/">改造</a>
+          
+          <a href="/tags/%E7%BC%96%E8%BE%91%E5%99%A8/">编辑器</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-02-20-sublimegdb-%E6%9B%B4%E5%A5%BD%E7%94%A8%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7-debugger/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">SublimeGDB: 更好用的轻量级 Debugger</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-02-17-gitbook-%E5%86%99%E4%BD%9C%E6%8C%87%E5%8D%97/">
+            <span class="next-text nav-default">gitbook 写作指南</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

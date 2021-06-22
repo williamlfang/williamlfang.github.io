@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>K&amp;R 读书笔记 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="这是一本简短精悍的书籍，介绍了 C 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 C 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="K&amp;R 读书笔记" />
+<meta property="og:description" content="这是一本简短精悍的书籍，介绍了 C 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 C 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" />
+<meta property="article:published_time" content="2019-02-24T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-02-24T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="K&amp;R 读书笔记">
+<meta itemprop="description" content="这是一本简短精悍的书籍，介绍了 C 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 C 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引。">
+
+
+<meta itemprop="datePublished" content="2019-02-24T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-02-24T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="5156">
+
+
+
+<meta itemprop="keywords" content="K&amp;R,D.Ritchie,c,unix," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="K&amp;R 读书笔记"/>
+<meta name="twitter:description" content="这是一本简短精悍的书籍，介绍了 C 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 C 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">K&amp;R 读书笔记</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-02-24 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 5156 words </span>
+        <span class="more-meta"> 11 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-02-24T00:00:00" title="February 24, 2019">February 24, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      <div id="概览" class="section level1">
+<h1>概览</h1>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/c.jpg" alt="K&amp;R: 经典之作" />
+<p class="caption">K&amp;R: 经典之作</p>
+</div>
+<p>根据我対本书的理解，把整本书籍分成四部分</p>
+<ul>
+<li>第一部分：简单介绍 <code>C</code>，重点在于说明为何要把 <code>C</code> 设计成如此简要。一方面，是受到当时程序运行的硬件条件限制，最早 K.Tompson 和 D.Ritchie 是在 PDP-7、PDP-11 上面实现了 Unix 操作系统，然后才决定设计一款与这个 Unix 操作系统配套的编程语言，这必然要求新语言一定要足够精简以适应操作系统対性能的极致考验；另一方面，「小而美」是当时学术领域的一个普遍认可的观念，即根据「奥卡姆」定律：如无必要，请勿增添。因此，我们现在看到，<code>C</code> 语言最核心的内容其实很少，关键词不到 30 个，基本上达到了高级编程语言能够触摸的「底层地板」，但通过一定的设计之后，由这些命令组成的程序却又有着强大的能够，既能够实现対底层硬件（指针是 <code>C</code> 语言的核心，即变量在内存的地址）的直接操控，又能提供简洁明确的逻辑范式。
+<ul>
+<li><p>Chapter 0: Introduction</p>
+<ul>
+<li><blockquote>
+<p>C is a general-purpose programming language。</p>
+</blockquote>
+<p><code>C</code> 是一个通用的编程语言，既能够用于编写操作系统这类高难度的「程序」，也提供了一套开发高级程序的工具。</p></li>
+<li><blockquote>
+<p>[page.3]</p>
+<p>we believe strongly that the way to learn a new language is to write programs in it.</p>
+</blockquote>
+其实编程就像一门传统的手艺活，需要不停的练习才能达到掌握，即 “learning by doing”。多敲键盘，多写代码，这是唯一无二的学习方法。</li>
+</ul></li>
+<li>Chapter 1: A Tutorial Introduction</li>
+</ul></li>
+<li>第二部分：介绍 <code>C</code> 编程语言的核心。
+<ul>
+<li>Chapter 2: Type, Operators, and Expression</li>
+<li>Chapter 3: Control Flow</li>
+<li>Chapter 4: Functions and Program Structure</li>
+<li>Chapter 5: Pointers and Arrays</li>
+<li>Chapter 6 Structures</li>
+</ul></li>
+<li>第三部分：介绍标准库
+<ul>
+<li>Chapter 7: Input and Output</li>
+<li>Chapter 8: The Unix System Interface</li>
+</ul></li>
+<li>第四部分：附录：编译器
+<ul>
+<li>Appendix A: Reference Manual</li>
+<li>Appendix B: Standard Library</li>
+</ul></li>
+</ul>
+</div>
+<div id="part-i入门准备" class="section level1">
+<h1>PART I：入门准备</h1>
+<div id="chap.-1-hello-world" class="section level2">
+<h2>Chap. 1: Hello, world!</h2>
+<div id="经典例子" class="section level3">
+<h3>经典例子</h3>
+<p>经典的 <code>Hello, world</code> 就是从这里诞生的。</p>
+<pre class="c"><code>// hello.c
+// 经典 Hello, World
+#include &lt;stdio.h&gt;
+
+int main()
+{
+    printf(&quot;Hello, world.&quot;);
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.1/hello-c.png" alt="Hello, world." />
+<p class="caption">Hello, world.</p>
+</div>
+<p>这个例子虽然看起来十分的简单，却涉及到相当多的关于该程序的知识点，因而也往往成了一门编程语言入门的「见面礼」，正如书上说的：</p>
+<blockquote>
+<p>[page.5]</p>
+<p>This is the big hurdle; to leap over it, you have to be able to</p>
+<ul>
+<li>create the program text somewhere</li>
+<li>compile it successfully</li>
+<li>load it</li>
+<li>run it</li>
+<li>and find out where you output went</li>
+</ul>
+</blockquote>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.1/hello.png" alt="Hello, world." />
+<p class="caption">Hello, world.</p>
+</div>
+</div>
+<div id="温度转换" class="section level3">
+<h3>温度转换</h3>
+<pre class="c"><code>// f-c.c
+// 摄氏温度、华氏温度之间的转换
+#include &lt;stdio.h&gt;
+
+#define BEGIN 0
+#define END 300
+#define STEP 20
+
+int main()
+{
+    for (int i = BEGIN; i &lt;= END; i += STEP)
+        printf(&quot;%3d\t%5.1f\n&quot;, i, (i-32)*5.0/9);
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.1/f-c.png" alt="f-c 温度转换" />
+<p class="caption">f-c 温度转换</p>
+</div>
+</div>
+<div id="格式化输入输出" class="section level3">
+<h3>格式化输入、输出</h3>
+<p>这里补充一下关于 <code>printf</code> 与 <code>scanf</code> 格式化的知识点：</p>
+<ul>
+<li>我们知道，<code>C</code> 被设计的非常的简洁，核心代码量极小，甚至都不提供输入、输出这样常用的函数，因为有时候程序确实不需要这些函数也能运行，从而可以省下不必要的函数载入消耗。</li>
+<li><code>ANSI C</code> 提供了输入输出的标准库，在 <code>stdio.h</code> 中定义了函数原形，我们可以把这个标准库载入后，调用输入输出函数。</li>
+<li>关于 <code>printf</code> 的说明
+<ul>
+<li>要求参数是一个 <strong>字符串</strong>，而不能是单个的<strong>字符</strong>。前者使用双引号 <code>“”</code>，后者使用单引号 <code>‘’</code>，而且前者的后面是 <code>\0</code> 做为字符串结束标识。</li>
+<li>可以定义输出格式
+<ul>
+<li><code>%d</code>：简单的私进制整型</li>
+<li><code>%6d</code>：宽度为 6 位</li>
+<li><code>%06d</code>：宽度为 6 位，且不足 6 位时以 <code>0</code> 代替</li>
+<li><code>%06.1f</code>：浮点数，最大宽度为 6，小数点保留 1 位，且补足 6 位时以 <code>0</code> 代替</li>
+<li><code>%c</code>：单个字符串</li>
+<li><code>%p</code>：指针</li>
+<li><code>%o</code>：八进制</li>
+<li><code>%x</code>：十六进制</li>
+</ul></li>
+</ul></li>
+<li>关于 <code>scanf</code> 的说明
+<ul>
+<li>接受输入，可以接受连续输入，中间以空格键区分，使用 <code>ctrl+d</code> 标示结束输入</li>
+<li>把<strong>输入值的指针</strong>赋值给指定的变量，因此需要放入变量的指针，而不是变量本身，这一点往往容易出错</li>
+</ul></li>
+</ul>
+<pre class="c"><code>// printf-scanf.c
+// 格式化输入、输出
+#include &lt;stdio.h&gt;
+
+int main() {
+    int a = 14;
+    float b = 23.55656;
+
+    printf(&quot;%d\n&quot;, a);
+    printf(&quot;%12d\n&quot;,a);
+    printf(&quot;%5.2f\n&quot;, b);
+    printf(&quot;%o\n&quot;, a);
+    printf(&quot;%x\n&quot;, a);
+    printf(&quot;%p\n&quot;, &amp;a);
+
+    printf(&quot;Enter two number\n&quot;);
+    scanf(&quot;%d%f&quot;, &amp;a, &amp;b);
+    printf(&quot;%d\n&quot;, a);
+    printf(&quot;%f\n&quot;, b);
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.1/printf-scanf.png" alt="printf-scanf 格式化输入、输出" />
+<p class="caption">printf-scanf 格式化输入、输出</p>
+</div>
+</div>
+<div id="关于-for-与-while" class="section level3">
+<h3>关于 <code>for</code> 与 <code>while</code></h3>
+<p>书中其实是分别用了 <code>for</code> 和 <code>while</code> 两种逻辑结构来対温度进制进行转换。这两类逻辑都是属于<strong>循环结构</strong>，一般来说，</p>
+<ul>
+<li>对于有确定循环次数的逻辑，我们使用 <code>for</code></li>
+<li>而对于未知循环次数的逻辑，则使用 <code>while</code></li>
+</ul>
+<blockquote>
+<p>[page.14]</p>
+<p>The choice between while and for is arbitrary, based on which seems clearer. The for is usually appropriate for loops in which <strong>the initialization and increment are single statements and logically related</strong>, since it is more compact than while and it <strong>keeps the loop control statements together in one place</strong>.</p>
+</blockquote>
+</div>
+<div id="关于预处理" class="section level3">
+<h3>关于预处理</h3>
+<p><code>macro</code> 也称作<strong>预处理指令</strong>，是预处理器在编译前，执行的特殊命令，可以是插入头文件、定义全局常量、执行逻辑分支等。需要注意的是，预处理指令实际上不是一个 <code>C</code> 语句，因此<strong>不能在预处理命令后面添加分号 <code>;</code></strong>。</p>
+<ul>
+<li><code>#include &lt;stdio.h&gt;</code>：就是把头文件插入到源文件，从而保证编译器能够找到声明</li>
+<li><code>#ifndef</code>、<code>#endif</code>：预处理器执行分支逻辑</li>
+<li><code>#define</code>：可以理解成定义了一个全局变量，实际上不是这样的，而是把源文件中出现的所有字符都替换为我们预定义的<strong>变量字面值</strong>，从而达到固定程序有关变量数值的目的，因此是<strong>不可改变的</strong></li>
+</ul>
+</div>
+<div id="getchar" class="section level3">
+<h3><code>getchar</code></h3>
+<pre class="c"><code>// 获取单个字符，然后计算一共输入多少字符
+#include &lt;stdio.h&gt;
+
+int main() {
+    int len = 0;
+
+    while (getchar() != EOF)
+        len += 1;
+    printf(&quot;\nTotal char: %d\n&quot;, len);
+
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.1/getchar.png" alt="gechar 获取单个字符" />
+<p class="caption">gechar 获取单个字符</p>
+</div>
+</div>
+<div id="函数封装" class="section level3">
+<h3>函数封装</h3>
+<blockquote>
+<p>[page.24]</p>
+<p>With properly designed functions, it is possible to ignore <em>how</em> a job is done; knowing what is done is sufficient.</p>
+</blockquote>
+<pre class="c"><code>// 计算 power 函数
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int power(int base, int n);
+void myprintf(char msg[]);
+
+int main() {
+    int a = 2, b = 5;
+    int pow;
+
+    // 可以保存结果
+    pow = power(a, b);
+    printf(&quot;%d^%d \t= %d\n&quot;, a, b, pow);
+    // 可以直接调用
+    printf(&quot;%d^%d \t= %d\n&quot;, 2, 10, power(2,10));
+
+    char msg[100];
+    strcpy(msg, &quot;hello, world&quot;);
+    myprintf(msg);
+    strcpy(msg, &quot;This is function.&quot;);
+    myprintf(msg);
+
+    return 0;
+}
+
+int power(int base, int n) {
+    int res = 1;
+    for (int i = 0; i &lt; n; ++i)
+        res *= base;
+    return res;
+}
+
+void myprintf(char msg[]) {
+    printf(&quot;\n// -----------------------\n&quot;);
+    printf(msg);
+    printf(&quot;\n// -----------------------\n&quot;);
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.1/function.png" alt="函数封装" />
+<p class="caption">函数封装</p>
+</div>
+</div>
+<div id="作用域scope" class="section level3">
+<h3>作用域(scope)</h3>
+<p><code>C</code> 使用一対大括号<code>{}</code>来聚合多个命令语句块，并形成一个变量的作用域(scope)。这类变量我们称之为 <code>automatic</code>。作用域遵从「可高不可低」的原则，即</p>
+<ul>
+<li>一个作用域内部的变量只在本作用域内有效（包含子域）</li>
+<li>更高层次的作用域无法调用子域变量</li>
+</ul>
+<blockquote>
+<p>[page.31]</p>
+<p>Because automatic variables come and go with function invocation, <strong>they do not retain their values from one call to the next</strong>, and must be explicitly get upon each entry. If they are not set, they will contain garbage.</p>
+</blockquote>
+<p>比如</p>
+<pre class="c"><code>// 作用域
+#include &lt;stdio.h&gt;
+
+// 全局变量
+int g = 10;
+
+int main() {
+    printf(&quot;g = %d\n&quot;, g);
+    --g;
+
+    int a = 5;
+    printf(&quot;a = %d\n&quot;, a);
+    --a;
+
+    printf(&quot;## 进入低级作用域 -------------------------\n&quot;);
+    {
+        // 可以调用更高的作用域
+        printf(&quot;a = %d\n&quot;, a);
+        // 全局变量始终有效
+        printf(&quot;g = %d\n&quot;, g);
+        --g;
+
+        int a = 100;
+        printf(&quot;a = %d\n&quot;, a);
+        --a;
+        // 只在这个层次的 {} 之内修改才有效
+        printf(&quot;a = %d\n&quot;, a);
+    }
+    printf(&quot;## 返回高级作用域 -------------------------\n&quot;);
+    // 不可以调用 {} 内更低的作用域
+    printf(&quot;a = %d\n&quot;, a);
+    // 全局变量始终有效
+    printf(&quot;g = %d\n&quot;, g);
+
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.1/scope.png" alt="Build As Project" />
+<p class="caption">Build As Project</p>
+</div>
+<p>从函数调用的角度看这个问题，每次调用一个函数，<code>C</code> 是默认使用 <code>pass-by-value</code> 把常量复制后再传入到函数主体，因此，在函数里面対参数的修改，实际上不会影响原来传递的参数值。如果想要对其进行修改，则需要 <code>pass-by-reference</code> 或则 <code>pass-by-pointer</code>。<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></p>
+</div>
+<div id="c编程工程项目" class="section level3">
+<h3><code>C</code>编程工程项目</h3>
+<p>对于一个小型的工程项目，比如上面这个函数封装的例子，我们只需要把所有的函数原型和函数定义写在 <code>main</code> 同在的源文件，然后直接编译就可以运行了。但是对于一个大型的 <code>C</code> 程序开发项目，往往会涉及到非常多的文件关联，主函数起到的只是一个做为程序入口用于调用其他的功能模块，而这些功能模块，又都是根据各自的特征分布的各个源文件中。这在编译的时候，就需要告诉编译器各个模块之间的关联关系。这就是<strong>头文件</strong>的作用。</p>
+<ul>
+<li><p>把所有的函数原型放在一个头文件 <code>myfunctions.h</code> 里面，指明函数的基本结构，但没有函数体</p>
+<ul>
+<li><p>由于头文件可能会在多个功能模块中被重复载入，因此需要使用预处理命令</p>
+<pre class="c"><code>#ifndef __MYFUNCTIONS__H__
+#define __MYFUNCTIONS__H__
+// ------------------------------
+函数原型声明
+// ------------------------------
+#endif</code></pre></li>
+</ul></li>
+<li><p>在 <code>myfunctions.c</code> 编写函数主体，主要需要把头文件载入，<code>#include “myfunctions.h”</code></p></li>
+<li><p>在 <code>main</code> 函数源文件中，由于需要调用函数主体，因此也需要把头文件载入，向编译器表明函数原型</p></li>
+<li><p>之后便可以直接调用函数</p></li>
+<li><p>编译的时候，可以使用命令，或者在 <code>Sublime</code> 里面设置</p>
+<pre class="bash"><code>&quot;cmd&quot;: [&quot;gcc -std=c11 -Wall ${file_path}/*.c -o ${file_base_name}&quot;]</code></pre>
+<p>即把所有的文件都进行编译，然后自动进行链接</p></li>
+</ul>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.1/project.png" alt="Build As Project" />
+<p class="caption">Build As Project</p>
+</div>
+</div>
+</div>
+</div>
+<div id="part-iic-语言核心概念" class="section level1">
+<h1>PART II：<code>C</code> 语言核心概念</h1>
+<div id="chap.-2-types-operators-and-expression" class="section level2">
+<h2>Chap. 2: Types, Operators, and Expression</h2>
+<div id="变量名" class="section level3">
+<h3>变量名</h3>
+<blockquote>
+<p>There are two hard things in computer science: cache invalidation and naming things.</p>
+<p>– Phil Karlton</p>
+</blockquote>
+<p>以上这句经典台词常常被用来形容给变量取一个合适的名称是多么的困难，既要简短以减少输入时间，又要直观以方便阅读。</p>
+<p>一般来说，以下几点是在 <code>c</code> 编程中需要注意的：</p>
+<ul>
+<li><code>c</code> 是<strong>対大小写敏感</strong>的编程语言，也就意味着 <code>x</code> 与 <code>X</code> 代表两个不同的变量。其实还可以进一步引申出来，绝大部分的 <code>c-family</code>，也都遵从大小写敏感的原则，如 <code>R</code>、<code>python</code>。当然，还是有很多的编程语言是不限制大小写的，比如数据库操作语言 <code>SQL</code> 。</li>
+<li><code>c</code> 要求变量名<strong>以英文字母、下划线开头</strong>、并可以在非开头部分<strong>使用阿拉伯数字</strong>。注意，这个往往是初学者容易犯错的地方：<em>变量名不能以数字开头</em>。</li>
+<li>以下划线开头的变量往往有特殊的意义，一般是标准开预先定义的变量名，或则是一类全局变量名。</li>
+<li>变量名应<strong>以字见意</strong>，<strong>能够从字面意思推断出该变量代表的具体含义</strong>。虽然类似 <code>a</code>、<code>aa</code>、<code>b</code> 这些名称也是合法的，但无法看出来他们各自代表什么意思，因此不利于代码阅读。另外，现在很多的 <code>IDE</code> 都有提供变量的模糊匹配功能，比如 <code>Sublime</code> 中使用 <code>ctrl+d</code> 或则 <code>alt+f3</code> 是可以直接找到与该名称匹配的所有变量，而如果使用 <code>a</code> 、<code>aa</code> 这类名称，则会困难很多。</li>
+</ul>
+</div>
+<div id="基本数据类型" class="section level3">
+<h3>基本数据类型</h3>
+<p>一般来说，基本数据类型的具体位长，与本地机器有关。</p>
+<ul>
+<li><p><code>char</code>： <code>ANSI</code> 支持的单个字母，并以整数表示。如 <code>A</code> 是对应 <code>65</code>。<code>char</code> 一共有 <code>256</code> 个，一般是以整数的形式表示。需要注意的是，<code>char</code> 和我们在标准库使用的 <code>string</code> 是不一样的， <code>char</code> 使用整数表示，只占用一个字节(byte，一共有 <span class="math inline">\(2^8\)</span>)；而 <code>string</code> 是字符串，本质上是一个 <code>char array[]</code>，并且以 <code>\0</code> 标示结尾（虽然打印的时候看不到，这个是系统自动加上的）。因此，<code>A</code> 与 <code>“A”</code> 是两个不一样的变量，前者是一个字符，只有一个字节，而后者多了一个结尾符号 <code>\0</code>，因此占用了两个字符。</p>
+<pre class="c"><code>// char 与 string 区别
+#include &lt;stdio.h&gt;
+
+int main() {
+    char c = &#39;A&#39;;
+    printf(&quot;%d\n&quot;, c);
+    printf(&quot;sizeof \&#39;A\&#39;: %ld\n&quot;, sizeof c);
+
+    char s[] = &quot;A&quot;;
+    printf(&quot;%s\n&quot;, s);    
+    printf(&quot;sizeof \&quot;A\&quot;: %ld\n&quot;, sizeof s);
+
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.2/char-string.png" alt="char 与 string" />
+<p class="caption">char 与 string</p>
+</div></li>
+<li><p><code>short</code>、<code>int</code>、<code>long</code>、<code>long long</code>：整型。</p></li>
+<li><p><code>float</code>、<code>double</code>、<code>long double</code>：浮点型。尽量使用 <code>double</code> 类型，一方面是因为精度更高；另一方面，传统上认为 <code>float</code> 可以节省内存空间，但是现在对于大内存时代，已经不是问题，而且很多的内存机制会自动进行 <code>double</code> 的补齐，所以直接使用 <code>double</code> 性能是会更佳。</p></li>
+</ul>
+<p>我们可以查看一下系统的基本数据类型长度</p>
+<pre class="c"><code>// 查看 sizeof()
+#include &lt;stdio.h&gt;
+
+int main () {
+
+    printf(&quot;sizeof(char) \t= %ld\n&quot;, sizeof(char));
+    printf(&quot;sizeof(short) \t= %ld\n&quot;, sizeof(short));
+    printf(&quot;sizeof(int) \t= %ld\n&quot;, sizeof(int));
+    printf(&quot;sizeof(long) \t= %ld\n&quot;, sizeof(long));
+    printf(&quot;sizeof(float) \t= %ld\n&quot;, sizeof(float));
+    printf(&quot;sizeof(double) \t= %ld\n&quot;, sizeof(double));
+    printf(&quot;sizeof(long double) \t= %ld\n&quot;, sizeof(long double));
+    
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.2/sizeof.png" alt="sizeof" />
+<p class="caption">sizeof</p>
+</div>
+</div>
+<div id="拓展数据类型" class="section level3">
+<h3>拓展数据类型</h3>
+<ul>
+<li><code>enum</code>：整型，并以 <code>1</code> 递增。如果没有指定初始，则以 <code>0</code> 开始计数。</li>
+<li><code>structure</code>：结构体。</li>
+<li><code>pointer</code>：指针，即变量在内存的地址。</li>
+<li><code>array</code></li>
+</ul>
+<pre class="c"><code>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+typedef enum Market 
+{
+    sse = 0,
+    szse,
+    unknown
+} Market;
+
+typedef struct Book
+{
+    char title[50];
+    char author[50];    
+} Book;
+
+int main () {
+    // enum
+    Market mkt = szse;
+    printf(&quot;market code: %d\n&quot;, mkt);
+
+    // structure
+    Book mybook = {&quot;C Programing Learning Note&quot;, &quot;william&quot;};
+    printf(&quot;%s: \&quot;%s\&quot;\n&quot;, mybook.author, mybook.title);
+    
+    // pointer to structure
+    Book *pbook = &amp;mybook;
+    strcpy(pbook-&gt;title, &quot;A personal remark&quot;);
+    printf(&quot;%s: \&quot;%s\&quot;\n&quot;, pbook-&gt;author, pbook-&gt;title);
+
+    // array
+    int l[10] = {1,2,3};
+    printf(&quot;l[0]: %d\n&quot;, l[0]);
+
+    char s[] = &quot;This is a really long string&quot;;
+    printf(&quot;%s\n&quot;, s);
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.2/ext.png" alt="扩展数据类型" />
+<p class="caption">扩展数据类型</p>
+</div>
+</div>
+<div id="常量" class="section level3">
+<h3>常量</h3>
+<p>常量，顾名思义，就是不可以更改的变量，本质上还是一个变量，只不过不能对其进行修改值，但可以在命令语句中调用。</p>
+<ul>
+<li><p>字面常量（literal constant）：字符常量 <code>a</code>、<code>A</code>，字符串常量 <code>“a long string”</code>。</p></li>
+<li><p>常量表达式（constant expression）：即<strong>在编译的时候就可以确定的表达式</strong></p>
+<pre class="c"><code>constant int i = 10;
+// 编译的时候已经确定了 j 的值
+int j = (i+100)*i;</code></pre></li>
+</ul>
+</div>
+<div id="类型转换" class="section level3">
+<h3>类型转换</h3>
+<p>类型转换有两种实现方式：</p>
+<ul>
+<li><p>显示转换，即明确写明需要转换的目标类型</p></li>
+<li><p>隐式转换，系统根据一定的转换规则把原来的数据转换为目标数据，<strong>注意原来的数据类型是不变的，改变的是取值后的数据</strong>：</p>
+<ul>
+<li><p>一般是采用<strong>低阶到高阶的顺序</strong>，即占用字节少的数据类型补齐成占用字节多的数据类型，以补齐所需的内存空间</p>
+<blockquote>
+<p><code>char -&gt; int -&gt; float -&gt; double</code></p>
+<p><code>short -&gt; long</code></p>
+</blockquote></li>
+<li><p>对于溢出数据所标示数值范围的，则会根据数据类型所占用的范围进行循环，比如</p>
+<pre class="c"><code>short si = 32768 + 1;
+printf(&quot;si = %d\n&quot;, si);
+
+// 得到 si = -32767</code></pre></li>
+</ul></li>
+</ul>
+<pre class="c"><code>#include &lt;stdio.h&gt;
+
+int main () {
+    int i = 65;
+    double f;
+    
+    // 整数截断
+    f = i / 2;
+    printf(&quot;f = %d/2: %.2f\n&quot;, i, f);
+    
+    // explicit converse
+    f = (double) i / 2;
+    printf(&quot;f = (double) %d / 2 = %.2f\n&quot;, i, f);
+
+    // implicit converse
+    int ii = f;
+    printf(&quot;ii = %f: %d\n&quot;, f, ii);
+
+    // implicit converse
+    char c = i;
+    printf(&quot;i = %d --&gt; c = %c\n&quot;, i, c);
+
+    short si = 32768 + 1;
+    printf(&quot;si = %d\n&quot;, si);
+
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.2/converse.png" alt="类型转换" />
+<p class="caption">类型转换</p>
+</div>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.2/p44.png" alt="page.44" />
+<p class="caption">page.44</p>
+</div>
+</div>
+<div id="运算" class="section level3">
+<h3>运算</h3>
+<ul>
+<li><p>函数运算优先级最高</p></li>
+<li><p>变量自增、自减</p></li>
+<li><p>算数运算</p></li>
+<li><p>逻辑运算</p></li>
+<li><p>复合运算符 <code>op=</code>，根据上面的运算优先级，<code>op=</code> 是先计算等式左边，得到值后再进行复合运算，即</p>
+<pre class="c"><code>x *= y + z; // x = x*(y+z);</code></pre></li>
+</ul>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.2/p53.png" alt="page.53" />
+<p class="caption">page.53</p>
+</div>
+</div>
+</div>
+<div id="chap.-3-control-flow" class="section level2">
+<h2>Chap. 3: Control Flow</h2>
+<div id="if-else" class="section level3">
+<h3><code>if-else</code></h3>
+<pre class="c"><code>if (expression)
+    statement;
+else if (expression)
+    statement;
+else
+    statement;</code></pre>
+<ul>
+<li><p><code>expression</code> 为逻辑判断，结果如果是非零（<code>0</code>），则表示逻辑为真；如果是零（<code>0</code>），则代表逻辑为假</p></li>
+<li><p>注意语句后面使用分号 <code>;</code> 代表该语句结束</p></li>
+<li><p><code>if-else</code> 遵从 <strong>就近原则</strong>，即会寻找最近的 <code>else</code> 进行配对</p>
+<pre class="c"><code>if (expression)
+    if (expression)
+        statement;
+else
+    statement;</code></pre>
+<p>虽然看起来，我们使用了缩进试图表示 <code>else</code> 是与第一个 <code>if</code> 配对，当时要记住，<code>c</code> 其实不不像 <code>python</code> 是严格使用缩进来表示代码运行逻辑的。因此，此处的运行到第二个 <code>if</code> 后，会直接与 <code>else</code> 配对，即</p>
+<pre class="c"><code>if (expression){
+    if (expression) {
+        statement;
+    } else {
+        statement;
+    }
+}</code></pre>
+<p>当然，如果需要表达另外一个意思，需要使用 <code>{}</code> 来划分代码块</p>
+<pre class="c"><code>if (expression) {
+    if (expression)
+        statement;
+} else {
+    statement;
+}</code></pre></li>
+</ul>
+</div>
+<div id="switch" class="section level3">
+<h3><code>switch</code></h3>
+<p><code>switch</code> 使用<strong>整型变量来判断需要执行哪个命令语句</strong>。</p>
+<pre class="c"><code>switch (expressoin) {
+    case constant-expression:
+    case constant-expression:
+        do-something statement;
+        break;
+    default:
+        break;
+}</code></pre>
+</div>
+<div id="for-与-while" class="section level3">
+<h3><code>for</code> 与 <code>while</code></h3>
+<p>其实两者是可以互相转换的</p>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.2/p60.png" alt="page.60" />
+<p class="caption">page.60</p>
+</div>
+<ul>
+<li><code>while</code> 是先执行判断条件，如果没有符合的，则一步都不会执行下面的语句</li>
+<li>为了至少执行一次，我们可以使用 <code>do-while</code>。</li>
+</ul>
+<pre class="c"><code>#include &lt;stdio.h&gt;
+
+int main() {
+    int END;
+    int i = 0;
+    printf(&quot;## while ------------\n&quot;);
+    printf(&quot;Enter a number: &quot;);
+    scanf(&quot;%d&quot;, &amp;END);
+    
+    // 如果 i &lt; END 不成立，则一次都不执行
+    while (i &lt; END) {
+        printf(&quot;%d\n&quot;, ++i);
+    }
+
+    printf(&quot;\n## do while ---------\n&quot;);
+    i = 0;
+    printf(&quot;Enter a number: &quot;);
+    scanf(&quot;%d&quot;, &amp;END);
+    // 无论 i &lt; END 是否成立，都至少执行一次
+    do {
+        printf(&quot;%d\n&quot;, ++i);
+    } while (i &lt; END);
+
+    return 0;
+}</code></pre>
+<div class="figure">
+<img src="/images/2019-02-24-K&amp;R-读书笔记/chap.2/do-while.png" alt="do-while" />
+<p class="caption">do-while</p>
+</div>
+</div>
+<div id="break与continue" class="section level3">
+<h3><code>break</code>与<code>continue</code></h3>
+<p>可以控制循环逻辑的执行：</p>
+<ul>
+<li><code>break</code> 提前退出整个循环</li>
+<li><code>continue</code> 不执行本次循环，但需要继续执行省下的循环<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a></li>
+</ul>
+</div>
+</div>
+<div id="chap.-4-functions-and-program-structure" class="section level2">
+<h2>Chap. 4: Functions and Program Structure</h2>
+<blockquote>
+<p>本章的内容非常的翔实，不仅介绍了函数封装的基本知识，更是重点分析如何构建一个完整的 <code>c</code> 项目程序，从使用头文件、声明外部变量、到分离编译、函数调用等高级功能。</p>
+</blockquote>
+</div>
+<div id="chap.-5-pointers-and-arrays" class="section level2">
+<h2>Chap. 5: Pointers and Arrays</h2>
+</div>
+<div id="chap.-6-structures" class="section level2">
+<h2>Chap. 6: Structures</h2>
+</div>
+</div>
+<div id="part-iii使用标准库" class="section level1">
+<h1>PART III：使用标准库</h1>
+</div>
+<div id="part-iv编译原理" class="section level1">
+<h1>PART IV：编译原理</h1>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>可以参考这个链接看看现在有哪些优秀的 C 编程数据：<a href="https://stackoverflow.com/questions/562303/the-definitive-c-book-guide-and-list">The Definitive C Book Guide and List - Stack Overflow</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>关于 <code>C</code> 的历史，这里有一篇 Dennis Ritchie 写的文章可供参考：<a href="https://www.bell-labs.com/usr/dmr/www/chist.html">The Development of the C Language</a><a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>从内存地址的角度看，二者是同一个东西，都是变量的一种「映射」，只不过 <code>reference</code> 是别名，而 <code>pointer</code> 是内存实实在在的地址。<a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p><code>R</code> 使用 <code>next</code>， <code>python</code> 使用 <code>continue</code><a href="#fnref4">↩</a></p></li>
+</ol>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-02-24</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kr/">K&amp;R</a>
+          
+          <a href="/tags/d.ritchie/">D.Ritchie</a>
+          
+          <a href="/tags/c/">c</a>
+          
+          <a href="/tags/unix/">unix</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-02-25-linux-%E6%9F%A5%E7%9C%8B%E5%85%AC%E7%BD%91ip/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Linux 查看公网IP</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-02-20-sublimegdb-%E6%9B%B4%E5%A5%BD%E7%94%A8%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7-debugger/">
+            <span class="next-text nav-default">SublimeGDB: 更好用的轻量级 Debugger</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

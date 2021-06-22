@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>R: package 开发指南 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="通过 hicloudR 演示如何开发一个　Ｒ 软件包。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2020-04-21-r-package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="R: package 开发指南" />
+<meta property="og:description" content="通过 hicloudR 演示如何开发一个　Ｒ 软件包。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2020-04-21-r-package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" />
+<meta property="article:published_time" content="2020-04-21T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-04-21T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="R: package 开发指南">
+<meta itemprop="description" content="通过 hicloudR 演示如何开发一个　Ｒ 软件包。">
+
+
+<meta itemprop="datePublished" content="2020-04-21T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-04-21T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1291">
+
+
+
+<meta itemprop="keywords" content="R,packages,devtools,开发,软件包,hicloud,hicloudR," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="R: package 开发指南"/>
+<meta name="twitter:description" content="通过 hicloudR 演示如何开发一个　Ｒ 软件包。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">R: package 开发指南</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-04-21 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1291 words </span>
+        <span class="more-meta"> 3 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2020-04-21T00:00:00" title="April 21, 2020">April 21, 2020</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div id="hicloudr" class="section level1">
+<h1>hicloudR</h1>
+<p>R package for hicloud</p>
+<div id="开发指南" class="section level2">
+<h2>开发指南</h2>
+<p>假设这个包的名称叫 <code>hicloudR</code></p>
+<div id="目录结构" class="section level3">
+<h3>目录结构</h3>
+<ul>
+<li>需要建立一个 <code>R</code> 目录</li>
+<li>添加 <code>DESCRIPTION</code> 用来说明开发包</li>
+<li>添加 <code>NAMESPACE</code> 提供函数</li>
+</ul>
+<pre class="bash"><code>## 建立一个 R 目录
+mkdir R
+
+## 建立一个描述文档
+touch DESCRIPTION
+
+## 提供函数
+touch NAMESPACE</code></pre>
+<p>在 <code>DESCRIPTION</code> 添加</p>
+<pre><code>Package: hicloudR
+Version: 0.1</code></pre>
+<p>在 `<code>NAMESPACE</code> 添加</p>
+<pre><code>## 暴露所有函数
+exportPattern(&quot;^[[:alpha:]]+&quot;)</code></pre>
+</div>
+</div>
+<div id="使用-rcpp" class="section level2">
+<h2>使用 Rcpp</h2>
+<ul>
+<li><p>在 <code>DESCRIPTION</code> 添加</p>
+<pre><code>Package: hicloudR
+Version: 0.1
+LinkingTo: Rcpp
+Imports: Rcpp</code></pre></li>
+<li><p>在 <code>NAMESPACE</code> 添加</p>
+<pre><code>exportPattern(&quot;^[[:alpha:]]+&quot;)
+useDynLib(hicloudR)
+importFrom(Rcpp, sourceCpp)</code></pre></li>
+<li><p>把 <code>myRcpp.cpp</code> 放在 <code>src</code> 目录下面</p></li>
+<li><p>然后在这个包目录 （与 <code>R</code>、<code>src</code> 并行的）运行</p>
+<pre class="bash"><code>tree -L 2
+
+.
+├── data
+├── DESCRIPTION
+├── man
+├── NAMESPACE
+├── R
+│   ├── about.R
+│   └── RcppExports.R
+├── README.md
+├── src
+│   ├── myRcpp.cpp
+│   └── RcppExports.cpp
+└── tests
+
+Rscript -e &quot;Rcpp::compileAttributes()&quot;</code></pre></li>
+</ul>
+<p>这样会生成两个文件</p>
+<pre><code>- `R/RcppExports.R`
+- `src/RcppExports.cpp`</code></pre>
+<div id="打包" class="section level3">
+<h3>打包</h3>
+<p>打开终端执行</p>
+<pre class="bash"><code>## 需要跳转到上面一层
+cd ..
+R CMD build hicloudR
+
+* checking for file ‘hicloudR/DESCRIPTION’ ... OK
+* preparing ‘hicloudR’:
+* checking DESCRIPTION meta-information ... OK
+* checking for LF line-endings in source and make files and shell scripts
+* checking for empty or unneeded directories
+* building ‘hicloudR_0.1.tar.gz’</code></pre>
+</div>
+<div id="安装" class="section level3">
+<h3>安装</h3>
+<pre class="bash"><code>R CMD INSTALL hicloudR_0.1.tar.gz
+
+* installing to library ‘/home/william/R/x86_64-pc-linux-gnu-library/3.6’
+* installing *source* package ‘hicloudR’ ...
+** using staged installation
+** R
+** byte-compile and prepare package for lazy loading
+这是一个 hicloudR 的软件包，目前基于开源协议 MIT 进行创作。
+所有版权归属汉云投资。
+@williamlfang
+** help
+No man pages found in package  ‘hicloudR’
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (hicloudR)</code></pre>
+</div>
+<div id="使用-devtools" class="section level3">
+<h3>使用 <code>devtools</code></h3>
+<p><code>devtools</code> 提供了更加优雅的方式，可以直接在 <code>R</code> 运行环境中进行构建</p>
+<ul>
+<li><code>devtools::build()</code></li>
+<li><code>devtools::install()</code></li>
+</ul>
+<pre class="r"><code>❯ setwd(&#39;/home/william/Documents/hicloudR&#39;)
+
+✔ 95.6 MiB master*
+❯ devtools::build()
+✔  checking for file ‘/home/william/Documents/hicloudR/DESCRIPTION’ ...
+─  preparing ‘hicloudR’:
+✔  checking DESCRIPTION meta-information
+─  checking for LF line-endings in source and make files and shell scripts
+─  checking for empty or unneeded directories
+─  building ‘hicloudR_0.1.tar.gz’
+
+[1] &quot;/home/william/Documents/hicloudR_0.1.tar.gz&quot;
+
+❯ devtools::install()
+✔  checking for file ‘/home/william/Documents/hicloudR/DESCRIPTION’ ...
+─  preparing ‘hicloudR’:
+✔  checking DESCRIPTION meta-information
+─  checking for LF line-endings in source and make files and shell scripts
+─  checking for empty or unneeded directories
+─  building ‘hicloudR_0.1.tar.gz’
+
+Running /usr/lib/R/bin/R CMD INSTALL /tmp/RtmpDbpRnz/hicloudR_0.1.tar.gz --install-tests
+* installing to library ‘/home/william/R/x86_64-pc-linux-gnu-library/3.6’
+* installing *source* package ‘hicloudR’ ...
+** using staged installation
+** R
+** byte-compile and prepare package for lazy loading
+这是一个 hicloudR 的软件包，目前基于开源协议 MIT 进行创作。
+所有版权归属汉云投资。
+@williamlfang
+** help
+No man pages found in package  ‘hicloudR’
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (hicloudR)</code></pre>
+</div>
+</div>
+<div id="托管到-github" class="section level2">
+<h2>托管到 <code>github</code></h2>
+<div id="添加-repo" class="section level3">
+<h3>添加 <code>repo</code></h3>
+<pre class="bash"><code>git add ./*
+git commit -m &#39;init&#39;
+git push</code></pre>
+</div>
+<div id="安装-1" class="section level3">
+<h3>安装</h3>
+<p>然后就可以直接安装了</p>
+<ul>
+<li><code>devtools::install_github(&quot;williamlfang/hicloudR&quot;)</code></li>
+</ul>
+<pre class="bash"><code>❯ devtools::install_github(&quot;williamlfang/hicloudR&quot;)
+Downloading GitHub repo williamlfang/hicloudR@master
+✔  checking for file ‘/tmp/RtmpDbpRnz/remotes41d42dcbca76/williamlfang-hicloudR-20b2dbf/DESCRIPTION’ ...
+─  preparing ‘hicloudR’:
+✔  checking DESCRIPTION meta-information
+─  checking for LF line-endings in source and make files and shell scripts
+─  checking for empty or unneeded directories
+─  building ‘hicloudR_0.1.tar.gz’
+
+Installing package into &#39;/home/william/R/x86_64-pc-linux-gnu-library/3.6&#39;
+(as &#39;lib&#39; is unspecified)
+* installing *source* package ‘hicloudR’ ...
+** using staged installation
+** R
+** byte-compile and prepare package for lazy loading
+这是一个 hicloudR 的软件包，目前基于开源协议 MIT 进行创作。
+所有版权归属汉云投资。
+@williamlfang
+** help
+No man pages found in package  ‘hicloudR’
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (hicloudR)
+</code></pre>
+</div>
+</div>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2020-04-21</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/r/">R</a>
+          
+          <a href="/tags/packages/">packages</a>
+          
+          <a href="/tags/devtools/">devtools</a>
+          
+          <a href="/tags/%E5%BC%80%E5%8F%91/">开发</a>
+          
+          <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%8C%85/">软件包</a>
+          
+          <a href="/tags/hicloud/">hicloud</a>
+          
+          <a href="/tags/hicloudr/">hicloudR</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2020-04-22-sublime-brackethighlighter-%E9%AB%98%E4%BA%AE%E6%8B%AC%E5%8F%B7/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Sublime: BracketHighlighter 高亮括号</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2020-04-20-jupyterlab-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97/">
+            <span class="next-text nav-default">JupyterLab: 配置指南</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="使用 zsh&#43;tmux&#43;powerline&#43;autojump 组合，通过合理配置，打造强大的操作终端" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF-zsh&#43;tmux&#43;powerline&#43;autojump/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump" />
+<meta property="og:description" content="使用 zsh&#43;tmux&#43;powerline&#43;autojump 组合，通过合理配置，打造强大的操作终端" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF-zsh&#43;tmux&#43;powerline&#43;autojump/" />
+<meta property="article:published_time" content="2019-01-16T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-01-16T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump">
+<meta itemprop="description" content="使用 zsh&#43;tmux&#43;powerline&#43;autojump 组合，通过合理配置，打造强大的操作终端">
+
+
+<meta itemprop="datePublished" content="2019-01-16T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-01-16T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="697">
+
+
+
+<meta itemprop="keywords" content="Linux,terminal,zsh,tmux,powerline,autojump," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump"/>
+<meta name="twitter:description" content="使用 zsh&#43;tmux&#43;powerline&#43;autojump 组合，通过合理配置，打造强大的操作终端"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-01-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 697 words </span>
+        <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-01-16T00:00:00" title="January 16, 2019">January 16, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      <p>对于经常在远程服务器进行编程的程序员，终端(<code>terminal</code>)无疑是我们接触最多的接口了。通过终端，我们可以直接使用命令来操作服务器系统，诸如修改文件、编辑程序、执行命令、传输文件等。通过配置合理的插件，我们可以打造出一款功能强大、符合个人使用习惯的「终端机」。</p>
+
+<p>这篇文件主要介绍几个强大的插件工具，并通过自定义配置文件，实现以上目标。</p>
+
+<h1 id="zsh-不仅是shell">zsh:不仅是shell</h1>
+
+<pre><code class="language-bash">yum install zsh
+
+## 更改默认 shell
+chsh -s /bin/zsh trader
+
+echo $SHELL
+/usr/bin/zsh
+</code></pre>
+
+<h1 id="tmux-终端组合">tmux:终端组合</h1>
+
+<pre><code class="language-bash">yum install tmux
+</code></pre>
+
+<h1 id="powerline-多点信息">powerline:多点信息</h1>
+
+<p><a href="https://github.com/erikw/tmux-powerline">tmux-powerline</a></p>
+
+<h2 id="install">install</h2>
+
+<pre><code class="language-bash">pip install --user git+git://github.com/powerline/powerline
+
+cd ~/Documents
+git clone https://github.com/erikw/tmux-powerline.git
+</code></pre>
+
+<h2 id="tmux-conf"><code>~/.tmux.conf</code></h2>
+
+<pre><code class="language-bash">## =============================================================================
+## https://github.com/erikw/tmux-powerline
+set-option -g status on
+set-option -g status-interval 2
+set-option -g status-justify &quot;centre&quot;
+set-option -g status-left-length 60
+set-option -g status-right-length 150
+set-option -g status-left &quot;#(~/Documents/tmux-powerline/powerline.sh left)&quot;
+set-option -g status-right &quot;#(~/Documents/tmux-powerline/powerline.sh right)&quot;
+set-window-option -g window-status-current-format &quot;#[fg=colour235, bg=colour27]⮀#[fg=colour255, bg=colour27] #I ⮁ #W #[fg=colour27, bg=colour235]⮀&quot;
+## =============================================================================
+</code></pre>
+
+<h1 id="autojump-快速跳转">autojump:快速跳转</h1>
+
+<h2 id="安装">安装</h2>
+
+<p>可以使用 <code>apt</code> 直接安装稳定发行版</p>
+
+<pre><code class="language-bash"># 如果提示找不到软件，需要 `update` 一下。
+sudo apt update
+sudo apt install autojump
+</code></pre>
+
+<h2 id="配置">配置</h2>
+
+<p>安装成功后，可以找到说明文档进行配置</p>
+
+<pre><code class="language-bash">vim /usr/share/doc/autojump/README.Debian                                  
+Autojump for Debian                                                                                   
+-------------------
+
+To use autojump, you need to configure you shell to source
+/usr/share/autojump/autojump.sh on startup.
+
+If you use Bash, add the following line to your ~/.bashrc (for non-login
+interactive shells) and your ~/.bash_profile (for login shells):
+. /usr/share/autojump/autojump.sh
+
+If you use Zsh, add the following line to your ~/.zshrc (for all interactive shells):
+. /usr/share/autojump/autojump.sh
+
+-- Tanguy Ortolo &lt;tanguy+debian@ortolo.eu&gt; Tue, 10 Aug 2010 07:55:16 +0200
+</code></pre>
+
+<p>由于我使用 <code>zsh</code>，因此需要把 <code>. /usr/share/autojump/autojump.sh</code> 放到 <code>~/.zshrc</code> 文件</p>
+
+<pre><code class="language-bash">echo &quot;. /usr/share/autojump/autojump.sh&quot; &gt;&gt; ~/.zshrc
+
+## -------------------------------------------------
+## 如果使用 Mac Bash，则在 ~/.bash_profile 添加
+echo &quot;source $(brew --prefix)/etc/profile.d/autojump.sh&quot; &gt;&gt; ~/.bash_profile
+## 如果使用 Mac Zsh， 则在 ~/.zshrc 最后添加一行
+echo &quot;[[ -s $(brew --prefix)/etc/profile.d/autojump.sh ]] &amp;&amp; . $(brew --prefix)/etc/profile.d/autojump.sh&quot; &gt;&gt; ~/.zshrc
+
+## -------------------------------------------------
+## 如果使用 CentOS, 需要
+echo &quot;/usr/share/autojump/autojump.bash&quot; &gt;&gt; ~/.bashrc
+## 如果有提示：/usr/share/autojump/autojump.bash: 权限不够
+## 那么需要给autojump.bash开权限
+## chmod 777 /usr/share/autojump/autojump.bash
+</code></pre>
+
+<p>这样，我们便可以使用命令 <code>autojump</code> 进行快速的文件目录跳转。当然，也可以使用短命令 <code>j</code> 进行操作，并配合 <code>tab</code> 键快速的筛选。</p>
+
+<pre><code class="language-bash">j bl__                                                                              │
+bl__1__/home/william/Documents/blog               bl__4__/home/william/Documents/blog/content/post
+bl__2__/home/william/Documents/blog               bl__5__/home/william/Documents/blog/content           │
+bl__3__/home/william/Documents/blog
+</code></pre>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-01-16</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">Linux</a>
+          
+          <a href="/tags/terminal/">terminal</a>
+          
+          <a href="/tags/zsh/">zsh</a>
+          
+          <a href="/tags/tmux/">tmux</a>
+          
+          <a href="/tags/powerline/">powerline</a>
+          
+          <a href="/tags/autojump/">autojump</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-01-16-2018%E5%B9%B4%E4%BC%9A%E6%80%BB%E7%BB%93%E5%A4%A7%E7%BA%B2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">2018年会总结大纲</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-01-13-%E6%96%B0%E4%B8%80%E5%B9%B4%E7%9A%84%E8%AE%A1%E5%88%92/">
+            <span class="next-text nav-default">新一年的计划</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

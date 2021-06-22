@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>期货数据：Tick 转 Bar - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="介绍如何把 `Tick Data` 转化为 `Bar Data`。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2017-10-20-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-tick-%E8%BD%AC-bar/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="期货数据：Tick 转 Bar" />
+<meta property="og:description" content="介绍如何把 `Tick Data` 转化为 `Bar Data`。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2017-10-20-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-tick-%E8%BD%AC-bar/" />
+<meta property="article:published_time" content="2017-10-20T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2017-10-20T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="期货数据：Tick 转 Bar">
+<meta itemprop="description" content="介绍如何把 `Tick Data` 转化为 `Bar Data`。">
+
+
+<meta itemprop="datePublished" content="2017-10-20T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-10-20T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="850">
+
+
+
+<meta itemprop="keywords" content="Futures,期货,数据,R," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="期货数据：Tick 转 Bar"/>
+<meta name="twitter:description" content="介绍如何把 `Tick Data` 转化为 `Bar Data`。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">期货数据：Tick 转 Bar</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-10-20 </span>
+        <div class="post-category">
+            
+              <a href="/categories/data/"> Data </a>
+            
+          </div>
+        <span class="more-meta"> 850 words </span>
+        <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2017-10-20T00:00:00" title="October 20, 2017">October 20, 2017</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p>继续 <strong>期货数据</strong> 系列。上一期我们已经<a href="https://williamlfang.github.io/post/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6/">从数据文件读取</a>相关的数据，今天来介绍如何把 <code>Tick Data</code> 转化为 <code>Bar Data</code>。</p>
+<ul>
+<li>通过清洗数据，获得真实、可靠、符合逻辑的<a href="https://williamlfang.github.io/post/2017-10-18-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE%E6%95%B0%E6%8D%AE%E6%B8%85%E7%90%86%E8%A6%81%E7%82%B9/">干净数据</a></li>
+<li>通过分笔数据来计算汇总日间（daily）的<code>OHLC</code>、<code>Volume</code>、<code>Turnover</code>、<code>OI</code>、<code>SettlementPrice</code></li>
+<li>通过计算分笔数据的 <code>Delta</code> 来汇总分钟之内的 <code>OHLC</code>、<code>Volume</code>、<code>Turnover</code></li>
+<li>对于每一笔交易的数据，我们要去其是<strong>真实成交的记录</strong>，因此需要提取的是 <span class="math inline">\(DeltaX \neq 0\)</span> 的数据行</li>
+<li><p>由于需要计算的分钟数据比较大，函数里面运用到了并行计算，默认开启 <code>parallel</code>:</p>
+<ul>
+<li><p>我们采用的是 <code>CentOS</code> 服务器，默认开始的模式是 <code>FORK</code></p>
+<pre class="r"><code>cl &lt;- makeCluster(no.cores, type=&quot;FORK&quot;)</code></pre></li>
+<li><p>如果在 <code>Windows</code> 操作系统，则需要开启 <code>PSOCK</code> 模式</p></li>
+</ul></li>
+</ul>
+<div id="daily" class="section level1">
+<h1>Daily</h1>
+<div id="文件" class="section level2">
+<h2>文件</h2>
+<p>文件在 <code>/Rconfig/dt2DailyBar.R</code></p>
+</div>
+<div id="代码" class="section level2">
+<h2>代码</h2>
+<pre class="r"><code>##! dt2DailyBar.R
+##
+## 功能：
+## 用于把 tick data 的数据转化为 daily 的数据，
+## 1. dt2DailyBar(dt,&quot;allday&quot;)：全天的数据
+## 2. dt2DailyBar(dt,&quot;day&quot;)：日盘的数据
+## 3. dt2DailyBar(dt,&quot;night&quot;)：夜盘的数据
+##############################################################################
+##----------------------------------------------------------------------------
+## 全天
+## dt_1d    &lt;- dt2DailyBar(dt,&quot;allday&quot;)
+## 日盘
+## dt_day   &lt;- dt2DailyBar(dt,&quot;day&quot;)
+## 夜盘
+## dt_night &lt;- dt2DailyBar(dt,&quot;night&quot;)
+dt2DailyBar &lt;- function(x, daySector){
+  #-----------------------------------------------------------------------------
+  if(daySector == &quot;allday&quot;){
+    temp &lt;- x
+  }else{
+    if(daySector == &quot;day&quot;){##-------------- dn == &quot;night&quot;
+      temp &lt;- x[UpdateTime %between% c(&quot;08:30:00&quot;, &quot;15:30:00&quot;)]
+    }else{##-------------- dn == &quot;night&quot;
+      temp &lt;- x[!(UpdateTime %between% c(&quot;08:30:00&quot;, &quot;15:30:00&quot;))]
+    }
+  }
+  #-----------------------------------------------------------------------------
+  #-----------------------------------------------------------------------------
+  tempRes &lt;- temp %&gt;%
+    .[,.SD[,.(
+      OpenPrice = ifelse(nrow(.SD[DeltaVolume != 0]) != 0,
+                .SD[DeltaVolume != 0][1, ifelse(is.na(OpenPrice) | OpenPrice == 0 | daySector == &#39;day&#39;,
+                  LastPrice, OpenPrice)],
+                .SD[Volume != 0][1, ifelse(is.na(OpenPrice) | OpenPrice == 0 | daySector == &#39;day&#39;,
+                  LastPrice, OpenPrice)]),
+      HighPrice = ifelse(all(is.na(.SD$HighestPrice)) | sum(.SD$HighestPrice, na.rm=TRUE) == 0,
+                         max(.SD[Volume != 0]$LastPrice, na.rm=TRUE),
+                         max(.SD[Volume != 0]$HighestPrice, na.rm=TRUE)),
+      LowPrice  = ifelse(all(is.na(.SD$LowestPrice)) | sum(.SD$LowestPrice, na.rm=TRUE) == 0,
+                         min(.SD[Volume != 0][LastPrice !=0]$LastPrice, na.rm=TRUE),
+                         min(.SD[Volume != 0]$LowestPrice, na.rm=TRUE)),
+      ## CZCE 郑商所的 ClosePrice 是有问题的，需要用到 LastPrice
+      ClosePrice = ifelse(all(is.na(.SD$ClosePrice)) | sum(.SD$ClosePrice, na.rm=TRUE) == 0 |
+                            .SD[,nchar(unique(gsub(&#39;[a-zA-Z]&#39;,&#39;&#39;,InstrumentID))) == 3],
+                          .SD[Volume != 0][.N,LastPrice],
+                          .SD[Volume != 0][.N,ClosePrice]),
+      #-----------------------------------------------------------------------------
+      Volume            = sum(.SD$DeltaVolume, na.rm=TRUE),
+      Turnover          = sum(.SD$DeltaTurnover, na.rm=TRUE),
+      #                 -----------------------------------------------------------------------------
+      OpenOpenInterest  = .SD[1,OpenInterest],
+      HighOpenInterest  = .SD[,max(OpenInterest, na.rm=TRUE)],
+      LowOpenInterest   = .SD[,min(OpenInterest, na.rm=TRUE)],
+      CloseOpenInterest = .SD[.N,OpenInterest],
+      #                 -----------------------------------------------------------------------------
+      UpperLimitPrice   = unique(na.omit(.SD$UpperLimitPrice)),
+      LowerLimitPrice   = unique(na.omit(.SD$LowerLimitPrice)),
+      SettlementPrice   = .SD[.N, SettlementPrice]
+    )], by = .(TradingDay, InstrumentID)] %&gt;%
+    .[Volume != 0 &amp; Turnover != 0] %&gt;%
+    .[, Sector := daySector]
+  #-----------------------------------------------------------------------------
+  #&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+  setcolorder(tempRes, c(&#39;TradingDay&#39;, &#39;Sector&#39;,
+                          colnames(tempRes)[2:(ncol(tempRes)-1)]))
+  return(tempRes)
+  #&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+}
+##############################################################################</code></pre>
+</div>
+</div>
+<div id="minute" class="section level1">
+<h1>Minute</h1>
+<div id="文件-1" class="section level2">
+<h2>文件</h2>
+<p>文件位于 <code>/Rconfig/dt2MinuteBar.R</code></p>
+</div>
+<div id="代码-1" class="section level2">
+<h2>代码</h2>
+<pre class="r"><code>##! dt2MinuteBar.R
+##
+## 功能：
+## 用于把 tick data 的数据转化为 分钟 的数据，
+## 1. dt2MinuteBar(dt)
+##############################################################################
+##----------------------------------------------------------------------------
+dt2MinuteBar &lt;- function(dt){
+  setkey(dt,InstrumentID)
+  temp &lt;- lapply(unique(dt$InstrumentID), function(ii){ dt[ii] })
+
+  no.cores &lt;- max(round(detectCores()/3), 4)
+  # no.cores &lt;- max(round(detectCores()/4), 4)
+  cl &lt;- makeCluster(no.cores, type=&quot;FORK&quot;)
+  # clusterExport(cl, c(&quot;dt&quot;,&quot;temp&quot;))
+  # clusterEvalQ(cl,{library(data.table);library(magrittr)})
+  dtMinute &lt;- parLapply(cl, 1:length(temp), function(ii){
+    ## -------------------------------------------------------------------------
+    temp[[ii]] %&gt;%
+      .[, .SD[,.(
+        #-----------------------------------------------------------------------------
+        NumericExchTime = .SD[1,NumericExchTime],
+        #-----------------------------------------------------------------------------
+        OpenPrice = .SD[DeltaVolume != 0][1,LastPrice],
+        HighPrice = .SD[DeltaVolume != 0, max(LastPrice, na.rm=TRUE)],
+        LowPrice  = .SD[DeltaVolume != 0, min(LastPrice, na.rm=TRUE)],
+        ClosePrice = ifelse(nrow(.SD[DeltaVolume != 0]) != 0,
+                      .SD[DeltaVolume != 0][nrow(.SD[DeltaVolume != 0]), LastPrice],
+                      .SD[.N,LastPrice]),
+        #-----------------------------------------------------------------------------
+        Volume            = sum(.SD$DeltaVolume, na.rm=TRUE),
+        Turnover          = sum(.SD$DeltaTurnover, na.rm=TRUE),
+        #                 -----------------------------------------------------------------------------
+        OpenOpenInterest  = .SD[1,OpenInterest],
+        HighOpenInterest  =.SD[,max(OpenInterest, na.rm=TRUE)],
+        LowOpenInterest   = .SD[,min(OpenInterest, na.rm=TRUE)],
+        CloseOpenInterest = .SD[.N,OpenInterest],
+        #                 -----------------------------------------------------------------------------
+        UpperLimitPrice   = unique(na.omit(.SD$UpperLimitPrice)),
+        LowerLimitPrice   = unique(na.omit(.SD$LowerLimitPrice)),
+        SettlementPrice   = .SD[.N, SettlementPrice]
+      )], by = .(TradingDay, InstrumentID, Minute)] %&gt;%
+      .[Volume != 0 &amp; Turnover != 0]
+    ## -------------------------------------------------------------------------
+  }) %&gt;% rbindlist()
+  stopCluster(cl)
+
+  return(dtMinute)
+}
+##############################################################################</code></pre>
+</div>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2017-10-20</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/futures/">Futures</a>
+          
+          <a href="/tags/%E6%9C%9F%E8%B4%A7/">期货</a>
+          
+          <a href="/tags/%E6%95%B0%E6%8D%AE/">数据</a>
+          
+          <a href="/tags/r/">R</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2017-10-21-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-mysql-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%A1%E7%90%86/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">期货数据：MySQL 数据库管理</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6/">
+            <span class="next-text nav-default">期货数据：R读取数据文件</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

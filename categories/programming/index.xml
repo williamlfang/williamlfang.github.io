@@ -1,0 +1,1412 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Programming on William Fang</title>
+    <link>https://williamlfang.github.io/categories/programming/</link>
+    <description>Recent content in Programming on William Fang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 08 Jun 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://williamlfang.github.io/categories/programming/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>python 打包 packages</title>
+      <link>https://williamlfang.github.io/post/2021-06-08-python-%E6%89%93%E5%8C%85-packages/</link>
+      <pubDate>Tue, 08 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-06-08-python-%E6%89%93%E5%8C%85-packages/</guid>
+      <description>项目结构 ├── readme.md ├── wepy │ ├── ch │ ├── __init__.py │ ├── __pycache__ │ ├── requirements.txt │ ├── setup.py │ ├── utils │ ├── __version__.py │ └── wechat 我们的git项目叫做 wepy，里面的</description>
+    </item>
+    
+    <item>
+      <title>rsync 自动重连</title>
+      <link>https://williamlfang.github.io/post/2021-06-04-rsync-%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</link>
+      <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-06-04-rsync-%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</guid>
+      <description>while true do sleep 1 #rsync --progress -avPz -r -e &amp;quot;ssh -p60001&amp;quot; tbt.colo101.$(date +&amp;quot;%Y%m&amp;quot;)*.tar.bz2 ops@58.33.72.179:/data/Xtp/FromZZ.SH exitCode=$? ## ------------------------------------------------------------------------- case $exitCode in 10 | 23 | 30 | 35) echo &amp;quot;$(date): rsync finished with a network related error: $exitCode&amp;quot; ;; 0) echo &amp;quot;$(date): rsync finished without error&amp;quot; break # leave the while loop ;; *) # all other cases echo &amp;quot;$(date): rsync finished with an unexpected error: $exitCode&amp;quot; ## break #</description>
+    </item>
+    
+    <item>
+      <title>clickhouse 数据迁移</title>
+      <link>https://williamlfang.github.io/post/2021-05-26-clickhouse-%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/</link>
+      <pubDate>Wed, 26 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-26-clickhouse-%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/</guid>
+      <description>使用 Remote 方式 INSERT INTO tickdata.szse_tbt_Colo102 SELECT * FROM remote(&amp;#39;192.168.1.192:9000&amp;#39;, &amp;#39;tickdata&amp;#39;, &amp;#39;szse_tbt_Colo102&amp;#39;, &amp;#39;sig&amp;#39;, &amp;#39;sig@R7_ch&amp;#39;) WHERE TradingDay = &amp;#39;2021-05-25&amp;#39; 使用 Clickhouse Copier 方式 使用文件冷备份 参考链接 记一次 ClickHouse 数据迁移</description>
+    </item>
+    
+    <item>
+      <title>Linux cpu 隔核设置</title>
+      <link>https://williamlfang.github.io/post/2021-05-24-linux-cpu-%E9%9A%94%E6%A0%B8%E8%AE%BE%E7%BD%AE/</link>
+      <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-24-linux-cpu-%E9%9A%94%E6%A0%B8%E8%AE%BE%E7%BD%AE/</guid>
+      <description>设置 ## 修改 grub vim /etc/default/grub ## 增加 ioslcpus=1-2,7-8 ## 更新配置 grub2-mkconfig -o /boot/grub2/grub.cfg ## 重启生效 reboot ## 查看是否生效 cat /proc/cmdline 参考链接 Linux 如何隔离CPU核心 isolcpus=0-2</description>
+    </item>
+    
+    <item>
+      <title>Linux 扩展 shm 空间</title>
+      <link>https://williamlfang.github.io/post/2021-05-18-linux-%E6%89%A9%E5%B1%95-shm-%E7%A9%BA%E9%97%B4/</link>
+      <pubDate>Tue, 18 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-18-linux-%E6%89%A9%E5%B1%95-shm-%E7%A9%BA%E9%97%B4/</guid>
+      <description>## 查看 shm 大小 df -h /dev/shm ## 修改大小 ## 记得一定要使用 tab 来分割 sudo vim /etc/fstab ## 使用 MB tmpfs /dev/shm tmpfs defaults,size=4096M 0 0 ## 使用 GB tmpfs /dev/shm tmpfs defaults,size=4G 0 0 ## 重新挂载，需要确保没有被占用 sudo umount -l /dev/shm sudo mount</description>
+    </item>
+    
+    <item>
+      <title>chrony 时间校准</title>
+      <link>https://williamlfang.github.io/post/2021-05-18-chrony-%E6%97%B6%E9%97%B4%E6%A0%A1%E5%87%86/</link>
+      <pubDate>Tue, 18 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-18-chrony-%E6%97%B6%E9%97%B4%E6%A0%A1%E5%87%86/</guid>
+      <description>安装 yum -y install chrony 配置 ## 配置文件修改 vim /etc/chrony.conf ## 把不需要的 server 注释掉 ## 然后增加需要时间对准的服务器IP server ntp2.xtp.com iburst server 10.228.39.1 iburst driftfile /var/lib/chrony/drift makestep 1.0 3 rtcsync ## 如果是服务器，需要开启这个</description>
+    </item>
+    
+    <item>
+      <title>Linux 网络参数优化</title>
+      <link>https://williamlfang.github.io/post/2021-05-16-linux-%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Sun, 16 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-16-linux-%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96/</guid>
+      <description>设置 sysctl ## 如果出现报错 sysctl: cannot stat /proc/sys/–p: No such file or directory ## 则需要执行以下命令 modprobe br_netfilter ls /proc/sys/net/bridge ## 记得输入该命令及时生效 sysctl -p /etc/sysctl</description>
+    </item>
+    
+    <item>
+      <title>testing</title>
+      <link>https://williamlfang.github.io/post/2021-05-16-testing/</link>
+      <pubDate>Sun, 16 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-16-testing/</guid>
+      <description>testing.</description>
+    </item>
+    
+    <item>
+      <title>autossh 的几个小技巧</title>
+      <link>https://williamlfang.github.io/post/2021-05-07-autossh-%E7%9A%84%E5%87%A0%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+      <pubDate>Fri, 07 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-07-autossh-%E7%9A%84%E5%87%A0%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+      <description>查看帮助，设置环境变量 autossh --help usage: autossh [-V] [-M monitor_port[:echo_port]] [-f] [SSH_OPTIONS] -M specifies monitor port. May be overridden by environment variable AUTOSSH_PORT. 0 turns monitoring loop off. Alternatively, a port for an echo service on the remote machine may be specified. (Normally port 7.) -f run in background (autossh handles this, and does not pass it to ssh.) -V print autossh</description>
+    </item>
+    
+    <item>
+      <title>sleek:管理todo列表</title>
+      <link>https://williamlfang.github.io/post/2021-04-27-sleek-%E7%AE%A1%E7%90%86todo%E5%88%97%E8%A1%A8/</link>
+      <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-27-sleek-%E7%AE%A1%E7%90%86todo%E5%88%97%E8%A1%A8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>.ssh config 保持连接不断</title>
+      <link>https://williamlfang.github.io/post/2021-04-23-.ssh-config-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E6%96%AD/</link>
+      <pubDate>Fri, 23 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-23-.ssh-config-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E6%96%AD/</guid>
+      <description>在 ~/.ssh/config 添加 Host * ServerAliveInterval 60</description>
+    </item>
+    
+    <item>
+      <title>autossh 防止 timed out</title>
+      <link>https://williamlfang.github.io/post/2021-04-16-autossh-%E9%98%B2%E6%AD%A2-timed-out/</link>
+      <pubDate>Fri, 16 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-16-autossh-%E9%98%B2%E6%AD%A2-timed-out/</guid>
+      <description>参考链接：终端 timed out waiting for input: auto-logout解决！ ## 先打印开一下有没有设置自动超时， ## 0或者空表示不会超时，其他表示超时多少秒会自动断线 echo</description>
+    </item>
+    
+    <item>
+      <title>zsh 报错:zsh compinit: insecure directories, run compaudit for list</title>
+      <link>https://williamlfang.github.io/post/2021-04-16-zsh-%E6%8A%A5%E9%94%99-zsh-compinit-insecure-directories-run-compaudit-for-list/</link>
+      <pubDate>Fri, 16 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-16-zsh-%E6%8A%A5%E9%94%99-zsh-compinit-insecure-directories-run-compaudit-for-list/</guid>
+      <description>解决方案 compaudit | xargs chmod g-w</description>
+    </item>
+    
+    <item>
+      <title>bash 显示 PS1</title>
+      <link>https://williamlfang.github.io/post/2021-04-14-bash-%E6%98%BE%E7%A4%BA-ps1/</link>
+      <pubDate>Wed, 14 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-14-bash-%E6%98%BE%E7%A4%BA-ps1/</guid>
+      <description>export PS1=&amp;quot;\[\e[01;32m\][\u@\h:\w]\$ \[\e[00m\]&amp;quot;</description>
+    </item>
+    
+    <item>
+      <title>Linux 使用 ag 快速模糊搜索</title>
+      <link>https://williamlfang.github.io/post/2021-04-04-linux-%E4%BD%BF%E7%94%A8-ag-%E5%BF%AB%E9%80%9F%E6%A8%A1%E7%B3%8A%E6%90%9C%E7%B4%A2/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-04-linux-%E4%BD%BF%E7%94%A8-ag-%E5%BF%AB%E9%80%9F%E6%A8%A1%E7%B3%8A%E6%90%9C%E7%B4%A2/</guid>
+      <description>安装</description>
+    </item>
+    
+    <item>
+      <title>Docker 运行 rstudio</title>
+      <link>https://williamlfang.github.io/post/2021-03-30-docker-%E8%BF%90%E8%A1%8C-rstudio/</link>
+      <pubDate>Tue, 30 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-03-30-docker-%E8%BF%90%E8%A1%8C-rstudio/</guid>
+      <description>参考链接：https://github.com/rocker-org/rocker/issues/206 https://hub.docker.com/r/rocker/rstudio ## 新建 Docker docker run -d --name rstudio -v $HOME:/home/`whoami` -e USER=lfang -e PASSWORD=****** -p 58787:8787</description>
+    </item>
+    
+    <item>
+      <title>autossh 实现反向代理自动重连</title>
+      <link>https://williamlfang.github.io/post/2021-03-28-autossh-%E5%AE%9E%E7%8E%B0%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</link>
+      <pubDate>Sun, 28 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-03-28-autossh-%E5%AE%9E%E7%8E%B0%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</guid>
+      <description>下载 ## https://www.harding.motd.ca/autossh/ wget https://www.harding.motd.ca/autossh/autossh-1.4g.tgz 安装 tar -xvf autossh-1.4g.tgz cd autossh-1.4g ./configure --prefix=$HOME/opt make -j &amp;amp;&amp;amp; make install 使用 阿里云 ## 运行外部访问端口 8002 转发到 8001，然后由 8001 转发到托管机器 22 端口 ssh -fNCL *:8002:localhost:8001 localhost 托管机器 ## 开启 80</description>
+    </item>
+    
+    <item>
+      <title>Linux 多网卡 bond</title>
+      <link>https://williamlfang.github.io/post/2021-03-27-linux-%E5%A4%9A%E7%BD%91%E5%8D%A1-bond/</link>
+      <pubDate>Sat, 27 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-03-27-linux-%E5%A4%9A%E7%BD%91%E5%8D%A1-bond/</guid>
+      <description>bond 可以将多个网卡绑定到一起，可以让两个或多个接口作为一个接口，同时提高带宽，并提供网络链路的冗余，当有其中一块网卡故障的时候，不会中断服务器</description>
+    </item>
+    
+    <item>
+      <title>Docker 搭建 openwrt</title>
+      <link>https://williamlfang.github.io/post/2021-03-19-docker-%E6%90%AD%E5%BB%BA-openwrt/</link>
+      <pubDate>Fri, 19 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-03-19-docker-%E6%90%AD%E5%BB%BA-openwrt/</guid>
+      <description>安装 ip addr sudo ip link set eno1 promisc on sudo docker network create -d macvlan --subnet=192.168.3.0/24 --gateway=192.168.3.1 -o parent=eno1 macnet docker network inspect macnet docker pull registry.cn-shanghai.aliyuncs.com/suling/openwrt:x86_64 sudo docker run -d --restart always --name openwrt --network macnet --privileged registry.cn-shanghai.aliyuncs.com/suling/openwrt:x86_64 /sbin/init sudo docker exec -it openwrt /bin/bash vi /etc/config/network config interface &amp;#39;loopback&amp;#39; option ifname &amp;#39;lo&amp;#39; option proto &amp;#39;static&amp;#39; option ipaddr &amp;#39;127.0.0.1&amp;#39; option netmask &amp;#39;255.0.0.0&amp;#39; config globals &amp;#39;globals&amp;#39; option ula_prefix</description>
+    </item>
+    
+    <item>
+      <title>Python 转换 DataFrame 为图片格式</title>
+      <link>https://williamlfang.github.io/post/2021-03-19-python-%E8%BD%AC%E6%8D%A2-dataframe-%E4%B8%BA%E5%9B%BE%E7%89%87%E6%A0%BC%E5%BC%8F/</link>
+      <pubDate>Fri, 19 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-03-19-python-%E8%BD%AC%E6%8D%A2-dataframe-%E4%B8%BA%E5%9B%BE%E7%89%87%E6%A0%BC%E5%BC%8F/</guid>
+      <description># -*- coding: utf-8 -*- # @Author: “williamlfang” # @Date: 2021-03-19 15:18:19 # @Last Modified by: “williamlfang” # @Last Modified time: 2021-03-19 16:18:32 import pandas as pd import numpy as np import matplotlib.pyplot as plt import six from matplotlib.ticker import FormatStrFormatter def render_mpl_table(data, savepath,</description>
+    </item>
+    
+    <item>
+      <title>Linux开发环境一键部署</title>
+      <link>https://williamlfang.github.io/post/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Fri, 08 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/</guid>
+      <description>套件 zsh ## 可以到主页看一下最新的版本号 ## https://www.zsh.org/ wget https://sunsite.icm.edu.pl/pub/unix/shells/zsh/zsh-5.8.tar.xz tar -xvf zsh-5.8.tar.xz cd zsh-5.8 ./configure --prefix=/home/lfang/opt make -j &amp;amp;&amp;amp; make install ## 安装 oh-my-zsh ## sh -c &amp;quot;$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)&amp;quot; wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh bash install.sh ## 如果报错，则把 install.sh 里面的 https 换成 git，这是</description>
+    </item>
+    
+    <item>
+      <title>patat: 命令行ppt</title>
+      <link>https://williamlfang.github.io/post/2020-12-23-patat-%E5%91%BD%E4%BB%A4%E8%A1%8Cppt/</link>
+      <pubDate>Wed, 23 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-12-23-patat-%E5%91%BD%E4%BB%A4%E8%A1%8Cppt/</guid>
+      <description>patat 是一款比较符合极客风格的课件制作工具。 安装 安装 stack curl -sSL https://get.haskellstack.org/ | sh 安装 patat git clone git@github.com:jaspervdj/patat.git cd patat stack setup stack install ## Make sure $HOME/.local/bin is in your $PATH patat v0.8.6.1 Usage: patat [FILENAME] [-w|--watch] Terminal-based presentations using Pandoc Controls: - Next slide: space, enter, l, right, pagedown -</description>
+    </item>
+    
+    <item>
+      <title>ssh 反向代理</title>
+      <link>https://williamlfang.github.io/post/2020-12-19-ssh-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</link>
+      <pubDate>Sat, 19 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-12-19-ssh-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</guid>
+      <description>服务器端 假设服务器[京东云]ip是：123.123.111.111 ## 启动 firewalld 服务，添加端口 6666 fuser -k 6666/tcp systemctl restart firewalld.service firewall-cmd --zone=public --add-port=6666/tcp --permanent systemctl stop firewalld.service ## 开启代理，通过外部访问</description>
+    </item>
+    
+    <item>
+      <title>Linux 设置超级用户程序</title>
+      <link>https://williamlfang.github.io/post/2020-10-25-linux-%E8%AE%BE%E7%BD%AE%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%E7%A8%8B%E5%BA%8F/</link>
+      <pubDate>Sun, 25 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-10-25-linux-%E8%AE%BE%E7%BD%AE%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%E7%A8%8B%E5%BA%8F/</guid>
+      <description>参考链接： Calling a script from a setuid root C program - script does not run as root Can I make a script always execute as root? c程序 一定要使用普通用户 // super.c // -------- #include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;sys/types.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; int main(void) { setuid(0); clearenv(); system(&amp;quot;/bin/bash&amp;quot;); } 编译 一定要使用普通</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu 安装 Deepin wechat</title>
+      <link>https://williamlfang.github.io/post/2020-10-24-ubuntu-%E5%AE%89%E8%A3%85-deepin-wechat/</link>
+      <pubDate>Sat, 24 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-10-24-ubuntu-%E5%AE%89%E8%A3%85-deepin-wechat/</guid>
+      <description>安装 可以参考项目地址：deepin-wine。 ## 需要添加仓库 wget -O- https://deepin-wine.i-m.dev/setup.sh | sh ## 开始安装应用 ## wechat sudo apt-get install deepin.com.wechat ## wechat-work sudo apt install deepin.com.weixin.work 字体安装 由于 wechat 使用了 文泉驿字体，</description>
+    </item>
+    
+    <item>
+      <title>catch2: 测试框架</title>
+      <link>https://williamlfang.github.io/post/2020-10-19-catch2-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6/</link>
+      <pubDate>Mon, 19 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-10-19-catch2-%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6/</guid>
+      <description>安装 Demo 代码 /* * @Author: &amp;quot;william&amp;quot; * @Date: 2020-10-19 17:21:32 * @Last Modified by: &amp;quot;william&amp;quot; * @Last Modified time: 2020-10-19 17:29:18 */ #define CATCH_CONFIG_RUNNER #include &amp;quot;catch.hpp&amp;quot; int main( int argc, char *argv[]) { int res = Catch::Session().run( argc, argv); return res; // ========================================================================= // Catch::Session session; // There must be exactly one instance // int height = 0; // Some user variable you want to be able</description>
+    </item>
+    
+    <item>
+      <title>SnailCore: 开发实例</title>
+      <link>https://williamlfang.github.io/post/2020-10-15-snailcore-%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/</link>
+      <pubDate>Thu, 15 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-10-15-snailcore-%E5%BC%80%E5%8F%91%E5%AE%9E%E4%BE%8B/</guid>
+      <description>项目结构 . ├── CMakeLists.txt └── main.cpp 0 directories, 2 files CMakeLists.txt ######################################################## snail_add_bin(test main.cpp) snail_bin_dep(test util shell) main.cpp #include &amp;lt;shell/main.hpp&amp;gt; #include &amp;lt;util/calendar.hpp&amp;gt; #include &amp;lt;util/log.hpp&amp;gt; using namespace snail; using namespace std; class playground_t: public snail::Main { public: using base_t = snail::Main; using base_t::base_t; playground_t() {}; ~playground_t() {}; const char* name() const override { return &amp;quot;playground_t&amp;quot;; }; bool do_init() override; void run() override; }; bool</description>
+    </item>
+    
+    <item>
+      <title>OpenSSL 源代码编译安装</title>
+      <link>https://williamlfang.github.io/post/2020-10-14-openssl-%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/</link>
+      <pubDate>Wed, 14 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-10-14-openssl-%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/</guid>
+      <description>下载 到官网下载 wget https://www.openssl.org/source/old/1.1.1/openssl-1.1.1g.tar.gz 安装 tar -xvf openssl-1.1.1g.tar.gz cd openssl-1.1.1 ./config --prefix=/home/lfang/opt --libdir=lib no-shared zlib-dynamic make make install 设置 export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64 echo &amp;quot;export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64&amp;quot; &amp;gt;&amp;gt; ~/.bashrc 版本 openssl version -a</description>
+    </item>
+    
+    <item>
+      <title>Clickhouse 高性能列式数据库</title>
+      <link>https://williamlfang.github.io/post/2020-09-21-clickhouse-%E9%AB%98%E6%80%A7%E8%83%BD%E5%88%97%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
+      <pubDate>Mon, 21 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-09-21-clickhouse-%E9%AB%98%E6%80%A7%E8%83%BD%E5%88%97%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
+      <description>OLAP方案与其他常见方案（如OLTP或Key-Value访问）有很大不同。所以，如果你想获得不错的表现，尝试使用OLTP或Key-Valu</description>
+    </item>
+    
+    <item>
+      <title>frp 实现域名解析</title>
+      <link>https://williamlfang.github.io/post/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Fri, 11 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/</guid>
+      <description>godday 域名解析 godaddy 提供了泛域名解析，即通过二级域名即可匹配在服务器特定端口运行的后台服务，如 8080 对应的 gitlab 端口服务。 使用 godaddy 的 DNS Management 面板，增加一条域名 类型</description>
+    </item>
+    
+    <item>
+      <title>CentOS7 搭建私有 DockerHub</title>
+      <link>https://williamlfang.github.io/post/2020-09-06-centos7-%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-dockerhub/</link>
+      <pubDate>Sun, 06 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-09-06-centos7-%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-dockerhub/</guid>
+      <description>安装 Docker Register ## 使用 docker 进行 registry2 进行管理 docker pull registry ## 建立一个目录存放 docker 镜像, 默认是存放在 /tmp/registry mkdir -p /data/Docker/registy docker run -n docker.registry -d -p 5000:5000 -v /data/Docker/registy:/tmp/registry registry docker ps -a ## 开启防火墙5000端口 systemctl restart firewalld.service firewall-cmd</description>
+    </item>
+    
+    <item>
+      <title>Gitlab 安装全过程</title>
+      <link>https://williamlfang.github.io/post/2020-09-05-gitlab-%E5%AE%89%E8%A3%85%E5%85%A8%E8%BF%87%E7%A8%8B/</link>
+      <pubDate>Sat, 05 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-09-05-gitlab-%E5%AE%89%E8%A3%85%E5%85%A8%E8%BF%87%E7%A8%8B/</guid>
+      <description>安装 Gitlab ## 安装必需的依赖项 sudo yum install curl policycoreutils-python openssh-server ## 将 SSH 服务设置成开机自启动 systemctl enable sshd ## 启动 SSH 服务 systemctl start sshd ## 邮件通知 sudo yum install postfix sudo systemctl start postfix sudo systemctl enable postfix ## 安装 Gitlab curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash sudo</description>
+    </item>
+    
+    <item>
+      <title>Evans: gRPC 交互式测试工具</title>
+      <link>https://williamlfang.github.io/post/2020-08-27-evans-grpc-%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Thu, 27 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-08-27-evans-grpc-%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/</guid>
+      <description>安装 到项目主页，找到发布地址，然后下载相应操作系统下的可执行文件。 cd /tmp wget https://github.com/ktr0731/evans/releases/download/0.9.0/evans_linux_amd64.tar.gz tar -xvf evans_linux_amd64.tar.gz ## 复制到系统路径 sudo mv evans /usr/local/bin 使用 evans --host 127.0.0.1 --port 50051 helloworld.proto ______ | ____| | |__ __ __ __ _ _</description>
+    </item>
+    
+    <item>
+      <title>pre commit: 自动美化代码</title>
+      <link>https://williamlfang.github.io/post/2020-08-18-pre-commit-%E8%87%AA%E5%8A%A8%E7%BE%8E%E5%8C%96%E4%BB%A3%E7%A0%81/</link>
+      <pubDate>Tue, 18 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-08-18-pre-commit-%E8%87%AA%E5%8A%A8%E7%BE%8E%E5%8C%96%E4%BB%A3%E7%A0%81/</guid>
+      <description>Python 参考链接: pre-commit: A framework for managing and maintaining multi-language pre-commit hooks. Automate Python workflow using pre-commits: black and flake8 ## 安装 python -m pip install pre-commit ## 也可以直接下载安装 ## curl https://pre-commit.com/install-local.py | python - ## 查看版本 pre-commit -V pre-commit 2.6.0 ## 在项目中生成配置文件 ## 使</description>
+    </item>
+    
+    <item>
+      <title>Abseil 代码阅读</title>
+      <link>https://williamlfang.github.io/post/2020-08-06-abseil-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/</link>
+      <pubDate>Thu, 06 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-08-06-abseil-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/</guid>
+      <description>Google 评价 Abseil 为： 它是从 Google 内部代码块中抽取出来的一系列最基础的软件库。作为基本的组成部分，这些软件库支撑了几乎全部 Google 在运行的项目。以前这些 API 是零零</description>
+    </item>
+    
+    <item>
+      <title>K8s 使用教程</title>
+      <link>https://williamlfang.github.io/post/2020-08-06-k8s-%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</link>
+      <pubDate>Thu, 06 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-08-06-k8s-%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/</guid>
+      <description>参考链接： ubuntu 使用阿里云镜像源快速搭建 kubernetes 1.15.2 集群 安装 sudo apt-get update &amp;amp;&amp;amp; sudo apt-get install -y apt-transport-https curl echo &amp;quot;deb https://apt.kubernetes.io/ kubernetes-xenial main&amp;quot; | sudo tee /etc/apt/sources.list.d/kubernetes.list sudo apt-get update ## 安装最新版 sudo apt install -y kubelet=1.18.5-00 kubeadm=1.18.5-00 kubectl=1.18.5-00 sudo apt-mark hold kubelet=1.18.5-00 kubeadm=1.18.5-00 kubectl=1.18.5-00 # sudo apt-get install -y</description>
+    </item>
+    
+    <item>
+      <title>Linux 添加 systemctl 服务</title>
+      <link>https://williamlfang.github.io/post/2020-08-06-linux-%E6%B7%BB%E5%8A%A0-systemctl-%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Thu, 06 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-08-06-linux-%E6%B7%BB%E5%8A%A0-systemctl-%E6%9C%8D%E5%8A%A1/</guid>
+      <description>方法 新建一个服务文件 cd /usr/lib/systemd/system $ls -alh EasyMonitor.service xtp_md.service total 16K drwxr-xr-x 2 root root 4.0K Aug 6 13:37 ./ drwxr-xr-x 10 root root 4.0K Jun 8 16:25 ../ -rw-r--r-- 1 root root 998 Jan 7 2020 EasyMonitor.service -rwxr-xr-x 1 root root 292 Aug 6 13:54 xtp_md.service* 设置 xtp_md.sevice 服务内容 [Unit] Description=XTP mkdata After=network.target network-online.target [Service] Type=forking Restart=always RestartSec=5</description>
+    </item>
+    
+    <item>
+      <title>Planner: 项目进度管理</title>
+      <link>https://williamlfang.github.io/post/2020-07-31-planner-%E9%A1%B9%E7%9B%AE%E8%BF%9B%E5%BA%A6%E7%AE%A1%E7%90%86/</link>
+      <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-31-planner-%E9%A1%B9%E7%9B%AE%E8%BF%9B%E5%BA%A6%E7%AE%A1%E7%90%86/</guid>
+      <description>安装 sudo apt instal planner</description>
+    </item>
+    
+    <item>
+      <title>gRPC: 学习笔记</title>
+      <link>https://williamlfang.github.io/post/2020-07-31-grpc-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-31-grpc-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <description>参考链接： gRPC 官方文档中文版 https://leimao.github.io/blog/gRPC-Tutorial/ gRPC 编译 参考官网 quick-start 需要指定版本号 configure 需要进行打包配置(package)，这个需要参考 ## 安装依赖包 sudo apt-get install golang sudo apt install autoconf automake libtool</description>
+    </item>
+    
+    <item>
+      <title>Hippo: 编译项目</title>
+      <link>https://williamlfang.github.io/post/2020-07-22-hippo-%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE/</link>
+      <pubDate>Wed, 22 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-22-hippo-%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE/</guid>
+      <description>安装 clang9 wget https://releases.llvm.org/9.0.0/clang%2bllvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz tar -xvf clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz cd clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04 sudo mkdir /usr/lib/llvm-9 sudo cp -r ./* /usr/lib/llvm-9 ProtoBuf sudo apt-get install autoconf automake libtool -y git clone https://github.com/google/protobuf.git cd protobuf git submodule update --init --recursive ./autogen.sh ./configure make make check sudo make install sudo ldconfig gRPC 编译 参考官网 quick-start 需要指定版本号 v1.20.0 configure 需要进行打包配</description>
+    </item>
+    
+    <item>
+      <title>gtest,gmock: 使用总结</title>
+      <link>https://williamlfang.github.io/post/2020-07-15-gtestgmock-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Wed, 15 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-15-gtestgmock-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</guid>
+      <description>项目地址：googletest GoogleTest 考虑到 gtest 和 gmock 两个项目均是针对单元测试 This repository is a merger of the formerly separate GoogleTest and GoogleMock projects. These were so closely related that it makes sense to maintain and release them together. 安装 Ubuntu git clone git@github.com:google/googletest.git cd googletest</description>
+    </item>
+    
+    <item>
+      <title>CppServer</title>
+      <link>https://williamlfang.github.io/post/2020-07-09-cppserver/</link>
+      <pubDate>Thu, 09 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-09-cppserver/</guid>
+      <description>安装 apt-get install uuid-dev pip3 install gil git clone https://github.com/chronoxor/CppServer.git cd CppServer gil update cd modules rm -rf asio pc git clone git@github.com:chriskohlhoff/asio.git 编译 cd build ./unix.sh</description>
+    </item>
+    
+    <item>
+      <title>RabbitMQ: 安装与使用</title>
+      <link>https://williamlfang.github.io/post/2020-07-09-rabbitmq-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Thu, 09 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-09-rabbitmq-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</guid>
+      <description>消息队列 RabbitMQ 是一个在 AMQP（Advanced Message Queuing Protocol ）基础上实现的、可复用的企业消息系统。它可以用于大型软件系统各个模块之间的高效通信，支持高</description>
+    </item>
+    
+    <item>
+      <title>侯捷: C&#43;&#43; 面向对象高级编程</title>
+      <link>https://williamlfang.github.io/post/2020-06-26-%E4%BE%AF%E6%8D%B7-c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/</link>
+      <pubDate>Fri, 26 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-06-26-%E4%BE%AF%E6%8D%B7-c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/</guid>
+      <description>介绍 课程目标 侯捷老师在整个课程的讲授过程中，一直都非常强调「大气的编程习惯」，即从宏观设计、全局把握，然后再从微观编写、认真调试的编程风格。</description>
+    </item>
+    
+    <item>
+      <title>Docker 使用总结</title>
+      <link>https://williamlfang.github.io/post/2020-06-24-docker-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Wed, 24 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-06-24-docker-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</guid>
+      <description>安装 Ubuntu Ubuntu 操作系统的安装步骤可以参考官网说明 卸载旧版本 sudo apt-get remove docker docker-engine docker.io containerd runc Reading package lists... Done Building dependency tree Reading state information... Done Package &amp;#39;docker-engine&amp;#39; is not installed, so not removed Package &amp;#39;docker&amp;#39; is not installed, so not removed Package &amp;#39;containerd&amp;#39; is not installed, so not removed Package</description>
+    </item>
+    
+    <item>
+      <title>MySQL: 指定安装版本5.5</title>
+      <link>https://williamlfang.github.io/post/2020-06-16-mysql-%E6%8C%87%E5%AE%9A%E5%AE%89%E8%A3%85%E7%89%88%E6%9C%AC5.5/</link>
+      <pubDate>Tue, 16 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-06-16-mysql-%E6%8C%87%E5%AE%9A%E5%AE%89%E8%A3%85%E7%89%88%E6%9C%AC5.5/</guid>
+      <description>参考连接：Is it possible to install MySQL 5.5 or 5.6 on Ubuntu 16.04? StackOverFlow Step by step guide* to install mysql 5.5.x on Ubuntu 16.04 Xenial-Xerus. Please see this documentation OR See steps below: Installing MySQL 5.5.51 on Ubuntu 16.06 Uninstall any existing version of MySQL sudo rm /var/lib/mysql/ -R Delete the MySQL profile sudo rm /etc/mysql/ -R Automatically uninstall mysql sudo apt-get autoremove mysql*</description>
+    </item>
+    
+    <item>
+      <title>zsh 报错: arguments:451: vim-files: function definition file not found</title>
+      <link>https://williamlfang.github.io/post/2020-06-15-zsh-%E6%8A%A5%E9%94%99-arguments-451-vim-files-function-definition-file-not-found/</link>
+      <pubDate>Mon, 15 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-06-15-zsh-%E6%8A%A5%E9%94%99-arguments-451-vim-files-function-definition-file-not-found/</guid>
+      <description>rm -rf ~/.zcompdump* exec zsh</description>
+    </item>
+    
+    <item>
+      <title>cgdb: 安装与使用</title>
+      <link>https://williamlfang.github.io/post/2020-05-31-cgdb-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Sun, 31 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-31-cgdb-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</guid>
+      <description>安装 安装 cgdb git clone git@github.com:cgdb/cgdb.git cd cgdb ./autogen.sh ## 安装依赖包 ## CentOS yum install ncurses-devel yum install texinfo ## 如果是 CentOS8 yum config-manager --set-enabled PowerTools yum install help2man yum install readline-devel yum install flex ## Ubuntu sudo apt-get install texinfo sudo apt-get install flex ./configure --prefix=/usr/local make -j sudo make install 配置 参考官方说明：C</description>
+    </item>
+    
+    <item>
+      <title>GLIBCXX: not found</title>
+      <link>https://williamlfang.github.io/post/2020-05-26-glibcxx-not-found/</link>
+      <pubDate>Tue, 26 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-26-glibcxx-not-found/</guid>
+      <description>## Ubuntu cd /usr/lib/x86_64-linux-gnu/ ## CentOS cd /usr/lib64 ll |grep libstd strings libstdc++.so.6 | grep GLIBCXX ## 有可能找不到 GLIBCXX_3.2.26 locate libstdc++.so.6 strings /usr/local/gcc/lib64/libstdc++.so.6 | grep GLIBCXX cp /usr/local/gcc/lib64/libstdc++.so.6 /usr/lib/x86_64-linux-gnu strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX</description>
+    </item>
+    
+    <item>
+      <title>Linux: 新购硬盘扩容</title>
+      <link>https://williamlfang.github.io/post/2020-05-25-linux-%E6%96%B0%E8%B4%AD%E7%A1%AC%E7%9B%98%E6%89%A9%E5%AE%B9/</link>
+      <pubDate>Mon, 25 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-25-linux-%E6%96%B0%E8%B4%AD%E7%A1%AC%E7%9B%98%E6%89%A9%E5%AE%B9/</guid>
+      <description>参考链接: linux新增大于2T硬盘，分区并挂载 最近公司给原来的服务器添加了一块 8T 的 DellSAS 硬盘，原来存放数据。由于Linux采用了逻辑硬盘LLV</description>
+    </item>
+    
+    <item>
+      <title>R: 安装 tensorflow</title>
+      <link>https://williamlfang.github.io/post/2020-05-16-r-%E5%AE%89%E8%A3%85-tensorflow/</link>
+      <pubDate>Sat, 16 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-16-r-%E5%AE%89%E8%A3%85-tensorflow/</guid>
+      <description>Sys.setenv(TENSORFLOW_PYTHON=&amp;quot;/home/fl/anaconda3/bin&amp;quot;) devtools::install_github(&amp;quot;rstudio/tensorflow&amp;quot;) devtools::install_github(&amp;quot;rstudio/keras&amp;quot;) library(tensorflow) hello &amp;lt;- tf$constant(&amp;quot;Hello&amp;quot;) print(hello)</description>
+    </item>
+    
+    <item>
+      <title>R:4.0 源代码安装</title>
+      <link>https://williamlfang.github.io/post/2020-05-14-r-4.0-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85/</link>
+      <pubDate>Thu, 14 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-14-r-4.0-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85/</guid>
+      <description>R4.0 正式发布上线了。新版本的代码在性能和编程方面均有出色的提升。本文将介绍如何通过源代码的方式安装程序，并在 Rstudio 当中指定可执行路径。 获取最新本 R</description>
+    </item>
+    
+    <item>
+      <title>算法学习资源</title>
+      <link>https://williamlfang.github.io/post/2020-05-07-%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90/</link>
+      <pubDate>Thu, 07 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-07-%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90/</guid>
+      <description>网站 演算法是什么 算法笔记 本算法笔记采用Go语言描述，同时内部引用了Go的一些专有函数，如append()，这样做屏蔽了很多底层数据元素的操作</description>
+    </item>
+    
+    <item>
+      <title>无限畅饮 Medium 文章</title>
+      <link>https://williamlfang.github.io/post/2020-04-30-%E6%97%A0%E9%99%90%E7%95%85%E9%A5%AE-medium-%E6%96%87%E7%AB%A0/</link>
+      <pubDate>Thu, 30 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-30-%E6%97%A0%E9%99%90%E7%95%85%E9%A5%AE-medium-%E6%96%87%E7%AB%A0/</guid>
+      <description>Medium 是一个推荐专业阅读文章的博客网站，上面的资讯是比较专业，也有一定的深度。这当然要归功与 Medium 花钱请了大佬长期驻扎在大本营。总结起来，Mediu</description>
+    </item>
+    
+    <item>
+      <title>Sublime: BracketHighlighter 高亮括号</title>
+      <link>https://williamlfang.github.io/post/2020-04-22-sublime-brackethighlighter-%E9%AB%98%E4%BA%AE%E6%8B%AC%E5%8F%B7/</link>
+      <pubDate>Wed, 22 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-22-sublime-brackethighlighter-%E9%AB%98%E4%BA%AE%E6%8B%AC%E5%8F%B7/</guid>
+      <description>在开发一个比较大的工程项目时，有时候我们会写一些比较长的代码块。如果没有良好的插件做辅助，单单凭借肉眼很难看清整个代码的层次关系。这时候，一</description>
+    </item>
+    
+    <item>
+      <title>R: package 开发指南</title>
+      <link>https://williamlfang.github.io/post/2020-04-21-r-package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/</link>
+      <pubDate>Tue, 21 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-21-r-package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/</guid>
+      <description>hicloudR R package for hicloud 开发指南 假设这个包的名称叫 hicloudR 目录结构 需要建立一个 R 目录 添加 DESCRIPTION 用来说明开发包 添加 NAMESPACE 提供函数 ## 建立一个 R 目录 mkdir R ## 建立一个描述文档 touch DESCRIPTION</description>
+    </item>
+    
+    <item>
+      <title>JupyterLab: 配置指南</title>
+      <link>https://williamlfang.github.io/post/2020-04-20-jupyterlab-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-20-jupyterlab-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97/</guid>
+      <description>jupyterlab 是対 ipython notebook 的全新改良版，提供了一个基于网页的功能套件，集成了多种数据分析工具，如 python、R、Julia 的内核。 安装 ## 使用 conda 安装，解决依</description>
+    </item>
+    
+    <item>
+      <title>Rcpp: 开发指南</title>
+      <link>https://williamlfang.github.io/post/2020-04-20-rcpp-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/</link>
+      <pubDate>Mon, 20 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-20-rcpp-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/</guid>
+      <description>R 是一门统计编程语言，提供了丰富的统计分析方法，并允许用户安装第三方软件库，可以快速地构建从想法到实践的全过程。但是 R 毕竟是一门解释性语言，</description>
+    </item>
+    
+    <item>
+      <title>dd: 测试磁盘IO读写速度</title>
+      <link>https://williamlfang.github.io/post/2020-04-18-dd-%E6%B5%8B%E8%AF%95%E7%A3%81%E7%9B%98io%E8%AF%BB%E5%86%99%E9%80%9F%E5%BA%A6/</link>
+      <pubDate>Sat, 18 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-18-dd-%E6%B5%8B%E8%AF%95%E7%A3%81%E7%9B%98io%E8%AF%BB%E5%86%99%E9%80%9F%E5%BA%A6/</guid>
+      <description>## 测试写速度 time dd if=/dev/zero of=/tmp/test bs=8k count=1000000 ## 测试读速度 time dd if=/tmp/test of=/dev/null bs=8k ## 测试读写速度 time dd if=/tmp/test of=/var/test bs=64k 参数说明： time有计时作用，dd用于复制，从if读出，写到of； if</description>
+    </item>
+    
+    <item>
+      <title>阿里云磁盘扩容与扩展分区</title>
+      <link>https://williamlfang.github.io/post/2020-04-17-%E9%98%BF%E9%87%8C%E4%BA%91%E7%A3%81%E7%9B%98%E6%89%A9%E5%AE%B9%E4%B8%8E%E6%89%A9%E5%B1%95%E5%88%86%E5%8C%BA/</link>
+      <pubDate>Fri, 17 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-17-%E9%98%BF%E9%87%8C%E4%BA%91%E7%A3%81%E7%9B%98%E6%89%A9%E5%AE%B9%E4%B8%8E%E6%89%A9%E5%B1%95%E5%88%86%E5%8C%BA/</guid>
+      <description>在线扩容 去阿里云控制台下单采购：在线扩容 采购完成后，大概经过 1 分钟左右，即可在对应的服务器看到增加的磁盘空间了 fdisk -l 但是，这时候直接使用 df -h 是</description>
+    </item>
+    
+    <item>
+      <title>R:colorout 设置终端输出的主题颜色</title>
+      <link>https://williamlfang.github.io/post/2020-04-16-r-colorout-%E8%AE%BE%E7%BD%AE%E7%BB%88%E7%AB%AF%E8%BE%93%E5%87%BA%E7%9A%84%E4%B8%BB%E9%A2%98%E9%A2%9C%E8%89%B2/</link>
+      <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-16-r-colorout-%E8%AE%BE%E7%BD%AE%E7%BB%88%E7%AB%AF%E8%BE%93%E5%87%BA%E7%9A%84%E4%B8%BB%E9%A2%98%E9%A2%9C%E8%89%B2/</guid>
+      <description>项目地址：colorout 安装 在终端运行 cd ~/Documents git clone https://github.com/jalvesaq/colorout.git R CMD INSTALL colorout 配置方案 转化函数 to_ansi #&amp;#39; Helper for generating ansi color codes with hex color codes. #&amp;#39; #&amp;#39; After generating ansi color codes, feed input to `colorout::setOutputColors`. #&amp;#39; #&amp;#39; @param fg Foreground color in hex format (ie</description>
+    </item>
+    
+    <item>
+      <title>feather:在R与python之间共享数据存储格式</title>
+      <link>https://williamlfang.github.io/post/2020-04-15-feather-%E5%9C%A8r%E4%B8%8Epython%E4%B9%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/</link>
+      <pubDate>Wed, 15 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-15-feather-%E5%9C%A8r%E4%B8%8Epython%E4%B9%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/</guid>
+      <description>更新 看新闻报道，feather 现在正式升级为 Apache Arrow 项目成员，得到业内大佬们的提携，性能上更加优秀。 项目地址：Apache Arrow Python 的版本现在改成了 pyarrow</description>
+    </item>
+    
+    <item>
+      <title>lbzip2 多线程并行压缩、解压</title>
+      <link>https://williamlfang.github.io/post/2020-04-15-lbzip2-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B9%B6%E8%A1%8C%E5%8E%8B%E7%BC%A9%E8%A7%A3%E5%8E%8B/</link>
+      <pubDate>Wed, 15 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-15-lbzip2-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B9%B6%E8%A1%8C%E5%8E%8B%E7%BC%A9%E8%A7%A3%E5%8E%8B/</guid>
+      <description>安装 wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/lbzip2/2.5-2/lbzip2_2.5.orig.tar.bz2 tar -xvf lbzip2_2.5.orig.tar.bz2 cd lbzip2-2.5 sudo ./configure --prefix=/usr sudo make -j sudo make install 对比 演示文件信息 -rw-r--r--. 1 1001 1001 5.2G Apr 14 15:15 20200414.csv -rw-r--r--. 1 root hy 1007M Apr 15 10:58 20200414.tar.bz2 lbzip2 time tar -cvf - 20200414.csv | lbzip2 &amp;gt; 20200414.tar.bz2 real 0m19.618s user 9m48.298s sys 0m22.568s pbzip2 time tar -cvf - 20200414.csv | pbzip2 &amp;gt; 20200414.tar.bz2</description>
+    </item>
+    
+    <item>
+      <title>sshfs 远程服务器挂载</title>
+      <link>https://williamlfang.github.io/post/2020-04-14-sshfs-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD/</link>
+      <pubDate>Tue, 14 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-14-sshfs-%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8C%82%E8%BD%BD/</guid>
+      <description>## https://unix.stackexchange.com/questions/37168/unable-to-use-o-allow-other-with-sshfs-option-enabled-in-fuse-conf vim /etc/fuse.conf # Set the maximum number of FUSE mounts allowed to non-root users. # The default is 1000. # #mount_max = 1000 # Allow non-root users to specify the &amp;#39;allow_other&amp;#39; or &amp;#39;allow_root&amp;#39; # mount options. # user_allow_other chmod a+r /etc/fuse.conf ## ubuntu sudo apt install sshfs sudo apt install fuse ## CentOS sudo yum install sshfs sudo yum install fuse ## cd /mnt mkdir From135 chmod -R</description>
+    </item>
+    
+    <item>
+      <title>cmake 指定编译器路径</title>
+      <link>https://williamlfang.github.io/post/2020-04-08-cmake-%E6%8C%87%E5%AE%9A%E7%BC%96%E8%AF%91%E5%99%A8%E8%B7%AF%E5%BE%84/</link>
+      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-08-cmake-%E6%8C%87%E5%AE%9A%E7%BC%96%E8%AF%91%E5%99%A8%E8%B7%AF%E5%BE%84/</guid>
+      <description>原来是在 CMakeLists.txt 里设置编译器路径，但是发现这个没有生效： set(CMAKE_CXX_COMPILER g++) 后面在 SO 上面找到答案：需要使用 export 指定路径。How to specify new GCC path for CMake export CC=/usr/local/bin/gcc export CXX=/usr/local/bin/g++ cmake /path/to/your/project make 这里提醒一</description>
+    </item>
+    
+    <item>
+      <title>zsh 无法使用 vim 自动补全: _arguments:451: _vim_files: function definition file not found</title>
+      <link>https://williamlfang.github.io/post/2020-04-08-zsh-%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8-vim-%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8-_arguments-451-_vim_files-function-definition-file-not-found/</link>
+      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-04-08-zsh-%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8-vim-%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8-_arguments-451-_vim_files-function-definition-file-not-found/</guid>
+      <description>在 zsh 中使用 vim 补全功能时，会出现以下报错： _arguments:451: _vim_files: function definition file not found 参考 SO 的答疑：zsh fails at path completition when command is vim。 解决方法是： rm $ZSH_COMPDUMP ## 一定要执行一次 exec zsh</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43;日志模块:loguru</title>
+      <link>https://williamlfang.github.io/post/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/</link>
+      <pubDate>Mon, 23 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/</guid>
+      <description>总结： 如果使用 fmtlib，则需要在编译静态库的时候，设置 include 之前添加 c++ #define LOGURU_USE_FMTLIB 1 #include &amp;quot;loguru.hpp&amp;quot; 编译可执行的时候，需要确保先链接 loguru，然后在链接 fmt cmake</description>
+    </item>
+    
+    <item>
+      <title>gcc 找不到 libgomp.spec: No such file or directory</title>
+      <link>https://williamlfang.github.io/post/2020-03-23-gcc-%E6%89%BE%E4%B8%8D%E5%88%B0-libgomp.spec-no-such-file-or-directory/</link>
+      <pubDate>Mon, 23 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-03-23-gcc-%E6%89%BE%E4%B8%8D%E5%88%B0-libgomp.spec-no-such-file-or-directory/</guid>
+      <description>error: can&#39;t find libgomp.spec 在网上找了好久的解决方法，其实是因为最近安装了新版本的 gcc，无法与旧版本的动态库链接。这里需要拷贝一份到 LD_LIBRARY_PATH 所在的路径 sudo cp /home/william/Documents/Linux-Tools/gcc/gcc9/gcc-9.2.0/x86_64-pc-linux-gnu/libgomp/libgomp.spec /usr/lib sudo cp /home/william/Documents/Linux-Tools/gcc/gcc9/gcc-9.2.0/x86_64-pc-linux-gnu/libgomp/libgomp.spec</description>
+    </item>
+    
+    <item>
+      <title>Sublime 使用 Jupyter Notebook</title>
+      <link>https://williamlfang.github.io/post/2020-03-13-sublime-%E4%BD%BF%E7%94%A8-jupyter-notebook/</link>
+      <pubDate>Fri, 13 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-03-13-sublime-%E4%BD%BF%E7%94%A8-jupyter-notebook/</guid>
+      <description>安装 安装 pyzmq ## 需要安装 pyzmq pc /usr/bin/python3.6 -m pip install pyzmqc 安装 Helium 在 Sublime 中打开 Shift+Ctrl+P，然后输入 Helium 进行安装 打开 Jupyter 先在命令行打开 jupyterlab 然后使用命令进行查询连接</description>
+    </item>
+    
+    <item>
+      <title>CTP低延时交易系统研究笔记</title>
+      <link>https://williamlfang.github.io/post/2020-03-10-ctp%E4%BD%8E%E5%BB%B6%E6%97%B6%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E7%A0%94%E7%A9%B6%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Tue, 10 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-03-10-ctp%E4%BD%8E%E5%BB%B6%E6%97%B6%E4%BA%A4%E6%98%93%E7%B3%BB%E7%BB%9F%E7%A0%94%E7%A9%B6%E7%AC%94%E8%AE%B0/</guid>
+      <description>参考链接 知乎 高频交易实盘中，如何提高按对价(bid-ask)执行限价单(limit order)的成交率？</description>
+    </item>
+    
+    <item>
+      <title>v2ray Ubuntu 配置教程</title>
+      <link>https://williamlfang.github.io/post/2020-03-08-v2ray-ubuntu-%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/</link>
+      <pubDate>Sun, 08 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-03-08-v2ray-ubuntu-%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/</guid>
+      <description>安装 v2ray 服务器 bash &amp;lt;(curl -s -L https://git.io/v2ray.sh) 可以顺便给 vps 测速 ## superspeed bash &amp;lt;(curl -Lso- https://git.io/superspeed) ————————————————————————SuperSpeed 全面测速版——————</description>
+    </item>
+    
+    <item>
+      <title>Windows: 安装与配置 Sublime Text 3</title>
+      <link>https://williamlfang.github.io/post/2020-02-04-windows-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE-sublime-text-3/</link>
+      <pubDate>Tue, 04 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-02-04-windows-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE-sublime-text-3/</guid>
+      <description>Sublime REPL: 配置 打开 Preferences/Packages Settings/SublimeREPL/Settings - User，增加 { // 对于 Windows，需要添加路径 // 1. R: C:\\Program Files\\R\\R-3.6.2\\bin\\x64 // 2. cywgin: C:\\cygwin64\\bin &amp;quot;default_extend_env&amp;quot;: { &amp;quot;PATH&amp;quot;: &amp;quot;{PATH};C:\\Program Files\\R\\R-3.6.2\\bin\\x64;C:\\cygwin64\\bin&amp;quot; }, &amp;quot;show_transferred_text&amp;quot;: true } 这里有一个小的提示，在 Windows 操作系统中，</description>
+    </item>
+    
+    <item>
+      <title>speedtest cli</title>
+      <link>https://williamlfang.github.io/post/2020-02-03-speedtest-cli/</link>
+      <pubDate>Mon, 03 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-02-03-speedtest-cli/</guid>
+      <description>speedtest-cli pip install speedtest-cli speedtest-cli pip install speedtest-cli Collecting speedtest-cli Downloading http://mirrors.aliyun.com/pypi/packages/c4/44/dfebd38c5fb35aae0a7279e2a3ffe33ca65edb449a586b93addc8d409a71/speedtest_cli-2.1.2-py2.py3-none-any.whl Installing collected packages: speedtest-cli Successfully installed speedtest-cli-2.1.2 You are using pip version 9.0.1, however version 20.0.2 is available. You should consider upgrading via the &amp;#39;pip install --upgrade pip&amp;#39; command. speedtest-clis Retrieving speedtest.net configuration... Testing from Hangzhou Alibaba Advertising Co.,Ltd. (47.98.117.71)... Retrieving speedtest.net server list... Selecting best server based on ping... Hosted by Beijing Unicom (Beijing) [1.67 km]: 31.03</description>
+    </item>
+    
+    <item>
+      <title>Linux 设置系统语言</title>
+      <link>https://williamlfang.github.io/post/2020-01-08-linux-%E8%AE%BE%E7%BD%AE%E7%B3%BB%E7%BB%9F%E8%AF%AD%E8%A8%80/</link>
+      <pubDate>Wed, 08 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-01-08-linux-%E8%AE%BE%E7%BD%AE%E7%B3%BB%E7%BB%9F%E8%AF%AD%E8%A8%80/</guid>
+      <description>vim /etc/environment #LC_ALL=zh_CN.UTF_8 #LANG=zh_CN.UTF_8 LC_ALL=en_US.utf8 LANG=en_US.utf8</description>
+    </item>
+    
+    <item>
+      <title>Vimium 插件</title>
+      <link>https://williamlfang.github.io/post/2020-01-07-vimium-%E6%8F%92%E4%BB%B6/</link>
+      <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-01-07-vimium-%E6%8F%92%E4%BB%B6/</guid>
+      <description>技巧 从地址栏返回页面（Focus） 有时会不小心点击了 Chrome 的地址栏，这时候就无法在使用 Vimium 的快捷键功能了。为了处理这个问题，网上有人给出了一个小的</description>
+    </item>
+    
+    <item>
+      <title>Sublime 3207注册码</title>
+      <link>https://williamlfang.github.io/post/2019-12-30-sublime-3207%E6%B3%A8%E5%86%8C%E7%A0%81/</link>
+      <pubDate>Mon, 30 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-30-sublime-3207%E6%B3%A8%E5%86%8C%E7%A0%81/</guid>
+      <description>Sublime 3207 目前是2019年最新版本 SUBLIME TEXT 3 BUILD 3207 AND 3208 LICENCE KEY 执行步骤： 断开网络连接 修改 /etc/hosts Windows | &amp;quot;C:\Windows\System32\drivers\etc\hosts&amp;quot; Mac | &amp;quot;/Private/etc/hosts&amp;quot; Linux | &amp;quot;/etc/hosts&amp;quot; 增加以下代码 127.0.0.1 www.sublimetext.com 127.0.0.1 sublimetext.com 127.0.0.1 sublimehq.com 127.0.0.1 license.sublimehq.com 127.0.0.1 45.55.255.55 127.0.0.1 45.55.41.223 0.0.0.0 license.sublimehq.com 0.0.0.0 45.55.255.55 0.0.0.0 45.55.41.223</description>
+    </item>
+    
+    <item>
+      <title>Solarflare网卡开发：efvi 低延时应用</title>
+      <link>https://williamlfang.github.io/post/2019-12-25-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-efvi-%E4%BD%8E%E5%BB%B6%E6%97%B6%E5%BA%94%E7%94%A8/</link>
+      <pubDate>Wed, 25 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-25-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-efvi-%E4%BD%8E%E5%BB%B6%E6%97%B6%E5%BA%94%E7%94%A8/</guid>
+      <description>概念 开发 Demo 服务端 客户端</description>
+    </item>
+    
+    <item>
+      <title>cmake 要点总结</title>
+      <link>https://williamlfang.github.io/post/2019-12-17-cmake-%E8%A6%81%E7%82%B9%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Tue, 17 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-17-cmake-%E8%A6%81%E7%82%B9%E6%80%BB%E7%BB%93/</guid>
+      <description>调试 通过 CMAKE_BUILD_TYPE 可以设置条件编译，执行生成可供调试的程序，这个相当于在命令行使用 cmake .. -DCMAKE_BUILD_TYPE=Debug ## 调试状态 set(CMAKE_BUILD_TYPE Debug) ## 发布状态 set(CMAKE_BUILD_TYPE Release) 头文件包含 include_directories(include_path) 可以使用 include_directories(include_path) set(INCLUDE_PATH ./include) include_directories(${INCLUDE_PATH}) ## 也</description>
+    </item>
+    
+    <item>
+      <title>Linux 调整 cstate 实现cpu超频</title>
+      <link>https://williamlfang.github.io/post/2019-12-11-linux-%E8%B0%83%E6%95%B4-cstate-%E5%AE%9E%E7%8E%B0cpu%E8%B6%85%E9%A2%91/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-11-linux-%E8%B0%83%E6%95%B4-cstate-%E5%AE%9E%E7%8E%B0cpu%E8%B6%85%E9%A2%91/</guid>
+      <description>随着技术的发展，现在主流的 Intel CPU 的主频都能达到 3GHz 以上，而且还支持超频技术。为了最大的获取 CPU 的性能，我们可以对 cstate 进行调整。 Ubuntu 设置 与开机项有关的参</description>
+    </item>
+    
+    <item>
+      <title>Solarflare网卡开发：openonload 安装与调试</title>
+      <link>https://williamlfang.github.io/post/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/</guid>
+      <description>OpenOnload 技术 固件信息 可以通过命令查看当前的网卡连接情况 ip address 1: lo: &amp;lt;LOOPBACK,UP,LOWER_UP&amp;gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000 link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 inet 127.0.0.1/8 scope host lo valid_lft forever preferred_lft forever inet6 ::1/128 scope host valid_lft forever preferred_lft forever 2: enp5s0: &amp;lt;BROADCAST,MULTICAST,UP,LOWER_UP&amp;gt; mtu 1500 qdisc pfifo_fast state UP group</description>
+    </item>
+    
+    <item>
+      <title>tuned/tuned adm 系统调优工具</title>
+      <link>https://williamlfang.github.io/post/2019-12-11-tuned/tuned-adm-%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-11-tuned/tuned-adm-%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98%E5%B7%A5%E5%85%B7/</guid>
+      <description>tuned 是服务，需要使用 tuned-adm 打开工具进行操作。 安装 CentOs sudo yum install tuned 启动 --------------- On RHEL/CentOS 7 --------------- # systemctl start tuned # systemctl enable tuned # systemctl status tuned # systemctl stop tuned Ubuntu sudo apt install tuned 调优 显示当前可用的调优方案 tuned-adm list Available</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu 源代码安装 wireshark</title>
+      <link>https://williamlfang.github.io/post/2019-12-10-ubuntu-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-wireshark/</link>
+      <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-10-ubuntu-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-wireshark/</guid>
+      <description>wireshark 与 tcpdump 是网络抓包的两大神器。其中，前者提供了更加便捷的界面操作，后者则比较适合在命令行进行操作。 安装 Ubuntu 可以直接从默认仓库安装，但是提供的是稳</description>
+    </item>
+    
+    <item>
+      <title>Unix Network Programming 代码学习</title>
+      <link>https://williamlfang.github.io/post/2019-12-09-unix-network-programming-%E4%BB%A3%E7%A0%81%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-09-unix-network-programming-%E4%BB%A3%E7%A0%81%E5%AD%A6%E4%B9%A0/</guid>
+      <description>网络编程的圣经 Chap.0 安装源代码 安装步骤 ## git clone git@github.com:williamlfang/unix-network-programming-v3.git cd unix-network-programming-v3-master ./configure cd lib # build the basic library that all programs need make # use &amp;quot;gmake&amp;quot; everywhere on BSD/OS systems cd ../libfree # continue building the basic library make 测试 ## 编译 cd intro make ## 启动服务器 sudo ./daytimetcpsrv ## 运</description>
+    </item>
+    
+    <item>
+      <title>ssh 保持连接不中断</title>
+      <link>https://williamlfang.github.io/post/2019-12-05-ssh-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E4%B8%AD%E6%96%AD/</link>
+      <pubDate>Thu, 05 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-05-ssh-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E4%B8%AD%E6%96%AD/</guid>
+      <description>为了在使用 ssh 登录服务器保持通信连接的持续，我们可以修改服务器端或者客户端。 修改服务器端 如果想要对所有的用户都允许保持连接，可以考虑把服务器端</description>
+    </item>
+    
+    <item>
+      <title>Clion 远程调试</title>
+      <link>https://williamlfang.github.io/post/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/</link>
+      <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/</guid>
+      <description>项目配置 同步本地代码 打开 File -&amp;gt; Setting -&amp;gt; Build,Execution,Deployment -&amp;gt; Deployment 在右边点击 + 进行添加远程服务 根据 Connections 添加远程服务器账户信息 切换到 Mappings 设置本地的代码根目录Local path 设置远</description>
+    </item>
+    
+    <item>
+      <title>tmux:终端神器</title>
+      <link>https://williamlfang.github.io/post/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/</link>
+      <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/</guid>
+      <description>编程如手艺 编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布</description>
+    </item>
+    
+    <item>
+      <title>samba文件配置与访问权限</title>
+      <link>https://williamlfang.github.io/post/2019-12-03-samba%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/</link>
+      <pubDate>Tue, 03 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-03-samba%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/</guid>
+      <description>注意，samba 在不同的操作系统下的服务名称是不一样的： Ubuntu: smbd CentOS: smb 安装 安装软件 ## Ubuntu sudo apt update sudo apt-get install samba ## CentOS yum install samba 查看状态 Ubuntu apt show samba Package: samba Version: 2:4.7.6+dfsg~ubuntu-0ubuntu2.14 Priority: optional Section: net Origin: Ubuntu</description>
+    </item>
+    
+    <item>
+      <title>Jupyter端口转发运行远程服务器</title>
+      <link>https://williamlfang.github.io/post/2019-12-02-jupyter%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
+      <pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-02-jupyter%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
+      <description>登录服务器 打开终端执行命令 lhg@lhg-Ubuntu:~$ rss@my Last login: Mon Dec 2 10:18:29 2019 from 192.168.10.111 [rss@rss ~]$ cd python_hg/ [rss@rss python_hg]$ ll total 24K drwxrwxr-x. 3 rss rss 4.0K Nov 29 20:33 . drwx------. 46 rss 1000 4.0K Dec 2 10:04 .. drwxrwxr-x. 2 rss rss 4.0K Nov 29 20:05 .ipynb_checkpoints -rw-rw-r--. 1 rss rss 4.5K Nov 29 20:33 Untitled1.ipynb -rw-rw-r--.</description>
+    </item>
+    
+    <item>
+      <title>Linux 完全删除用户</title>
+      <link>https://williamlfang.github.io/post/2019-12-02-linux-%E5%AE%8C%E5%85%A8%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7/</link>
+      <pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-02-linux-%E5%AE%8C%E5%85%A8%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7/</guid>
+      <description>userdel git ## 提示错误 ## userdel: group git not removed because it is not the primary group of user git. usermod -g git git groupdel git</description>
+    </item>
+    
+    <item>
+      <title>influxDB 入坑指北</title>
+      <link>https://williamlfang.github.io/post/2019-12-02-influxdb-%E5%85%A5%E5%9D%91%E6%8C%87%E5%8C%97/</link>
+      <pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-02-influxdb-%E5%85%A5%E5%9D%91%E6%8C%87%E5%8C%97/</guid>
+      <description>安装 cd ~/Downloads ## 官网下载 https://portal.influxdata.com/downloads/ wget https://dl.influxdata.com/influxdb/releases/influxdb_1.7.9_amd64.deb ## 开始安装 sudo dpkg -i influxdb_1.7.9_amd64.deb ## 启动服务 /bin/systemctl start influxdb.service ## 打开服务 influx Connected to http://localhost:8086 version 1.7.9 InfluxDB shell version: 1.7.9 &amp;gt; &amp;gt; help Usage: connect &amp;lt;host:port&amp;gt; connects to another node specified by host:port auth prompts for username and password pretty toggles pretty print for the json</description>
+    </item>
+    
+    <item>
+      <title>解决ssh上传公钥到服务器仍需输入密码的问题</title>
+      <link>https://williamlfang.github.io/post/2019-12-02-%E8%A7%A3%E5%86%B3ssh%E4%B8%8A%E4%BC%A0%E5%85%AC%E9%92%A5%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BB%8D%E9%9C%80%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-02-%E8%A7%A3%E5%86%B3ssh%E4%B8%8A%E4%BC%A0%E5%85%AC%E9%92%A5%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BB%8D%E9%9C%80%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>为了保证安装，我们通常使用公钥登录的方式，可以避免输入密码。但是如果权限管理不正确，即使上传了本地公钥后，ssh 登录连接仍然提示需要输入密码</description>
+    </item>
+    
+    <item>
+      <title>搭建阿里云Git服务器</title>
+      <link>https://williamlfang.github.io/post/2019-11-29-%E6%90%AD%E5%BB%BA%E9%98%BF%E9%87%8C%E4%BA%91git%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
+      <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-11-29-%E6%90%AD%E5%BB%BA%E9%98%BF%E9%87%8C%E4%BA%91git%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
+      <description>Git:版本控制系统 搭建 Git 服务器 第一步，安装git： $ sudo apt-get install git 第二步，创建一个git用户，用来运行git服务： $ sudo adduser git 第三步，创建证书登录：</description>
+    </item>
+    
+    <item>
+      <title>本地终端运行远程R命令，并输出图像</title>
+      <link>https://williamlfang.github.io/post/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/</link>
+      <pubDate>Fri, 29 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/</guid>
+      <description>痛点 今天在网上看到一个 R 编程语言的扩展包，解决了长期以来困扰我的一个难题：如果在本地终端编辑运行位于远程服务器上的 R 命令脚本，并在需要的时候</description>
+    </item>
+    
+    <item>
+      <title>Clion 激活码</title>
+      <link>https://williamlfang.github.io/post/2019-11-27-clion-%E6%BF%80%E6%B4%BB%E7%A0%81/</link>
+      <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-11-27-clion-%E6%BF%80%E6%B4%BB%E7%A0%81/</guid>
+      <description>更新 ✅Jetbrains系列产品2019.3.1最新激活方法[持续更新] CLion License Activation 旧时代 CLion License Activation ❌2019 Clion PyCharm 激活码 在/etc/hosts文件末尾</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu解压zip中文乱码</title>
+      <link>https://williamlfang.github.io/post/2019-11-25-ubuntu%E8%A7%A3%E5%8E%8Bzip%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/</link>
+      <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-11-25-ubuntu%E8%A7%A3%E5%8E%8Bzip%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/</guid>
+      <description>unzip 出现中文乱码 unzip doc.zip [14:45:55] Archive: doc.zip creating: doc/ inflating: doc/CATS╧╡═│┐═╗з╢╦▓▀┬╘╗╪▓т║═╜╗╥╫╣ж─▄╩╣╙├╦╡├ў.pdf inflating: doc/CA</description>
+    </item>
+    
+    <item>
+      <title>CentOS7:gcc7.3源代码编译升级</title>
+      <link>https://williamlfang.github.io/post/2019-11-12-centos7-gcc7.3%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%8D%87%E7%BA%A7/</link>
+      <pubDate>Tue, 12 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-11-12-centos7-gcc7.3%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%8D%87%E7%BA%A7/</guid>
+      <description>准备 把需要下载和解压的文件都放在一个目录 mkdir -p ~/gcc7 cd gcc7 ## 下载 gcc7.3 wget https://mirrors.ustc.edu.cn/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz ## 下载依赖包 wget ftp://gcc.gnu.org/pub/gcc/infrastructure/gmp-6.1.0.tar.bz2 wget https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz wget https://ftp.gnu.org/gnu/mpc/mpc-1.1.0.tar.gz 安装 tar -xvf gcc-7.3.0.tar.gz ## 依赖包都放进去 cp gmp-6.1.0.tar.bz2 ./gcc-7.3.0 cp mpc-1.0.3.tar.gz ./gcc-7.3.0 cp mpfr-3.1.4.tar.bz2 ./gcc-7.3.0 ## 进入 gc</description>
+    </item>
+    
+    <item>
+      <title>使用 github 发布 gitbook 电子书</title>
+      <link>https://williamlfang.github.io/post/2019-10-29-%E4%BD%BF%E7%94%A8-github-%E5%8F%91%E5%B8%83-gitbook-%E7%94%B5%E5%AD%90%E4%B9%A6/</link>
+      <pubDate>Tue, 29 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-10-29-%E4%BD%BF%E7%94%A8-github-%E5%8F%91%E5%B8%83-gitbook-%E7%94%B5%E5%AD%90%E4%B9%A6/</guid>
+      <description>gitbook 是一个用于生成现代电子书的工具，进过处理后可以得到mobi、pdf、静态网页等多种类型的书籍形式。对于生成后得到的静态网页，我们可以将其托</description>
+    </item>
+    
+    <item>
+      <title>CentOS7 升级 gcc</title>
+      <link>https://williamlfang.github.io/post/2019-10-22-centos7-%E5%8D%87%E7%BA%A7-gcc/</link>
+      <pubDate>Tue, 22 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-10-22-centos7-%E5%8D%87%E7%BA%A7-gcc/</guid>
+      <description>yum install centos-release-scl -y yum install devtoolset-7 -y scl enable devtoolset-7 bash gcc --version ## 注释： 在centos的devtoolset库中 最新的为 devtoolset-7，所以我们以后可以自己改数字安装</description>
+    </item>
+    
+    <item>
+      <title>利用frp实现内网穿透</title>
+      <link>https://williamlfang.github.io/post/2019-10-08-%E5%88%A9%E7%94%A8frp%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/</link>
+      <pubDate>Tue, 08 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-10-08-%E5%88%A9%E7%94%A8frp%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/</guid>
+      <description>无论是在服务器端还是在客户机端，均需要安装 frp、并启动相关的服务。其中： frps.init 是服务器配置文件 frpc.init 是客户端配置文件 服务器配置 下载 frp cd ~ wget https://github.com/fatedier/frp/releases/download/v0.21.0/frp_0.21.0_linux_amd64.tar.gz 解压 tar</description>
+    </item>
+    
+    <item>
+      <title>R slidify</title>
+      <link>https://williamlfang.github.io/post/2019-09-10-r-slidify/</link>
+      <pubDate>Tue, 10 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-09-10-r-slidify/</guid>
+      <description>安装 安装 slidify软件包 library(devtools) install_github(&amp;#39;ramnathv/slidify&amp;#39;) install_github(&amp;#39;ramnathv/slidifyLibraries&amp;#39;) Demo 初始化 library(slidify) author(&amp;#39;mydeck&amp;#39;) slidify(&amp;quot;index.Rmd&amp;quot;) 格式 上传到 Github # publish to github # create an empty repo on github. replace USER and REPO with your repo details publish(user = &amp;#39;williamlfang&amp;#39;, repo = &amp;#39;myslidify&amp;#39;) # publish to rpubs publish(title = &amp;#39;My Deck&amp;#39;, &amp;#39;index.html&amp;#39;, host = &amp;#39;rpubs&amp;#39;) demo 可以</description>
+    </item>
+    
+    <item>
+      <title>分配sudo账户</title>
+      <link>https://williamlfang.github.io/post/2019-06-11-%E5%88%86%E9%85%8Dsudo%E8%B4%A6%E6%88%B7/</link>
+      <pubDate>Tue, 11 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-06-11-%E5%88%86%E9%85%8Dsudo%E8%B4%A6%E6%88%B7/</guid>
+      <description>&lt;p&gt;sudo是linux系统管理指令，是允许系统管理员让普通用户执行一些或者全部的root命令的一个工具，如halt、reboot、su等等。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>terminal 右边显示时间</title>
+      <link>https://williamlfang.github.io/post/2019-05-13-terminal-%E5%8F%B3%E8%BE%B9%E6%98%BE%E7%A4%BA%E6%97%B6%E9%97%B4/</link>
+      <pubDate>Mon, 13 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-05-13-terminal-%E5%8F%B3%E8%BE%B9%E6%98%BE%E7%A4%BA%E6%97%B6%E9%97%B4/</guid>
+      <description>&lt;p&gt;在 &lt;code&gt;~/.oh-my-zsh/themes/agnoster.themes&lt;/code&gt; 增加&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>SSH Too Many Authentication Failures</title>
+      <link>https://williamlfang.github.io/post/2019-04-18-ssh-too-many-authentication-failures/</link>
+      <pubDate>Thu, 18 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-04-18-ssh-too-many-authentication-failures/</guid>
+      <description>&lt;p&gt;今天在使用 &lt;code&gt;ssh&lt;/code&gt; 连接服务器的时候出现一个错误，这里记录一下解决方法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ssh-copy-id ${USER}@${HOST}                                               
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 6 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+Received disconnect from 192.168.1.199 port 22:2: Too many authentication failures
+Disconnected from 192.168.1.199 port 22
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>Linux 创建内存硬盘</title>
+      <link>https://williamlfang.github.io/post/2019-04-16-linux-%E5%88%9B%E5%BB%BA%E5%86%85%E5%AD%98%E7%A1%AC%E7%9B%98/</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-04-16-linux-%E5%88%9B%E5%BB%BA%E5%86%85%E5%AD%98%E7%A1%AC%E7%9B%98/</guid>
+      <description>&lt;p&gt;我们知道，在操作系统层面，性能与存储空间（价格）之间存在着负相关性，即越靠近 &lt;code&gt;CPU&lt;/code&gt; 的硬件具有更加快速的 &lt;code&gt;I/O&lt;/code&gt; 性能，但相对空间较小，价格也比较贵；而那些远离 &lt;code&gt;CPU&lt;/code&gt; 的设备则可以以相对低廉的价格获得足够大的存储空间，但是性能相对较弱。这就是著名的 &lt;code&gt;操作系统层次图&lt;/code&gt;：&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>使用 acl 控制文件权限</title>
+      <link>https://williamlfang.github.io/post/2019-04-11-%E4%BD%BF%E7%94%A8-acl-%E6%8E%A7%E5%88%B6%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/</link>
+      <pubDate>Thu, 11 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-04-11-%E4%BD%BF%E7%94%A8-acl-%E6%8E%A7%E5%88%B6%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/</guid>
+      <description>&lt;p&gt;ACL(Access Control List) 权限控制主要目的是提供传统的 owner、group、other 的 read、wirte、execute 权限之外的具体权限设置，可以针对单一用户或组来设置特定的权限。&lt;/p&gt;
+
+&lt;p&gt;我们可以通过命令来设置单个用户対文件（或文件夹）的读取权限。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>python3 安装 talib</title>
+      <link>https://williamlfang.github.io/post/2019-03-29-python3-%E5%AE%89%E8%A3%85-talib/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-03-29-python3-%E5%AE%89%E8%A3%85-talib/</guid>
+      <description>&lt;p&gt;&lt;code&gt;talib&lt;/code&gt; 是一款高性能技术指标的数值运算模块，为金融建模与量化交易提供一套丰富的接口函数。由于使用了 &lt;code&gt;c++&lt;/code&gt; 进行编译，&lt;code&gt;talib&lt;/code&gt; 能够实现快速处理机能，尤其在量化实盘中有重要的作用。&lt;/p&gt;
+
+&lt;p&gt;而在 &lt;code&gt;python3&lt;/code&gt; 中，并不提供内置的 &lt;code&gt;talib&lt;/code&gt; 模块，需要我们单独进行安装。问题是，使用常规的 &lt;code&gt;pip&lt;/code&gt; 无法直接安装这个软件包。因此，本文将介绍如何通过源文件进行安装模块。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>centos 升级 gdb8.1</title>
+      <link>https://williamlfang.github.io/post/2019-03-28-centos-%E5%8D%87%E7%BA%A7-gdb8.1/</link>
+      <pubDate>Thu, 28 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-03-28-centos-%E5%8D%87%E7%BA%A7-gdb8.1/</guid>
+      <description>&lt;p&gt;&lt;code&gt;gdb&lt;/code&gt; 是一款通用的程序调试器，可以用于测试 &lt;code&gt;c&lt;/code&gt;、&lt;code&gt;c++&lt;/code&gt;、&lt;code&gt;java&lt;/code&gt;、&lt;code&gt;python&lt;/code&gt; 等多种程序语言。借用官方的解释，&lt;code&gt;gdb&lt;/code&gt; 可以为我们提供至少以下强大的功能：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Start your program, specifying anything that might affect its behavior.&lt;/li&gt;
+&lt;li&gt;Make your program stop on specified conditions.&lt;/li&gt;
+&lt;li&gt;Examine what has happened, when your program has stopped.&lt;/li&gt;
+&lt;li&gt;Change things in your program, so you can experiment with correcting the effects of one bug and go on to learn about another.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;但是，如果其他的 &lt;code&gt;GNU&lt;/code&gt; 项目，&lt;code&gt;gdb&lt;/code&gt; 本身也是一款终端命令工具(CLI)，只能通过命令交互的方式进行代码调试。如果我们想要实时的看到断点(break point) 运行到何处，则需要配合使用 &lt;code&gt;tui&lt;/code&gt;(text user interface) 功能。目前， &lt;code&gt;gdb8.1&lt;/code&gt; 及以上版本，均已实现了该功能。&lt;/p&gt;
+
+&lt;p&gt;接下来，我将介绍如何在 &lt;code&gt;CentOS&lt;/code&gt; 操作系统下升级 &lt;code&gt;gdb8.1&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>makefile 将所有目录中的源文件编译成独立程序</title>
+      <link>https://williamlfang.github.io/post/2019-03-24-makefile-%E5%B0%86%E6%89%80%E6%9C%89%E7%9B%AE%E5%BD%95%E4%B8%AD%E7%9A%84%E6%BA%90%E6%96%87%E4%BB%B6%E7%BC%96%E8%AF%91%E6%88%90%E7%8B%AC%E7%AB%8B%E7%A8%8B%E5%BA%8F/</link>
+      <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-03-24-makefile-%E5%B0%86%E6%89%80%E6%9C%89%E7%9B%AE%E5%BD%95%E4%B8%AD%E7%9A%84%E6%BA%90%E6%96%87%E4%BB%B6%E7%BC%96%E8%AF%91%E6%88%90%E7%8B%AC%E7%AB%8B%E7%A8%8B%E5%BA%8F/</guid>
+      <description>&lt;p&gt;&lt;code&gt;makefile&lt;/code&gt; 是一款功能强大的&lt;strong&gt;工程项目管理套件&lt;/strong&gt;，可以根据各个文件之间的依赖关系，自动生成事物处理的完整流程。我们现在有一个要求：使用 &lt;code&gt;make&lt;/code&gt; 来一次性的把目录下的所有源文件编译成单独可运行的程序。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>25个必须记住的SSH命令</title>
+      <link>https://williamlfang.github.io/post/2019-03-19-25%E4%B8%AA%E5%BF%85%E9%A1%BB%E8%AE%B0%E4%BD%8F%E7%9A%84ssh%E5%91%BD%E4%BB%A4/</link>
+      <pubDate>Tue, 19 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-03-19-25%E4%B8%AA%E5%BF%85%E9%A1%BB%E8%AE%B0%E4%BD%8F%E7%9A%84ssh%E5%91%BD%E4%BB%A4/</guid>
+      <description>&lt;p&gt;SSH是一个非常伟大的工具，如果你要在互联网上远程连接到服务器，那么SSH无疑是最佳的候选。SSH是加密的，OpenSSH加密所有通信（包括密码），有效消除了窃听，连接劫持和其它攻击。本文将为大家介绍25个最佳的SSH命令，希望您在阅读之后能获得一些启发。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>使用 sshfs 挂载远程文件到本地机器</title>
+      <link>https://williamlfang.github.io/post/2019-03-19-%E4%BD%BF%E7%94%A8-sshfs-%E6%8C%82%E8%BD%BD%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%88%B0%E6%9C%AC%E5%9C%B0%E6%9C%BA%E5%99%A8/</link>
+      <pubDate>Tue, 19 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-03-19-%E4%BD%BF%E7%94%A8-sshfs-%E6%8C%82%E8%BD%BD%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%88%B0%E6%9C%AC%E5%9C%B0%E6%9C%BA%E5%99%A8/</guid>
+      <description>&lt;p&gt;我们在与远程服务器进行交互的过程中，常用的是通过终端以 &lt;code&gt;ssh&lt;/code&gt; 的形式连接到服务器，然后再以命令行（&lt;code&gt;CLI&lt;/code&gt;）进行操作。但是，如果是想把远程服务器的目录文件直接挂载到本地机器上面，然后像浏览和操作本地文件一样方便，其实也是可行的。这就需要使用到今天介绍的 &lt;code&gt;sshfs&lt;/code&gt;，一款基于 &lt;code&gt;ssh&lt;/code&gt; 的远程文件挂载工具。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Linux 查看公网IP</title>
+      <link>https://williamlfang.github.io/post/2019-02-25-linux-%E6%9F%A5%E7%9C%8B%E5%85%AC%E7%BD%91ip/</link>
+      <pubDate>Mon, 25 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-02-25-linux-%E6%9F%A5%E7%9C%8B%E5%85%AC%E7%BD%91ip/</guid>
+      <description>&lt;p&gt;由于我们做程序化交易需要调用 &lt;code&gt;CTP&lt;/code&gt; 的接口，需要把本地机器的 &lt;code&gt;IP&lt;/code&gt; 报备给经纪商（期货公司、证券公司）。但其实我们使用的是公网 &lt;code&gt;IP&lt;/code&gt; 而非固定 &lt;code&gt;IP&lt;/code&gt;，因此这个也不一定在每次联网后都一样。&lt;/p&gt;
+
+&lt;p&gt;尽管如此，我还是把相关的命令做一下备忘。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>K&amp;R 读书笔记</title>
+      <link>https://williamlfang.github.io/post/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sun, 24 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</guid>
+      <description>
+
+
+&lt;p&gt;“The C Programming Language” 是计算机编程的经典之作，别名 &lt;code&gt;K&amp;amp;R&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;这是一本简短精悍的书籍，介绍了 &lt;code&gt;C&lt;/code&gt; 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书&lt;a href=&#34;#fn1&#34; class=&#34;footnoteRef&#34; id=&#34;fnref1&#34;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 &lt;code&gt;C&lt;/code&gt; 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引&lt;a href=&#34;#fn2&#34; class=&#34;footnoteRef&#34; id=&#34;fnref2&#34;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>SublimeGDB: 更好用的轻量级 Debugger</title>
+      <link>https://williamlfang.github.io/post/2019-02-20-sublimegdb-%E6%9B%B4%E5%A5%BD%E7%94%A8%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7-debugger/</link>
+      <pubDate>Wed, 20 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-02-20-sublimegdb-%E6%9B%B4%E5%A5%BD%E7%94%A8%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7-debugger/</guid>
+      <description>&lt;p&gt;&lt;code&gt;SublimeGDB&lt;/code&gt; 是一款可以在 &lt;code&gt;Sublime&lt;/code&gt; 编辑器内运行的代码调试器，即调用系统的 &lt;code&gt;GNU Debugger&lt;/code&gt; 套件。通过一定的设置，我们便可以把 &lt;code&gt;Sublime&lt;/code&gt; 改造成一款轻量级的 &lt;code&gt;IDE&lt;/code&gt;，从而可以直接在编辑器对源文件&lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:source-code&#34;&gt;&lt;a href=&#34;#fn:source-code&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;进行调试，并且提供了了多个代码调试状态，比直接在终端进行调试要强大的多，也十分方便。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>SublimeREPL: 定制与改造</title>
+      <link>https://williamlfang.github.io/post/2019-02-18-sublimerepl-%E5%AE%9A%E5%88%B6%E4%B8%8E%E6%94%B9%E9%80%A0/</link>
+      <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-02-18-sublimerepl-%E5%AE%9A%E5%88%B6%E4%B8%8E%E6%94%B9%E9%80%A0/</guid>
+      <description>&lt;p&gt;&lt;code&gt;Sublime&lt;/code&gt; 是一款提供了可自定义的强大&lt;strong&gt;编辑器&lt;/strong&gt;。我们可以根据个人的使用习惯，通过修改相应的参数配置，就可以搭建一个得心应手的编程环境。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>gitbook 写作指南</title>
+      <link>https://williamlfang.github.io/post/2019-02-17-gitbook-%E5%86%99%E4%BD%9C%E6%8C%87%E5%8D%97/</link>
+      <pubDate>Sun, 17 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-02-17-gitbook-%E5%86%99%E4%BD%9C%E6%8C%87%E5%8D%97/</guid>
+      <description>&lt;p&gt;介绍如何使用 &lt;code&gt;gitbook&lt;/code&gt; 编写技术手册，并配置 &lt;code&gt;github&lt;/code&gt; 实现对内容的版本控制。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>jupyterlab: 新一代的数据分析套件</title>
+      <link>https://williamlfang.github.io/post/2019-02-14-jupyterlab-%E6%96%B0%E4%B8%80%E4%BB%A3%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%A5%97%E4%BB%B6/</link>
+      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-02-14-jupyterlab-%E6%96%B0%E4%B8%80%E4%BB%A3%E7%9A%84%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90%E5%A5%97%E4%BB%B6/</guid>
+      <description>&lt;p&gt;jupyterlab 是対 ipython notebook 的全新改良版，提供了一个基于网页的功能套件，集成了多种数据分析工具，如 python、R、Julia 的内核。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>mycli 配置文件</title>
+      <link>https://williamlfang.github.io/post/2019-02-11-mycli-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/</link>
+      <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-02-11-mycli-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>peek: 简单好用的Gif屏幕截图</title>
+      <link>https://williamlfang.github.io/post/2019-01-22-peek-%E7%AE%80%E5%8D%95%E5%A5%BD%E7%94%A8%E7%9A%84gif%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE/</link>
+      <pubDate>Tue, 22 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-01-22-peek-%E7%AE%80%E5%8D%95%E5%A5%BD%E7%94%A8%E7%9A%84gif%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE/</guid>
+      <description>&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;knitr::opts_chunk$set(comment = &#39;&#39;,
+                      fig.align = &#39;center&#39;,
+                      eval = FALSE)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;peek 是一款小巧而好用的屏幕截图工具，可以输出 GIF 动态图片。这个项目在 github 上面的 &lt;code&gt;star&lt;/code&gt; 高达 *4k*，可见程序员朋友对这款工具的喜好。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/phw/peek&#34;&gt;Peek&lt;/a&gt;: Simple animated GIF screen recorder with an easy to use interface&lt;/p&gt;
+&lt;/blockquote&gt;</description>
+    </item>
+    
+    <item>
+      <title>terminator themes</title>
+      <link>https://williamlfang.github.io/post/2019-01-22-terminator-themes/</link>
+      <pubDate>Tue, 22 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-01-22-terminator-themes/</guid>
+      <description>&lt;p&gt;配置 &lt;code&gt;terminator&lt;/code&gt; 主题颜色，以插件的形式提供了灵活的配置方式。&lt;a href=&#34;https://github.com/EliverLara/terminator-themes&#34;&gt;The biggest collection of Terminator themes&lt;/a&gt;。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Emacs: 神的编辑器</title>
+      <link>https://williamlfang.github.io/post/2019-01-17-emacs-%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-01-17-emacs-%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/</guid>
+      <description>&lt;p&gt;&lt;code&gt;Emacs&lt;/code&gt; 速来有「神的编辑器」之美誉，同另一款「编辑器之神」&lt;code&gt;Vi/Vim&lt;/code&gt;，都是程序员编辑源文件、编写文档的重要法宝。用一种在江湖上流传许久的说法，&lt;code&gt;Emacs&lt;/code&gt;其实不是&lt;strong&gt;编辑器&lt;/strong&gt;，而是披着编辑器外衣的&lt;strong&gt;操作系统&lt;/strong&gt;，具有高强度的可拓展性，堪比一款操作系统般强大。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump</title>
+      <link>https://williamlfang.github.io/post/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF-zsh&#43;tmux&#43;powerline&#43;autojump/</link>
+      <pubDate>Wed, 16 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF-zsh&#43;tmux&#43;powerline&#43;autojump/</guid>
+      <description>&lt;p&gt;对于经常在远程服务器进行编程的程序员，终端(&lt;code&gt;terminal&lt;/code&gt;)无疑是我们接触最多的接口了。通过终端，我们可以直接使用命令来操作服务器系统，诸如修改文件、编辑程序、执行命令、传输文件等。通过配置合理的插件，我们可以打造出一款功能强大、符合个人使用习惯的「终端机」。&lt;/p&gt;
+
+&lt;p&gt;这篇文件主要介绍几个强大的插件工具，并通过自定义配置文件，实现以上目标。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Sublime 编译 运行 c/c&#43;&#43; 文件</title>
+      <link>https://williamlfang.github.io/post/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/</link>
+      <pubDate>Sat, 05 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/</guid>
+      <description>干中学 最近在学习一个 C++ 项目，需要重新把以前的课本拿起来。学习的最好方法，尤其是编程技能的学习，就是对照着教材，边学边练，即 「Learning</description>
+    </item>
+    
+    <item>
+      <title>CentOS7 命令行设置分辨率</title>
+      <link>https://williamlfang.github.io/post/2018-12-11-centos7-%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%BE%E7%BD%AE%E5%88%86%E8%BE%A8%E7%8E%87/</link>
+      <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-12-11-centos7-%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%AE%BE%E7%BD%AE%E5%88%86%E8%BE%A8%E7%8E%87/</guid>
+      <description>
+
+
+&lt;p&gt;&lt;code&gt;CentOS&lt;/code&gt; 可以通过命令行来设置（修改）屏幕分辨率大小。使用的命令是&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;xrandr&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>使用 ssh key 免密码登录</title>
+      <link>https://williamlfang.github.io/post/2018-12-11-%E4%BD%BF%E7%94%A8-ssh-key-%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</link>
+      <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-12-11-%E4%BD%BF%E7%94%A8-ssh-key-%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</guid>
+      <description>终结痛苦 通常，我们登录远程服务器使用的是 ssh 安全通道，通过终端交互的形式与服务器进行对话。但是，使用该命令要求每次都输入账号和密码。这对于一个</description>
+    </item>
+    
+    <item>
+      <title>修改MySQL数据存储目录</title>
+      <link>https://williamlfang.github.io/post/2018-12-11-%E4%BF%AE%E6%94%B9mysql%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E7%9B%AE%E5%BD%95/</link>
+      <pubDate>Tue, 11 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-12-11-%E4%BF%AE%E6%94%B9mysql%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E7%9B%AE%E5%BD%95/</guid>
+      <description>MySQL默认的数据存储路径是在 /var 下面。由于该目录可能设置空间不大，后期会影响使用，我准备把数据存储在 /data/DataBase 这个目录下面，用于集中的管理，后期也</description>
+    </item>
+    
+    <item>
+      <title>CentOS7 LLVM 扩展逻辑磁盘</title>
+      <link>https://williamlfang.github.io/post/2018-12-06-centos7-llvm-%E6%89%A9%E5%B1%95%E9%80%BB%E8%BE%91%E7%A3%81%E7%9B%98/</link>
+      <pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-12-06-centos7-llvm-%E6%89%A9%E5%B1%95%E9%80%BB%E8%BE%91%E7%A3%81%E7%9B%98/</guid>
+      <description>CentOS 已经创建 LLVM 逻辑磁盘1。现在需要对 /data 下面的磁盘进行扩容。 首先，需要获取当前磁盘的物理路径： [root@localhost ~]# df Filesystem Size Used Avail Use% Mounted on /dev/mapper/centos-root 100G 12G 89G 12% / devtmpfs 32G 0 32G 0% /dev tmpfs 32G 0</description>
+    </item>
+    
+    <item>
+      <title>CentOS7 系统配置</title>
+      <link>https://williamlfang.github.io/post/2018-10-25-centos7-%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Thu, 25 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-10-25-centos7-%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE/</guid>
+      <description>
+
+
+&lt;p&gt;在服务器操作系统领域，&lt;code&gt;Linux&lt;/code&gt; 绝对是独领风骚的佼佼者，拥有开放兼容的社区神态、功能强大的开发环境以及持续高效的运行性能。而作为 &lt;code&gt;Linux&lt;/code&gt; 的重要分支，&lt;code&gt;CentOS&lt;/code&gt; 则凭借稳定的性能，占领了大部分的大型企业级别服务器操作市场。因此，目前几乎所有的企业均在服务器上部署了 &lt;code&gt;CentOS&lt;/code&gt; 操作系统。我们公司目前所有的服务器均安装 &lt;code&gt;CentOS7&lt;/code&gt;，这是目前最新的版本，有足够强大的社区技术支持，同时也适合采用更加强大的新技术。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Github使用SSH免密码登录</title>
+      <link>https://williamlfang.github.io/post/2018-09-05-github%E4%BD%BF%E7%94%A8ssh%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</link>
+      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-09-05-github%E4%BD%BF%E7%94%A8ssh%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/</guid>
+      <description>&lt;p&gt;在使用 &lt;code&gt;Github&lt;/code&gt; 进行提交修改时，默认是每次都需要输入账户与密码才能完成提交。这对于需要频繁修改的项目而言，无疑存在极大的重复性操作。因此，我想通过使用 &lt;code&gt;SSH&lt;/code&gt; 免密码的方式，事先设置好相关的配置，一旦需要有新的 &lt;code&gt;commit&lt;/code&gt; 就可以跳过账户与密码验证的步骤，进而极大简化工作流程。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Rstudio编译Rmd报错：the fontspec package requires either XeTeX or LuaTeX.</title>
+      <link>https://williamlfang.github.io/post/2018-08-21-rstudio%E7%BC%96%E8%AF%91rmd%E6%8A%A5%E9%94%99-the-fontspec-package-requires-either-xetex-or-luatex/</link>
+      <pubDate>Tue, 21 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-08-21-rstudio%E7%BC%96%E8%AF%91rmd%E6%8A%A5%E9%94%99-the-fontspec-package-requires-either-xetex-or-luatex/</guid>
+      <description>自动化报告 对于一些常规的报告，我一般是会写一个脚本来自动运行、生成格式化的模板。然后通过 R 的软件包 knitr 来实现自动化报告效果。这样可以十分方便的</description>
+    </item>
+    
+    <item>
+      <title>在本地服务器搭建私有Git</title>
+      <link>https://williamlfang.github.io/post/2018-08-18-%E5%9C%A8%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89git/</link>
+      <pubDate>Sat, 18 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-08-18-%E5%9C%A8%E6%9C%AC%E5%9C%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89git/</guid>
+      <description>版本控制 对于一些大型的软件开发项目，通常我们无法做到一次性完成。也难以避免版本定型后，在未来可能还会面临着大幅度的修改与重写。不要说那种动不</description>
+    </item>
+    
+    <item>
+      <title>增加显示数学公式编号</title>
+      <link>https://williamlfang.github.io/post/2018-08-04-%E5%A2%9E%E5%8A%A0%E6%98%BE%E7%A4%BA%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E7%BC%96%E5%8F%B7/</link>
+      <pubDate>Sat, 04 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2018-08-04-%E5%A2%9E%E5%8A%A0%E6%98%BE%E7%A4%BA%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F%E7%BC%96%E5%8F%B7/</guid>
+      <description>这两天在重新搭建博客网站，一切重新归零后，再次放空自己，也许会做得更好。 刚好翻阅到以前写的博客，原来发现自己竟然也会写一些跟数学或者金融搭边</description>
+    </item>
+    
+    <item>
+      <title>CentOS 调用显示器</title>
+      <link>https://williamlfang.github.io/post/2017-12-18-centos-%E8%B0%83%E7%94%A8%E6%98%BE%E7%A4%BA%E5%99%A8/</link>
+      <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-12-18-centos-%E8%B0%83%E7%94%A8%E6%98%BE%E7%A4%BA%E5%99%A8/</guid>
+      <description>参考链接：Stack OverFlow 在系统添加显示屏 export DISPLAY=:0.0 xhost +HOSTNAME xhost +local:root 在交易系统调用屏幕 import os os.putenv(&amp;#39;DISPLAY&amp;#39;, &amp;#39;:0.0&amp;#39;)</description>
+    </item>
+    
+    <item>
+      <title>CLion：最好用的 C-C&#43;&#43; IDE</title>
+      <link>https://williamlfang.github.io/post/2017-12-10-clion-%E6%9C%80%E5%A5%BD%E7%94%A8%E7%9A%84-c-c&#43;&#43;-ide/</link>
+      <pubDate>Sun, 10 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-12-10-clion-%E6%9C%80%E5%A5%BD%E7%94%A8%E7%9A%84-c-c&#43;&#43;-ide/</guid>
+      <description>C/Cpp 编程常常使程序员感到懊恼，一方面是编程语言本身的难度较高，另一方面，我认为也是因为没有比较好用的 IDE。不像 R 或者 Python 这些解释性编程语言，不</description>
+    </item>
+    
+    <item>
+      <title>Mac 启动 IPV6</title>
+      <link>https://williamlfang.github.io/post/2017-12-06-mac-%E5%90%AF%E5%8A%A8-ipv6/</link>
+      <pubDate>Wed, 06 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-12-06-mac-%E5%90%AF%E5%8A%A8-ipv6/</guid>
+      <description>最近因为需要使用 IPV6 来访问 google，所以写了一个小脚本来实现自动启动。 第一个命名说明：首先通过查找是否之前已经启动了 miredo 使用 ps aux | grep &#39;miredo&#39; 来获得</description>
+    </item>
+    
+    <item>
+      <title>命令行启动 TeamViewer</title>
+      <link>https://williamlfang.github.io/post/2017-12-05-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%90%AF%E5%8A%A8-teamviewer/</link>
+      <pubDate>Tue, 05 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-12-05-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%90%AF%E5%8A%A8-teamviewer/</guid>
+      <description>连接远程服务器 我们通过 TeamViewer 连接服务器，可以很方便的监控到远程服务器的运行状况，比如交易系统的界面是否正常启动、相关的 crontab 操作是否及时开启等。 可是</description>
+    </item>
+    
+    <item>
+      <title>搭建 Ipv6 网络环境</title>
+      <link>https://williamlfang.github.io/post/2017-12-03-%E6%90%AD%E5%BB%BA-ipv6-%E7%BD%91%E7%BB%9C%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Sun, 03 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-12-03-%E6%90%AD%E5%BB%BA-ipv6-%E7%BD%91%E7%BB%9C%E7%8E%AF%E5%A2%83/</guid>
+      <description>
+
+
+&lt;p&gt;通过在系统搭建 &lt;code&gt;Ipv6&lt;/code&gt; 网络环境，实现翻墙上网。 </description>
+    </item>
+    
+    <item>
+      <title>Mac 更新系统后修复 Ruby</title>
+      <link>https://williamlfang.github.io/post/2017-11-15-mac-%E6%9B%B4%E6%96%B0%E7%B3%BB%E7%BB%9F%E5%90%8E%E4%BF%AE%E5%A4%8D-ruby/</link>
+      <pubDate>Wed, 15 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-11-15-mac-%E6%9B%B4%E6%96%B0%E7%B3%BB%E7%BB%9F%E5%90%8E%E4%BF%AE%E5%A4%8D-ruby/</guid>
+      <description>我一般写博客都使用 Ruby 的 rake 功能，具体的流程是 先建立一个文章模板（通常是 .Rmd 格式） 模板里面预先设定的各种参数与格式，比如我使用的 R 软件包、画图偏好</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu: unable to resolve host 解决方法</title>
+      <link>https://williamlfang.github.io/post/2017-11-09-ubuntu-unable-to-resolve-host-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-11-09-ubuntu-unable-to-resolve-host-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</guid>
+      <description>Ubuntu环境, 假设这台机器名字叫abc(机器的hostname), 每次执行sudo 就出现这个警告讯息: sudo: unable to resolve host *** 虽然sudo 还是可以正</description>
+    </item>
+    
+    <item>
+      <title>升级 Rstudio Server</title>
+      <link>https://williamlfang.github.io/post/2017-11-05-%E5%8D%87%E7%BA%A7-rstudio-server/</link>
+      <pubDate>Sun, 05 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-11-05-%E5%8D%87%E7%BA%A7-rstudio-server/</guid>
+      <description>强大的 R IDE Rstudio 是非常强大的、专注于 R 统计语言编程环境的 IDE，基本取代了原生的操作界面而成为目前使用范围最广泛、功能最强大的编程软件。一般而言</description>
+    </item>
+    
+    <item>
+      <title>CentOS 安装 Sublime</title>
+      <link>https://williamlfang.github.io/post/2017-10-29-centos-%E5%AE%89%E8%A3%85-sublime/</link>
+      <pubDate>Sun, 29 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-10-29-centos-%E5%AE%89%E8%A3%85-sublime/</guid>
+      <description>
+
+
+&lt;p&gt;通过下载源文件，使用命令行实现在 &lt;code&gt;CentOS7&lt;/code&gt; 操作系统上安装 &lt;code&gt;Sublime Text 3&lt;/code&gt;。目前最新版本的是 &lt;strong&gt;3143&lt;/strong&gt;，网上已经有该版本的注册码。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>我的 Sublime Text 设置</title>
+      <link>https://williamlfang.github.io/post/2017-10-13-%E6%88%91%E7%9A%84-sublime-text-%E8%AE%BE%E7%BD%AE/</link>
+      <pubDate>Fri, 13 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-10-13-%E6%88%91%E7%9A%84-sublime-text-%E8%AE%BE%E7%BD%AE/</guid>
+      <description>一款神奇的IDE Sublime Text 3 原本是一款编辑器，可以用来编辑绝大多数的文件格式。后来，随着相关插件的增加与增强，它也逐渐演变成为一种轻便式的 IDE，</description>
+    </item>
+    
+    <item>
+      <title>xz: 高压缩打包工具</title>
+      <link>https://williamlfang.github.io/post/2017-10-11-xz%E9%AB%98%E5%8E%8B%E7%BC%A9%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Wed, 11 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-10-11-xz%E9%AB%98%E5%8E%8B%E7%BC%A9%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/</guid>
+      <description>xz 是一款高性能、高压缩比的打包工具，相比于 gzip、bzip2 等具有更高的压缩比率。对于大容量的数据文件，可以使用 xz 进行压缩打包。 目前我们拥</description>
+    </item>
+    
+    <item>
+      <title>Unix编程</title>
+      <link>https://williamlfang.github.io/post/2017-09-29-unix%E7%BC%96%E7%A8%8B/</link>
+      <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-09-29-unix%E7%BC%96%E7%A8%8B/</guid>
+      <description>
+
+
+&lt;p&gt;&lt;code&gt;Unix&lt;/code&gt;/&lt;code&gt;Linux&lt;/code&gt; 编程实践，主要为实际生产过程中经常使用的&lt;strong&gt;命令行以及简单的执行任务的程序脚本&lt;/strong&gt;。 </description>
+    </item>
+    
+    <item>
+      <title>LaTeX 合并独立子文件</title>
+      <link>https://williamlfang.github.io/post/2016-02-19-latex-%E5%90%88%E5%B9%B6%E7%8B%AC%E7%AB%8B%E5%AD%90%E6%96%87%E4%BB%B6/</link>
+      <pubDate>Fri, 19 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2016-02-19-latex-%E5%90%88%E5%B9%B6%E7%8B%AC%E7%AB%8B%E5%AD%90%E6%96%87%E4%BB%B6/</guid>
+      <description>&lt;p&gt;我们在处理 LaTeX 多文档的时候，常常会遇到这样的情况&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;有一个主文件，包含需要的 preamble 内容，同时还有其他子文件，各自都有自己的 preamble。现在的问题是，我们想要在主文件里，把其他的子文件都包含进去。这样的意思是，一方面，每个单独的子文件是可以独立 compile 的，同时，又可以把这些子文件统一合并到主文件当中。&lt;/p&gt;
+&lt;/blockquote&gt;</description>
+    </item>
+    
+    <item>
+      <title>网页显示 PDF</title>
+      <link>https://williamlfang.github.io/post/2015-07-26-%E7%BD%91%E9%A1%B5%E6%98%BE%E7%A4%BA-pdf/</link>
+      <pubDate>Sun, 26 Jul 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2015-07-26-%E7%BD%91%E9%A1%B5%E6%98%BE%E7%A4%BA-pdf/</guid>
+      <description>显示 PDF 文件 这是一个使用网页直接显示 PDF 的方法。 &amp;lt;iframe src=&amp;quot;http://statweb.stanford.edu/~tibs/ElemStatLearn/contents.pdf&amp;quot; style=&amp;quot;width:100%; height:520px;&amp;quot; frameborder=&amp;quot;0&amp;quot;&amp;gt; &amp;lt;/iframe&amp;gt; &amp;lt;p style=&amp;quot;margin-top: 0px; text-align:right;&amp;quot;&amp;gt; &amp;lt;a target=&amp;quot;_blank&amp;quot; href=&amp;quot;http://statweb.stanford.edu/~tibs/ElemStatLearn/contents.pdf&amp;quot;&amp;gt; 全屏查看 &amp;lt;/a&amp;gt; &amp;lt;/p&amp;gt; 全屏查看 显示其他网页 引入其他网页 当然，我们也可以使用相同的</description>
+    </item>
+    
+    <item>
+      <title>码农的假期</title>
+      <link>https://williamlfang.github.io/post/2014-10-03-%E7%A0%81%E5%86%9C%E7%9A%84%E5%81%87%E6%9C%9F/</link>
+      <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2014-10-03-%E7%A0%81%E5%86%9C%E7%9A%84%E5%81%87%E6%9C%9F/</guid>
+      <description>又一个「劫日」 我历来对假期没有特别的概念。以前读书的时候，基本上是天天在图书馆泡着，要么是在发呆要么是在准备发呆的状态中。一方面是自己的借口</description>
+    </item>
+    
+    <item>
+      <title>Why R?</title>
+      <link>https://williamlfang.github.io/post/2014-01-20-why-r/</link>
+      <pubDate>Mon, 20 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2014-01-20-why-r/</guid>
+      <description>大神出品，必属精品 小小膜拜 这个文档记录了我在学习 Hadley Wickham 即将出版的新书，Advanced R Programming 时的一些笔记与总结，以便将来复习查阅。 老司机谈经验 该</description>
+    </item>
+    
+    <item>
+      <title>本本的转型</title>
+      <link>https://williamlfang.github.io/post/2014-01-02-%E6%9C%AC%E6%9C%AC%E7%9A%84%E8%BD%AC%E5%9E%8B/</link>
+      <pubDate>Thu, 02 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2014-01-02-%E6%9C%AC%E6%9C%AC%E7%9A%84%E8%BD%AC%E5%9E%8B/</guid>
+      <description>换系统 最近给这台老机子换了一个新系统.多年前买的一个笔记本,折旧损耗的严重,配置也不能满足当下的计算需要.想着是不是该从Win8换回XP,想</description>
+    </item>
+    
+  </channel>
+</rss>

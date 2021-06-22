@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>期货数据：R读取数据文件 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="期货数据：R读取数据文件" />
+<meta property="og:description" content="介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6/" />
+<meta property="article:published_time" content="2017-10-19T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2017-10-19T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="期货数据：R读取数据文件">
+<meta itemprop="description" content="介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。">
+
+
+<meta itemprop="datePublished" content="2017-10-19T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-10-19T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="870">
+
+
+
+<meta itemprop="keywords" content="Futures,期货,数据,R," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="期货数据：R读取数据文件"/>
+<meta name="twitter:description" content="介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">期货数据：R读取数据文件</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-10-19 </span>
+        <div class="post-category">
+            
+              <a href="/categories/data/"> Data </a>
+            
+          </div>
+        <span class="more-meta"> 870 words </span>
+        <span class="more-meta"> 2 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2017-10-19T00:00:00" title="October 19, 2017">October 19, 2017</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      <hr />
+<div id="r-读取数据" class="section level1">
+<h1><code>R</code> 读取数据</h1>
+<div id="萝卜与青菜" class="section level2">
+<h2>萝卜与青菜</h2>
+<p>我在之前的一篇博客谈到了如何使用 <code>readr</code> 包<a href="https://williamlfang.github.io/post/2017-10-10-r%E8%AF%BB%E5%8F%96%E4%B8%AD%E6%96%87%E5%AD%97%E6%AE%B5%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/">读取包含中文字段的数据文件</a>。同时，文件也提到，<code>readr</code> 对于读取大文件存在性能上的不足。因此，我日常仍然以另外一个软件包为主要工具。</p>
+<p>这个神奇的软件包，就是大名鼎鼎的 <code>data.table</code>，提高了从读取数据、数据清洗、数据汇总到数据写入的全方位功能函数，而且难能可贵的是，它的处理效率惊人得强大。我估计会在以后单独写一篇博客来介绍这个扩展包。不过这里作为引子，请允许我隆重介绍今天的主角：<code>fread</code>。</p>
+</div>
+<div id="read_csv" class="section level2">
+<h2><code>read_csv</code></h2>
+<pre class="r"><code>library(readr)
+help(read_csv)</code></pre>
+</div>
+<div id="fread" class="section level2">
+<h2><code>fread</code></h2>
+<pre class="r"><code>library(data.table)
+help(fread)</code></pre>
+<hr />
+</div>
+</div>
+<div id="myfread.r" class="section level1">
+<h1><code>myFread.R</code></h1>
+<p><code>myFraed.R</code> 是我编写的一个函数脚本，集成了以上两个函数的功能，并在此基础上对数据文件进行初步的判断：</p>
+<ul>
+<li>如果数据文件支持使用 <code>fread</code> 进行读取，则优先使用这个函数，因为这个读取速度极快，对于一个 <code>1Gb  大小的文件，大概只需要</code>10 ~ 15 秒`</li>
+<li>如果对于部分数据文件，有可能由于里面包含中文字段、数据格式异常等问题，这时候就需要借助 <code>read_csv</code> 更加强大的底层支撑来处理，不过读取的速度稍微有所降低</li>
+</ul>
+<div id="fromdc" class="section level2">
+<h2>FromDC</h2>
+<pre class="r"><code>## =============================================================================
+## FUN: myFreadBar
+## 从　DC 那份数据文件读取数据，用于制作　Bar
+myFreadFromDC &lt;- function(x){
+  ## -- 如果使用　fread 可以正常读取数据文件
+  if(class(try(fread(x, showProgress = FALSE, fill = TRUE, nrows = 1000),
+               silent = TRUE))[1] != &quot;try-error&quot;){
+    dt &lt;- fread(x, showProgress = TRUE, fill = TRUE,
+                select = c(&#39;TradingDay&#39;,&#39;UpdateTime&#39;,&#39;UpdateMillisec&#39;
+                           ,&#39;InstrumentID&#39;,&#39;LastPrice&#39;
+                           ,&quot;OpenPrice&quot;, &quot;HighestPrice&quot;, &quot;LowestPrice&quot;,&quot;ClosePrice&quot;
+                           ,&#39;Volume&#39;,&#39;Turnover&#39;,&#39;OpenInterest&#39;
+                           ,&#39;SettlementPrice&#39;,&#39;UpperLimitPrice&#39;,&#39;LowerLimitPrice&#39;
+                           ,&#39;BidPrice1&#39;,&#39;BidVolume1&#39;,&#39;BidPrice2&#39;,&#39;BidVolume2&#39;
+                           ,&#39;BidPrice3&#39;,&#39;BidVolume3&#39;,&#39;BidPrice4&#39;,&#39;BidVolume4&#39;
+                           ,&#39;BidPrice5&#39;,&#39;BidVolume5&#39;
+                           ,&#39;AskPrice1&#39;,&#39;AskVolume1&#39;,&#39;AskPrice2&#39;,&#39;AskVolume2&#39;
+                           ,&#39;AskPrice3&#39;,&#39;AskVolume3&#39;,&#39;AskPrice4&#39;,&#39;AskVolume4&#39;
+                           ,&#39;AskPrice5&#39;,&#39;AskVolume5&#39;,&#39;AveragePrice&#39;
+                ),
+                colClasses = list(character = c(&quot;TradingDay&quot;,&quot;InstrumentID&quot;,&quot;UpdateTime&quot;),
+                                  numeric   = c(&quot;Volume&quot;,&quot;Turnover&quot;) ))
+  }else{
+  ## -- 如果使用　fread 读取失败，则使用　read_csv
+    dt &lt;- read_csv(x,
+                   col_types = list(TradingDay   = col_character(),
+                                    InstrumentID = col_character(),
+                                    UpdateTime   = col_character(),
+                                    Volume       = col_number(),
+                                    Turnover     = col_number())
+    ) %&gt;% as.data.table() %&gt;%
+      .[,.(TradingDay, UpdateTime, UpdateMillisec
+           ,InstrumentID,LastPrice
+           ,OpenPrice, HighestPrice, LowestPrice,ClosePrice
+           ,Volume,Turnover,OpenInterest
+           ,SettlementPrice,UpperLimitPrice,LowerLimitPrice
+           ,BidPrice1,BidVolume1,BidPrice2,BidVolume2
+           ,BidPrice3,BidVolume3,BidPrice4,BidVolume4
+           ,BidPrice5,BidVolume5
+           ,AskPrice1,AskVolume1,AskPrice2,AskVolume2
+           ,AskPrice3,AskVolume3,AskPrice4,AskVolume4
+           ,AskPrice5,AskVolume5,AveragePrice)]
+  }
+  ##----------------------------------------------------------------------------
+  return(dt)
+}</code></pre>
+</div>
+<div id="ctpmd" class="section level2">
+<h2>CTPMD</h2>
+<pre class="r"><code>## =============================================================================
+## FUN: myFreadBarCTP
+## 用于制作 bar
+myFreadBarCTP &lt;- function(x){
+  ## -- 如果使用　fread 可以正常读取数据文件
+  if(class(try(fread(x, showProgress = FALSE, fill = TRUE, nrows = 1000),
+               silent = TRUE))[1] != &quot;try-error&quot;){
+    dt &lt;- fread(x, showProgress = TRUE, fill = TRUE,
+                select = c(&#39;TimeStamp&#39;,&#39;TradingDay&#39;,&#39;UpdateTime&#39;,&#39;UpdateMillisec&#39;
+                           ,&#39;InstrumentID&#39;,&#39;LastPrice&#39;
+                           ,&quot;OpenPrice&quot;, &quot;HighestPrice&quot;, &quot;LowestPrice&quot;,&quot;ClosePrice&quot;
+                           ,&#39;Volume&#39;,&#39;Turnover&#39;,&#39;OpenInterest&#39;
+                           ,&#39;SettlementPrice&#39;,&#39;UpperLimitPrice&#39;,&#39;LowerLimitPrice&#39;
+                           ,&#39;BidPrice1&#39;,&#39;BidVolume1&#39;,&#39;BidPrice2&#39;,&#39;BidVolume2&#39;
+                           ,&#39;BidPrice3&#39;,&#39;BidVolume3&#39;,&#39;BidPrice4&#39;,&#39;BidVolume4&#39;
+                           ,&#39;BidPrice5&#39;,&#39;BidVolume5&#39;
+                           ,&#39;AskPrice1&#39;,&#39;AskVolume1&#39;,&#39;AskPrice2&#39;,&#39;AskVolume2&#39;
+                           ,&#39;AskPrice3&#39;,&#39;AskVolume3&#39;,&#39;AskPrice4&#39;,&#39;AskVolume4&#39;
+                           ,&#39;AskPrice5&#39;,&#39;AskVolume5&#39;
+                ),
+                colClasses = list(character = c(&quot;TradingDay&quot;,&quot;InstrumentID&quot;,&quot;UpdateTime&quot;),
+                                  numeric   = c(&quot;Volume&quot;,&quot;Turnover&quot;) )) %&gt;%
+      .[grep(&quot;^[0-9]{8}:[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{4,6}$&quot;, TimeStamp)]
+  }else{
+  ## -- 如果使用　fread 读取失败，则使用　read_csv
+    dt &lt;- read_csv(x,
+                   col_types = list(TradingDay   = col_character(),
+                                    InstrumentID = col_character(),
+                                    UpdateTime   = col_character(),
+                                    Volume       = col_number(),
+                                    Turnover     = col_number())
+    ) %&gt;% as.data.table() %&gt;%
+      .[grep(&quot;^[0-9]{8}:[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{4,6}$&quot;, TimeStamp)] %&gt;%
+      .[,.(TimeStamp, TradingDay, UpdateTime, UpdateMillisec
+           ,InstrumentID,LastPrice
+           ,OpenPrice, HighestPrice, LowestPrice,ClosePrice
+           ,Volume,Turnover,OpenInterest
+           ,SettlementPrice,UpperLimitPrice,LowerLimitPrice
+           ,BidPrice1,BidVolume1,BidPrice2,BidVolume2
+           ,BidPrice3,BidVolume3,BidPrice4,BidVolume4
+           ,BidPrice5,BidVolume5
+           ,AskPrice1,AskVolume1,AskPrice2,AskVolume2
+           ,AskPrice3,AskVolume3,AskPrice4,AskVolume4
+           ,AskPrice5,AskVolume5)]
+  }
+  ##----------------------------------------------------------------------------
+  return(dt)
+}</code></pre>
+</div>
+<div id="vnpydata" class="section level2">
+<h2>vnpyData</h2>
+<pre class="r"><code>## =============================================================================
+## FUN: myFreadvnpy
+myFreadvnpy &lt;- function(x){
+  ## -- 如果使用　fread 可以正常读取数据文件
+  if(class(try(fread(x, showProgress = FALSE, fill = TRUE, nrows = 100000),
+               silent = TRUE))[1] != &quot;try-error&quot;){
+    dt &lt;- fread(x, showProgress = TRUE, fill = TRUE,
+                select = c(&#39;timeStamp&#39;,&#39;date&#39;,&#39;time&#39;
+                           ,&#39;symbol&#39;,&#39;lastPrice&#39;
+                           ,&quot;openPrice&quot;, &quot;highestPrice&quot;, &quot;lowestPrice&quot;,&quot;closePrice&quot;
+                           ,&#39;volume&#39;,&#39;turnover&#39;,&#39;openInterest&#39;
+                           ,&#39;settlementPrice&#39;,&#39;upperLimit&#39;,&#39;lowerLimit&#39;
+                           ,&#39;bidPrice1&#39;,&#39;bidVolume1&#39;,&#39;bidPrice2&#39;,&#39;bidVolume2&#39;
+                           ,&#39;bidPrice3&#39;,&#39;bidVolume3&#39;,&#39;bidPrice4&#39;,&#39;bidVolume4&#39;
+                           ,&#39;bidPrice5&#39;,&#39;bidVolume5&#39;
+                           ,&#39;askPrice1&#39;,&#39;askVolume1&#39;,&#39;askPrice2&#39;,&#39;askVolume2&#39;
+                           ,&#39;askPrice3&#39;,&#39;askVolume3&#39;,&#39;askPrice4&#39;,&#39;askVolume4&#39;
+                           ,&#39;askPrice5&#39;,&#39;askVolume5&#39;
+                ),
+                colClasses = list(character = c(&quot;date&quot;,&quot;symbol&quot;,&quot;time&quot;),
+                                  numeric   = c(&quot;volume&quot;,&quot;turnover&quot;) )) %&gt;%
+      .[grep(&quot;^[0-9]{8} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{4,6}$&quot;, timeStamp)]
+      ## 考虑到部分文件可能使用的　Timestamp 是乱码
+  }else{
+  ## -- 如果使用　fread 读取失败，则使用　read_csv
+    dt &lt;- read_csv(x,
+                   col_types = list(timeStamp = col_character(),
+                                    date      = col_character(),
+                                    symbol    = col_character(),
+                                    time      = col_character(),
+                                    volume    = col_number(),
+                                    turnover  = col_number())
+                   ) %&gt;% as.data.table() %&gt;%
+      .[grep(&quot;^[0-9]{8} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{4,6}$&quot;, timeStamp)] %&gt;%
+      .[,.(timeStamp, date, time
+           ,symbol,lastPrice
+           ,openPrice,highestPrice,lowestPrice,closePrice
+           ,volume,turnover,openInterest
+           ,settlementPrice,upperLimit,lowerLimit
+           ,bidPrice1,bidVolume1,bidPrice2,bidVolume2
+           ,bidPrice3,bidVolume3,bidPrice4,bidVolume4
+           ,bidPrice5,bidVolume5
+           ,askPrice1,askVolume1,askPrice2,askVolume2
+           ,askPrice3,askVolume3,askPrice4,askVolume4
+           ,askPrice5,askVolume5)]
+  }
+  ##----------------------------------------------------------------------------
+  return(dt)
+}</code></pre>
+</div>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2017-10-19</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/futures/">Futures</a>
+          
+          <a href="/tags/%E6%9C%9F%E8%B4%A7/">期货</a>
+          
+          <a href="/tags/%E6%95%B0%E6%8D%AE/">数据</a>
+          
+          <a href="/tags/r/">R</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2017-10-20-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-tick-%E8%BD%AC-bar/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">期货数据：Tick 转 Bar</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2017-10-18-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-%E6%95%B0%E6%8D%AE%E6%B8%85%E7%90%86%E8%A6%81%E7%82%B9/">
+            <span class="next-text nav-default">期货数据：数据清理要点</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

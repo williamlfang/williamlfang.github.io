@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Linux 网络参数优化 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="优化 Linux 网络参数。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2021-05-16-linux-%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Linux 网络参数优化" />
+<meta property="og:description" content="优化 Linux 网络参数。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2021-05-16-linux-%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96/" />
+<meta property="article:published_time" content="2021-05-16T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2021-05-16T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Linux 网络参数优化">
+<meta itemprop="description" content="优化 Linux 网络参数。">
+
+
+<meta itemprop="datePublished" content="2021-05-16T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2021-05-16T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1951">
+
+
+
+<meta itemprop="keywords" content="Linux,socket,TCP,UDP,网络,优化," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Linux 网络参数优化"/>
+<meta name="twitter:description" content="优化 Linux 网络参数。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">Linux 网络参数优化</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-05-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1951 words </span>
+        <span class="more-meta"> 4 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="hint">
+      <p>[NOTE] Updated <span class="timeago" datetime="2021-05-16T00:00:00" title="May 16, 2021">May 16, 2021</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div id="设置-sysctl" class="section level1">
+<h1>设置 sysctl</h1>
+<pre class="bash"><code>## 如果出现报错 sysctl: cannot stat /proc/sys/–p: No such file or directory
+## 则需要执行以下命令
+
+modprobe br_netfilter
+ls /proc/sys/net/bridge
+## 记得输入该命令及时生效
+sysctl -p</code></pre>
+<p><code>/etc/sysctl.conf</code>文件是一个允许你改变正在运行中的<a href="http://www.ttlsa.com/linux/">Linux</a>系统的接口。它包含一些TCP/IP堆栈和虚拟内存系统的高级选项，可用来控制Linux网络配置，由于/proc/sys/net目录内容的临时性，建议把TCPIP参数的修改添加到`<code>/etc/sysctl.conf</code>文件, 然后保存文件，使用命令“/sbin/sysctl –p”使之立即生效。具体修改方案参照上文：</p>
+</div>
+<div id="设置网络参数" class="section level1">
+<h1>设置网络参数</h1>
+<p>可以先查看网络参数</p>
+<pre class="bash"><code>cat /proc/sys/net/core/rmem_max
+
+## 128MB=134217728
+## 1GB  =1073741824</code></pre>
+<p>接着修改/proc/sys/net/core/rmem_max 以及rmem_default数值到128M大小，命令如下</p>
+<pre class="bash"><code>sysctl –w net.core.rmem_default=”134217728” #128M
+sysctl –w net.core.rmem_max=”134217728” #128M
+sysctl –w net.core.wmem_default=”134217728” #128M
+sysctl –w net.core.wmem_max=”134217728” #128M
+sysctl –w net.ipv4.udp_mem=” 134217728 134217728 268435456”
+sysctl –w net.ipv4.udp_rmem_min=” 134217728” #128M
+sysctl –w net.ipv4.udp_wmem_min=” 134217728” #128M</code></pre>
+<p>然后保存修改 <code>/etc/sysctl.conf</code></p>
+<pre class="bash"><code>vim /etc/sysctl.conf
+
+# 添加下面的参数
+## 允许送到队列的数据包的最大数目
+net.core.netdev_max_backlog=262144
+## 用来限制监听(LISTEN)队列最大数据包的数量
+net.core.somaxconn=4096
+## 修改内核缓存大小
+net.core.rmem_default=134217728     ## 128M
+net.core.rmem_max=134217728         ## 128M
+net.core.wmem_default=134217728     ## 128M
+net.core.wmem_max=134217728         ## 128M
+
+#内核分配给TCP连接的内存，单位是Page，1 Page = 4096 Bytes，可用命令查看：
+#getconf PAGESIZE
+#第一个数字表示，当 tcp 使用的 page 少于 1048576 时，kernel 不对其进行任何的干预
+#第二个数字表示，当 tcp 使用了超过 1310720 的 pages 时，kernel 会进入 “memory pressure” 压力模式
+#第三个数字表示，当 tcp 使用的 pages 超过 1572864 时（相当于1.6GB内存），就会报：Out of socket memory
+## net.ipv4.tcp_mem = 1048576 1310720 1572864
+net.ipv4.tcp_mem = 94500000 915000000 927000000
+net.ipv4.tcp_rmem = 4096        87380   4194304
+net.ipv4.tcp_wmem = 4096        16384   4194304
+net.ipv4.udp_mem = 134217728 134217728 268435456    ## 128M
+net.ipv4.udp_rmem_min = 134217728       ## 128M
+net.ipv4.udp_wmem_min = 134217728       ## 128M
+
+## 表示开启重用。允许将TIME-WAIT sockets重新用于新的TCP连接，默认为0，表示关闭
+net.ipv4.tcp_tw_reuse=1
+## 表示开启TCP连接中TIME-WAIT sockets的快速回收，默认为0，表示关闭
+net.ipv4.tcp_tw_recycle=1
+## keepalive的保持时间
+net.ipv4.tcp_keepalive_time=300
+## 表示如果套接字由本端要求关闭，这个参数决定了它保持在FIN-WAIT-2状态的时间（可改为30，一般来说FIN-WAIT-2的连接也极少）
+net.ipv4.tcp_fin_timeout=30
+## 示那些尚未收到客户端确认信息的连接（SYN消息）队列的长度，默认为1024，加大队列长度为819200，可以容纳更多等待连接的网络连接数。
+net.ipv4.tcp_max_syn_backlog=819200
+## 表示系统同时保持TIME_WAIT套接字的最大数量，如果超过这个数字，TIME_WAIT套接字将立刻被清除并打印告警信息。默认为180000，更改为8192000.对于Apache，Nginx等服务器，上几行参数可以很好的减少TIME_WAIT套接字数量，但是对于Squid，效果不大。此项参数可以控制TIME_WAIT套接字的最大数量，避免Squid服务器被大量的TIME_WAIT套接字拖死
+net.ipv4.tcp_max_tw_buckets = 8192000 
+## 该参数用于设定系统中最多允许存在多少tcp套接字不被关联到任何一个用户文件句柄上。如果超过这个数字，没有与用户文件句柄关联的tcp套接字符将立即被复位，同时给出警告信息。这个限制只是为了防止简单的DoS工具。一般在系统内存比较充足的情况下，可以增大这个参数的赋值：
+net.ipv4.tcp_max_orphans=3276800
+## 管理TCP的选择性应答，允许接收端向发送端传递关于字节流中丢失的序列号，减少了段丢失时需要重传的段数目，当段丢失频繁时，sack是很有益的。
+net.ipv4.tcp_sack=1
+## 支持更大的TCP窗口. 如果TCP窗口最大超过65535(64K), 必须设置该数值为1
+net.ipv4.tcp_window_scaling=1       
+## tcp_synack_retries 显示或设定 Linux 核心在回应 SYN 要求时会尝试多少次重新发送初始 SYN,ACK 封包后才决定放弃。这是所谓的三段交握 (threeway handshake) 的第二个步骤。即是说系统会尝试多少次去建立由远端启始的 TCP 连线。tcp_synack_retries 的值必须为正整数，并不能超过 255。因为每一次重新发送封包都会耗费约 30 至 40 秒去等待才决定尝试下一次重新发送或决定放弃。tcp_synack_retries 的缺省值为 5，即每一个连线要在约 180 秒 (3 分钟) 后才确定逾时.
+net.ipv4.tcp_synack_retries = 1     
+
+## kernel 相关
+## 由于linux下的程序有时候需要根据core文件来判断出错的
+kernel.core_uses_pid = 1
+kernel.msgmnb = 65536
+kernel.msgmax = 65536
+kernel.shmmax = 68719476736
+kernel.shmall = 4294967296
+
+##　文件系统相关
+fs.file-max=65535
+fs.inotify.max_user_instances=8192</code></pre>
+<p>执行命令保存<strong>永久修改</strong></p>
+<pre class="bash"><code>## 永久修改，配置后需要执行sysctl -p生效
+sysctl -p</code></pre>
+<p>最后，需要把 /proc/sys/net/core/netdev_max_backlog 调整到4000</p>
+<pre class="bash"><code>cat /proc/sys/net/core/netdev_max_backlog 
+
+vim /proc/sys/net/core/netdev_max_backlog 
+
+## 设置为
+4000</code></pre>
+</div>
+<div id="参考链接" class="section level1">
+<h1>参考链接</h1>
+<ol style="list-style-type: decimal">
+<li><a href="http://www.ttlsa.com/linux/the-tcp-ip-kernel-parameter-optimization-of-linux/">Linux下TCP/IP内核参数优化</a></li>
+<li><a href="https://www.cnblogs.com/tangshengwei/p/5566606.html">Linux内核socket优化项</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/150086151">ethtool原理介绍和解决网卡丢包排查思路</a></li>
+</ol>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2021-05-16</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">Linux</a>
+          
+          <a href="/tags/socket/">socket</a>
+          
+          <a href="/tags/tcp/">TCP</a>
+          
+          <a href="/tags/udp/">UDP</a>
+          
+          <a href="/tags/%E7%BD%91%E7%BB%9C/">网络</a>
+          
+          <a href="/tags/%E4%BC%98%E5%8C%96/">优化</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2021-05-18-chrony-%E6%97%B6%E9%97%B4%E6%A0%A1%E5%87%86/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">chrony 时间校准</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2021-05-16-testing/">
+            <span class="next-text nav-default">testing</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on William Fang</title>
+    <link>https://williamlfang.github.io/tags/linux/</link>
+    <description>Recent content in Linux on William Fang</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 04 Jun 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://williamlfang.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>rsync 自动重连</title>
+      <link>https://williamlfang.github.io/post/2021-06-04-rsync-%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</link>
+      <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-06-04-rsync-%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</guid>
+      <description>while true do sleep 1 #rsync --progress -avPz -r -e &amp;quot;ssh -p60001&amp;quot; tbt.colo101.$(date +&amp;quot;%Y%m&amp;quot;)*.tar.bz2 ops@58.33.72.179:/data/Xtp/FromZZ.SH exitCode=$? ## ------------------------------------------------------------------------- case $exitCode in 10 | 23 | 30 | 35) echo &amp;quot;$(date): rsync finished with a network related error: $exitCode&amp;quot; ;; 0) echo &amp;quot;$(date): rsync finished without error&amp;quot; break # leave the while loop ;; *) # all other cases echo &amp;quot;$(date): rsync finished with an unexpected error: $exitCode&amp;quot; ## break #</description>
+    </item>
+    
+    <item>
+      <title>clickhouse 数据迁移</title>
+      <link>https://williamlfang.github.io/post/2021-05-26-clickhouse-%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/</link>
+      <pubDate>Wed, 26 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-26-clickhouse-%E6%95%B0%E6%8D%AE%E8%BF%81%E7%A7%BB/</guid>
+      <description>使用 Remote 方式 INSERT INTO tickdata.szse_tbt_Colo102 SELECT * FROM remote(&amp;#39;192.168.1.192:9000&amp;#39;, &amp;#39;tickdata&amp;#39;, &amp;#39;szse_tbt_Colo102&amp;#39;, &amp;#39;sig&amp;#39;, &amp;#39;sig@R7_ch&amp;#39;) WHERE TradingDay = &amp;#39;2021-05-25&amp;#39; 使用 Clickhouse Copier 方式 使用文件冷备份 参考链接 记一次 ClickHouse 数据迁移</description>
+    </item>
+    
+    <item>
+      <title>Linux cpu 隔核设置</title>
+      <link>https://williamlfang.github.io/post/2021-05-24-linux-cpu-%E9%9A%94%E6%A0%B8%E8%AE%BE%E7%BD%AE/</link>
+      <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-24-linux-cpu-%E9%9A%94%E6%A0%B8%E8%AE%BE%E7%BD%AE/</guid>
+      <description>设置 ## 修改 grub vim /etc/default/grub ## 增加 ioslcpus=1-2,7-8 ## 更新配置 grub2-mkconfig -o /boot/grub2/grub.cfg ## 重启生效 reboot ## 查看是否生效 cat /proc/cmdline 参考链接 Linux 如何隔离CPU核心 isolcpus=0-2</description>
+    </item>
+    
+    <item>
+      <title>Linux 扩展 shm 空间</title>
+      <link>https://williamlfang.github.io/post/2021-05-18-linux-%E6%89%A9%E5%B1%95-shm-%E7%A9%BA%E9%97%B4/</link>
+      <pubDate>Tue, 18 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-18-linux-%E6%89%A9%E5%B1%95-shm-%E7%A9%BA%E9%97%B4/</guid>
+      <description>## 查看 shm 大小 df -h /dev/shm ## 修改大小 ## 记得一定要使用 tab 来分割 sudo vim /etc/fstab ## 使用 MB tmpfs /dev/shm tmpfs defaults,size=4096M 0 0 ## 使用 GB tmpfs /dev/shm tmpfs defaults,size=4G 0 0 ## 重新挂载，需要确保没有被占用 sudo umount -l /dev/shm sudo mount</description>
+    </item>
+    
+    <item>
+      <title>chrony 时间校准</title>
+      <link>https://williamlfang.github.io/post/2021-05-18-chrony-%E6%97%B6%E9%97%B4%E6%A0%A1%E5%87%86/</link>
+      <pubDate>Tue, 18 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-18-chrony-%E6%97%B6%E9%97%B4%E6%A0%A1%E5%87%86/</guid>
+      <description>安装 yum -y install chrony 配置 ## 配置文件修改 vim /etc/chrony.conf ## 把不需要的 server 注释掉 ## 然后增加需要时间对准的服务器IP server ntp2.xtp.com iburst server 10.228.39.1 iburst driftfile /var/lib/chrony/drift makestep 1.0 3 rtcsync ## 如果是服务器，需要开启这个</description>
+    </item>
+    
+    <item>
+      <title>Linux 网络参数优化</title>
+      <link>https://williamlfang.github.io/post/2021-05-16-linux-%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Sun, 16 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-16-linux-%E7%BD%91%E7%BB%9C%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96/</guid>
+      <description>设置 sysctl ## 如果出现报错 sysctl: cannot stat /proc/sys/–p: No such file or directory ## 则需要执行以下命令 modprobe br_netfilter ls /proc/sys/net/bridge ## 记得输入该命令及时生效 sysctl -p /etc/sysctl</description>
+    </item>
+    
+    <item>
+      <title>autossh 的几个小技巧</title>
+      <link>https://williamlfang.github.io/post/2021-05-07-autossh-%E7%9A%84%E5%87%A0%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+      <pubDate>Fri, 07 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-05-07-autossh-%E7%9A%84%E5%87%A0%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+      <description>查看帮助，设置环境变量 autossh --help usage: autossh [-V] [-M monitor_port[:echo_port]] [-f] [SSH_OPTIONS] -M specifies monitor port. May be overridden by environment variable AUTOSSH_PORT. 0 turns monitoring loop off. Alternatively, a port for an echo service on the remote machine may be specified. (Normally port 7.) -f run in background (autossh handles this, and does not pass it to ssh.) -V print autossh</description>
+    </item>
+    
+    <item>
+      <title>sleek:管理todo列表</title>
+      <link>https://williamlfang.github.io/post/2021-04-27-sleek-%E7%AE%A1%E7%90%86todo%E5%88%97%E8%A1%A8/</link>
+      <pubDate>Tue, 27 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-27-sleek-%E7%AE%A1%E7%90%86todo%E5%88%97%E8%A1%A8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>.ssh config 保持连接不断</title>
+      <link>https://williamlfang.github.io/post/2021-04-23-.ssh-config-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E6%96%AD/</link>
+      <pubDate>Fri, 23 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-23-.ssh-config-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E6%96%AD/</guid>
+      <description>在 ~/.ssh/config 添加 Host * ServerAliveInterval 60</description>
+    </item>
+    
+    <item>
+      <title>autossh 防止 timed out</title>
+      <link>https://williamlfang.github.io/post/2021-04-16-autossh-%E9%98%B2%E6%AD%A2-timed-out/</link>
+      <pubDate>Fri, 16 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-16-autossh-%E9%98%B2%E6%AD%A2-timed-out/</guid>
+      <description>参考链接：终端 timed out waiting for input: auto-logout解决！ ## 先打印开一下有没有设置自动超时， ## 0或者空表示不会超时，其他表示超时多少秒会自动断线 echo</description>
+    </item>
+    
+    <item>
+      <title>zsh 报错:zsh compinit: insecure directories, run compaudit for list</title>
+      <link>https://williamlfang.github.io/post/2021-04-16-zsh-%E6%8A%A5%E9%94%99-zsh-compinit-insecure-directories-run-compaudit-for-list/</link>
+      <pubDate>Fri, 16 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-16-zsh-%E6%8A%A5%E9%94%99-zsh-compinit-insecure-directories-run-compaudit-for-list/</guid>
+      <description>解决方案 compaudit | xargs chmod g-w</description>
+    </item>
+    
+    <item>
+      <title>bash 显示 PS1</title>
+      <link>https://williamlfang.github.io/post/2021-04-14-bash-%E6%98%BE%E7%A4%BA-ps1/</link>
+      <pubDate>Wed, 14 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-14-bash-%E6%98%BE%E7%A4%BA-ps1/</guid>
+      <description>export PS1=&amp;quot;\[\e[01;32m\][\u@\h:\w]\$ \[\e[00m\]&amp;quot;</description>
+    </item>
+    
+    <item>
+      <title>Linux 使用 ag 快速模糊搜索</title>
+      <link>https://williamlfang.github.io/post/2021-04-04-linux-%E4%BD%BF%E7%94%A8-ag-%E5%BF%AB%E9%80%9F%E6%A8%A1%E7%B3%8A%E6%90%9C%E7%B4%A2/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-04-04-linux-%E4%BD%BF%E7%94%A8-ag-%E5%BF%AB%E9%80%9F%E6%A8%A1%E7%B3%8A%E6%90%9C%E7%B4%A2/</guid>
+      <description>安装</description>
+    </item>
+    
+    <item>
+      <title>autossh 实现反向代理自动重连</title>
+      <link>https://williamlfang.github.io/post/2021-03-28-autossh-%E5%AE%9E%E7%8E%B0%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</link>
+      <pubDate>Sun, 28 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-03-28-autossh-%E5%AE%9E%E7%8E%B0%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</guid>
+      <description>下载 ## https://www.harding.motd.ca/autossh/ wget https://www.harding.motd.ca/autossh/autossh-1.4g.tgz 安装 tar -xvf autossh-1.4g.tgz cd autossh-1.4g ./configure --prefix=$HOME/opt make -j &amp;amp;&amp;amp; make install 使用 阿里云 ## 运行外部访问端口 8002 转发到 8001，然后由 8001 转发到托管机器 22 端口 ssh -fNCL *:8002:localhost:8001 localhost 托管机器 ## 开启 80</description>
+    </item>
+    
+    <item>
+      <title>Linux 多网卡 bond</title>
+      <link>https://williamlfang.github.io/post/2021-03-27-linux-%E5%A4%9A%E7%BD%91%E5%8D%A1-bond/</link>
+      <pubDate>Sat, 27 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-03-27-linux-%E5%A4%9A%E7%BD%91%E5%8D%A1-bond/</guid>
+      <description>bond 可以将多个网卡绑定到一起，可以让两个或多个接口作为一个接口，同时提高带宽，并提供网络链路的冗余，当有其中一块网卡故障的时候，不会中断服务器</description>
+    </item>
+    
+    <item>
+      <title>Linux开发环境一键部署</title>
+      <link>https://williamlfang.github.io/post/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Fri, 08 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/</guid>
+      <description>套件 zsh ## 可以到主页看一下最新的版本号 ## https://www.zsh.org/ wget https://sunsite.icm.edu.pl/pub/unix/shells/zsh/zsh-5.8.tar.xz tar -xvf zsh-5.8.tar.xz cd zsh-5.8 ./configure --prefix=/home/lfang/opt make -j &amp;amp;&amp;amp; make install ## 安装 oh-my-zsh ## sh -c &amp;quot;$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)&amp;quot; wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh bash install.sh ## 如果报错，则把 install.sh 里面的 https 换成 git，这是</description>
+    </item>
+    
+    <item>
+      <title>patat: 命令行ppt</title>
+      <link>https://williamlfang.github.io/post/2020-12-23-patat-%E5%91%BD%E4%BB%A4%E8%A1%8Cppt/</link>
+      <pubDate>Wed, 23 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-12-23-patat-%E5%91%BD%E4%BB%A4%E8%A1%8Cppt/</guid>
+      <description>patat 是一款比较符合极客风格的课件制作工具。 安装 安装 stack curl -sSL https://get.haskellstack.org/ | sh 安装 patat git clone git@github.com:jaspervdj/patat.git cd patat stack setup stack install ## Make sure $HOME/.local/bin is in your $PATH patat v0.8.6.1 Usage: patat [FILENAME] [-w|--watch] Terminal-based presentations using Pandoc Controls: - Next slide: space, enter, l, right, pagedown -</description>
+    </item>
+    
+    <item>
+      <title>Linux 设置超级用户程序</title>
+      <link>https://williamlfang.github.io/post/2020-10-25-linux-%E8%AE%BE%E7%BD%AE%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%E7%A8%8B%E5%BA%8F/</link>
+      <pubDate>Sun, 25 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-10-25-linux-%E8%AE%BE%E7%BD%AE%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%E7%A8%8B%E5%BA%8F/</guid>
+      <description>参考链接： Calling a script from a setuid root C program - script does not run as root Can I make a script always execute as root? c程序 一定要使用普通用户 // super.c // -------- #include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;sys/types.h&amp;gt; #include &amp;lt;unistd.h&amp;gt; int main(void) { setuid(0); clearenv(); system(&amp;quot;/bin/bash&amp;quot;); } 编译 一定要使用普通</description>
+    </item>
+    
+    <item>
+      <title>Abseil 代码阅读</title>
+      <link>https://williamlfang.github.io/post/2020-08-06-abseil-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/</link>
+      <pubDate>Thu, 06 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-08-06-abseil-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB/</guid>
+      <description>Google 评价 Abseil 为： 它是从 Google 内部代码块中抽取出来的一系列最基础的软件库。作为基本的组成部分，这些软件库支撑了几乎全部 Google 在运行的项目。以前这些 API 是零零</description>
+    </item>
+    
+    <item>
+      <title>Linux 添加 systemctl 服务</title>
+      <link>https://williamlfang.github.io/post/2020-08-06-linux-%E6%B7%BB%E5%8A%A0-systemctl-%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Thu, 06 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-08-06-linux-%E6%B7%BB%E5%8A%A0-systemctl-%E6%9C%8D%E5%8A%A1/</guid>
+      <description>方法 新建一个服务文件 cd /usr/lib/systemd/system $ls -alh EasyMonitor.service xtp_md.service total 16K drwxr-xr-x 2 root root 4.0K Aug 6 13:37 ./ drwxr-xr-x 10 root root 4.0K Jun 8 16:25 ../ -rw-r--r-- 1 root root 998 Jan 7 2020 EasyMonitor.service -rwxr-xr-x 1 root root 292 Aug 6 13:54 xtp_md.service* 设置 xtp_md.sevice 服务内容 [Unit] Description=XTP mkdata After=network.target network-online.target [Service] Type=forking Restart=always RestartSec=5</description>
+    </item>
+    
+    <item>
+      <title>Planner: 项目进度管理</title>
+      <link>https://williamlfang.github.io/post/2020-07-31-planner-%E9%A1%B9%E7%9B%AE%E8%BF%9B%E5%BA%A6%E7%AE%A1%E7%90%86/</link>
+      <pubDate>Fri, 31 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-31-planner-%E9%A1%B9%E7%9B%AE%E8%BF%9B%E5%BA%A6%E7%AE%A1%E7%90%86/</guid>
+      <description>安装 sudo apt instal planner</description>
+    </item>
+    
+    <item>
+      <title>gtest,gmock: 使用总结</title>
+      <link>https://williamlfang.github.io/post/2020-07-15-gtestgmock-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Wed, 15 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-15-gtestgmock-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</guid>
+      <description>项目地址：googletest GoogleTest 考虑到 gtest 和 gmock 两个项目均是针对单元测试 This repository is a merger of the formerly separate GoogleTest and GoogleMock projects. These were so closely related that it makes sense to maintain and release them together. 安装 Ubuntu git clone git@github.com:google/googletest.git cd googletest</description>
+    </item>
+    
+    <item>
+      <title>RabbitMQ: 安装与使用</title>
+      <link>https://williamlfang.github.io/post/2020-07-09-rabbitmq-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Thu, 09 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-07-09-rabbitmq-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</guid>
+      <description>消息队列 RabbitMQ 是一个在 AMQP（Advanced Message Queuing Protocol ）基础上实现的、可复用的企业消息系统。它可以用于大型软件系统各个模块之间的高效通信，支持高</description>
+    </item>
+    
+    <item>
+      <title>Docker 使用总结</title>
+      <link>https://williamlfang.github.io/post/2020-06-24-docker-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Wed, 24 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-06-24-docker-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</guid>
+      <description>安装 Ubuntu Ubuntu 操作系统的安装步骤可以参考官网说明 卸载旧版本 sudo apt-get remove docker docker-engine docker.io containerd runc Reading package lists... Done Building dependency tree Reading state information... Done Package &amp;#39;docker-engine&amp;#39; is not installed, so not removed Package &amp;#39;docker&amp;#39; is not installed, so not removed Package &amp;#39;containerd&amp;#39; is not installed, so not removed Package</description>
+    </item>
+    
+    <item>
+      <title>MySQL: 指定安装版本5.5</title>
+      <link>https://williamlfang.github.io/post/2020-06-16-mysql-%E6%8C%87%E5%AE%9A%E5%AE%89%E8%A3%85%E7%89%88%E6%9C%AC5.5/</link>
+      <pubDate>Tue, 16 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-06-16-mysql-%E6%8C%87%E5%AE%9A%E5%AE%89%E8%A3%85%E7%89%88%E6%9C%AC5.5/</guid>
+      <description>参考连接：Is it possible to install MySQL 5.5 or 5.6 on Ubuntu 16.04? StackOverFlow Step by step guide* to install mysql 5.5.x on Ubuntu 16.04 Xenial-Xerus. Please see this documentation OR See steps below: Installing MySQL 5.5.51 on Ubuntu 16.06 Uninstall any existing version of MySQL sudo rm /var/lib/mysql/ -R Delete the MySQL profile sudo rm /etc/mysql/ -R Automatically uninstall mysql sudo apt-get autoremove mysql*</description>
+    </item>
+    
+    <item>
+      <title>cgdb: 安装与使用</title>
+      <link>https://williamlfang.github.io/post/2020-05-31-cgdb-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Sun, 31 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-31-cgdb-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</guid>
+      <description>安装 安装 cgdb git clone git@github.com:cgdb/cgdb.git cd cgdb ./autogen.sh ## 安装依赖包 ## CentOS yum install ncurses-devel yum install texinfo ## 如果是 CentOS8 yum config-manager --set-enabled PowerTools yum install help2man yum install readline-devel yum install flex ## Ubuntu sudo apt-get install texinfo sudo apt-get install flex ./configure --prefix=/usr/local make -j sudo make install 配置 参考官方说明：C</description>
+    </item>
+    
+    <item>
+      <title>GLIBCXX: not found</title>
+      <link>https://williamlfang.github.io/post/2020-05-26-glibcxx-not-found/</link>
+      <pubDate>Tue, 26 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-26-glibcxx-not-found/</guid>
+      <description>## Ubuntu cd /usr/lib/x86_64-linux-gnu/ ## CentOS cd /usr/lib64 ll |grep libstd strings libstdc++.so.6 | grep GLIBCXX ## 有可能找不到 GLIBCXX_3.2.26 locate libstdc++.so.6 strings /usr/local/gcc/lib64/libstdc++.so.6 | grep GLIBCXX cp /usr/local/gcc/lib64/libstdc++.so.6 /usr/lib/x86_64-linux-gnu strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBCXX</description>
+    </item>
+    
+    <item>
+      <title>Linux: 新购硬盘扩容</title>
+      <link>https://williamlfang.github.io/post/2020-05-25-linux-%E6%96%B0%E8%B4%AD%E7%A1%AC%E7%9B%98%E6%89%A9%E5%AE%B9/</link>
+      <pubDate>Mon, 25 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-05-25-linux-%E6%96%B0%E8%B4%AD%E7%A1%AC%E7%9B%98%E6%89%A9%E5%AE%B9/</guid>
+      <description>参考链接: linux新增大于2T硬盘，分区并挂载 最近公司给原来的服务器添加了一块 8T 的 DellSAS 硬盘，原来存放数据。由于Linux采用了逻辑硬盘LLV</description>
+    </item>
+    
+    <item>
+      <title>Linux 设置系统语言</title>
+      <link>https://williamlfang.github.io/post/2020-01-08-linux-%E8%AE%BE%E7%BD%AE%E7%B3%BB%E7%BB%9F%E8%AF%AD%E8%A8%80/</link>
+      <pubDate>Wed, 08 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2020-01-08-linux-%E8%AE%BE%E7%BD%AE%E7%B3%BB%E7%BB%9F%E8%AF%AD%E8%A8%80/</guid>
+      <description>vim /etc/environment #LC_ALL=zh_CN.UTF_8 #LANG=zh_CN.UTF_8 LC_ALL=en_US.utf8 LANG=en_US.utf8</description>
+    </item>
+    
+    <item>
+      <title>本周阅读清单</title>
+      <link>https://williamlfang.github.io/shared/2019-12-30-%E6%9C%AC%E5%91%A8%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</link>
+      <pubDate>Mon, 30 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/shared/2019-12-30-%E6%9C%AC%E5%91%A8%E9%98%85%E8%AF%BB%E6%B8%85%E5%8D%95/</guid>
+      <description>Linux Some Notes on the &amp;ldquo;Who Wrote Linux&amp;rdquo; Kerfuffle, Release 1.5 今天在知乎上看到有人推送老爷子的旧文。里面提到了关于 *nix 系统的发展、minix 与 linux 的渊源，以及对 Linus 工作的肯定。 顺带在老爷</description>
+    </item>
+    
+    <item>
+      <title>Linux 调整 cstate 实现cpu超频</title>
+      <link>https://williamlfang.github.io/post/2019-12-11-linux-%E8%B0%83%E6%95%B4-cstate-%E5%AE%9E%E7%8E%B0cpu%E8%B6%85%E9%A2%91/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-11-linux-%E8%B0%83%E6%95%B4-cstate-%E5%AE%9E%E7%8E%B0cpu%E8%B6%85%E9%A2%91/</guid>
+      <description>随着技术的发展，现在主流的 Intel CPU 的主频都能达到 3GHz 以上，而且还支持超频技术。为了最大的获取 CPU 的性能，我们可以对 cstate 进行调整。 Ubuntu 设置 与开机项有关的参</description>
+    </item>
+    
+    <item>
+      <title>tuned/tuned adm 系统调优工具</title>
+      <link>https://williamlfang.github.io/post/2019-12-11-tuned/tuned-adm-%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Wed, 11 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-11-tuned/tuned-adm-%E7%B3%BB%E7%BB%9F%E8%B0%83%E4%BC%98%E5%B7%A5%E5%85%B7/</guid>
+      <description>tuned 是服务，需要使用 tuned-adm 打开工具进行操作。 安装 CentOs sudo yum install tuned 启动 --------------- On RHEL/CentOS 7 --------------- # systemctl start tuned # systemctl enable tuned # systemctl status tuned # systemctl stop tuned Ubuntu sudo apt install tuned 调优 显示当前可用的调优方案 tuned-adm list Available</description>
+    </item>
+    
+    <item>
+      <title>ssh 保持连接不中断</title>
+      <link>https://williamlfang.github.io/post/2019-12-05-ssh-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E4%B8%AD%E6%96%AD/</link>
+      <pubDate>Thu, 05 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-05-ssh-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E4%B8%AD%E6%96%AD/</guid>
+      <description>为了在使用 ssh 登录服务器保持通信连接的持续，我们可以修改服务器端或者客户端。 修改服务器端 如果想要对所有的用户都允许保持连接，可以考虑把服务器端</description>
+    </item>
+    
+    <item>
+      <title>Linux 完全删除用户</title>
+      <link>https://williamlfang.github.io/post/2019-12-02-linux-%E5%AE%8C%E5%85%A8%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7/</link>
+      <pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-12-02-linux-%E5%AE%8C%E5%85%A8%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7/</guid>
+      <description>userdel git ## 提示错误 ## userdel: group git not removed because it is not the primary group of user git. usermod -g git git groupdel git</description>
+    </item>
+    
+    <item>
+      <title>Ubuntu解压zip中文乱码</title>
+      <link>https://williamlfang.github.io/post/2019-11-25-ubuntu%E8%A7%A3%E5%8E%8Bzip%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/</link>
+      <pubDate>Mon, 25 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-11-25-ubuntu%E8%A7%A3%E5%8E%8Bzip%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/</guid>
+      <description>unzip 出现中文乱码 unzip doc.zip [14:45:55] Archive: doc.zip creating: doc/ inflating: doc/CATS╧╡═│┐═╗з╢╦▓▀┬╘╗╪▓т║═╜╗╥╫╣ж─▄╩╣╙├╦╡├ў.pdf inflating: doc/CA</description>
+    </item>
+    
+    <item>
+      <title>CentOS7:gcc7.3源代码编译升级</title>
+      <link>https://williamlfang.github.io/post/2019-11-12-centos7-gcc7.3%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%8D%87%E7%BA%A7/</link>
+      <pubDate>Tue, 12 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-11-12-centos7-gcc7.3%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%8D%87%E7%BA%A7/</guid>
+      <description>准备 把需要下载和解压的文件都放在一个目录 mkdir -p ~/gcc7 cd gcc7 ## 下载 gcc7.3 wget https://mirrors.ustc.edu.cn/gnu/gcc/gcc-7.3.0/gcc-7.3.0.tar.gz ## 下载依赖包 wget ftp://gcc.gnu.org/pub/gcc/infrastructure/gmp-6.1.0.tar.bz2 wget https://ftp.gnu.org/gnu/mpc/mpc-1.0.3.tar.gz wget https://ftp.gnu.org/gnu/mpc/mpc-1.1.0.tar.gz 安装 tar -xvf gcc-7.3.0.tar.gz ## 依赖包都放进去 cp gmp-6.1.0.tar.bz2 ./gcc-7.3.0 cp mpc-1.0.3.tar.gz ./gcc-7.3.0 cp mpfr-3.1.4.tar.bz2 ./gcc-7.3.0 ## 进入 gc</description>
+    </item>
+    
+    <item>
+      <title>分配sudo账户</title>
+      <link>https://williamlfang.github.io/post/2019-06-11-%E5%88%86%E9%85%8Dsudo%E8%B4%A6%E6%88%B7/</link>
+      <pubDate>Tue, 11 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-06-11-%E5%88%86%E9%85%8Dsudo%E8%B4%A6%E6%88%B7/</guid>
+      <description>&lt;p&gt;sudo是linux系统管理指令，是允许系统管理员让普通用户执行一些或者全部的root命令的一个工具，如halt、reboot、su等等。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>terminal 右边显示时间</title>
+      <link>https://williamlfang.github.io/post/2019-05-13-terminal-%E5%8F%B3%E8%BE%B9%E6%98%BE%E7%A4%BA%E6%97%B6%E9%97%B4/</link>
+      <pubDate>Mon, 13 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-05-13-terminal-%E5%8F%B3%E8%BE%B9%E6%98%BE%E7%A4%BA%E6%97%B6%E9%97%B4/</guid>
+      <description>&lt;p&gt;在 &lt;code&gt;~/.oh-my-zsh/themes/agnoster.themes&lt;/code&gt; 增加&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>SSH Too Many Authentication Failures</title>
+      <link>https://williamlfang.github.io/post/2019-04-18-ssh-too-many-authentication-failures/</link>
+      <pubDate>Thu, 18 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-04-18-ssh-too-many-authentication-failures/</guid>
+      <description>&lt;p&gt;今天在使用 &lt;code&gt;ssh&lt;/code&gt; 连接服务器的时候出现一个错误，这里记录一下解决方法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ssh-copy-id ${USER}@${HOST}                                               
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 6 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+Received disconnect from 192.168.1.199 port 22:2: Too many authentication failures
+Disconnected from 192.168.1.199 port 22
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>Linux 创建内存硬盘</title>
+      <link>https://williamlfang.github.io/post/2019-04-16-linux-%E5%88%9B%E5%BB%BA%E5%86%85%E5%AD%98%E7%A1%AC%E7%9B%98/</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-04-16-linux-%E5%88%9B%E5%BB%BA%E5%86%85%E5%AD%98%E7%A1%AC%E7%9B%98/</guid>
+      <description>&lt;p&gt;我们知道，在操作系统层面，性能与存储空间（价格）之间存在着负相关性，即越靠近 &lt;code&gt;CPU&lt;/code&gt; 的硬件具有更加快速的 &lt;code&gt;I/O&lt;/code&gt; 性能，但相对空间较小，价格也比较贵；而那些远离 &lt;code&gt;CPU&lt;/code&gt; 的设备则可以以相对低廉的价格获得足够大的存储空间，但是性能相对较弱。这就是著名的 &lt;code&gt;操作系统层次图&lt;/code&gt;：&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>使用 acl 控制文件权限</title>
+      <link>https://williamlfang.github.io/post/2019-04-11-%E4%BD%BF%E7%94%A8-acl-%E6%8E%A7%E5%88%B6%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/</link>
+      <pubDate>Thu, 11 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-04-11-%E4%BD%BF%E7%94%A8-acl-%E6%8E%A7%E5%88%B6%E6%96%87%E4%BB%B6%E6%9D%83%E9%99%90/</guid>
+      <description>&lt;p&gt;ACL(Access Control List) 权限控制主要目的是提供传统的 owner、group、other 的 read、wirte、execute 权限之外的具体权限设置，可以针对单一用户或组来设置特定的权限。&lt;/p&gt;
+
+&lt;p&gt;我们可以通过命令来设置单个用户対文件（或文件夹）的读取权限。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>python3 安装 talib</title>
+      <link>https://williamlfang.github.io/post/2019-03-29-python3-%E5%AE%89%E8%A3%85-talib/</link>
+      <pubDate>Fri, 29 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-03-29-python3-%E5%AE%89%E8%A3%85-talib/</guid>
+      <description>&lt;p&gt;&lt;code&gt;talib&lt;/code&gt; 是一款高性能技术指标的数值运算模块，为金融建模与量化交易提供一套丰富的接口函数。由于使用了 &lt;code&gt;c++&lt;/code&gt; 进行编译，&lt;code&gt;talib&lt;/code&gt; 能够实现快速处理机能，尤其在量化实盘中有重要的作用。&lt;/p&gt;
+
+&lt;p&gt;而在 &lt;code&gt;python3&lt;/code&gt; 中，并不提供内置的 &lt;code&gt;talib&lt;/code&gt; 模块，需要我们单独进行安装。问题是，使用常规的 &lt;code&gt;pip&lt;/code&gt; 无法直接安装这个软件包。因此，本文将介绍如何通过源文件进行安装模块。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Linux 查看公网IP</title>
+      <link>https://williamlfang.github.io/post/2019-02-25-linux-%E6%9F%A5%E7%9C%8B%E5%85%AC%E7%BD%91ip/</link>
+      <pubDate>Mon, 25 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-02-25-linux-%E6%9F%A5%E7%9C%8B%E5%85%AC%E7%BD%91ip/</guid>
+      <description>&lt;p&gt;由于我们做程序化交易需要调用 &lt;code&gt;CTP&lt;/code&gt; 的接口，需要把本地机器的 &lt;code&gt;IP&lt;/code&gt; 报备给经纪商（期货公司、证券公司）。但其实我们使用的是公网 &lt;code&gt;IP&lt;/code&gt; 而非固定 &lt;code&gt;IP&lt;/code&gt;，因此这个也不一定在每次联网后都一样。&lt;/p&gt;
+
+&lt;p&gt;尽管如此，我还是把相关的命令做一下备忘。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump</title>
+      <link>https://williamlfang.github.io/post/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF-zsh&#43;tmux&#43;powerline&#43;autojump/</link>
+      <pubDate>Wed, 16 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF-zsh&#43;tmux&#43;powerline&#43;autojump/</guid>
+      <description>&lt;p&gt;对于经常在远程服务器进行编程的程序员，终端(&lt;code&gt;terminal&lt;/code&gt;)无疑是我们接触最多的接口了。通过终端，我们可以直接使用命令来操作服务器系统，诸如修改文件、编辑程序、执行命令、传输文件等。通过配置合理的插件，我们可以打造出一款功能强大、符合个人使用习惯的「终端机」。&lt;/p&gt;
+
+&lt;p&gt;这篇文件主要介绍几个强大的插件工具，并通过自定义配置文件，实现以上目标。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>xz: 高压缩打包工具</title>
+      <link>https://williamlfang.github.io/post/2017-10-11-xz%E9%AB%98%E5%8E%8B%E7%BC%A9%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Wed, 11 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2017-10-11-xz%E9%AB%98%E5%8E%8B%E7%BC%A9%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/</guid>
+      <description>xz 是一款高性能、高压缩比的打包工具，相比于 gzip、bzip2 等具有更高的压缩比率。对于大容量的数据文件，可以使用 xz 进行压缩打包。 目前我们拥</description>
+    </item>
+    
+    <item>
+      <title>本本的转型</title>
+      <link>https://williamlfang.github.io/post/2014-01-02-%E6%9C%AC%E6%9C%AC%E7%9A%84%E8%BD%AC%E5%9E%8B/</link>
+      <pubDate>Thu, 02 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>https://williamlfang.github.io/post/2014-01-02-%E6%9C%AC%E6%9C%AC%E7%9A%84%E8%BD%AC%E5%9E%8B/</guid>
+      <description>换系统 最近给这台老机子换了一个新系统.多年前买的一个笔记本,折旧损耗的严重,配置也不能满足当下的计算需要.想着是不是该从Win8换回XP,想</description>
+    </item>
+    
+  </channel>
+</rss>

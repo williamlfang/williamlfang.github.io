@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Sublime: BracketHighlighter 高亮括号 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="使用 Sublime 的时候，我们可以通过添加插件 BracketHighlighter 来高亮括号对应的代码段。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2020-04-22-sublime-brackethighlighter-%E9%AB%98%E4%BA%AE%E6%8B%AC%E5%8F%B7/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Sublime: BracketHighlighter 高亮括号" />
+<meta property="og:description" content="使用 Sublime 的时候，我们可以通过添加插件 BracketHighlighter 来高亮括号对应的代码段。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2020-04-22-sublime-brackethighlighter-%E9%AB%98%E4%BA%AE%E6%8B%AC%E5%8F%B7/" />
+<meta property="article:published_time" content="2020-04-22T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2020-04-22T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="Sublime: BracketHighlighter 高亮括号">
+<meta itemprop="description" content="使用 Sublime 的时候，我们可以通过添加插件 BracketHighlighter 来高亮括号对应的代码段。">
+
+
+<meta itemprop="datePublished" content="2020-04-22T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2020-04-22T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="2379">
+
+
+
+<meta itemprop="keywords" content="Sublime,highligh,高亮,IDE," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Sublime: BracketHighlighter 高亮括号"/>
+<meta name="twitter:description" content="使用 Sublime 的时候，我们可以通过添加插件 BracketHighlighter 来高亮括号对应的代码段。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">Sublime: BracketHighlighter 高亮括号</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-04-22 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 2379 words </span>
+        <span class="more-meta"> 5 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2020-04-22T00:00:00" title="April 22, 2020">April 22, 2020</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<p>在开发一个比较大的工程项目时，有时候我们会写一些比较长的代码块。如果没有良好的插件做辅助，单单凭借肉眼很难看清整个代码的层次关系。这时候，一款得心应手的代码块高亮工具就显得十分可贵。</p>
+<div class="figure">
+<img src="/images/2020-04-22-Sublime--BracketHighlighter-高亮括号/md-cpp.png" />
+
+</div>
+<p>像上面这个 <code>c++</code> 代码，我们可以非常清晰的看到：</p>
+<ul>
+<li>左侧边栏的 <code>()</code> 是否补全</li>
+<li>在代码内部的逻辑层次</li>
+</ul>
+<p>以上的实现是通过在 Sublime 安装插件 <code>BracketHighlighter</code> 来完成的。</p>
+<p>项目地址：<a href="https://facelessuser.github.io/BracketHighlighter/">BracketHighlighter Documentation</a></p>
+<div id="安装" class="section level1">
+<h1>安装</h1>
+<p>打开 <code>Sublime</code>，使用 <code>Shift+Ctrl+P</code> 开始搜索软件名 <code>BracketHighlighter</code>，然后安装就可以了。</p>
+</div>
+<div id="配置" class="section level1">
+<h1>配置</h1>
+<p>以下是我的配置方案</p>
+<pre class="json"><code>{
+    // Debug logging
+    &quot;debug_enable&quot;: false,
+
+    // When only either the left or right bracket can be found
+    // this defines if the unmatched bracket should be shown.
+    &quot;show_unmatched&quot;: true,
+
+    // Do the opposite of `show_unmatched` for the languages listed below
+    &quot;show_unmatched_exceptions&quot;: [],
+
+    // Enable high visibility by default when sublime starts up
+    // If sublime is already running and this gets changed,
+    // you will not see any changes (restart required to see change)
+    &quot;high_visibility_enabled_by_default&quot;: false,
+
+    // Experimental: Creates a visible bar at the beginning of all lines between
+    // multiline bracket spans.
+    // &quot;content_highlight_bar&quot;: false,
+    &quot;content_highlight_bar&quot;: true,
+    // Show hover popup
+    // This will show a hover popup when mousing over
+    // the visible bracket if the other
+    // highlighted matching bracket is off screen.
+    // It will show line text of the off screen bracket -/+ 128 chars
+    // from the bracket start and end points.
+    // A link will be available allowing the user to click and jump to
+    // the other bracket.
+    &quot;show_offscreen_bracket_popup&quot;: true,
+
+    // If enabled with `show_offscreen_bracket_popup`,the popup will be shown
+    // even if brackets are onscreen.
+    // &quot;show_bracket_popup_always&quot;: false,
+    &quot;show_bracket_popup_always&quot;: true,
+
+    // Adjust char per line context of bracket popup.
+    &quot;popup_char_context&quot;: 120,
+
+    // Adjust number of lines of additional context
+    // that are shown when brackets are vertically off screen.
+    // Specified line count is split to context before and after the target line.
+    // So a value of 4 would give you two lines of context before and two lines after.
+    &quot;popup_line_context&quot;: 2,
+
+    // Experimental: Use `popup_bracket_emphasis` to customize the popup&#39;s bracket emphasis color
+    &quot;use_custom_popup_bracket_emphasis&quot;: false,
+
+    // Experimental: Specify the scope (to get color) to emphasize the off screen bracket
+    // in popups.  Alternatively you can use a hex value in the form `#rgb` or `#rrggbb`.
+    &quot;popup_bracket_emphasis&quot;: &quot;keyword&quot;,
+
+    // Experimental: Align the content highlight bar at the bracket indent level
+    // &quot;align_content_highlight_bar&quot;: false,
+    &quot;align_content_highlight_bar&quot;: true,
+
+    // Experimental: Allow bracket highlighter to search in widgets.
+    // Most widgets use Plain Text which BH should ignore,
+    // But regex find views views are usually regular expression
+    // Which should be the only views to trigger BH.
+    &quot;search_in_widgets&quot;: false,
+
+    // Show brackets in the minimap.
+    // Depending on your highlight style, regions may not be visible in minimap.
+    // &quot;underline&quot; won&#39;t show up due to it being a style consisting of
+    // multiple zero width selections to create a fat underline.
+    // But the following styles should show up fine as they are normal regions styles:
+    //     - thin_underline
+    //     - solid
+    //     - outline
+    //     - squiggly
+    //     - stippled
+    // &quot;show_in_minimap&quot;: false,
+    &quot;show_in_minimap&quot;: true,
+
+    // High visibility style and color for high visibility mode
+    // (`solid`|`outline`|`underline`)
+    // ST3 has additional options of (`thin_underline`|`squiggly`|`stippled`)
+    &quot;high_visibility_style&quot;: &quot;outline&quot;,
+
+    // (scope|__default__|__bracket__)
+    &quot;high_visibility_color&quot;: &quot;__bracket__&quot;,
+
+    // Match brackets only when the cursor is touching the inside of the bracket
+    &quot;match_only_adjacent&quot;: false,
+
+    // Outside adjacent bracket matching
+    &quot;bracket_outside_adjacent&quot;: true,
+
+    // Experimental: Special matching mode for block cursor.
+    // Essentially, this provides a matching mode that makes a little more
+    // sense to some in regards to the visual representation of block cursors.
+    // This will ignore `bracket_outside_adjacent`.
+    &quot;block_cursor_mode&quot;: false,
+
+    // When `bracket_outside_adjacent` is set, and a plugin command explicitly sets
+    // `no_outside_adj` to `None` instead of `true` or the default `false`,
+    // this value will be used.
+    &quot;ignore_outside_adjacent_in_plugin&quot;: true,
+
+    // When `block_cursor_mode` is set, and a plugin command explicitly sets
+    // &quot;no_block_mode&quot; to `None` instead of `true` or the default `false`,
+    // this value will be used.
+    &quot;ignore_block_mode_in_plugin&quot;: true,
+
+    // Character threshold to search
+    &quot;search_threshold&quot;: 5000,
+
+    // Ignore threshold
+    &quot;ignore_threshold&quot;: false,
+
+    // Set mode for string escapes to ignore (`regex`|`string`)
+    &quot;bracket_string_escape_mode&quot;: &quot;string&quot;,
+
+    // Set max number of multi-select brackets that will be searched automatically
+    &quot;auto_selection_threshold&quot; : 10,
+
+    // Enable this to completely kill highlighting if &quot;auto_selection_threshold&quot;
+    // is exceeded.  Default is to highlight up to the &quot;auto_selection_threshold&quot;.
+    &quot;kill_highlight_on_threshold&quot;: true,
+
+    // Disable gutter icons when doing multi-select
+    &quot;no_multi_select_icons&quot;: false,
+
+    // Rules that define the finding and matching of brackets
+    // that are contained in a common scope.
+    // Useful for bracket pairs that are the same but
+    // share a common scope.  Brackets are found by
+    // Finding the extent of the scope and using regex
+    // to look at the beginning and end to identify bracket.
+    // Use only if they cannot be targeted with traditional bracket
+    // rules.
+    &quot;scope_brackets&quot;: [
+        // Quotes
+        {
+            &quot;name&quot;: &quot;py_single_quote&quot;,
+            &quot;open&quot;: &quot;(?:u|b|f)?r?((?:&#39;&#39;)?&#39;)&quot;,
+            &quot;close&quot;: &quot;((?:&#39;&#39;)?&#39;)&quot;,
+            &quot;style&quot;: &quot;single_quote&quot;,
+            &quot;scopes&quot;: [&quot;string&quot;, &quot;meta.string&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [
+                &quot;Python&quot;,
+                &quot;PythonImproved&quot;,
+                &quot;MagicPython&quot;
+            ],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;plugin_library&quot;: &quot;bh_modules.pyquotes&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;py_double_quote&quot;,
+            &quot;open&quot;: &quot;(?:u|b|f)?r?((?:\&quot;\&quot;)?\&quot;)&quot;,
+            &quot;close&quot;: &quot;((?:\&quot;\&quot;)?\&quot;)&quot;,
+            &quot;style&quot;: &quot;double_quote&quot;,
+            &quot;scopes&quot;: [&quot;string&quot;, &quot;meta.string&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [
+                &quot;Python&quot;,
+                &quot;PythonImproved&quot;,
+                &quot;MagicPython&quot;
+            ],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;plugin_library&quot;: &quot;bh_modules.pyquotes&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;csharp_double_quote&quot;,
+            &quot;open&quot;: &quot;\\$?@?(\&quot;)&quot;,
+            &quot;close&quot;: &quot;(\&quot;)&quot;,
+            &quot;style&quot;: &quot;double_quote&quot;,
+            &quot;scopes&quot;: [&quot;string.quoted.double&quot;, &quot;meta.string.interpolated&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;C#&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;single_quote&quot;,
+            &quot;open&quot;: &quot;(&#39;)&quot;,
+            &quot;close&quot;: &quot;(&#39;)&quot;,
+            &quot;style&quot;: &quot;single_quote&quot;,
+            &quot;scopes&quot;: [
+                &quot;meta.attribute-with-value.style.html -entity.other.attribute-name.style.html -punctuation.separator.key-value.html&quot;,
+                &quot;source.ruby string.quoted, source.ruby meta.interpolation&quot;,
+                &quot;string&quot;,
+                &quot;string.quoted&quot;
+            ],
+            &quot;language_filter&quot;: &quot;blacklist&quot;,
+            &quot;language_list&quot;: [&quot;Plain text&quot;, &quot;Hex&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;double_quote&quot;,
+            &quot;open&quot;: &quot;(\&quot;)&quot;,
+            &quot;close&quot;: &quot;(\&quot;)&quot;,
+            &quot;style&quot;: &quot;double_quote&quot;,
+            &quot;scopes&quot;: [
+                &quot;meta.attribute-with-value.style.html -entity.other.attribute-name.style.html -punctuation.separator.key-value.html&quot;,
+                &quot;source.ruby string.quoted, source.ruby meta.interpolation&quot;,
+                &quot;string&quot;,
+                &quot;string.quoted&quot;
+            ],
+            &quot;language_filter&quot;: &quot;blacklist&quot;,
+            &quot;language_list&quot;: [&quot;Plain text&quot;, &quot;Hex&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;backtick_quote&quot;,
+            &quot;open&quot;: &quot;(`)&quot;,
+            &quot;close&quot;: &quot;(`)&quot;,
+            &quot;style&quot;: &quot;single_quote&quot;,
+            &quot;scopes&quot;: [
+                &quot;string.interpolated.ruby&quot;,
+                &quot;string.interpolated.backtick.shell&quot;,
+                &quot;string.template-string.js&quot;,
+                &quot;string.template.js, meta.template.expression.js&quot;
+            ],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Ruby&quot;, &quot;Shell-Unix-Generic&quot;, &quot;Bash&quot;, &quot;JavaScript&quot;, &quot;JavaScriptNext&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        // Regex for different Languages
+        {
+            &quot;name&quot;: &quot;jsregex&quot;,
+            &quot;open&quot;: &quot; *(/)&quot;,
+            &quot;close&quot;: &quot;(/)[igm]*&quot;,
+            &quot;style&quot;: &quot;regex&quot;,
+            &quot;scopes&quot;: [&quot;string&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;JavaScript&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;perlregex&quot;,
+            &quot;open&quot;: &quot;(?:m|s|tr)(.|\n)&quot;,
+            &quot;close&quot;: &quot;(.|\n)(?:[igmos]*)&quot;,
+            &quot;style&quot;: &quot;regex&quot;,
+            &quot;scopes&quot;: [&quot;string.regexp&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Perl&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;rubyregex&quot;,
+            &quot;open&quot;: &quot; *(/)&quot;,
+            &quot;close&quot;: &quot;(/)[imxo]*&quot;,
+            &quot;style&quot;: &quot;regex&quot;,
+            &quot;scopes&quot;: [&quot;string&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Ruby&quot;, &quot;RSpec&quot;, &quot;Better RSpec&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        // Markdown
+        {
+            &quot;name&quot;: &quot;mditalic&quot;,
+            &quot;open&quot;: &quot;(\\*|_)&quot;,
+            &quot;close&quot;: &quot;(\\*|_)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scopes&quot;: [&quot;markup.italic&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Markdown&quot;, &quot;Multimarkdown&quot;, &quot;GithubFlavoredMarkdown&quot;, &quot;Markdown Extended&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;mdbold&quot;,
+            &quot;open&quot;: &quot;(\\*\\*|__)&quot;,
+            &quot;close&quot;: &quot;(\\*\\*|__)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scopes&quot;: [&quot;markup.bold&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Markdown&quot;, &quot;Multimarkdown&quot;, &quot;GithubFlavoredMarkdown&quot;, &quot;Markdown Extended&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;mdcodeinline&quot;,
+            &quot;open&quot;: &quot;(`+)&quot;,
+            &quot;close&quot;: &quot;(`+)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scopes&quot;: [&quot;markup.raw.inline.markdown&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Markdown&quot;, &quot;Multimarkdown&quot;, &quot;GithubFlavoredMarkdown&quot;, &quot;Markdown Extended&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;plugin_library&quot;: &quot;bh_modules.mdcode&quot;,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;mdcodeblock&quot;,
+            &quot;open&quot;: &quot;\\s*(`{3,}|~{3,})&quot;,
+            &quot;close&quot;: &quot;(`{3,}|~{3,})\\n?&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scopes&quot;: [&quot;markup.raw.block.fenced.markdown, markup.raw.block.markdown.fenced&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Markdown&quot;, &quot;Multimarkdown&quot;, &quot;GithubFlavoredMarkdown&quot;, &quot;Markdown Extended&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.mdcode&quot;,
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        // LaTeX
+        {
+            &quot;name&quot;: &quot;latexmath_inline&quot;,
+            &quot;open&quot;: &quot;(\\$)&quot;,
+            &quot;close&quot;: &quot;(\\$)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scopes&quot;: [&quot;string.other.math.tex&quot;, &quot;meta.environment.math.inline.dollar.latex&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;LaTeX&quot;, &quot;LaTeX (TikZ)&quot;, &quot;knitr (Rnw)&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        }
+    ],
+
+    // Rule definitions for finding and matching brackets.
+    // Brackets are found by using regex and can use scope
+    // qualifiers exclude certain matches.
+    // Once all matches are found, the closest pair surrounding
+    // the cursor are selected.
+    &quot;brackets&quot;: [
+        // OCaml
+        {
+            &quot;name&quot;: &quot;ocaml_comment&quot;,
+            &quot;open&quot;: &quot;(\\(\\*)&quot;,
+            &quot;close&quot;: &quot;(\\*\\))&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;-comment&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;OCaml&quot;],
+            &quot;sub_bracket_search&quot;: &quot;false&quot;,
+            &quot;enabled&quot;: true
+        },
+        // Basic brackets
+        {
+            &quot;name&quot;: &quot;curly&quot;,
+            &quot;open&quot;: &quot;(\\{)&quot;,
+            &quot;close&quot;: &quot;(\\})&quot;,
+            &quot;style&quot;: &quot;curly&quot;,
+            &quot;scope_exclude&quot;: [
+                &quot;string&quot;,
+                &quot;comment&quot;,
+                &quot;source.regexp constant.character.escape&quot;,
+                &quot;source.yaml-tmlanguage constant.character.escape&quot;
+            ],
+            &quot;scope_exclude_exceptions&quot;: [&quot;text.tex string.other.math&quot;],
+            &quot;language_filter&quot;: &quot;blacklist&quot;,
+            &quot;language_list&quot;: [&quot;Plain text&quot;, &quot;Hex&quot;],
+            &quot;find_in_sub_search&quot;: &quot;true&quot;,
+            &quot;ignore_string_escape&quot;: true,
+            &quot;enabled&quot;: true
+        },
+        {
+            &quot;name&quot;: &quot;round&quot;,
+            &quot;open&quot;: &quot;(\\()&quot;,
+            &quot;close&quot;: &quot;(\\))&quot;,
+            &quot;style&quot;: &quot;round&quot;,
+            &quot;scope_exclude_exceptions&quot;: [
+                &quot;text.tex string.other.math&quot;,
+                &quot;punctuation.definition.string.begin.shell&quot;,
+                &quot;punctuation.definition.string.end.shell&quot;
+            ],
+            &quot;scope_exclude&quot;: [
+                &quot;string&quot;,
+                &quot;comment&quot;,
+                &quot;source.regexp constant.character.escape&quot;,
+                &quot;keyword.control.conditional.patterns.end.shell&quot;,
+                &quot;source.yaml-tmlanguage constant.character.escape&quot;
+            ],
+            &quot;language_filter&quot;: &quot;blacklist&quot;,
+            &quot;language_list&quot;: [&quot;Plain text&quot;, &quot;Hex&quot;, &quot;RTF&quot;],
+            &quot;find_in_sub_search&quot;: &quot;true&quot;,
+            &quot;ignore_string_escape&quot;: true,
+            &quot;enabled&quot;: true
+        },
+        //XML
+        {
+            &quot;name&quot;:&quot;xml_cdata&quot;,
+            &quot;open&quot;:&quot;(&lt;!\\[CDATA\\[)&quot;,
+            &quot;close&quot;:&quot;(\\]\\]&gt;)&quot;,
+            &quot;style&quot;:&quot;default&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;XML&quot;],
+            &quot;scope_exclude&quot;: [
+                &quot;comment&quot;
+            ],
+            &quot;enabled&quot;:true
+        },
+        {
+            &quot;name&quot;: &quot;square&quot;,
+            &quot;open&quot;: &quot;(\\[)&quot;,
+            &quot;close&quot;: &quot;(\\])&quot;,
+            &quot;style&quot;: &quot;square&quot;,
+            &quot;scope_exclude&quot;: [
+                &quot;string&quot;,
+                &quot;source.regexp constant.character.escape&quot;,
+                &quot;comment&quot;
+            ],
+            &quot;scope_exclude_exceptions&quot;: [&quot;text.tex string.other.math&quot;, &quot;source.yaml-tmlanguage meta.value -constant.character.escape&quot;],
+            &quot;language_filter&quot;: &quot;blacklist&quot;,
+            &quot;language_list&quot;: [&quot;Plain text&quot;, &quot;Hex&quot;, &quot;RTF&quot;],
+            &quot;find_in_sub_search&quot;: &quot;true&quot;,
+            &quot;ignore_string_escape&quot;: true,
+            &quot;enabled&quot;: true
+        },
+        // PHP Angle
+        {
+            &quot;name&quot;: &quot;php_angle&quot;,
+            &quot;open&quot;: &quot;(&lt;\\?)(?:php)?&quot;,
+            &quot;close&quot;: &quot;(\\?&gt;)&quot;,
+            &quot;style&quot;: &quot;angle&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;, &quot;keyword.operator&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;HTML&quot;, &quot;HTML 5&quot;],
+            &quot;enabled&quot;: true
+        },
+        // Angle
+        {
+            &quot;name&quot;: &quot;angle&quot;,
+            &quot;open&quot;: &quot;(&lt;)(?=[^?%]|$)&quot;,
+            &quot;close&quot;: &quot;(?:(?&lt;=[^?%])|(?&lt;=^))(&gt;)&quot;,
+            &quot;style&quot;: &quot;angle&quot;,
+            &quot;scope_exclude&quot;: [
+                &quot;string&quot;,
+                &quot;comment&quot;,
+                &quot;keyword.operator&quot;,
+                &quot;source.ruby.rails.embedded.html&quot;,
+                &quot;source.ruby.embedded.html&quot;,
+                &quot;storage.type.function.arrow.js&quot;,
+                &quot;punctuation.accessor.php&quot;,
+                &quot;punctuation.accessor.arrow.php&quot;,
+                &quot;source.php meta.embedded.html punctuation.section.embedded.begin.php&quot;,
+                &quot;source.php meta.embedded.js punctuation.section.embedded.begin.php&quot;,
+                &quot;source.php meta.embedded.css punctuation.section.embedded.begin.php&quot;
+            ],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [
+                &quot;HTML&quot;,
+                &quot;HTML 5&quot;,
+                &quot;XML&quot;,
+                &quot;PHP&quot;,
+                &quot;HTML (Rails)&quot;,
+                &quot;HTML (Jinja Templates)&quot;,
+                &quot;HTML (Jinja2)&quot;,
+                &quot;HTML (Twig)&quot;,
+                &quot;HTML (Django)&quot;,
+                &quot;HTML+CFML&quot;,
+                &quot;ColdFusion&quot;,
+                &quot;ColdFusionCFC&quot;,
+                &quot;laravel-blade&quot;,
+                &quot;blade&quot;,
+                &quot;Handlebars&quot;,
+                &quot;AngularJS&quot;,
+                &quot;Java Server Pages (JSP)&quot;
+            ],
+            &quot;plugin_library&quot;: &quot;bh_modules.tags&quot;,
+            &quot;enabled&quot;: true
+        },
+        // CSSedit groups
+        {
+            &quot;name&quot;: &quot;cssedit_groups&quot;,
+            &quot;open&quot;: &quot;(/\\* *@group .*\\*/)&quot;,
+            &quot;close&quot;: &quot;(/\\* *@end *\\*/)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;CSS&quot;],
+            &quot;enabled&quot;: true
+        },
+        // Ruby embedded HTML
+        // !!! May conflict with `php_keywords` if enabled in same file !!!
+        {
+            &quot;name&quot;: &quot;ruby_embedded_html&quot;,
+            &quot;open&quot;: &quot;((?:(?&lt;=&lt;%)|(?&lt;=^)|(?&lt;==)|(?&lt;=&lt;&lt;))\\s*\\b(?:if|begin|case)\\b(?!:)|(?:(?&lt;=&lt;%)|(?&lt;=^))\\s*(?:(?:private|public|protected)\\s*)?def\\b[\\p{Ll}\\p{Lu}]*\\b(?!:)|(?:(?&lt;=&lt;%)|(?&lt;=^))\\s*\\b(?:for|until|unless|while|class|module)\\b(?!:)|(?&lt;!:)\\bdo\\b(?!:)|(?&lt;=return)\\s*\\b(?:begin|case|for|until|while|class|module)\\b(?!:))&quot;,
+            &quot;close&quot;: &quot;(?&lt;=[\\s;])(end)\\b(?!:)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;text.html&quot;, &quot;source&quot;, &quot;comment&quot;, &quot;string&quot;],
+            &quot;scope_exclude_exceptions&quot;: [
+                &quot;source.ruby.rails.embedded.html -comment -string&quot;,
+                &quot;source.ruby.embedded.html -comment -string&quot;
+            ],
+            &quot;plugin_library&quot;: &quot;bh_modules.rubykeywords&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;HTML&quot;, &quot;HTML 5&quot;, &quot;HTML (Rails)&quot;],
+            &quot;enabled&quot;: true
+        },
+        // Ruby conditional statements
+        {
+            &quot;name&quot;: &quot;ruby&quot;,
+            &quot;open&quot;: &quot;((?:(?&lt;=^)|(?&lt;==)|(?&lt;=&lt;&lt;))\\s*\\b(?:if|begin|case)\\b(?!:)|^\\s*(?:(?:private|public|protected)\\s*)?def\\b[\\p{Ll}\\p{Lu}]*\\b(?!:)|^\\s*\\b(?:for|until|unless|while|class|module)\\b(?!:)|(?&lt;!:)\\bdo\\b(?!:)|(?&lt;=return)\\s*\\b(?:begin|case|for|until|while|class|module)\\b(?!:))&quot;,
+            &quot;close&quot;: &quot;(?&lt;=[\\s;])(end)\\b(?!:)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.rubykeywords&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Ruby&quot;, &quot;RSpec&quot;, &quot;Better RSpec&quot;, &quot;Ruby on Rails&quot;],
+            &quot;enabled&quot;: true
+        },
+        // C/C++ compile switches
+        {
+            &quot;name&quot;: &quot;c_compile_switch&quot;,
+            &quot;open&quot;: &quot;\\#[ \\t]*(if|ifdef|ifndef)\\b&quot;,
+            &quot;close&quot;: &quot;\\#[ \\t]*(endif)\\b&quot;,
+            &quot;style&quot;: &quot;c_define&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;C++&quot;, &quot;C&quot;, &quot;Objective-C++&quot;, &quot;Objective-C&quot;, &quot;CCpp&quot;, &quot;C Improved&quot;],
+            &quot;enabled&quot;: true
+        },
+        // PHP conditional keywords
+        // !!! May conflict with `ruby_embedded_html` if enabled in same file !!!
+        {
+            &quot;name&quot;: &quot;php_keywords&quot;,
+            &quot;open&quot;: &quot;(?:(?&lt;=^)|(?&lt;=&lt;\\?php)|(?&lt;=&lt;\\?))\\s*(if|foreach|for|while|switch)\\b(?=.*?\\)\\s*:\\s*(?://.*?|/\\*.*?\\*/\\s*?)?(?:\\?&gt;|$))&quot;,
+            &quot;close&quot;: &quot;(?:(?&lt;=^)|(?&lt;=&lt;\\?php)|(?&lt;=&lt;\\?))\\s*(endif|endfor|endforeach|endwhile|endswitch)\\b(?=\\s*(?:;|;?\\?&gt;))&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;, &quot;text.html&quot;],
+            &quot;scope_exclude_exceptions&quot;: [
+                &quot;source.php -comment -string&quot;
+            ],
+            &quot;plugin_library&quot;: &quot;bh_modules.phpkeywords&quot;,
+            &quot;language_list&quot;: [
+                &quot;HTML&quot;,
+                &quot;HTML 5&quot;,
+                &quot;PHP&quot;,
+                &quot;HTML+CFML&quot;,
+                &quot;ColdFusion&quot;,
+                &quot;ColdFusionCFC&quot;
+            ],
+            &quot;enabled&quot;: true
+        },
+        // Erlang conditional statements
+        {
+            &quot;name&quot;: &quot;erlang&quot;,
+            &quot;open&quot;: &quot;\\s*(\\b(?:if|case|begin|try|fun(?=\\s*\\()|receive)\\b)&quot;,
+            &quot;close&quot;: &quot;\\b(end)\\b&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;plugin_library&quot;: &quot;bh_modules.lowercase&quot;,
+            &quot;language_list&quot;: [&quot;Erlang&quot;, &quot;HTML (Erlang)&quot;],
+            &quot;enabled&quot;: true
+        },
+        //Bash
+        {
+            &quot;name&quot;: &quot;bash&quot;,
+            &quot;open&quot;: &quot;(?:(?&lt;!\\\\\\n)(?:;|^|&amp;|\\|)\\s*)\\b(if|case|while|select|until|for)\\s&quot;,
+            &quot;close&quot;: &quot;(?:(?&lt;!\\\\\\n)(?:;|^)\\s*)\\b(fi|esac|done)(?=;|\\s|$)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.bashsupport&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Shell-Unix-Generic&quot;, &quot;Bash&quot;],
+            &quot;enabled&quot;: true
+        },
+        //Fish shell
+        {
+            &quot;name&quot;: &quot;fish&quot;,
+            &quot;open&quot;: &quot;(?:(?&lt;!\\\\\\n)(?:;|^|&amp;|\\||and|or|not)\\s*)\\b(begin|if|while|for|switch|function)(?:;|\\s)&quot;,
+            &quot;close&quot;: &quot;(?:(?&lt;!\\\\\\n)(?:;|^)\\s*)\\b(end)(?=;|\\s|$)&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;fish&quot;],
+            &quot;enabled&quot;: true
+        },
+        // Lua
+        {
+            &quot;name&quot;: &quot;lua&quot;,
+            &quot;open&quot;: &quot;(?:(?&lt;=[\\s;])|(?&lt;=^))(if|function|do|repeat)\\b&quot;,
+            &quot;close&quot;: &quot;(?:(?&lt;=[\\s;])|(?&lt;=^))(end|until)\\b&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.luakeywords&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Lua&quot;],
+            &quot;enabled&quot;: true
+        },
+        // LaTeX
+        {
+            &quot;name&quot;: &quot;latexenv&quot;,
+            &quot;open&quot;: &quot;(\\\\begin{[^}]*})&quot;,
+            &quot;close&quot;: &quot;(\\\\end{[^}]*})&quot;,
+            &quot;style&quot;: &quot;tag&quot;,
+            &quot;scope_exclude&quot;: [&quot;comment&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.latexenvironments&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;LaTeX&quot;, &quot;LaTeX (TikZ)&quot;, &quot;knitr (Rnw)&quot;],
+            &quot;sub_bracket_search&quot;: &quot;true&quot;,
+            &quot;enabled&quot;: true
+        },
+        // Pascal
+        {
+            &quot;name&quot;: &quot;pascal&quot;,
+            &quot;open&quot;: &quot;(?:(?&lt;=^)|(?&lt;=[\\s;]))(try|(?&lt;=\\=\\s)(?:class|record|interface)|begin|repeat)\\b&quot;,
+            &quot;close&quot;: &quot;(?&lt;=[\\s;])(end(?=[;\\s])|until(?=\\s))&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.pascalkeywords&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Pascal&quot;],
+            &quot;enabled&quot;: true
+        },
+        // Elixir
+        {
+            &quot;name&quot;: &quot;elixir&quot;,
+            &quot;open&quot;: &quot;\\b(do$|fn)\\b&quot;,
+            &quot;close&quot;: &quot;\\b(end)\\b&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;Elixir&quot;],
+            &quot;enabled&quot;: true
+        },
+        // CMake
+        {
+            &quot;name&quot;: &quot;cmake&quot;,
+            &quot;open&quot;: &quot;\\b(foreach|function|if|macro|while)\\b&quot;,
+            &quot;close&quot;: &quot;\\b(end(?:foreach|function|if|macro|while))\\b&quot;,
+            &quot;style&quot;: &quot;default&quot;,
+            &quot;scope_exclude&quot;: [&quot;-keyword.cmake&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.cmakekeywords&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;CMake&quot;],
+            &quot;enabled&quot;: true
+        },
+        // `SINUMERIK 840D SL G-Code`
+        {
+            &quot;name&quot;: &quot;s840d_gcode&quot;,
+            &quot;open&quot;: &quot;\\b(IF(?!.*GOTO)|FOR|WHILE|REPEAT(?!.*GOTO))\\b&quot;,
+            &quot;close&quot;: &quot;\\b(END(?:IF|FOR|WHILE)|UNTIL)\\b&quot;,
+            &quot;style&quot;: &quot;tag&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.s840d_gcode&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;s840d_gcode&quot;],
+            &quot;enabled&quot;: true
+        },
+        // `SINUMERIK 840D SL RunMyHmi`
+        {
+            &quot;name&quot;: &quot;s840d_hmi&quot;,
+            &quot;open&quot;: &quot;^\\s*(//[ABGMS]|ACTIVATE|CHANGE|FOCUS|IF|LOAD|UNLOAD|OUTPUT|PRESS|SUB)\\b&quot;,
+            &quot;close&quot;: &quot;^\\s*(//END|END_(?:ACTIVATE|CHANGE|FOCUS|IF|LOAD|UNLOAD|OUTPUT|PRESS|SUB))\\b&quot;,
+            &quot;style&quot;: &quot;tag&quot;,
+            &quot;scope_exclude&quot;: [&quot;string&quot;, &quot;comment&quot;],
+            &quot;plugin_library&quot;: &quot;bh_modules.s840d_hmi&quot;,
+            &quot;language_filter&quot;: &quot;whitelist&quot;,
+            &quot;language_list&quot;: [&quot;s840d_hmi&quot;],
+            &quot;enabled&quot;: true
+        }
+    ],
+
+    // `user_scope_brackets` and `user_brackets` will be appended
+    // to the tail of scope_brackets and brackets respectively
+    // If you have custom rules that you don&#39;t want to commit to
+    // the official list, and do not need to be inserted before
+    // one of the official definitions, this is a good place to
+    // put yours rules and keep in sync with the defaults.
+    // If you want to disable all gutter icons, please set icon
+    // to none for all region with user_bracket_styles
+    &quot;user_scope_brackets&quot;: [],
+    &quot;user_brackets&quot;: [],
+    &quot;user_bracket_styles&quot;: {},
+
+    // Define region highlight styles
+    &quot;bracket_styles&quot;: {
+        // `default` and `unmatched` styles are special
+        // styles. If they are not defined here,
+        // they will be generated internally with
+        // internal defaults.
+
+        // `default` style defines attributes that
+        // will be used for any style that does not
+        // explicitly define that attribute.  So if
+        // a style does not define a color, it will
+        // use the color from the &quot;default&quot; style.
+        &quot;default&quot;: {
+            &quot;icon&quot;: &quot;dot&quot;,
+            // Support the old convention of `brackethighlighter.default`
+            // for themes that already provide something.
+            // As this has always been the only one we&#39;ve provided
+            // by default, all the others will use region-ish colors.
+            &quot;color&quot;: &quot;region.yellowish brackethighlighter.default&quot;,
+            &quot;style&quot;: &quot;underline&quot;
+        },
+
+        // This particular style is used to highlight
+        // unmatched bracket pairs.  It is a special
+        // style.
+        &quot;unmatched&quot;: {
+            &quot;icon&quot;: &quot;question&quot;,
+            &quot;color&quot;: &quot;region.redish&quot;,
+            &quot;style&quot;: &quot;outline&quot;
+        },
+        // User defined region styles
+        &quot;curly&quot;: {
+            &quot;icon&quot;: &quot;curly_bracket&quot;,
+            &quot;color&quot;: &quot;region.yellowish&quot;,
+            &quot;style&quot;: &quot;underline&quot;
+        },
+        &quot;round&quot;: {
+            &quot;icon&quot;: &quot;round_bracket&quot;,
+            &quot;color&quot;: &quot;region.yellowish&quot;
+            // &quot;style&quot;: &quot;underline&quot;
+        },
+        &quot;square&quot;: {
+            &quot;icon&quot;: &quot;square_bracket&quot;,
+            &quot;color&quot;: &quot;region.yellowish&quot;
+            // &quot;style&quot;: &quot;underline&quot;
+        },
+        &quot;angle&quot;: {
+            &quot;icon&quot;: &quot;angle_bracket&quot;,
+            &quot;color&quot;: &quot;region.orangish&quot;
+            // &quot;style&quot;: &quot;underline&quot;
+        },
+        &quot;tag&quot;: {
+            &quot;icon&quot;: &quot;tag&quot;,
+            &quot;color&quot;: &quot;region.orangish&quot;
+            // &quot;style&quot;: &quot;underline&quot;
+        },
+        &quot;c_define&quot;: {
+            &quot;icon&quot;: &quot;hash&quot;,
+            &quot;color&quot;: &quot;region.yellowish&quot;
+            // &quot;style&quot;: &quot;underline&quot;
+        },
+        &quot;single_quote&quot;: {
+            &quot;icon&quot;: &quot;single_quote&quot;,
+            &quot;color&quot;: &quot;region.greenish&quot;
+            // &quot;style&quot;: &quot;underline&quot;
+        },
+        &quot;double_quote&quot;: {
+            &quot;icon&quot;: &quot;double_quote&quot;,
+            &quot;color&quot;: &quot;region.greenish&quot;
+            // &quot;style&quot;: &quot;underline&quot;
+        },
+        &quot;regex&quot;: {
+            &quot;icon&quot;: &quot;star&quot;,
+            &quot;color&quot;: &quot;region.greenish&quot;
+            // &quot;style&quot;: &quot;underline&quot;
+        }
+    }
+}</code></pre>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2020-04-22</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/sublime/">Sublime</a>
+          
+          <a href="/tags/highligh/">highligh</a>
+          
+          <a href="/tags/%E9%AB%98%E4%BA%AE/">高亮</a>
+          
+          <a href="/tags/ide/">IDE</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2020-04-30-%E6%97%A0%E9%99%90%E7%95%85%E9%A5%AE-medium-%E6%96%87%E7%AB%A0/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">无限畅饮 Medium 文章</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2020-04-21-r-package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/">
+            <span class="next-text nav-default">R: package 开发指南</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

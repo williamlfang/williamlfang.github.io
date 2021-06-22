@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>tmux:终端神器 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="tmux:终端神器" />
+<meta property="og:description" content="编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" />
+<meta property="article:published_time" content="2019-12-04T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2019-12-04T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="tmux:终端神器">
+<meta itemprop="description" content="编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。">
+
+
+<meta itemprop="datePublished" content="2019-12-04T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-12-04T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3324">
+
+
+
+<meta itemprop="keywords" content="tmux,terminal,zsh,vim," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="tmux:终端神器"/>
+<meta name="twitter:description" content="编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">tmux:终端神器</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-12-04 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 3324 words </span>
+        <span class="more-meta"> 7 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2019-12-04T00:00:00" title="December 4, 2019">December 4, 2019</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div id="编程如手艺" class="section level1">
+<h1>编程如手艺</h1>
+<p>编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。</p>
+<p>当然，巧妇难为无米之炊，为了更好的完成工作，我们也需要配合一套得心应手的工具，这些工具犹如我们的左右手，拓展了我们可以活动的想象空间。具体的，在编程领域，我们同样需要一套优良的的开发工具，从而可以极大的提升工作效率。</p>
+</div>
+<div id="tmux" class="section level1">
+<h1>tmux</h1>
+<div id="安装" class="section level2">
+<h2>安装</h2>
+<div class="figure">
+<img src="/images/2019-12-04-tmux-终端神器/tmux.png" alt="tmux" />
+<p class="caption">tmux</p>
+</div>
+<pre class="bash"><code># Install tmux 2.8 on Centos
+
+# install deps
+yum install -y gcc kernel-devel make ncurses-devel
+yum install -y automake.noarch
+
+# DOWNLOAD SOURCES FOR LIBEVENT AND MAKE AND INSTALL
+cd /tmp
+curl -LOk https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz
+tar -xf libevent-2.1.8-stable.tar.gz
+cd libevent-2.1.8-stable
+./configure --prefix=/usr/local
+make -j &amp; make install
+
+# DOWNLOAD SOURCES FOR TMUX AND MAKE AND INSTALL
+
+cd /tmp
+curl -LOk https://github.com/tmux/tmux/releases/download/2.8/tmux-2.8.tar.gz
+tar -xf tmux-2.8.tar.gz
+cd tmux-2.8
+LDFLAGS=&quot;-L/usr/local/lib -Wl,-rpath=/usr/local/lib&quot; ./configure --prefix=/usr/local
+make -j &amp;&amp; make install
+
+pkill tmux
+
+# 编译出来的程序在 tmux 目录内，这里假设你还没离开 tmux 目录
+cp tmux /usr/bin/tmux -f
+cp tmux /usr/local/bin/tmux -f
+
+# close your terminal window (flushes cached tmux executable)
+# open new shell and check tmux version
+tmux -V
+
+
+## 如果出现乱码
+export LANG=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
+tmux -u</code></pre>
+</div>
+<div id="配置" class="section level2">
+<h2>配置</h2>
+<p>可以通过修改 <code>~/.tmux.conf</code> 进行设置</p>
+<pre class="bash"><code>#
+# author   : Xu Xiaodong &lt;xxdlhy@gmail.com&gt;
+# modified : 2017 Apr 29
+#
+
+#-- base settings --#
+## set -g default-terminal &quot;screen-256color&quot;
+set -g default-terminal &#39;linux&#39;
+set -ga terminal-overrides &quot;,rxvt-unicode-256color:Tc&quot;
+set -sg escape-time 0
+set -g display-time 3000
+set -g history-limit 65535
+set -g base-index 1
+set -g pane-base-index 1
+set -g renumber-windows on
+
+#-- bindkeys --#
+# prefix key (Ctrl+k)
+set -g prefix ^k
+unbind ^b
+bind k send-prefix
+
+# split window
+unbind &#39;&quot;&#39;
+bind - splitw -v # vertical split (prefix -)
+unbind %
+#bind | splitw -h # horizontal split (prefix |)
+bind \ splitw -h # horizontal split (prefix \)
+
+# select pane
+bind k selectp -U # above (prefix k)
+bind j selectp -D # below (prefix j)
+bind h selectp -L # left (prefix h)
+bind l selectp -R # right (prefix l)
+
+# resize pane
+bind -r ^k resizep -U 5 # upward (prefix Ctrl+k)
+bind -r ^j resizep -D 5 # downward (prefix Ctrl+j)
+bind -r ^h resizep -L 5 # to the left (prefix Ctrl+h)
+bind -r ^l resizep -R 5 # to the right (prefix Ctrl+l)
+
+# swap pane
+bind ^u swapp -U # swap with the previous pane (prefix Ctrl+u)
+bind ^d swapp -D # swap with the next pane (prefix Ctrl+d)
+
+# select layout
+bind , select-layout even-vertical
+bind . select-layout even-horizontal
+
+# misc
+bind e lastp  # select the last pane (prefix e)
+bind ^e last  # select the last window (prefix Ctrl+e)
+bind q killp  # kill pane (prefix q)
+bind ^q killw # kill window (prefix Ctrl+q)
+
+# copy mode
+bind Escape copy-mode               # enter copy mode (prefix Escape)
+bind ^p pasteb                      # paste buffer (prefix Ctrl+p)
+unbind -T copy-mode-vi Space
+bind -T copy-mode-vi v send -X begin-selection   # select (v)
+bind -T copy-mode-vi y send -X copy-pipe &quot;xclip&quot; # copy (y)
+
+# app
+bind ! splitw htop                                  # htop (prefix !)
+bind m command-prompt &quot;splitw &#39;exec man %%&#39;&quot;        # man (prefix m)
+bind % command-prompt &quot;splitw &#39;exec perldoc -t %%&#39;&quot; # perl doc (prefix %)
+bind / command-prompt &quot;splitw &#39;exec ri %%&#39;&quot;         # ruby doc (prefix /)
+
+# reload config (prefix r)
+bind r source ~/.tmux.conf \; display &quot;Configuration reloaded!&quot;
+
+#-- statusbar --#
+set -g status-interval 1
+set -g status-keys vi
+
+setw -g mode-keys vi
+setw -g automatic-rename off
+
+#-- colorscheme --#
+# statusbar
+set -g status-justify right
+# set -g status-left &quot;&quot;
+# set -g status-right &quot;&quot;
+#左下角
+set -g status-left &quot;#[bg=black,fg=green][#[fg=cyan]#S#[fg=green]]&quot;
+set -g status-left-length 20
+set -g automatic-rename on
+set-window-option -g window-status-format &#39;#[dim]#I:#[default]#W#[fg=grey,dim]&#39;
+set-window-option -g window-status-current-format &#39;#[fg=cyan,bold]#I#[fg=blue]:#[fg=cyan]#W#[fg=dim]&#39;
+#右下角
+set -g status-right &#39;#[fg=green][#[fg=cyan]%Y-%m-%d %H:%M:%S#[fg=green]]&#39;
+
+# -- display -------------------------------------------------------------------
+
+set -g base-index 1           # start windows numbering at 1
+setw -g pane-base-index 1     # make pane numbering consistent with windows
+setw -g automatic-rename on   # rename window to reflect current program
+set -g renumber-windows on    # renumber windows when a window is closed
+set -g set-titles on          # set terminal title
+set -g display-panes-time 800 # slightly longer pane indicators display time
+set -g display-time 1000      # slightly longer status messages display time
+set -g status-interval 1     # redraw status line every 10 seconds
+
+set -g status-style &quot;fg=#504945,bg=#282828&quot;
+setw -g window-status-current-fg white
+setw -g window-status-current-bg red
+setw -g window-status-current-attr bright
+setw -g window-status-fg cyan
+setw -g window-status-bg default
+setw -g window-status-attr dim
+
+# window
+setw -g window-status-separator &quot; &quot;
+setw -g window-status-format &quot;-&quot;
+setw -g window-status-current-format &quot;+&quot;
+setw -g window-status-current-style &quot;fg=#d79921,bg=#282828&quot;
+
+# pane
+set -g pane-border-style &quot;fg=#ebdbb2&quot;
+set -g pane-active-border-style &quot;fg=#d79921&quot;
+
+#开启window事件提示
+setw -g monitor-activity on
+#set -g visual-activity on
+
+## 鼠标设置，不要打开，不然用鼠标选择不了内容
+set-option -g mouse on</code></pre>
+<div class="figure">
+<img src="/images/2019-12-04-tmux-终端神器/panel.png" alt="tmux" />
+<p class="caption">tmux</p>
+</div>
+<p>接着，我们需要安装底部状态栏支持插件 <code>tmux-powerline</code></p>
+<pre class="bash"><code>mkidr -p $HOME/opt
+cd $HOME/opt
+mkdir -p .tmux
+cd .tmux
+git clone https://github.com/erikw/tmux-powerline.git 
+
+echo &#39;
+## =============================================================================
+## https://github.com/erikw/tmux-powerline
+set-option -g status on
+set-option -g status-interval 2
+set-option -g status-justify &quot;centre&quot;
+set-option -g status-left-length 60
+set-option -g status-right-length 150
+set-option -g status-left &quot;#(~/opt/.tmux/tmux-powerline/powerline.sh left)&quot;
+set-option -g status-right &quot;#(~/opt/.tmux/tmux-powerline/powerline.sh right)&quot;
+set-window-option -g window-status-current-format &quot;#[fg=colour235, bg=colour27]⮀#[fg=colour255, bg=colour27] #I ⮁ #W #[fg=colour27, bg=colour235]⮀&quot;
+## =============================================================================
+&#39; &gt;&gt; $HOME/.tmux.conf</code></pre>
+<p>然后在 <code>~/.tmux.conf</code> 添加如下</p>
+<pre class="bash"><code>## =============================================================================
+## https://github.com/erikw/tmux-powerline
+set-option -g status on
+set-option -g status-interval 2
+set-option -g status-justify &quot;centre&quot;
+set-option -g status-left-length 150
+set-option -g status-right-length 120
+set-option -g status-left &quot;#(~/opt/.tmux/tmux-powerline/powerline.sh left)&quot;
+set-option -g status-right &quot;#(~/opt/.tmux/tmux-powerline/powerline.sh right)&quot;
+set-window-option -g window-status-current-format &quot;#[fg=colour235, bg=colour27]⮀#[fg=colour255, bg=colour27] #I ⮁ #W #[fg=colour27, bg=colour235]⮀&quot;
+
+setw -g window-status-style &#39;fg=colour9 bg=colour18&#39;
+setw -g window-status-format &#39; #I#[fg=colour237]:#[fg=colour250]#W#[fg=colour244]#F &#39;
+setw -g window-status-bell-style &#39;fg=colour255 bg=colour1 bold&#39;
+# messages
+set -g message-style &#39;fg=colour1 bg=colour16 bold&#39;
+## =============================================================================
+## =============================================================================
+
+## 使用 bin++z 实现最大-最小屏
+# unbind m
+# bind m run &quot;. ~/tmux-zoom &quot;
+
+bind -r a select-pane -t .+1 \;  resize-pane -Z
+# bind -n C-Space resize-pane -Z
+
+# Ref https://superuser.com/questions/238702/maximizing-a-pane-in-tmux
+# #!/bin/bash -f
+# currentwindow=`tmux list-window | tr &#39;\t&#39; &#39; &#39; | sed -n -e &#39;/(active)/s/^[^:]*: *\([^ ]*\) .*/\1/gp&#39;`;
+# currentpane=`tmux list-panes | sed -n -e &#39;/(active)/s/^\([^:]*\):.*/\1/gp&#39;`;
+# panecount=`tmux list-panes | wc | sed -e &#39;s/^ *//g&#39; -e &#39;s/ .*$//g&#39;`;
+# inzoom=`echo $currentwindow | sed -n -e &#39;/^zoom/p&#39;`;
+# if [ $panecount -ne 1 ]; then
+#     inzoom=&quot;&quot;;
+# fi
+# if [ $inzoom ]; then
+#     lastpane=`echo $currentwindow | rev | cut -f 1 -d &#39;@&#39; | rev`;
+#     lastwindow=`echo $currentwindow | cut -f 2- -d &#39;@&#39; | rev | cut -f 2- -d &#39;@&#39; | rev`;
+#     tmux select-window -t $lastwindow;
+#     tmux select-pane -t $lastpane;
+#     tmux swap-pane -s $currentwindow;
+#     tmux kill-window -t $currentwindow;
+# else
+#     newwindowname=zoom@$currentwindow@$currentpane;
+#     tmux new-window -d -n $newwindowname;
+#     tmux swap-pane -s $newwindowname;
+#     tmux select-window -t $newwindowname;
+# fi
+
+
+## --------------------------------------------------
+# setw -g window-style &#39;bg=#262626&#39;
+# setw -g window-active-style &#39;bg=#121212&#39;
+# set-option -g pane-active-border-style &#39;bg=#3a3a3a&#39;
+# set-option -ag pane-active-border-style &#39;bg=#3a3a3a&#39;
+# set-option -g pane-active-border-fg colour237
+# set-option -g pane-border-fg colour237
+# setw -g pane-border-status bottom
+# setw -g window-active-style &#39;bg=#3a3a3a,bold&#39;
+
+## -----------------------------------------------------
+## 设置活跃窗口的背景颜色
+set-option -ga terminal-overrides &quot;,xterm-256color:Tc&quot;
+# setw -g window-style &#39;bg=#504945&#39;
+# setw -g window-active-style &#39;bg=#282828&#39;
+
+set -g &quot;window-style&quot; &quot;fg=#aab2bf,bg=default&quot;
+# set -g &quot;window-active-style&quot; &quot;bg=default&quot;
+# setw -g window-style &#39;bg=#504945&#39;
+setw -g window-active-style &#39;bg=#282828,bold&#39;
+## -----------------------------------------------------
+
+set-window-option -g clock-mode-colour colour40 #green
+set-option -g pane-border-fg colour10
+set-option -g pane-active-border-fg colour4
+
+# toggle pane synchronization
+bind s setw synchronize-panes
+
+## =============================================================================
+## 安装 tmux plugin
+## 在 Tmux 里面使用 prefix + I 安装插件
+# prefix + Ctrl-s - save
+# prefix + Ctrl-r - restore
+set -g @plugin &#39;tmux-plugins/tmux-resurrect&#39;
+## 或者手动安装
+## cd ~/Documents
+## git clone https://github.com/tmux-plugins/tmux-resurrect
+run-shell ~/Documents/tmux-resurrect/resurrect.tmux
+## =============================================================================
+
+set -g pane-border-status bottom
+set -g pane-border-format &quot;#P #T #{pane_current_command}&quot;</code></pre>
+<div id="设置窗口显示" class="section level3">
+<h3>设置窗口显示</h3>
+<pre class="bash"><code>#-- base settings --#
+## set -g default-terminal &quot;screen-256color&quot;
+set -g default-terminal &#39;linux&#39;
+set -ga terminal-overrides &quot;,rxvt-unicode-256color:Tc&quot;
+set -sg escape-time 0
+set -g display-time 3000
+set -g history-limit 65535
+set -g base-index 1
+set -g pane-base-index 1
+set -g renumber-windows on</code></pre>
+</div>
+<div id="修改绑定键" class="section level3">
+<h3>修改绑定键</h3>
+<p>原来的绑定是 <code>ctrl+b</code>，总感觉这个有点逆人性，每次按下这两个键的时候整个手掌都是弯曲的，后来就干脆分开使用两只手分别按住一个键，这样就避免了使用单手产生的扭曲感</p>
+<pre class="bash"><code>##-- bindkeys --#
+## prefix key (Ctrl+k)
+set -g prefix ^k
+unbind ^b
+bind k send-prefix</code></pre>
+</div>
+<div id="分屏" class="section level3">
+<h3>分屏</h3>
+<p>这个是 <code>tmux</code> 的看家本领，允许我们通过快捷键进行屏幕的任意切分，相比于 <code>terminator</code> 的方式要灵活很多。这里我使用了</p>
+<ul>
+<li><code>bind-key</code>（也就是我修改后的 <code>ctrl+k</code>），然后按下 <code>|</code> 进行横向切分</li>
+<li><code>bind-key</code>，然后按下 <code>-</code> 进行纵向切分</li>
+<li><code>bind-key</code>，然后按下
+<ul>
+<li><code>j</code>：跳转下面屏幕</li>
+<li><code>k</code>：跳转上面屏幕</li>
+<li><code>h</code>：跳转左边屏幕</li>
+<li><code>l</code>：跳转右边屏幕 其实这个方向跟 <code>vim</code> 的操作是一样的想法，避免了记忆压力。</li>
+</ul></li>
+<li>同时，我还可以使用快捷键进行屏幕大小调整。
+<ol style="list-style-type: decimal">
+<li>先按下 <code>bind-key</code> （也就是我修改后的 <code>ctrl+k</code>）</li>
+<li>然后松开 <code>k</code>，但是不要松开 <code>ctrl</code> 键（如果松开，就变成了上面的屏幕跳转了）</li>
+<li>接着使用 <code>h</code>、<code>j</code>、<code>k</code>、<code>l</code> 进行屏幕大小调整</li>
+</ol></li>
+</ul>
+<pre class="bash"><code># split window
+unbind &#39;&quot;&#39;
+bind - splitw -v # vertical split (prefix -)
+unbind %
+#bind | splitw -h # horizontal split (prefix |)
+bind \ splitw -h # horizontal split (prefix \)
+
+# select pane
+bind k selectp -U # above (prefix k)
+bind j selectp -D # below (prefix j)
+bind h selectp -L # left (prefix h)
+bind l selectp -R # right (prefix l)
+
+# resize pane
+bind -r ^k resizep -U 5 # upward (prefix Ctrl+k)
+bind -r ^j resizep -D 5 # downward (prefix Ctrl+j)
+bind -r ^h resizep -L 5 # to the left (prefix Ctrl+h)
+bind -r ^l resizep -R 5 # to the right (prefix Ctrl+l)
+
+# swap pane
+bind ^u swapp -U # swap with the previous pane (prefix Ctrl+u)
+bind ^d swapp -D # swap with the next pane (prefix Ctrl+d)
+
+# select layout
+bind , select-layout even-vertical
+bind . select-layout even-horizontal
+
+# misc
+bind e lastp  # select the last pane (prefix e)
+bind ^e last  # select the last window (prefix Ctrl+e)
+bind q killp  # kill pane (prefix q)
+bind ^q killw # kill window (prefix Ctrl+q)</code></pre>
+</div>
+<div id="状态栏显示" class="section level3">
+<h3>状态栏显示</h3>
+<p>作为程序员，我们每天都在与终端打交道，几乎所有的视线就是整个屏幕范围。因此，我当然希望所有的监控状态也同样可以在视野所及范围内都一一收下。<code>tmux</code> 也同样允许我们通过修改配置进行调整</p>
+<pre class="bash"><code>#-- colorscheme --#
+# statusbar
+set -g status-justify right
+# set -g status-left &quot;&quot;
+# set -g status-right &quot;&quot;
+#左下角
+set -g status-left &quot;#[bg=black,fg=green][#[fg=cyan]#S#[fg=green]]&quot;
+set -g status-left-length 20
+set -g automatic-rename on
+set-window-option -g window-status-format &#39;#[dim]#I:#[default]#W#[fg=grey,dim]&#39;
+set-window-option -g window-status-current-format &#39;#[fg=cyan,bold]#I#[fg=blue]:#[fg=cyan]#W#[fg=dim]&#39;
+#右下角
+set -g status-right &#39;#[fg=green][#[fg=cyan]%Y-%m-%d %H:%M:%S#[fg=green]]&#39;
+
+# -- display -------------------------------------------------------------------
+
+set -g base-index 1           # start windows numbering at 1
+setw -g pane-base-index 1     # make pane numbering consistent with windows
+setw -g automatic-rename on   # rename window to reflect current program
+set -g renumber-windows on    # renumber windows when a window is closed
+set -g set-titles on          # set terminal title
+set -g display-panes-time 800 # slightly longer pane indicators display time
+set -g display-time 1000      # slightly longer status messages display time
+set -g status-interval 1     # redraw status line every 10 seconds
+
+set -g status-style &quot;fg=#504945,bg=#282828&quot;
+setw -g window-status-current-fg white
+setw -g window-status-current-bg red
+setw -g window-status-current-attr bright
+setw -g window-status-fg cyan
+setw -g window-status-bg default
+setw -g window-status-attr dim
+
+# window
+setw -g window-status-separator &quot; &quot;
+setw -g window-status-format &quot;-&quot;
+setw -g window-status-current-format &quot;+&quot;
+setw -g window-status-current-style &quot;fg=#d79921,bg=#282828&quot;
+
+# pane
+set -g pane-border-style &quot;fg=#ebdbb2&quot;
+set -g pane-active-border-style &quot;fg=#d79921&quot;
+
+#开启window事件提示
+setw -g monitor-activity on
+#set -g visual-activity on
+
+## 鼠标设置，不要打开，不然用鼠标选择不了内容
+set-option -g mouse on
+
+
+## =============================================================================
+## https://github.com/erikw/tmux-powerline
+set-option -g status on
+set-option -g status-interval 2
+set-option -g status-justify &quot;centre&quot;
+set-option -g status-left-length 150
+set-option -g status-right-length 120
+set-option -g status-left &quot;#(~/opt/.tmux/tmux-powerline/powerline.sh left)&quot;
+set-option -g status-right &quot;#(~/opt/.tmux/tmux-powerline/powerline.sh right)&quot;
+set-window-option -g window-status-current-format &quot;#[fg=colour235, bg=colour27]⮀#[fg=colour255, bg=colour27] #I ⮁ #W #[fg=colour27, bg=colour235]⮀&quot;
+
+setw -g window-status-style &#39;fg=colour9 bg=colour18&#39;
+setw -g window-status-format &#39; #I#[fg=colour237]:#[fg=colour250]#W#[fg=colour244]#F &#39;
+setw -g window-status-bell-style &#39;fg=colour255 bg=colour1 bold&#39;
+# messages
+set -g message-style &#39;fg=colour1 bg=colour16 bold&#39;
+## =============================================================================
+## =============================================================================
+
+## 使用 bin++z 实现最大-最小屏
+# unbind m
+# bind m run &quot;. ~/tmux-zoom &quot;
+
+bind -r a select-pane -t .+1 \;  resize-pane -Z
+# bind -n C-Space resize-pane -Z
+
+# Ref https://superuser.com/questions/238702/maximizing-a-pane-in-tmux
+# #!/bin/bash -f
+# currentwindow=`tmux list-window | tr &#39;\t&#39; &#39; &#39; | sed -n -e &#39;/(active)/s/^[^:]*: *\([^ ]*\) .*/\1/gp&#39;`;
+# currentpane=`tmux list-panes | sed -n -e &#39;/(active)/s/^\([^:]*\):.*/\1/gp&#39;`;
+# panecount=`tmux list-panes | wc | sed -e &#39;s/^ *//g&#39; -e &#39;s/ .*$//g&#39;`;
+# inzoom=`echo $currentwindow | sed -n -e &#39;/^zoom/p&#39;`;
+# if [ $panecount -ne 1 ]; then
+#     inzoom=&quot;&quot;;
+# fi
+# if [ $inzoom ]; then
+#     lastpane=`echo $currentwindow | rev | cut -f 1 -d &#39;@&#39; | rev`;
+#     lastwindow=`echo $currentwindow | cut -f 2- -d &#39;@&#39; | rev | cut -f 2- -d &#39;@&#39; | rev`;
+#     tmux select-window -t $lastwindow;
+#     tmux select-pane -t $lastpane;
+#     tmux swap-pane -s $currentwindow;
+#     tmux kill-window -t $currentwindow;
+# else
+#     newwindowname=zoom@$currentwindow@$currentpane;
+#     tmux new-window -d -n $newwindowname;
+#     tmux swap-pane -s $newwindowname;
+#     tmux select-window -t $newwindowname;
+# fi
+
+
+## --------------------------------------------------
+# setw -g window-style &#39;bg=#262626&#39;
+# setw -g window-active-style &#39;bg=#121212&#39;
+# set-option -g pane-active-border-style &#39;bg=#3a3a3a&#39;
+# set-option -ag pane-active-border-style &#39;bg=#3a3a3a&#39;
+# set-option -g pane-active-border-fg colour237
+# set-option -g pane-border-fg colour237
+# setw -g pane-border-status bottom
+# setw -g window-active-style &#39;bg=#3a3a3a,bold&#39;</code></pre>
+</div>
+<div id="设置活跃窗口" class="section level3">
+<h3>设置活跃窗口</h3>
+<pre class="bash"><code>## -----------------------------------------------------
+## 设置活跃窗口的背景颜色
+set-option -ga terminal-overrides &quot;,xterm-256color:Tc&quot;
+# setw -g window-style &#39;bg=#504945&#39;
+# setw -g window-active-style &#39;bg=#282828&#39;
+
+set -g &quot;window-style&quot; &quot;fg=#aab2bf,bg=default&quot;
+# set -g &quot;window-active-style&quot; &quot;bg=default&quot;
+# setw -g window-style &#39;bg=#504945&#39;
+setw -g window-active-style &#39;bg=#282828,bold&#39;
+## -----------------------------------------------------
+
+set-window-option -g clock-mode-colour colour40 #green
+set-option -g pane-border-fg colour10
+set-option -g pane-active-border-fg colour4
+
+# toggle pane synchronization
+bind s setw synchronize-panes
+
+## =============================================================================
+## 安装 tmux plugin
+## 在 Tmux 里面使用 prefix + I 安装插件
+# prefix + Ctrl-s - save
+# prefix + Ctrl-r - restore
+set -g @plugin &#39;tmux-plugins/tmux-resurrect&#39;
+## 或者手动安装
+## cd ~/Documents
+## git clone https://github.com/tmux-plugins/tmux-resurrect
+run-shell ~/Documents/tmux-resurrect/resurrect.tmux
+## =============================================================================
+
+set -g pane-border-status bottom
+set -g pane-border-format &quot;#P #T #{pane_current_command}&quot;</code></pre>
+</div>
+<div id="屏幕右边显示命令执行时间" class="section level3">
+<h3>屏幕右边显示命令执行时间</h3>
+<p>这个主要为了提醒我们在什么时候执行了操作。其实是通过修改 <code>~/.oh-my-zsh/themes/agnoster.zsh-theme</code>。不过我把这条放在一起</p>
+<pre class="bash"><code>## 显示命令执行时间
+strlen () {
+    FOO=$1
+    local zero=&#39;%([BSUbfksu]|([FB]|){*})&#39;
+    LEN=${#${(S%%)FOO//$~zero/}}
+    echo $LEN
+}
+
+# show right prompt with date ONLY when command is executed
+preexec () {
+    DATE=$( date +&quot;[%H:%M:%S]&quot; )
+    local len_right=$( strlen &quot;$DATE&quot; )
+    len_right=$(( $len_right+1 ))
+    local right_start=$(($COLUMNS - $len_right))
+
+    local len_cmd=$( strlen &quot;$@&quot; )
+    local len_prompt=$(strlen &quot;$PROMPT&quot; )
+    local len_left=$(($len_cmd+$len_prompt))
+
+    RDATE=&quot;\033[${right_start}C ${DATE}&quot;
+
+    if [ $len_left -lt $right_start ]; then
+        # command does not overwrite right prompt
+        # ok to move up one line
+        #echo -e &quot;\033[1A${RDATE}&quot;
+
+        # Black=&#39;\033[30m&#39;        # Black
+        # Red=&#39;\033[31m&#39;          # Red
+        # Green=&#39;\033[32m&#39;        # Green
+        # Yellow=&#39;\033[33m&#39;       # Yellow
+        # Blue=&#39;\033[34m&#39;         # Blue
+        # Purple=&#39;\033[35m&#39;       # Purple
+        # Cyan=&#39;\033[36m&#39;         # Cyan
+        # White=&#39;\033[37m&#39;        # White
+
+        echo -e &quot;\033[1A\033[36m${RDATE}\033[36m&quot;
+
+    else
+        echo -e &quot;${RDATE}&quot;
+    fi
+
+}</code></pre>
+</div>
+</div>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2019-12-04</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/tmux/">tmux</a>
+          
+          <a href="/tags/terminal/">terminal</a>
+          
+          <a href="/tags/zsh/">zsh</a>
+          
+          <a href="/tags/vim/">vim</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Clion 远程调试</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2019-12-03-samba%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90/">
+            <span class="next-text nav-default">samba文件配置与访问权限</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>

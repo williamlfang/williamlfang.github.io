@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>中国期货交易日历 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="利用`R`编制中国期货市场交易日历表。" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2017-10-10-%E4%B8%AD%E5%9B%BD%E6%9C%9F%E8%B4%A7%E4%BA%A4%E6%98%93%E6%97%A5%E5%8E%86/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="中国期货交易日历" />
+<meta property="og:description" content="利用`R`编制中国期货市场交易日历表。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2017-10-10-%E4%B8%AD%E5%9B%BD%E6%9C%9F%E8%B4%A7%E4%BA%A4%E6%98%93%E6%97%A5%E5%8E%86/" />
+<meta property="article:published_time" content="2017-10-10T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2017-10-13T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="中国期货交易日历">
+<meta itemprop="description" content="利用`R`编制中国期货市场交易日历表。">
+
+
+<meta itemprop="datePublished" content="2017-10-10T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-10-13T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1566">
+
+
+
+<meta itemprop="keywords" content="Futures,Calendar,R," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="中国期货交易日历"/>
+<meta name="twitter:description" content="利用`R`编制中国期货市场交易日历表。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">中国期货交易日历</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-10-10 </span>
+        <div class="post-category">
+            
+              <a href="/categories/trading/"> Trading </a>
+            
+          </div>
+        <span class="more-meta"> 1566 words </span>
+        <span class="more-meta"> 4 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+  <div class="post-outdated">
+    <div class="warn">
+      <p>[NOTE] Updated <span class="timeago" datetime="2017-10-13T00:00:00" title="October 13, 2017">October 13, 2017</span>. This article may have outdated content or subject matter.</p>
+    </div>
+  </div>
+
+    
+    <div class="post-content">
+      
+
+
+<div id="期货交易日" class="section level1">
+<h1>期货交易日</h1>
+<p>利用<code>R</code>语言对日期的处理功能，我们可以借此来编制中国期货市场的交易日历表，用于策略回测（Backtesting）、自动化执行行情订阅（mdApi）、进行程序化交易（tdAip）等。</p>
+<div id="要点" class="section level2">
+<h2>要点</h2>
+<p>在处理中国期货市场交易日期时，主要有以下几个要点需要特别注意：</p>
+<ul>
+<li>在当年年末，期货交易所会（提前）公布来年的所有节假日安排，这个可以通过查询<a href="http://www.shfe.com.cn/news/">上期所公告网站</a></li>
+<li>因为我们的历史数据最早可以追踪到<code>2010</code>年，所以这里的第一个起始年度为<code>2010</code>。更加具体地，第一个真正开始接收数据的日期是 <code>2010-04-16</code></li>
+<li>如果未来第二日开始放假，则当天的夜盘不交易。这个通过判断<code>days</code>与<code>nights</code>日期相差的时间超过<strong>3天</strong>来处理，因为正常的周五至下周一的相差刚好是<strong>3天</strong>，而节假日则破坏了这个规律</li>
+<li><code>2015</code>年的中秋节放假比较特别，只有放假两天，当时交易所规定了<code>2015-09-25</code>当天的夜盘不交易，所以这个需要在<code>nights</code>里面排除。请注意，这是一个大坑。</li>
+</ul>
+</div>
+<div id="代码" class="section level2">
+<h2>代码</h2>
+<pre class="r"><code>## =============================================================================
+## myChinaFuturesCalendar.R
+##
+## 生成中国期货交易日
+## 1. days  :日盘时间
+## 2. nights:夜盘时间
+##
+## =============================================================================
+rm(list = ls())
+setwd(&#39;/home/fl/myData&#39;)
+
+## =============================================================================
+## 需要安装的 package: bizdays
+pkgs &lt;- c(&quot;data.table&quot;,&#39;magrittr&#39;)
+
+if (length(pkgs[!pkgs %in% installed.packages()]) != 0) {
+  sapply(pkgs[!pkgs %in% installed.packages()], install.packages)
+}
+
+sapply(pkgs, require, character.only = TRUE)
+
+## -----------------------------------------------------------------------------
+## 这里需要做选择
+## 对于周末的时间，日盘和夜盘的间隔不应该超过 3 天
+## 但是，如果是节假日，有可能超过 3 天，那么夜盘就是 NA 了。
+## 这个应该很好理解。
+setNights &lt;- function(x) {
+    for (i in 1:nrow(x)) {
+        if (is.na(x$nights[i])) next
+
+        if( (x$days[i] - x$nights[i]) &gt; 3){
+          #-- 如果有休假，则日盘与夜盘差超过 3 天
+          x$nights[i] &lt;- NA
+        }
+    }
+    x[, &quot;:=&quot;(
+        nights = gsub(&#39;-&#39;,&#39;&#39;, nights),
+        days   = gsub(&#39;-&#39;,&#39;&#39;, days))]
+    return(x)
+}
+## =============================================================================
+
+## =============================================================================
+## 查询交易所对节假日的安排
+## http://www.shfe.com.cn/news/
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/911232224.html
+yearID &lt;- 2010
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2010-01-01&quot; &amp; . &lt;= &quot;2010-01-03&quot;),
+             which(. &gt;= &quot;2010-02-13&quot; &amp; . &lt;= &quot;2010-02-19&quot;),
+             which(. &gt;= &quot;2010-04-03&quot; &amp; . &lt;= &quot;2010-04-05&quot;),
+             which(. &gt;= &quot;2010-05-01&quot; &amp; . &lt;= &quot;2010-05-03&quot;),
+             which(. &gt;= &quot;2010-06-14&quot; &amp; . &lt;= &quot;2010-06-16&quot;),
+             which(. &gt;= &quot;2010-09-22&quot; &amp; . &lt;= &quot;2010-09-24&quot;),
+             which(. &gt;= &quot;2010-10-01&quot; &amp; . &lt;= &quot;2010-10-07&quot;)
+          )] %&gt;%
+          .[which(. &gt;= &#39;2010-04-16&#39;)]
+nights &lt;- NA
+
+calendar2010 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/11272678.html
+yearID &lt;- 2011
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2011-01-01&quot; &amp; . &lt;= &quot;2011-01-03&quot;),
+             which(. &gt;= &quot;2011-02-02&quot; &amp; . &lt;= &quot;2011-02-08&quot;),
+             which(. &gt;= &quot;2011-04-03&quot; &amp; . &lt;= &quot;2011-04-05&quot;),
+             which(. &gt;= &quot;2011-04-30&quot; &amp; . &lt;= &quot;2011-05-02&quot;),
+             which(. &gt;= &quot;2011-06-04&quot; &amp; . &lt;= &quot;2011-06-06&quot;),
+             which(. &gt;= &quot;2011-09-10&quot; &amp; . &lt;= &quot;2011-09-12&quot;),
+             which(. &gt;= &quot;2011-10-01&quot; &amp; . &lt;= &quot;2011-10-07&quot;)
+          )]
+nights &lt;- NA
+
+calendar2011 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/111211125.html
+yearID &lt;- 2012
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2012-01-01&quot; &amp; . &lt;= &quot;2012-01-03&quot;),
+             which(. &gt;= &quot;2012-01-22&quot; &amp; . &lt;= &quot;2012-01-28&quot;),
+             which(. &gt;= &quot;2012-04-02&quot; &amp; . &lt;= &quot;2012-04-04&quot;),
+             which(. &gt;= &quot;2012-04-29&quot; &amp; . &lt;= &quot;2012-05-01&quot;),
+             which(. &gt;= &quot;2012-06-22&quot; &amp; . &lt;= &quot;2012-06-24&quot;),
+             which(. &gt;= &quot;2012-09-30&quot; &amp; . &lt;= &quot;2012-10-07&quot;)
+          )]
+nights &lt;- NA
+
+calendar2012 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/211216642.html
+yearID &lt;- 2013
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2013-01-01&quot; &amp; . &lt;= &quot;2013-01-03&quot;),
+             which(. &gt;= &quot;2013-01-01&quot; &amp; . &lt;= &quot;2013-01-03&quot;),
+             which(. &gt;= &quot;2013-02-09&quot; &amp; . &lt;= &quot;2013-02-15&quot;),
+             which(. &gt;= &quot;2013-04-04&quot; &amp; . &lt;= &quot;2013-04-06&quot;),
+             which(. &gt;= &quot;2013-04-29&quot; &amp; . &lt;= &quot;2013-05-01&quot;),
+             which(. &gt;= &quot;2013-06-10&quot; &amp; . &lt;= &quot;2013-06-12&quot;),
+             which(. &gt;= &quot;2013-09-19&quot; &amp; . &lt;= &quot;2013-09-21&quot;),
+             which(. &gt;= &quot;2013-10-01&quot; &amp; . &lt;= &quot;2013-10-07&quot;)
+          )]
+nights &lt;- c(NA, days[-length(days)]) %&gt;% as.Date(., origin = &quot;1970-01-01&quot;)
+nights[which(nights &lt; &quot;2013-07-05&quot;)] &lt;- NA
+
+calendar2013 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/211216642.html
+yearID &lt;- 2014
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2014-01-01&quot; &amp; . &lt;= &quot;2014-01-01&quot;),
+             which(. &gt;= &quot;2014-01-31&quot; &amp; . &lt;= &quot;2014-02-06&quot;),
+             which(. &gt;= &quot;2014-04-05&quot; &amp; . &lt;= &quot;2014-04-07&quot;),
+             which(. &gt;= &quot;2014-05-01&quot; &amp; . &lt;= &quot;2014-05-03&quot;),
+             which(. &gt;= &quot;2014-05-31&quot; &amp; . &lt;= &quot;2014-06-02&quot;),
+             which(. &gt;= &quot;2014-09-06&quot; &amp; . &lt;= &quot;2014-09-08&quot;),
+             which(. &gt;= &quot;2014-10-01&quot; &amp; . &lt;= &quot;2014-10-07&quot;)
+          )]
+nights &lt;- c(NA, days[-length(days)]) %&gt;% as.Date(., origin = &quot;1970-01-01&quot;)
+
+calendar2014 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/211216642.html
+yearID &lt;- 2014
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2014-01-01&quot; &amp; . &lt;= &quot;2014-01-01&quot;),
+             which(. &gt;= &quot;2014-01-31&quot; &amp; . &lt;= &quot;2014-02-06&quot;),
+             which(. &gt;= &quot;2014-04-05&quot; &amp; . &lt;= &quot;2014-04-07&quot;),
+             which(. &gt;= &quot;2014-05-01&quot; &amp; . &lt;= &quot;2014-05-03&quot;),
+             which(. &gt;= &quot;2014-05-31&quot; &amp; . &lt;= &quot;2014-06-02&quot;),
+             which(. &gt;= &quot;2014-09-06&quot; &amp; . &lt;= &quot;2014-09-08&quot;),
+             which(. &gt;= &quot;2014-10-01&quot; &amp; . &lt;= &quot;2014-10-07&quot;)
+          )]
+nights &lt;- c(NA, days[-length(days)]) %&gt;% as.Date(., origin = &quot;1970-01-01&quot;)
+
+calendar2014 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/911321768.html
+yearID &lt;- 2015
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2015-01-01&quot; &amp; . &lt;= &quot;2015-01-03&quot;),
+             which(. &gt;= &quot;2015-02-18&quot; &amp; . &lt;= &quot;2015-02-24&quot;),
+             which(. &gt;= &quot;2015-04-05&quot; &amp; . &lt;= &quot;2015-04-06&quot;),
+             which(. &gt;= &quot;2015-05-01&quot; &amp; . &lt;= &quot;2015-05-01&quot;),
+             which(. &gt;= &quot;2015-06-20&quot; &amp; . &lt;= &quot;2015-06-22&quot;),
+             which(. &gt;= &quot;2015-09-03&quot; &amp; . &lt;= &quot;2015-09-05&quot;),
+             which(days&gt;=&quot;2015-09-27&quot;&amp;days&lt;=&quot;2015-09-27&quot;),
+             which(. &gt;= &quot;2015-10-01&quot; &amp; . &lt;= &quot;2015-10-07&quot;)
+          )]
+nights &lt;- c(NA, days[-length(days)]) %&gt;% as.Date(., origin = &quot;1970-01-01&quot;)
+nights[which(nights == &#39;2015-09-25&#39;)] &lt;- NA
+
+calendar2015 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/911323994.html
+yearID &lt;- 2016
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2016-01-01&quot; &amp; . &lt;= &quot;2016-01-03&quot;),
+             which(. &gt;= &quot;2016-02-07&quot; &amp; . &lt;= &quot;2016-02-13&quot;),
+             which(. &gt;= &quot;2016-04-02&quot; &amp; . &lt;= &quot;2016-04-04&quot;),
+             which(. &gt;= &quot;2016-04-30&quot; &amp; . &lt;= &quot;2016-05-02&quot;),
+             which(. &gt;= &quot;2016-06-09&quot; &amp; . &lt;= &quot;2016-06-11&quot;),
+             which(. &gt;= &quot;2016-09-15&quot; &amp; . &lt;= &quot;2016-09-17&quot;),
+             which(. &gt;= &quot;2016-10-01&quot; &amp; . &lt;= &quot;2016-10-07&quot;)
+          )]
+nights &lt;- c(NA, days[-length(days)]) %&gt;% as.Date(., origin = &quot;1970-01-01&quot;)
+
+calendar2016 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+
+## =============================================================================
+## http://www.shfe.com.cn/news/notice/911326468.html
+yearID &lt;- 2017
+daysInYear &lt;- as.numeric(as.Date(paste0(yearID, &#39;-12-31&#39;)) -
+                         as.Date(paste0(yearID, &#39;-01-01&#39;)))
+days &lt;- as.Date(0:daysInYear, origin = paste0(yearID, &#39;-01-01&#39;)) %&gt;%
+        .[-which(weekdays(.) %in% c(&quot;Saturday&quot;, &quot;Sunday&quot;))] %&gt;%
+        .[-c(which(. &gt;= &quot;2017-01-01&quot; &amp; . &lt;= &quot;2017-01-02&quot;),
+             which(. &gt;= &quot;2017-01-27&quot; &amp; . &lt;= &quot;2017-02-02&quot;),
+             which(. &gt;= &quot;2017-04-02&quot; &amp; . &lt;= &quot;2017-04-04&quot;),
+             which(. &gt;= &quot;2017-04-29&quot; &amp; . &lt;= &quot;2017-05-01&quot;),
+             which(. &gt;= &quot;2017-05-28&quot; &amp; . &lt;= &quot;2017-05-30&quot;),
+             which(. &gt;= &quot;2017-10-01&quot; &amp; . &lt;= &quot;2017-10-08&quot;),
+             which(. == &quot;2017-12-31&quot;)
+          )]
+nights &lt;- c(NA, days[-length(days)]) %&gt;% as.Date(., origin = &quot;1970-01-01&quot;)
+
+calendar2017 &lt;- data.table(nights, days) %&gt;% setNights()
+## =============================================================================
+
+calendar &lt;- rbind(calendar2010, calendar2011, calendar2012, calendar2013,
+                  calendar2014, calendar2015, calendar2016, calendar2017)
+fwrite(calendar, &#39;./data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv&#39;)
+
+## =============================================================================
+## 录入 MySQL 数据库
+library(RMySQL)
+mysql &lt;-   dbConnect(MySQL(),
+                     dbname   = &#39;dev&#39;,
+                     host     = &#39;192.168.1.166&#39;,
+                     port     = 3306,
+                     user     = &#39;fl&#39;,
+                     password = &#39;******&#39;)
+dbSendQuery(mysql, &quot;
+            CREATE TABLE IF NOT EXISTS dev.ChinaFuturesCalendar(
+              nights Date,
+              days Date NOT NULL
+            )
+            &quot;)
+dbSendQuery(mysql,&quot;truncate table ChinaFuturesCalendar&quot;)
+dbWriteTable(mysql, &quot;ChinaFuturesCalendar&quot;,
+             calendar, row.names=FALSE, append=TRUE)
+## =============================================================================</code></pre>
+</div>
+</div>
+<div id="数据下载" class="section level1">
+<h1>数据下载</h1>
+<p>从<code>2010</code>年至<code>2017</code>年的交易日期已经存放在我的<code>github</code>网站，<a href="https://github.com/williamlfang/myData/blob/master/data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv">点击查看</a>。</p>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2017-10-13</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/futures/">Futures</a>
+          
+          <a href="/tags/calendar/">Calendar</a>
+          
+          <a href="/tags/r/">R</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2017-10-10-r%E8%AF%BB%E5%8F%96%E4%B8%AD%E6%96%87%E5%AD%97%E6%AE%B5%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">R读取中文字段的正确姿势</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2017-10-09-%E4%BA%A6%E8%88%92-%E8%BF%B7%E8%BF%AD%E9%A6%99/">
+            <span class="next-text nav-default">亦舒：迷迭香</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>
