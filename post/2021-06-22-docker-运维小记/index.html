@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Vim 自动识别 log 文件 - William Fang</title>
+  <title>Docker 运维小记 - William Fang</title>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
@@ -33,7 +33,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
 
-<meta name="author" content="William" /><meta name="description" content="让 Vim 自动识别 log 文件，并且可以语法高亮错误日志。" />
+<meta name="author" content="William" /><meta name="description" content="在企业内部搭建 DockerHub 以及运维的常用技巧。" />
 
   <meta name="keywords" content="Hugo, theme, even" />
 
@@ -45,7 +45,7 @@
 <meta name="generator" content="Hugo 0.55.6" />
 
 
-<link rel="canonical" href="https://williamlfang.github.io/post/2021-06-22-vim-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB-log-%E6%96%87%E4%BB%B6/" />
+<link rel="canonical" href="https://williamlfang.github.io/post/2021-06-22-docker-%E8%BF%90%E7%BB%B4%E5%B0%8F%E8%AE%B0/" />
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -65,27 +65,27 @@
 
 
 
-<meta property="og:title" content="Vim 自动识别 log 文件" />
-<meta property="og:description" content="让 Vim 自动识别 log 文件，并且可以语法高亮错误日志。" />
+<meta property="og:title" content="Docker 运维小记" />
+<meta property="og:description" content="在企业内部搭建 DockerHub 以及运维的常用技巧。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/post/2021-06-22-vim-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB-log-%E6%96%87%E4%BB%B6/" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2021-06-22-docker-%E8%BF%90%E7%BB%B4%E5%B0%8F%E8%AE%B0/" />
 <meta property="article:published_time" content="2021-06-22T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2021-06-22T00:00:00&#43;00:00"/>
 
-<meta itemprop="name" content="Vim 自动识别 log 文件">
-<meta itemprop="description" content="让 Vim 自动识别 log 文件，并且可以语法高亮错误日志。">
+<meta itemprop="name" content="Docker 运维小记">
+<meta itemprop="description" content="在企业内部搭建 DockerHub 以及运维的常用技巧。">
 
 
 <meta itemprop="datePublished" content="2021-06-22T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2021-06-22T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="169">
+<meta itemprop="wordCount" content="313">
 
 
 
-<meta itemprop="keywords" content="Linux,Vim,log," />
+<meta itemprop="keywords" content="Linux,Docker,ops," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Vim 自动识别 log 文件"/>
-<meta name="twitter:description" content="让 Vim 自动识别 log 文件，并且可以语法高亮错误日志。"/>
+<meta name="twitter:title" content="Docker 运维小记"/>
+<meta name="twitter:description" content="在企业内部搭建 DockerHub 以及运维的常用技巧。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -400,7 +400,7 @@ div.tocify {
 
     
     <header class="post-header">
-      <h1 class="post-title toc-ignore">Vim 自动识别 log 文件</h1>
+      <h1 class="post-title toc-ignore">Docker 运维小记</h1>
 
       <div class="post-meta">
         <span class="post-time"> 2021-06-22 </span>
@@ -409,7 +409,7 @@ div.tocify {
               <a href="/categories/programming/"> Programming </a>
             
           </div>
-        <span class="more-meta"> 169 words </span>
+        <span class="more-meta"> 313 words </span>
         <span class="more-meta"> 1 min read </span>
         
       </div>
@@ -426,58 +426,103 @@ div.tocify {
       
 
 
-<div id="自动识别-log-文件" class="section level1">
-<h1>自动识别 log 文件</h1>
-<pre class="bash"><code># 在 ~/.vimrc 添加
-au BufNewFile,BufRead *.log set filetype=log</code></pre>
+<div id="安装-docker" class="section level1">
+<h1>安装 Docker</h1>
+<div id="删除旧版本" class="section level2">
+<h2>删除旧版本</h2>
+<pre class="bash"><code>sudo yum remove docker \
+    docker-client \
+    docker-client-latest \
+    docker-common \
+    docker-latest \
+    docker-latest-logrotate \
+    docker-logrotate \
+    docker-engine</code></pre>
 </div>
-<div id="添加语法高亮" class="section level1">
-<h1>添加语法高亮</h1>
-<div id="systax" class="section level2">
-<h2>systax</h2>
-<pre class="bash"><code>&quot; Vim syntax file
-&quot; Language:         Generic log files
-&quot; Maintainer:       Alex Dzyoba &lt;avd@reduct.ru&gt;
-&quot; Latest Revision:  2013-03-08
-&quot; Changes:          2013-03-08 Initial version
-
-&quot; Based on messages.vim - syntax file for highlighting kernel messages
-
-au BufRead,BufNewFile *.log set filetype=log
-
-if exists(&quot;b:current_syntax&quot;)
-  finish
-endif
-
-syn match log_fatal     &#39;\c.*\&lt;\(FATAL\|FTL\|FAIL\|FAILED\|FAILURE\).*&#39;
-syn match log_error     &#39;\c.*\&lt;\(ERR\|ERROR\|ERRORS\).*&#39;
-syn match log_warning   &#39;\c.*\&lt;\(WARNING\|DELETE\|DELETING\|DELETED\|RETRY\|RETRYING\).*&#39;
-syn region log_string   start=/&#39;/ end=/&#39;/ end=/$/ skip=/\\./
-syn region log_string   start=/&quot;/ end=/&quot;/ skip=/\\./
-syn match log_number    &#39;0x[0-9a-fA-F]*\|\[&lt;[0-9a-f]\+&gt;\]\|\&lt;\d[0-9a-fA-F]*&#39;
-
-syn match   log_date &#39;\(Jan\|Feb\|Mar\|Apr\|May\|Jun\|Jul\|Aug\|Sep\|Oct\|Nov\|Dec\) [ 0-9]\d *&#39;
-syn match   log_date &#39;\d\{4}-\d\d-\d\d&#39;
-syn match   log_date &#39;^202\d\{1}\d\d\d\d&#39;
-
-syn match   log_time &#39;\d\d:\d\d:\d\d\s*&#39;
-syn match   log_time &#39;\c\d\d:\d\d:\d\d\(\.\d\+\)\=\([+-]\d\d:\d\d\|Z\)&#39;
-
-hi def link log_string          Comment &quot;&quot;String
-hi def link log_number          Comment &quot;&quot;Number
-hi def link log_date            Constant
-hi def link log_time            Type
-hi def link log_fatal           ErrotMsg
-hi def link log_error           Error
-hi def link log_warning         WarningMsg
-
-let b:current_syntax = &quot;log&quot;</code></pre>
+<div id="添加软件源" class="section level2">
+<h2>添加软件源</h2>
+<pre class="bash"><code>sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum update</code></pre>
 </div>
-<div id="ftdetect" class="section level2">
-<h2>ftdetect</h2>
-<pre class="bash"><code>## 在 ~/.vimrc/ftdetect/log.vim 
-au BufNewFile,BufRead *.log set filetype=log</code></pre>
+<div id="安装" class="section level2">
+<h2>安装</h2>
+<pre class="bash"><code>sudo yum install docker.io</code></pre>
+<p>或者使用国内 daocloud 一键安装命令：</p>
+<pre class="bash"><code>## daocloud
+curl -sSL https://get.daocloud.io/docker | sh</code></pre>
 </div>
+</div>
+<div id="搭建私有-dockerhub" class="section level1">
+<h1>搭建私有 DockerHub</h1>
+<div id="建立-registry" class="section level2">
+<h2>建立 registry</h2>
+<pre class="bash"><code>## 使用 docker 进行 registry2 进行管理
+docker pull registry
+## 建立一个目录存放 docker 镜像, 默认是存放在 /tmp/registry
+## 为了防止不小心删掉，我们将其挂载到 /data/Docker/registry 这个目录下
+mkdir -p /data/Docker/registy
+docker run --name docker.registry \
+    -d -p 5000:5000 \
+    -v /data/Docker/registy:/tmp/registry \
+    registry
+
+docker ps -a
+## 开启防火墙5000端口
+systemctl restart firewalld.service
+firewall-cmd --zone=public --permanent--add-port=5000/tcp
+firewall-cmd --reload
+
+## 如果出现错误
+## -i docker0: iptables: no chain/target/match by that name.
+## Ref:https://blog.csdn.net/xujiamin0022016/article/details/108124725
+systemctl restart docker
+
+## 测试访问
+curl http://127.0.0.1:5000/v2/
+## 返回 {} 说明正常运行了</code></pre>
+</div>
+<div id="配置" class="section level2">
+<h2>配置</h2>
+<p>需要配置 <code>daemon.json</code> 允许访问本地使用 DockerHub</p>
+<pre class="bash"><code>{
+  &quot;registry-mirrors&quot; : [
+    &quot;http://ovfftd6p.mirror.aliyuncs.com&quot;,
+    &quot;http://registry.docker-cn.com&quot;,
+    &quot;http://docker.mirrors.ustc.edu.cn&quot;,
+    &quot;http://hub-mirror.c.163.com&quot;
+  ],
+  &quot;insecure-registries&quot; : [
+    &quot;registry.docker-cn.com&quot;,
+    &quot;docker.mirrors.ustc.edu.cn&quot;,
+    &quot;192.168.1.183:5000&quot;
+  ],
+  &quot;debug&quot; : true,
+  &quot;experimental&quot; : true,
+  &quot;log-driver&quot;: &quot;json-file&quot;,
+  &quot;log-opts&quot;: {
+    &quot;max-size&quot;: &quot;1m&quot;,
+    &quot;max-file&quot;: &quot;10&quot;
+  }
+}</code></pre>
+<p>这里需要注意需要重启 docker 服务</p>
+<pre class="bash"><code>systemctl restart docker</code></pre>
+</div>
+<div id="测试" class="section level2">
+<h2>测试</h2>
+<pre class="bash"><code>docker tag hello-world 192.168.1.183:5000/testing
+docker push 192.168.1.183:5000/testing
+docker push 192.168.1.183:5000/testing
+
+## 可以看一下是不是有这个 repo 了
+curl http://192.168.1.183:5000/v2/_catalog</code></pre>
+</div>
+</div>
+<div id="常用命令" class="section level1">
+<h1>常用命令</h1>
+</div>
+<div id="编写-dockerfile" class="section level1">
+<h1>编写 DockerFile</h1>
 </div>
 
     </div>
@@ -521,23 +566,18 @@ au BufNewFile,BufRead *.log set filetype=log</code></pre>
           
           <a href="/tags/linux/">Linux</a>
           
-          <a href="/tags/vim/">Vim</a>
+          <a href="/tags/docker/">Docker</a>
           
-          <a href="/tags/log/">log</a>
+          <a href="/tags/ops/">ops</a>
           
         </div>
 
       
       <nav class="post-nav">
         
-          <a class="prev" href="/post/2021-06-22-docker-%E8%BF%90%E7%BB%B4%E5%B0%8F%E8%AE%B0/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Docker 运维小记</span>
-            <span class="prev-text nav-mobile">Prev</span>
-          </a>
         
-          <a class="next" href="/post/2021-06-08-python-%E6%89%93%E5%8C%85-packages/">
-            <span class="next-text nav-default">python 打包 packages</span>
+          <a class="next" href="/post/2021-06-22-vim-%E8%87%AA%E5%8A%A8%E8%AF%86%E5%88%AB-log-%E6%96%87%E4%BB%B6/">
+            <span class="next-text nav-default">Vim 自动识别 log 文件</span>
             <span class="next-text nav-mobile">Next</span>
             <i class="iconfont icon-right"></i>
           </a>
