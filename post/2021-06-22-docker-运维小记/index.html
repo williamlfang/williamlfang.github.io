@@ -78,7 +78,7 @@
 
 <meta itemprop="datePublished" content="2021-06-22T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2021-06-22T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="824">
+<meta itemprop="wordCount" content="876">
 
 
 
@@ -409,7 +409,7 @@ div.tocify {
               <a href="/categories/programming/"> Programming </a>
             
           </div>
-        <span class="more-meta"> 824 words </span>
+        <span class="more-meta"> 876 words </span>
         <span class="more-meta"> 2 mins read </span>
         
       </div>
@@ -578,9 +578,7 @@ docker image ls
 
 ## 使用 REPOSITORY:TAG
 ## 使用 -v 可以挂载主机文件
-docker run --name mycentos7 -dit \
-    -v /home/william:/mnt \
-    wuya-centos7:v1.0 /bin/bash
+docker run --name mycentos7 --net=host -dit wuya-centos7:v1.0
     
 ## 启动实例
 docker exec -it mycentos7 /bin/bash</code></pre>
@@ -588,6 +586,16 @@ docker exec -it mycentos7 /bin/bash</code></pre>
 </div>
 <div id="发布-docker" class="section level1">
 <h1>发布 Docker</h1>
+<div id="打包一个容器" class="section level2">
+<h2>打包一个容器</h2>
+<pre class="bash"><code>docker commit -a &quot;william&quot; -m &quot;wuya-centos7:v1.0&quot; [container_id] image_id:version</code></pre>
+<p>当然，也可以直接打包成一个压缩包</p>
+<pre class="bash"><code>## 打包
+docker save wuya-centos7:v1.0 &gt; mycetnos7.tar
+
+## 加载
+docker load -i mycetnos7.tar</code></pre>
+<p>我们也可以选择发布到 Dockerhub</p>
 <pre class="bash"><code>docker tag wuya-centos7:v1.0 192.168.1.183:5000/wuya/centos7:v1.0
 docker push 192.168.1.183:5000/wuya/centos7:v1.0
 docker pull 192.168.1.183:5000/wuya/centos7:v1.0
@@ -601,6 +609,7 @@ docker image ls
 docker run -dit --name testing 192.168.1.183:5000/wuya/centos7:v1.0
 docker ps -a 
 docker exec -it testing /bin/bash</code></pre>
+</div>
 </div>
 
     </div>
