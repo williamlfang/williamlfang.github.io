@@ -78,7 +78,7 @@
 
 <meta itemprop="datePublished" content="2021-06-22T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2021-06-22T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="325">
+<meta itemprop="wordCount" content="824">
 
 
 
@@ -409,8 +409,8 @@ div.tocify {
               <a href="/categories/programming/"> Programming </a>
             
           </div>
-        <span class="more-meta"> 325 words </span>
-        <span class="more-meta"> 1 min read </span>
+        <span class="more-meta"> 824 words </span>
+        <span class="more-meta"> 2 mins read </span>
         
       </div>
     </header>
@@ -485,7 +485,9 @@ curl http://127.0.0.1:5000/v2/
 <div id="配置" class="section level2">
 <h2>配置</h2>
 <p>需要配置 <code>daemon.json</code> 允许访问本地使用 DockerHub</p>
-<pre class="bash"><code>{
+<pre class="bash"><code>sudo vim /etc/docker/daemon.json 
+
+{
   &quot;registry-mirrors&quot; : [
     &quot;http://ovfftd6p.mirror.aliyuncs.com&quot;,
     &quot;http://registry.docker-cn.com&quot;,
@@ -525,7 +527,80 @@ curl http://192.168.1.183:5000/v2/_catalog</code></pre>
 <h1>常用命令</h1>
 </div>
 <div id="编写-dockerfile" class="section level1">
-<h1>编写 DockerFile</h1>
+<h1>编写 Dockerfile</h1>
+<div id="centos7.9" class="section level2">
+<h2>Centos7.9</h2>
+<p>可以使用一下的模板来编写一个测试使用的 <code>CentOS7</code> 开发环境</p>
+<blockquote>
+<p>查看 centos <a href="https://hub.docker.com/_/centos?tab=tags&amp;page=1&amp;ordering=last_updated" class="uri">https://hub.docker.com/_/centos?tab=tags&amp;page=1&amp;ordering=last_updated</a></p>
+</blockquote>
+<pre class="bash"><code>FROM centos:centos7.9.2009
+
+MAINTAINER WuyaCapital
+LABEL Remarks=&quot;CentOS7.9 Develop&amp;Testing Environment @WuyaCapital&quot;
+
+RUN yum -y install \
+    sudo vim git make cmake htop\
+    gcc gcc-c++ kernel-devel \
+    openssl-devel libcurl-devel
+RUN mkdir -p /shared/trading /data
+
+ENV PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+ENV LANG=en_US.UTF-8
+ENV BASH_ENV=~/.bashrc  \
+    ENV=~/.bashrc \
+    PROMPT_COMMAND=&quot;source ~/.bashrc&quot;
+
+EXPOSE 22 80
+WORKDIR /home
+CMD /bin/bash</code></pre>
+<p>命令说明：</p>
+<ul>
+<li><code>CMD</code></li>
+</ul>
+<p>指定容器启动时执行的命令，注意，和RUN的区别是：RUN是在打包过程中执行的命令。镜像中只能有一条CMD指令，<strong>如果有多个CMD指令</strong>，则以最后一条为准，所以我们可以覆盖基础镜像中定义的CMD指令。CMD指令支持三种格式：</p>
+<ul>
+<li><code>CMD [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</code> 使用exec执行，这是使用<em>CMD</em>的首选方法</li>
+<li><code>CMD command param1 param2</code> 使用<code>/bin/sh -c</code>执行</li>
+<li><code>CMD [&quot;param1&quot;, &quot;param2&quot;]</code> 提供给ENTRYPOINT的默认参数</li>
+</ul>
+<p>注意，指定了<code>CMD</code>命令以后，<code>docker container run</code>命令就不能附加命令了（比如前面的<code>/bin/bash</code>），否则它会覆盖<code>CMD</code>命令。</p>
+<ul>
+<li><code>ENTRYPOINT</code></li>
+</ul>
+<p>容器启动入口，即容器启动后执行的命令，不会被CMD指令覆盖，如果存在ENTRYPOINT，那么CMD指令会充当ENTRYPOINT的参数。</p>
+</div>
+<div id="搭建" class="section level2">
+<h2>搭建</h2>
+<pre class="bash"><code>docker build -t wuya-centos7:v1.0 .
+
+docker image ls
+
+## 使用 REPOSITORY:TAG
+## 使用 -v 可以挂载主机文件
+docker run --name mycentos7 -dit \
+    -v /home/william:/mnt \
+    wuya-centos7:v1.0 /bin/bash
+    
+## 启动实例
+docker exec -it mycentos7 /bin/bash</code></pre>
+</div>
+</div>
+<div id="发布-docker" class="section level1">
+<h1>发布 Docker</h1>
+<pre class="bash"><code>docker tag wuya-centos7:v1.0 192.168.1.183:5000/wuya/centos7:v1.0
+docker push 192.168.1.183:5000/wuya/centos7:v1.0
+docker pull 192.168.1.183:5000/wuya/centos7:v1.0
+
+curl http://192.168.1.183:5000/v2/_catalog
+curl http://192.168.1.183:5000/v2/wuya/centos7/tags/list</code></pre>
+<p>这样，我们可以建立一个新的容器了</p>
+<pre class="bash"><code>## 记得修改 vim  /etc/docker/daemon.json
+docker pull 192.168.1.183:5000/wuya/centos7:v1.0
+docker image ls
+docker run -dit --name testing 192.168.1.183:5000/wuya/centos7:v1.0
+docker ps -a 
+docker exec -it testing /bin/bash</code></pre>
 </div>
 
     </div>
