@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+
+<html xmlns="https://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>RShiny 使用指南 - William Fang</title>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+<link href="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.css" rel="stylesheet" />
+<script src="http://q2smcep19.bkt.clouddn.com//content/settings/tocify-1.9.1jquery.tocify.js"></script>
+<link href="http://q2smcep19.bkt.clouddn.com//content/setting/gist.css" rel="stylesheet" />
+
+
+<link href="/settings/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="/settings/tocify-1.9.1/jquery.tocify.js"></script>
+<link href="/settings/gist.css" rel="stylesheet" />
+
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="William" /><meta name="description" content="使用 Rshiny 构建可视化展示的网页" />
+
+  <meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.55.6" />
+
+
+<link rel="canonical" href="https://williamlfang.github.io/post/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="RShiny 使用指南" />
+<meta property="og:description" content="使用 Rshiny 构建可视化展示的网页" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/post/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" />
+<meta property="article:published_time" content="2021-07-10T00:00:00&#43;00:00"/>
+<meta property="article:modified_time" content="2021-07-10T00:00:00&#43;00:00"/>
+
+<meta itemprop="name" content="RShiny 使用指南">
+<meta itemprop="description" content="使用 Rshiny 构建可视化展示的网页">
+
+
+<meta itemprop="datePublished" content="2021-07-10T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2021-07-10T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="1392">
+
+
+
+<meta itemprop="keywords" content="R,Shiny,Rstudio,docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="RShiny 使用指南"/>
+<meta name="twitter:description" content="使用 Rshiny 构建可视化展示的网页"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+  <script>
+$(document).ready(function ()  {
+
+    
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+
+<style type = "text/css">
+
+.post {
+   
+  margin-left: 5px;
+  margin-right: auto;
+}
+
+.post-content hr {
+    position: relative;
+    margin: 2rem auto;
+    border-top: 1px dashed #dbdbdb;
+    border-bottom: none;
+}
+
+
+.content-wrapper, .content {
+  margin-top: -10px;
+}
+
+.slideout-panel {
+    position: relative;
+    z-index: 1;
+    background-color: #fefefe;
+    min-height: 20vh; 
+}
+
+.post-content img {
+    display: block;
+    margin: 2rem auto;
+    max-width: 100%;
+    width:100%;
+    box-shadow: 2px 20px 40px 10px rgba(0,0,0,0.15);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.post .post-content img {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+     
+}
+
+.post-content figure {
+    display: block;
+    margin: 2rem auto;
+    margin-top: -2px;
+}
+
+.post-content a {
+  text-decoration:none;
+  color:inherit;
+  border-bottom:3px solid #cbf8df;
+  box-shadow:inset 0 -4px 0 #cbf8df;
+  background:0 0;
+  transition:background 150ms ease
+  }
+
+.post-content a:focus,.post-content a:hover {
+  background:#cbf8df;
+}
+
+.post .post-content img {
+    display: block;
+    margin: 2rem auto;
+}
+
+.post .post-content .highlight td {
+  width: 0%;
+}
+.gist .blob-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.post-content .caption {
+    word-wrap: break-word;
+    text-align: center;
+    color: #be5d4d;
+    margin-top: -20px;
+    font-size: 13px;
+}
+
+.post-content h1 {
+  color: #c05b4d;
+  padding-left: 10px;
+  border-bottom: 1px solid #c05b4d;
+  border-left: 10px solid #c05b4d;
+}
+
+.post-content h2,h3,h4,h5 {
+  color: #c05b4d;
+  padding-left: 10px;
+   
+  border-left: 10px solid #c05b4d;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.post .mjx-chtml {
+ 
+    font-size: 85%;
+ 
+}
+
+
+</style>
+
+
+<style type="text/css">
+
+#TOC {
+   
+   
+  margin-top: 10px;
+  margin-left: -14%;
+  margin-right: 15px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+}
+
+.toc-content {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 13%;
+  max-width: 180px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 0%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+#TOC {
+  margin-left: 0px;
+}
+}
+
+.tocify ul, .tocify li {
+  line-height: 15px;
+}
+
+.tocify-header {
+    text-indent: 10px;
+    font-size: 12px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 10px;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    z-index: 2;
+    color: #ffffff;
+    background-color: #bf5c4d;
+    border-color: #dddddd;
+}
+
+.tocify-subheader .tocify-subheader {
+    text-indent: 30px;
+    padding-left: 10px;
+}
+</style>
+</head>
+
+<body>
+<div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">William</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/shared/">
+        <li class="mobile-menu-item">Shared</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">About</li>
+      </a>
+  </ul>
+</nav>
+
+
+
+<div class="container" id="mobile-panel">
+  <header id="header" class="header">
+      <div class="logo-wrapper">
+  <a href="/" class="logo">William</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/shared/">Shared</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">About</a>
+      </li>
+  </ul>
+</nav>
+  </header>
+
+    
+      
+      <div id="TOC" class="tocify">
+      </div>
+      
+    
+
+
+<div class="container-fluid">
+
+
+<div class="toc-content">
+
+  <div class="container">
+
+
+    <main id="main" class="main">
+
+      <div class="content-wrapper">
+        <div id="content" class="content">
+
+  <article class="post">
+
+    
+    <header class="post-header">
+      <h1 class="post-title toc-ignore">RShiny 使用指南</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2021-07-10 </span>
+        <div class="post-category">
+            
+              <a href="/categories/programming/"> Programming </a>
+            
+          </div>
+        <span class="more-meta"> 1392 words </span>
+        <span class="more-meta"> 3 mins read </span>
+        
+      </div>
+    </header>
+
+    
+    
+
+    
+    
+
+    
+    <div class="post-content">
+      
+
+
+<div id="rshiny-是什么" class="section level1">
+<h1>RShiny 是什么</h1>
+<p><code>Shiny</code> 是一个 <code>R</code> 语言的软件包，提供了用于制作 <code>Web-UI/app</code> 的便捷工具。这些应用提供了交互式的数据展示、实时的统计分析与高度可定制化的操作界面，并且可以以网站或者独立的应用分享和发布。通过 <code>RShiny</code>，我们可以非常方便的与他人分享自己的数据研究成果，随时监控关心的信号指标。</p>
+<p>可以访问 <code>RShiny</code> 的官网查看<a href="https://shiny.rstudio.com/gallery/">案例集</a>，你会发现原来可以通过在 <code>R</code> 中调用简单的几个命令，就可以制作出如此精妙的 <code>Web-UI</code>，而不用再纠结与 <code>HTML-CSS-Javascript</code> 的细枝末节里。实在是「居家旅行、获奖无数」的必备良品。</p>
+<blockquote>
+<p>是不是很期待？来吧，接下来请接受代码的暴风雨。。。。。。</p>
+</blockquote>
+</div>
+<div id="怎么使用" class="section level1">
+<h1>怎么使用</h1>
+<div id="安装" class="section level2">
+<h2>安装</h2>
+<p>由于 <code>Shiny</code> 会开启 <code>systemd</code> 网站服务，因此安装 <code>Shiny</code> 需要管理员 <code>root</code> 权限。</p>
+<blockquote>
+<p>当然，我们也可以在 <code>Docker</code> 中安装，然后把相关的 <code>3838</code> 端口转发出来，一样可以在外部访问该服务。</p>
+</blockquote>
+<div id="安装-shiny-包" class="section level3">
+<h3>安装 shiny 包</h3>
+<pre class="bash"><code>## 1. Shiny 包安装，一定要使用 root 权限，才可以添加服务项
+$ sudo su -c &quot;R -e \&quot;install.packages(&#39;shiny&#39;, repos=&#39;https://cran.rstudio.com/&#39;, dep=TRUE)\&quot;&quot;</code></pre>
+</div>
+<div id="安装-gdebi" class="section level3">
+<h3>安装 gdebi</h3>
+<pre class="bash"><code>## 2. 安装 gdebi（用于安装 Shiny Server 及其所有依赖项）和 Shiny Server
+$ sudo apt-get install gdebi-core
+$ wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-1.5.14.948-amd64.deb
+$ sudo gdebi shiny-server-1.5.14.948-amd64.deb</code></pre>
+</div>
+<div id="开启-shiny-server-服务" class="section level3">
+<h3>开启 shiny-server 服务</h3>
+<pre class="bash"><code>## 3. shiny-server 命令
+#启动 
+$ sudo systemctl start shiny-server 
+#停止 
+$ sudo systemctl stop shiny-server 
+#重启
+$ sudo systemctl restart shiny-server
+#查看状态 
+$ sudo systemctl status shiny-server 
+#服务器重新初始化，但不会中断服务器当前进程或任何连接。
+
+$ sudo systemctl kill -s HUP --kill-who=main shiny-server
+$ sudo reload shiny-server
+#shiny-server状态
+$ sudo systemctl status shiny-server</code></pre>
+</div>
+<div id="查看安装" class="section level3">
+<h3>查看安装</h3>
+<pre class="bash"><code>## 4. 查看 shiny-server: http://localhost:3838/
+## 查看 demo: http://localhost:3838/sample-apps/hello/</code></pre>
+</div>
+<div id="配置" class="section level3">
+<h3>配置</h3>
+<pre class="bash"><code>## 5. 配置
+/etc/shiny-server/shiny-server.conf
+/opt/shiny-server/config/default.config
+
+# Instruct Shiny Server to run applications as the user &quot;shiny&quot;
+run_as shiny;
+
+# Define a server that listens on port 3838
+server {
+  #listen 3838;
+  listen 3838 0.0.0.0;
+
+  # Define a location at the base URL
+  location / {
+
+    # Host the directory of Shiny Apps stored in this directory
+    site_dir /srv/shiny-server;
+
+    # Log all Shiny output to files in this directory
+    log_dir /var/log/shiny-server;
+
+    # When a user visits the base URL rather than a particular application,
+    # an index of the applications available in this directory will be shown.
+    directory_index on;
+  }
+}</code></pre>
+</div>
+<div id="添加用户" class="section level3">
+<h3>添加用户</h3>
+<pre class="bash"><code>## 6. 创建用户
+## sudo /opt/shiny-server/bin/sspasswd /etc/shiny-server/passwd admin
+
+## 7. Rmarkdown 
+$ sudo su - -c &quot;R -e \&quot;install.packages(&#39;rmarkdown&#39;,repos=&#39;http://mirror.bjtu.edu.cn/cran/&#39;)\&quot;&quot;
+
+## 8. 所有的 app 都放在 /srv/shiny-server
+
+## 9. 外部可以访问 192.168.1.88:3838</code></pre>
+</div>
+</div>
+<div id="demo" class="section level2">
+<h2>Demo</h2>
+<pre class="r"><code>library(shiny)
+library(ggplot2)
+library(ggthemes)
+library(plotly)
+
+ui &lt;- fluidPage(  
+    titlePanel(&quot;Plotly&quot;),
+    sidebarLayout(
+        sidebarPanel(),
+        mainPanel(
+            plotlyOutput(&quot;plot2&quot;))))
+
+server &lt;- function(input, output) {
+    
+    output$plot2 &lt;- renderPlotly({
+        print(
+            ggplotly(
+                ggplot(data = mtcars, aes(x = disp, y = cyl)) + 
+                    geom_smooth(method = lm, formula = y~x) + geom_point() + theme_gdocs()
+            )
+        )
+        
+    })
+}
+
+shinyApp(ui, server)</code></pre>
+</div>
+<div id="技术细节" class="section level2">
+<h2>技术细节</h2>
+<p>为了搭建 <code>Shiny</code> 服务，我们首先需要制作一个快加，把需要的元素放在这里</p>
+<pre class="r"><code>library(shiny)
+
+# Define UI ----
+ui &lt;- fluidPage(
+  
+)
+
+# Define server logic ----
+server &lt;- function(input, output) {
+  
+}
+
+# Run the app ----
+shinyApp(ui = ui, server = server)</code></pre>
+<div id="ui-前端" class="section level3">
+<h3>ui 前端</h3>
+<pre class="r"><code>ui &lt;- fluidPage(
+  titlePanel(&quot;title panel&quot;),
+
+  sidebarLayout(
+    position = &quot;right&quot;,
+    sidebarPanel(&quot;sidebar panel&quot;),
+    mainPanel(&quot;main panel&quot;)
+  )
+)</code></pre>
+<p><code>titlePanel</code> and <code>sidebarLayout</code> are the two most popular elements to add to <code>fluidPage</code>. They create a basic Shiny app with a sidebar.</p>
+<p><code>sidebarLayout</code> always takes two arguments:</p>
+<ul>
+<li><code>sidebarPanel</code> function output</li>
+<li><code>mainPanel</code> function output</li>
+</ul>
+<p>The sidebar panel will appear on the left side of your app by default. You can move it to the right side by giving <code>sidebarLayout</code> the optional argument <code>position = &quot;right&quot;</code>.</p>
+<blockquote>
+<p>布局可以参考：<a href="https://shiny.rstudio.com/articles/layout-guide.html">Application layout guide</a></p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th align="left">shiny function</th>
+<th align="left">HTML5 equivalent</th>
+<th align="left">creates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>p</code></td>
+<td align="left"><code>&lt;p&gt;</code></td>
+<td align="left">A paragraph of text</td>
+</tr>
+<tr class="even">
+<td align="left"><code>h1</code></td>
+<td align="left"><code>&lt;h1&gt;</code></td>
+<td align="left">A first level header</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>h2</code></td>
+<td align="left"><code>&lt;h2&gt;</code></td>
+<td align="left">A second level header</td>
+</tr>
+<tr class="even">
+<td align="left"><code>h3</code></td>
+<td align="left"><code>&lt;h3&gt;</code></td>
+<td align="left">A third level header</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>h4</code></td>
+<td align="left"><code>&lt;h4&gt;</code></td>
+<td align="left">A fourth level header</td>
+</tr>
+<tr class="even">
+<td align="left"><code>h5</code></td>
+<td align="left"><code>&lt;h5&gt;</code></td>
+<td align="left">A fifth level header</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>h6</code></td>
+<td align="left"><code>&lt;h6&gt;</code></td>
+<td align="left">A sixth level header</td>
+</tr>
+<tr class="even">
+<td align="left"><code>a</code></td>
+<td align="left"><code>&lt;a&gt;</code></td>
+<td align="left">A hyper link</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>br</code></td>
+<td align="left"><code>&lt;br&gt;</code></td>
+<td align="left">A line break (e.g. a blank line)</td>
+</tr>
+<tr class="even">
+<td align="left"><code>div</code></td>
+<td align="left"><code>&lt;div&gt;</code></td>
+<td align="left">A division of text with a uniform style</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>span</code></td>
+<td align="left"><code>&lt;span&gt;</code></td>
+<td align="left">An in-line division of text with a uniform style</td>
+</tr>
+<tr class="even">
+<td align="left"><code>pre</code></td>
+<td align="left"><code>&lt;pre&gt;</code></td>
+<td align="left">Text ‘as is’ in a fixed width font</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>code</code></td>
+<td align="left"><code>&lt;code&gt;</code></td>
+<td align="left">A formatted block of code</td>
+</tr>
+<tr class="even">
+<td align="left"><code>img</code></td>
+<td align="left"><code>&lt;img&gt;</code></td>
+<td align="left">An image</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>strong</code></td>
+<td align="left"><code>&lt;strong&gt;</code></td>
+<td align="left">Bold text</td>
+</tr>
+<tr class="even">
+<td align="left"><code>em</code></td>
+<td align="left"><code>&lt;em&gt;</code></td>
+<td align="left">Italicized text</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>HTML</code></td>
+<td align="left"></td>
+<td align="left">Directly passes a character string as HTML code</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="输入" class="section level3">
+<h3>输入</h3>
+<div class="figure">
+<img src="https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png" />
+
+</div>
+<p>The standard Shiny widgets are:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">function</th>
+<th align="left">widget</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>actionButton</code></td>
+<td align="left">Action Button</td>
+</tr>
+<tr class="even">
+<td align="left"><code>checkboxGroupInput</code></td>
+<td align="left">A group of check boxes</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>checkboxInput</code></td>
+<td align="left">A single check box</td>
+</tr>
+<tr class="even">
+<td align="left"><code>dateInput</code></td>
+<td align="left">A calendar to aid date selection</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>dateRangeInput</code></td>
+<td align="left">A pair of calendars for selecting a date range</td>
+</tr>
+<tr class="even">
+<td align="left"><code>fileInput</code></td>
+<td align="left">A file upload control wizard</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>helpText</code></td>
+<td align="left">Help text that can be added to an input form</td>
+</tr>
+<tr class="even">
+<td align="left"><code>numericInput</code></td>
+<td align="left">A field to enter numbers</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>radioButtons</code></td>
+<td align="left">A set of radio buttons</td>
+</tr>
+<tr class="even">
+<td align="left"><code>selectInput</code></td>
+<td align="left">A box with choices to select from</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>sliderInput</code></td>
+<td align="left">A slider bar</td>
+</tr>
+<tr class="even">
+<td align="left"><code>submitButton</code></td>
+<td align="left">A submit button</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>textInput</code></td>
+<td align="left">A field to enter text</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>library(shiny)
+
+# Define UI ----
+ui &lt;- fluidPage(
+  titlePanel(&quot;Basic widgets&quot;),
+  
+  fluidRow(
+    
+    column(3,
+           h3(&quot;Buttons&quot;),
+           actionButton(&quot;action&quot;, &quot;Action&quot;),
+           br(),
+           br(), 
+           submitButton(&quot;Submit&quot;)),
+    
+    column(3,
+           h3(&quot;Single checkbox&quot;),
+           checkboxInput(&quot;checkbox&quot;, &quot;Choice A&quot;, value = TRUE)),
+    
+    column(3, 
+           checkboxGroupInput(&quot;checkGroup&quot;, 
+                              h3(&quot;Checkbox group&quot;), 
+                              choices = list(&quot;Choice 1&quot; = 1, 
+                                             &quot;Choice 2&quot; = 2, 
+                                             &quot;Choice 3&quot; = 3),
+                              selected = 1)),
+    
+    column(3, 
+           dateInput(&quot;date&quot;, 
+                     h3(&quot;Date input&quot;), 
+                     value = &quot;2014-01-01&quot;))   
+  ),
+  
+  fluidRow(
+    
+    column(3,
+           dateRangeInput(&quot;dates&quot;, h3(&quot;Date range&quot;))),
+    
+    column(3,
+           fileInput(&quot;file&quot;, h3(&quot;File input&quot;))),
+    
+    column(3, 
+           h3(&quot;Help text&quot;),
+           helpText(&quot;Note: help text isn&#39;t a true widget,&quot;, 
+                    &quot;but it provides an easy way to add text to&quot;,
+                    &quot;accompany other widgets.&quot;)),
+    
+    column(3, 
+           numericInput(&quot;num&quot;, 
+                        h3(&quot;Numeric input&quot;), 
+                        value = 1))   
+  ),
+  
+  fluidRow(
+    
+    column(3,
+           radioButtons(&quot;radio&quot;, h3(&quot;Radio buttons&quot;),
+                        choices = list(&quot;Choice 1&quot; = 1, &quot;Choice 2&quot; = 2,
+                                       &quot;Choice 3&quot; = 3),selected = 1)),
+    
+    column(3,
+           selectInput(&quot;select&quot;, h3(&quot;Select box&quot;), 
+                       choices = list(&quot;Choice 1&quot; = 1, &quot;Choice 2&quot; = 2,
+                                      &quot;Choice 3&quot; = 3), selected = 1)),
+    
+    column(3, 
+           sliderInput(&quot;slider1&quot;, h3(&quot;Sliders&quot;),
+                       min = 0, max = 100, value = 50),
+           sliderInput(&quot;slider2&quot;, &quot;&quot;,
+                       min = 0, max = 100, value = c(25, 75))
+    ),
+    
+    column(3, 
+           textInput(&quot;text&quot;, h3(&quot;Text input&quot;), 
+                     value = &quot;Enter text...&quot;))   
+  )
+  
+)
+
+# Define server logic ----
+server &lt;- function(input, output) {
+  
+}
+
+# Run the app ----
+shinyApp(ui = ui, server = server)</code></pre>
+</div>
+<div id="server" class="section level3">
+<h3>server</h3>
+<p>Shiny provides a family of functions that turn R objects into output for your user interface. Each function creates a specific type of output.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Output function</th>
+<th align="left">Creates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>dataTableOutput</code></td>
+<td align="left">DataTable</td>
+</tr>
+<tr class="even">
+<td align="left"><code>htmlOutput</code></td>
+<td align="left">raw HTML</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>imageOutput</code></td>
+<td align="left">image</td>
+</tr>
+<tr class="even">
+<td align="left"><code>plotOutput</code></td>
+<td align="left">plot</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>tableOutput</code></td>
+<td align="left">table</td>
+</tr>
+<tr class="even">
+<td align="left"><code>textOutput</code></td>
+<td align="left">text</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>uiOutput</code></td>
+<td align="left">raw HTML</td>
+</tr>
+<tr class="even">
+<td align="left"><code>verbatimTextOutput</code></td>
+<td align="left">text</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left">render function</th>
+<th align="left">creates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>renderDataTable</code></td>
+<td align="left">DataTable</td>
+</tr>
+<tr class="even">
+<td align="left"><code>renderImage</code></td>
+<td align="left">images (saved as a link to a source file)</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>renderPlot</code></td>
+<td align="left">plots</td>
+</tr>
+<tr class="even">
+<td align="left"><code>renderPrint</code></td>
+<td align="left">any printed output</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>renderTable</code></td>
+<td align="left">data frame, matrix, other table like structures</td>
+</tr>
+<tr class="even">
+<td align="left"><code>renderText</code></td>
+<td align="left">character strings</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>renderUI</code></td>
+<td align="left">a Shiny tag object or HTML</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="如何添加新图片" class="section level1">
+<h1>如何添加新图片</h1>
+</div>
+<div id="如何添加-python.plotly" class="section level1">
+<h1>如何添加 Python.plotly</h1>
+</div>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">William</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">2021-07-10</span>
+  </p>
+  
+  
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">Reward</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/wechat.png">
+        <span>wechat</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/images/reward/alipay.png">
+        <span>alipay</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/r/">R</a>
+          
+          <a href="/tags/shiny/">Shiny</a>
+          
+          <a href="/tags/rstudio/">Rstudio</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/2021-07-07-clickhouse-%E8%BF%9E%E6%8E%A5%E9%94%99%E8%AF%AF%E6%AC%A1%E6%95%B0/">
+            <span class="next-text nav-default">Clickhouse 连接错误次数</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+
+  </article>
+
+
+        </div>
+      </div>  
+    </main>
+  
+  <footer id="footer" class="footer">
+    <div class="social-links">
+      <a href="mailto:william.lian.fang@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://twitter.com/WilliamLFang" class="iconfont icon-twitter" title="twitter"></a>
+      <a href="https://github.com/williamlfang" class="iconfont icon-github" title="github"></a>
+  <a href="https://williamlfang.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2017 - 
+    2021
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">williamlfang</span>
+  </span>
+</div>
+  </footer>
+  <div class="back-to-top" id="back-to-top">
+    <i class="iconfont icon-up"></i>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+
+</body>
+
+
+
+<script>
+
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+</script>
+<script src="/lib/highlight/highlight.pack.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/slideout/1.0.1/slideout.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="/dist/even.min.js?v=2.6.1"></script>
+
+<script type="text/javascript">
+  
+  
+  
+  
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      TeX: {equationNumbers: {autoNumber: "AMS"}},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+</script>
+<script async src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
+
+
+</html>
