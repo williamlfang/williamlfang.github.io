@@ -78,7 +78,7 @@
 
 <meta itemprop="datePublished" content="2021-06-24T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2021-06-24T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="878">
+<meta itemprop="wordCount" content="1043">
 
 
 
@@ -409,8 +409,8 @@ div.tocify {
               <a href="/categories/programming/"> Programming </a>
             
           </div>
-        <span class="more-meta"> 878 words </span>
-        <span class="more-meta"> 2 mins read </span>
+        <span class="more-meta"> 1043 words </span>
+        <span class="more-meta"> 3 mins read </span>
         
       </div>
     </header>
@@ -428,6 +428,65 @@ div.tocify {
 
 <div id="安装-vim8" class="section level1">
 <h1>安装 Vim8</h1>
+<div id="使用-anaconda-python" class="section level2">
+<h2>使用 Anaconda-python</h2>
+<pre class="bash"><code>## 不需要 lto
+export LDFLAGS=&quot;-fno-lto&quot;
+## 有可能需要添加环境路径
+## 1.
+ldconfig -p |grep libSM
+ldconfig -p |grep libuuid
+## 2.
+export PATH=
+export LD_LIBRARY_PATH=
+
+./configure --prefix=$HOME/opt \
+--enable-python3interp=yes \
+--enable-cscope \
+--enable-gui=auto \
+--enable-gtk2-check \
+--enable-gnome-check \
+--with-features=huge \
+--enable-multibyte \
+--enable-largefile \
+--disable-netbeans \
+--with-x \
+--with-compiledby=&quot;xorpd&quot; \
+--enable-fail-if-missing \
+--with-python3-command=$HOME/anaconda3/bin/python3 \
+--with-python3-config-dir=$HOME/anaconda3/lib/python3.7/config-3.7m-x86_64-linux-gnu
+
+make -j &amp;&amp; make install
+
+~/opt/bin/vim --version |grep python
+/home/ops/opt/bin/vim: /home/ops/anaconda3/lib/libuuid.so.1: no version information available (required by /lib64/libSM.so.6)
++cmdline_hist      +langmap           -python            +visual
++cmdline_info      +libcall           +python3           +visualextra
+Linking: gcc -fno-lto -L/usr/local/lib -Wl,--as-needed -o vim -lSM -lICE -lXt -lX11 -lSM -lICE -lm -ltinfo -lselinux -ldl -L/home/ops/anaconda3/lib/python3.7/config-3.7m-x86_64-linux-gnu -lpython3.7m -lcrypt -lpthread -ldl -lutil -lrt -lm</code></pre>
+</div>
+<div id="使用源代码编译-python" class="section level2">
+<h2>使用源代码编译 python</h2>
+<pre class="bash"><code>export LDFLAGS=&quot;-rdynamic&quot;
+export LDFLAGS=&quot;-fno-lto&quot;
+export PATH=
+export LD_LIBRARY_PATH=
+
+./configure --prefix=$HOME/opt \
+--enable-python3interp=yes \
+--enable-cscope \
+--enable-gui=auto \
+--enable-gtk2-check \
+--enable-gnome-check \
+--with-features=huge \
+--enable-multibyte \
+--enable-largefile \
+--disable-netbeans \
+--with-x \
+--with-compiledby=&quot;xorpd&quot; \
+--enable-fail-if-missing \
+--with-python3-command=$HOME/opt/bin/python3.9 \
+--with-python3-config-dir=$HOME/opt/lib/python3.9/config-3.9-x86_64-linux-gnu</code></pre>
+</div>
 </div>
 <div id="安装插件" class="section level1">
 <h1>安装插件</h1>
