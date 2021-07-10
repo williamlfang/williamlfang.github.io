@@ -78,7 +78,7 @@
 
 <meta itemprop="datePublished" content="2021-07-10T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2021-07-10T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2065">
+<meta itemprop="wordCount" content="2064">
 
 
 
@@ -409,7 +409,7 @@ div.tocify {
               <a href="/categories/programming/"> Programming </a>
             
           </div>
-        <span class="more-meta"> 2065 words </span>
+        <span class="more-meta"> 2064 words </span>
         <span class="more-meta"> 5 mins read </span>
         
       </div>
@@ -993,16 +993,16 @@ ui = dashboardPage(header, sidebar, body)</code></pre>
 }</code></pre>
 <p>其中，</p>
 <ul>
-<li><p><code>input</code> 是我们可以从 <code>UI</code> 界面交互获取的内容，比如 `<code>input$CFFEX_main_select_session</code>，通过这个变量我们就可以实时的从界面获取用户想要我们执行的参数</p></li>
+<li><p><code>input</code> 是我们可以从 <code>UI</code> 界面交互获取的内容，比如 <code>input$CFFEX_main_select_session</code>，通过这个变量我们就可以实时的从界面获取用户想要我们执行的参数</p></li>
 <li><p><code>output</code> 是我们想要 <code>server</code> 计算的结果返回给 <code>UI</code>。比如，我们在上面的 <code>UI</code> 定义了一个 <code>tab_main</code> 的组件，代码里面包含了这么一个命令</p></li>
 </ul>
 <p><code>R   plotlyOutput(sprintf(&quot;%s_sig&quot;, exch), width = &quot;100%&quot;, height = &quot;620px&quot;)</code></p>
 <p>即 <code>UI</code> 期望可以通过 <code>Server</code> 获取到这个返回，那么我们的 <code>output</code> 就可以写成这样</p>
-<p><code>R   output$CFFEX_T_main &lt;- renderPlotly({       ## some R code goes here   })</code></p>
+<p><code>R   output$CFFEX_T_main &lt;- renderPlotly({     ## some R code goes here   })</code></p>
 <ul>
 <li>细心的你，还发现我添加了一些按钮，你只需要轻松的点击按钮或者选择框，就可以得到想要的结果。这个用编程语言讲，叫做事件触发。我们通过添加观察组，针对不同的事件执行相应的策略。比如，观察到用户选择不同的信号名称，那么我们就更新相应的图片：</li>
 </ul>
-<p><code>R   observe({       if (input$CFFEX_sig_reset == 0)       {           updateCheckboxGroupInput(session, inputId=&quot;CFFEX_sig_select_signame&quot;, label = NULL,                                    choices = all.cffex.sig.names,                                    selected = grep(&quot;pred&quot;, all.cffex.sig.names, value = T),                                    inline = TRUE)       }       else       {           updateCheckboxGroupInput(session, inputId=&quot;CFFEX_sig_select_signame&quot;, label = NULL,                                    choices = all.cffex.sig.names,                                    selected = grep(&quot;pred&quot;, all.cffex.sig.names, value = T),                                    inline = TRUE)       }   })</code></p>
+<p><code>R   observe({     if (input$CFFEX_sig_reset == 0)     {         updateCheckboxGroupInput(session, inputId=&quot;CFFEX_sig_select_signame&quot;, label = NULL,                                  choices = all.cffex.sig.names,                                  selected = grep(&quot;pred&quot;, all.cffex.sig.names, value = T),                                  inline = TRUE)     }     else     {         updateCheckboxGroupInput(session, inputId=&quot;CFFEX_sig_select_signame&quot;, label = NULL,                                  choices = all.cffex.sig.names,                                  selected = grep(&quot;pred&quot;, all.cffex.sig.names, value = T),                                  inline = TRUE)     }   })</code></p>
 </div>
 <div id="完工" class="section level3">
 <h3>完工</h3>
