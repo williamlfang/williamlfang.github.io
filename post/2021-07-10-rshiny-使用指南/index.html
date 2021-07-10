@@ -78,7 +78,7 @@
 
 <meta itemprop="datePublished" content="2021-07-10T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2021-07-10T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="1392">
+<meta itemprop="wordCount" content="1490">
 
 
 
@@ -409,7 +409,7 @@ div.tocify {
               <a href="/categories/programming/"> Programming </a>
             
           </div>
-        <span class="more-meta"> 1392 words </span>
+        <span class="more-meta"> 1490 words </span>
         <span class="more-meta"> 3 mins read </span>
         
       </div>
@@ -925,11 +925,58 @@ shinyApp(ui = ui, server = server)</code></pre>
 </div>
 </div>
 </div>
-<div id="如何添加新图片" class="section level1">
-<h1>如何添加新图片</h1>
+<div id="一个实际的例子" class="section level1">
+<h1>一个实际的例子</h1>
+<div class="figure">
+<img src="/post/RShiny-demo.gif" />
+
 </div>
-<div id="如何添加-python.plotly" class="section level1">
-<h1>如何添加 Python.plotly</h1>
+<div class="figure">
+<img src="RShiny-demo.gif" />
+
+</div>
+<div id="设计框架" class="section level2">
+<h2>设计框架</h2>
+<pre class="r"><code>## ------------------------------------------------------------------------------------
+## ui
+## icon: https://fontawesome.com/icons?d=gallery&amp;p=1
+header &lt;- dashboardHeader(title = &quot;RShiny @william&quot;)
+sidebar &lt;- dashboardSidebar(
+    sidebarMenu(
+        menuItem(&quot;CFFEX&quot;, tabName = &quot;CFFEX&quot;, icon = icon(&quot;warehouse&quot;)),
+        menuItem(&quot;CFFEX_T&quot;, tabName = &quot;CFFEX_T&quot;, icon = icon(&quot;ticket-alt&quot;)),
+        menuItem(&quot;SHFE&quot;, tabName = &quot;SHFE&quot;, icon = icon(&quot;city&quot;)),
+        menuItem(&quot;DCE&quot;, tabName = &quot;DCE&quot;, icon = icon(&quot;shopping-basket&quot;)),
+        menuItem(&quot;STOCKS&quot;, tabName = &quot;STOCKS&quot;, icon = icon(&quot;coins&quot;)),
+        menuItem(&quot;ConvBond&quot;, tabName = &quot;CV&quot;, icon = icon(&quot;comment-dollar&quot;))
+    )
+)
+
+tab_main &lt;- function(exch) {
+    
+}
+
+body &lt;- dashboardBody(
+    tabItems(
+        ## CFFEX ----------------------------------------------
+        tabItem(tabName = &quot;CFFEX&quot;,
+                navbarPage(&quot;&quot;, 
+                           id = &quot;CFFEX_nav&quot;,
+                           theme = shinytheme(&quot;flatly&quot;),
+                           tab_main(&quot;CFFEX&quot;),
+                           tab_product(&quot;CFFEX&quot;),
+                           tab_data(&quot;CFFEX&quot;),
+                           tab_sig(&quot;CFFEX&quot;)
+                )
+        )
+    )
+)
+
+dashboardPage(header, sidebar, body)
+ui = dashboardPage(header, sidebar, body)
+
+</code></pre>
+</div>
 </div>
 
     </div>
