@@ -54,14 +54,6 @@
 </item>
 <item>
   <title>Centos 手动安装 Realtek 网卡</title>
-  <link>https://williamlfang.github.io/archives/2021-11-13-centos-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85-realtek-%E7%BD%91%E5%8D%A1/</link>
-  <pubDate>Sat, 13 Nov 2021 00:00:00 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/archives/2021-11-13-centos-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85-realtek-%E7%BD%91%E5%8D%A1/</guid>
-  <description><![CDATA[<p>由于 CentOS7 无法识别最新的 Realtek 网卡，我们需要通过单独安装一个内核程序才能使用网卡。</p>]]></description>
-</item>
-<item>
-  <title>Centos 手动安装 Realtek 网卡</title>
   <link>https://williamlfang.github.io/2021-11-13-centos-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85-realtek-%E7%BD%91%E5%8D%A1/</link>
   <pubDate>Sat, 13 Nov 2021 00:00:00 &#43;0000</pubDate>
   <author>william</author>
@@ -70,19 +62,65 @@
 </item>
 <item>
   <title>Clickhouse 安装与使用</title>
-  <link>https://williamlfang.github.io/archives/2021-08-20-clickhouse-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</link>
-  <pubDate>Fri, 20 Aug 2021 00:00:00 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/archives/2021-08-20-clickhouse-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</guid>
-  <description><![CDATA[安装参考官网安装页面。 源代码安装可以通过下载源代码的方式进行安装，网址： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 # export LATEST_VERSION=`curl https://api.github.com/repos/ClickHouse/ClickHouse/tags 2&gt;/dev/null | grep -Eo &#39;[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+&#39; | head -n 1`]]></description>
-</item>
-<item>
-  <title>Clickhouse 安装与使用</title>
   <link>https://williamlfang.github.io/2021-08-20-clickhouse-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</link>
   <pubDate>Fri, 20 Aug 2021 00:00:00 &#43;0000</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2021-08-20-clickhouse-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/</guid>
   <description><![CDATA[<p><code>Clickhouse</code> 是一款高性能的列式存储数据库。</p>]]></description>
+</item>
+<item>
+  <title>CentOS7 搭建私有 DockerHub</title>
+  <link>https://williamlfang.github.io/archives/2020-09-06-centos7-%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-dockerhub/</link>
+  <pubDate>Sun, 06 Sep 2020 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2020-09-06-centos7-%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-dockerhub/</guid>
+  <description><![CDATA[<h1 id="安装-docker-register" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-docker-register" class="heading-mark"></a>安装 Docker Register</h1><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 使用 docker 进行 registry2 进行管理</span>
+</span></span><span class="line"><span class="cl">docker pull registry
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 建立一个目录存放 docker 镜像, 默认是存放在 /tmp/registry</span>
+</span></span><span class="line"><span class="cl">mkdir -p /data/Docker/registy
+</span></span><span class="line"><span class="cl">docker run --name docker.registry -d -p 5000:5000 -v /data/Docker/registy:/tmp/registry registry
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">docker ps -a
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 开启防火墙5000端口</span>
+</span></span><span class="line"><span class="cl">systemctl restart firewalld.service
+</span></span><span class="line"><span class="cl">firewall-cmd --zone<span class="o">=</span>public --add-port<span class="o">=</span>5000/tcp --permanent
+</span></span><span class="line"><span class="cl">firewall-cmd --reload
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 测试访问</span>
+</span></span><span class="line"><span class="cl">curl http://192.168.1.135:5000/v2/</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
+  <title>Gitlab 安装全过程</title>
+  <link>https://williamlfang.github.io/archives/2020-09-05-gitlab-%E5%AE%89%E8%A3%85%E5%85%A8%E8%BF%87%E7%A8%8B/</link>
+  <pubDate>Sat, 05 Sep 2020 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2020-09-05-gitlab-%E5%AE%89%E8%A3%85%E5%85%A8%E8%BF%87%E7%A8%8B/</guid>
+  <description><![CDATA[<p>记录在公司内部安装 Gitlab 全过程。</p>]]></description>
 </item>
 </channel>
 </rss>

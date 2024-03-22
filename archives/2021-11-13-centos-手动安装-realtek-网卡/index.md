@@ -33,5 +33,5 @@ nmtui
 ---
 
 > 作者: william  
-> URL: https://williamlfang.github.io/archives/2021-11-13-centos-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85-realtek-%E7%BD%91%E5%8D%A1/  
+> URL: http://localhost:1313/archives/2021-11-13-centos-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85-realtek-%E7%BD%91%E5%8D%A1/  
 

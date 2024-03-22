@@ -22,5 +22,5 @@ clickhouse-cli
 ---
 
 > 作者: william  
-> URL: https://williamlfang.github.io/archives/2021-08-23-python-%E6%9C%AC%E5%9C%B0%E5%AE%89%E8%A3%85-requirements.txt/  
+> URL: http://localhost:1313/archives/2021-08-23-python-%E6%9C%AC%E5%9C%B0%E5%AE%89%E8%A3%85-requirements.txt/  
 

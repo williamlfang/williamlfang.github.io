@@ -163,7 +163,7 @@
     hugo
     ```
 
-- 发布静态生成的网站页面。我原来的做法是把 `github page` 单独放在一个目录，然后通过拷贝的方式进行同步。现在回想起来，这个方法似乎有点多此一举，为何不直接在 `public` 目录添加一个 `submodule` 呢，然后把内容推送到 `github page` 即可？
+- 发布静态生成的网站页面。我原来的做法是把 `github page` 单独放在一个目录，然后通过拷贝的方式进行同步。现在回想起来，这个方法似乎有点多此一举，为何不直接在 `public` 目录添加一个 `submodule` 呢，然后把内容推送到 `github page` 即可？[^submodule]
 
     ```bash
     ## 先生成一个 public 目录
@@ -178,7 +178,7 @@
     git commit -m &#34;add submodule&#34;
     git push origin main
     ```
-
+[^submodule]: 这个主要参考了官方教程：[Hosting on GitHub Pages](https://www.gohugo.org/doc/tutorials/github-pages-blog)
 
 ## ~~deploy.sh 一键发布脚本~~
 
