@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Linux fdisk 将剩余未分区的磁盘空间挂载 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="对于在 fdisk 显示，但是没有添加到已经挂载目录的磁盘空间，我们需要进行对剩余磁盘空间的挂载操作。" /><meta name="keywords" content='Linux, fdisk, lvm, lvextend, lvdisplay, vgdisplay' /><meta itemprop="name" content="Linux fdisk 将剩余未分区的磁盘空间挂载">
+<meta itemprop="description" content="对于在 fdisk 显示，但是没有添加到已经挂载目录的磁盘空间，我们需要进行对剩余磁盘空间的挂载操作。"><meta itemprop="datePublished" content="2022-11-23T16:31:58+00:00" />
+<meta itemprop="dateModified" content="2022-11-23T16:31:58+00:00" />
+<meta itemprop="wordCount" content="676"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,fdisk,lvm,lvextend,lvdisplay,vgdisplay," /><meta property="og:title" content="Linux fdisk 将剩余未分区的磁盘空间挂载" />
+<meta property="og:description" content="对于在 fdisk 显示，但是没有添加到已经挂载目录的磁盘空间，我们需要进行对剩余磁盘空间的挂载操作。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-11-23T16:31:58+00:00" />
+<meta property="article:modified_time" content="2022-11-23T16:31:58+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Linux fdisk 将剩余未分区的磁盘空间挂载"/>
+<meta name="twitter:description" content="对于在 fdisk 显示，但是没有添加到已经挂载目录的磁盘空间，我们需要进行对剩余磁盘空间的挂载操作。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/" /><link rel="prev" href="https://williamlfang.github.io/2022-11-23-docker-%E4%BD%BF%E7%94%A8-systemctl/" /><link rel="next" href="https://williamlfang.github.io/2022-11-24-dockerfile-%E4%BD%BF%E7%94%A8-ssh-%E4%B8%8B%E8%BD%BD%E7%A7%81%E6%9C%89-git-%E9%A1%B9%E7%9B%AE/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Linux fdisk 将剩余未分区的磁盘空间挂载",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD\/"
+    },"genre": "posts","keywords": "Linux, fdisk, lvm, lvextend, lvdisplay, vgdisplay","wordcount":  676 ,
+    "url": "https:\/\/williamlfang.github.io\/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD\/","datePublished": "2022-11-23T16:31:58+00:00","dateModified": "2022-11-23T16:31:58+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Linux fdisk 将剩余未分区的磁盘空间挂载</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2022-11-23 16:31:58"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2022-11-23">2022-11-23</time></span>&nbsp;<span title="676 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 700 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#fdisk--l-查看当前磁盘空间">fdisk -l 查看当前磁盘空间</a></li>
+        <li><a href="#vgdisplay-显示当前可用逻辑卷空间">vgdisplay 显示当前可用逻辑卷空间</a></li>
+        <li><a href="#lvdisplay-查看分卷的名称">lvdisplay 查看分卷的名称</a></li>
+        <li><a href="#fdisk-初始化未未挂磁盘">fdisk 初始化未未挂磁盘</a></li>
+        <li><a href="#pvcreate-添加到逻辑卷">pvcreate 添加到逻辑卷</a></li>
+        <li><a href="#vgextend">vgextend</a></li>
+        <li><a href="#lvextend">lvextend</a></li>
+        <li><a href="#新磁盘">新磁盘</a></li>
+        <li><a href="#如果不是逻辑卷-lvm则直接挂载">如果不是逻辑卷 lvm，则直接挂载</a></li>
+      </ol>
+    </li>
+    <li><a href="#ref">Ref</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2022-11-23，文中内容可能已过时。</div>
+      </div>
+    </div><p>对于在 <code>fdisk</code> 显示，但是没有添加到已经挂载目录的磁盘空间，我们需要进行对剩余磁盘空间的挂载操作。</p>
+<h2 id="fdisk--l-查看当前磁盘空间" class="heading-element">
+  <a href="#fdisk--l-%e6%9f%a5%e7%9c%8b%e5%bd%93%e5%89%8d%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4" class="heading-mark"></a>fdisk -l 查看当前磁盘空间</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fdisk -l</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/screenshot_52.png" alt="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/screenshot_52.png" srcset="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/screenshot_52.png?size=small, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/screenshot_52.png?size=medium 1.5x, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/screenshot_52.png?size=large 2x" data-title="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/screenshot_52.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>可以看到，这时候 <code>/dev/sda</code> 一共有 <code>200G</code> 空间，但实际占用的磁盘只有<code>19G</code>(19,921,920)。</p>
+<h2 id="vgdisplay-显示当前可用逻辑卷空间" class="heading-element">
+  <a href="#vgdisplay-%e6%98%be%e7%a4%ba%e5%bd%93%e5%89%8d%e5%8f%af%e7%94%a8%e9%80%bb%e8%be%91%e5%8d%b7%e7%a9%ba%e9%97%b4" class="heading-mark"></a>vgdisplay 显示当前可用逻辑卷空间</h2><p><img loading="lazy" src="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/screenshot.png" alt="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/screenshot.png" srcset="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/screenshot.png?size=small, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/screenshot.png?size=medium 1.5x, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/screenshot.png?size=large 2x" data-title="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/screenshot.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>发现可以空间（<code>Free PE / Size</code>) 为空。</p>
+<h2 id="lvdisplay-查看分卷的名称" class="heading-element">
+  <a href="#lvdisplay-%e6%9f%a5%e7%9c%8b%e5%88%86%e5%8d%b7%e7%9a%84%e5%90%8d%e7%a7%b0" class="heading-mark"></a>lvdisplay 查看分卷的名称</h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> --- Logical volume ---
+</span></span><span class="line"><span class="cl">  LV Path                /dev/centos/root
+</span></span><span class="line"><span class="cl">  LV Name                root
+</span></span><span class="line"><span class="cl">  VG Name                centos
+</span></span><span class="line"><span class="cl">  LV UUID                RJXQ4v-eiWR-Mddv-afWi-JFcm-I2pk-dk78jm
+</span></span><span class="line"><span class="cl">  LV Write Access        read/write
+</span></span><span class="line"><span class="cl">  LV Creation host, <span class="nb">time</span> localhost, 2022-10-11 18:10:29 +0800
+</span></span><span class="line"><span class="cl">  LV Status              available
+</span></span><span class="line"><span class="cl">  <span class="c1"># open                 1</span>
+</span></span><span class="line"><span class="cl">  LV Size                &lt;117.00 GiB
+</span></span><span class="line"><span class="cl">  Current LE             <span class="m">29951</span>
+</span></span><span class="line"><span class="cl">  Segments               <span class="m">2</span>
+</span></span><span class="line"><span class="cl">  Allocation             inherit
+</span></span><span class="line"><span class="cl">  Read ahead sectors     auto
+</span></span><span class="line"><span class="cl">  - currently <span class="nb">set</span> to     <span class="m">8192</span>
+</span></span><span class="line"><span class="cl">  Block device           253:0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  --- Logical volume ---
+</span></span><span class="line"><span class="cl">  LV Path                /dev/centos/swap
+</span></span><span class="line"><span class="cl">  LV Name                swap
+</span></span><span class="line"><span class="cl">  VG Name                centos
+</span></span><span class="line"><span class="cl">  LV UUID                o6bndH-Tev1-1nLj-l3ZW-HKE5-UncQ-69aBLQ
+</span></span><span class="line"><span class="cl">  LV Write Access        read/write
+</span></span><span class="line"><span class="cl">  LV Creation host, <span class="nb">time</span> localhost, 2022-10-11 18:10:29 +0800
+</span></span><span class="line"><span class="cl">  LV Status              available
+</span></span><span class="line"><span class="cl">  <span class="c1"># open                 2</span>
+</span></span><span class="line"><span class="cl">  LV Size                2.00 GiB
+</span></span><span class="line"><span class="cl">  Current LE             <span class="m">512</span>
+</span></span><span class="line"><span class="cl">  Segments               <span class="m">1</span>
+</span></span><span class="line"><span class="cl">  Allocation             inherit
+</span></span><span class="line"><span class="cl">  Read ahead sectors     auto
+</span></span><span class="line"><span class="cl">  - currently <span class="nb">set</span> to     <span class="m">8192</span>
+</span></span><span class="line"><span class="cl">  Block device           253:1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，根目录<code>/</code> 对应的路径是 <code>/dev/centos/root</code>，我们就是需要扩展这个分卷空间。</p>
+<h2 id="fdisk-初始化未未挂磁盘" class="heading-element">
+  <a href="#fdisk-%e5%88%9d%e5%a7%8b%e5%8c%96%e6%9c%aa%e6%9c%aa%e6%8c%82%e7%a3%81%e7%9b%98" class="heading-mark"></a>fdisk 初始化未未挂磁盘</h2><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">fdisk /dev/sda</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/fdisk.png" alt="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/fdisk.png" srcset="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/fdisk.png?size=small, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/fdisk.png?size=medium 1.5x, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/fdisk.png?size=large 2x" data-title="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/fdisk.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>初始化完成后，会看到多了一个 <code>/dev/sda3</code>.</p>
+<h2 id="pvcreate-添加到逻辑卷" class="heading-element">
+  <a href="#pvcreate-%e6%b7%bb%e5%8a%a0%e5%88%b0%e9%80%bb%e8%be%91%e5%8d%b7" class="heading-mark"></a>pvcreate 添加到逻辑卷</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pvcreate /dev/sda3</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/pvcreate.png" alt="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/pvcreate.png" srcset="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/pvcreate.png?size=small, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/pvcreate.png?size=medium 1.5x, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/pvcreate.png?size=large 2x" data-title="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/pvcreate.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h2 id="vgextend" class="heading-element">
+  <a href="#vgextend" class="heading-mark"></a>vgextend</h2><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vgextend /dev/sda3</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/vgextend.png" alt="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/vgextend.png" srcset="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/vgextend.png?size=small, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/vgextend.png?size=medium 1.5x, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/vgextend.png?size=large 2x" data-title="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/vgextend.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h2 id="lvextend" class="heading-element">
+  <a href="#lvextend" class="heading-mark"></a>lvextend</h2><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">lvextend -L +100G /dev/mapper/centos-root</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/lvextend.png" alt="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/lvextend.png" srcset="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/lvextend.png?size=small, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/lvextend.png?size=medium 1.5x, /home/william/git/blog/content/post/2022-11-23-Linux-fdisk-%e5%b0%86%e5%89%a9%e4%bd%99%e6%9c%aa%e5%88%86%e5%8c%ba%e7%9a%84%e7%a3%81%e7%9b%98%e7%a9%ba%e9%97%b4%e6%8c%82%e8%bd%bd/lvextend.png?size=large 2x" data-title="/home/william/git/blog/content/post/2022-11-23-Linux-fdisk-将剩余未分区的磁盘空间挂载/lvextend.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h2 id="新磁盘" class="heading-element">
+  <a href="#%e6%96%b0%e7%a3%81%e7%9b%98" class="heading-mark"></a>新磁盘</h2><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pvcreate /dev/sda
+</span></span><span class="line"><span class="cl">pvdisplay
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将新的 PV 加入 VolGroup 组卷，使用 vgdisplay 获取得到的 `VG Name`</span>
+</span></span><span class="line"><span class="cl">vgextend centos /dev/sda
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 查看当前逻辑磁盘的空间大小</span>
+</span></span><span class="line"><span class="cl">lvdisplay
+</span></span><span class="line"><span class="cl"><span class="c1">## 查看系统可用空间大小</span>
+</span></span><span class="line"><span class="cl">vgdisplay
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 增加一个 vg</span>
+</span></span><span class="line"><span class="cl">lvs
+</span></span><span class="line"><span class="cl">lvcreate -L1024G -n data centos
+</span></span><span class="line"><span class="cl">lvs
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mkfs.xfs /dev/mapper/centos-data
+</span></span><span class="line"><span class="cl">mkdir -p /data
+</span></span><span class="line"><span class="cl">mount /dev/mapper/centos-data /data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 设置自动挂载</span>
+</span></span><span class="line"><span class="cl">vim /etc/fstab
+</span></span><span class="line"><span class="cl">/dev/mapper/centos-data /data    xfs    defaults    <span class="m">0</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 逻辑卷扩容</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 查看系统可用空间大小</span>
+</span></span><span class="line"><span class="cl">vgdisplay
+</span></span><span class="line"><span class="cl"><span class="c1">## 开始进行磁盘扩展，增加 500G 到 /dev/mapper/centos-data（也就是 /data）</span>
+</span></span><span class="line"><span class="cl">lvextend -L +500G /dev/mapper/centos-data
+</span></span><span class="line"><span class="cl">xfs_growfs /dev/mapper/centos-data
+</span></span><span class="line"><span class="cl"><span class="c1">## CentOS6 使用命令 resize2fs</span>
+</span></span><span class="line"><span class="cl">df -h</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="如果不是逻辑卷-lvm则直接挂载" class="heading-element">
+  <a href="#%e5%a6%82%e6%9e%9c%e4%b8%8d%e6%98%af%e9%80%bb%e8%be%91%e5%8d%b7-lvm%e5%88%99%e7%9b%b4%e6%8e%a5%e6%8c%82%e8%bd%bd" class="heading-mark"></a>如果不是逻辑卷 lvm，则直接挂载</h2><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 查看</span>
+</span></span><span class="line"><span class="cl">fdisk -l
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 新建分区</span>
+</span></span><span class="line"><span class="cl">fdisk /dev/sda
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">n -&gt; <span class="m">1</span> -&gt; 8e -&gt; w
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 格式化</span>
+</span></span><span class="line"><span class="cl">mkfs.ext4 /dev/sda1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 直接挂载到　/data</span>
+</span></span><span class="line"><span class="cl">mkdir -p /data
+</span></span><span class="line"><span class="cl">mount /dev/sda1 /data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vi /etc/fstab
+</span></span><span class="line"><span class="cl">/dev/sda1       /data   ext4    defaults        <span class="m">0</span>       <span class="m">0</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="ref" class="heading-element">
+  <a href="#ref" class="heading-mark"></a>Ref</h1><p><a href="https://juejin.cn/post/6998762369346174990"target="_blank" rel="external nofollow noopener noreferrer"><strong>Linux 将剩余未分区的磁盘空间挂载</strong><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2022-11-23-docker-%E4%BD%BF%E7%94%A8-systemctl/" title="Docker 使用 systemctl">Docker 使用 systemctl</a></li><li>
+          <a href="/2022-01-12-nerdtree-%E8%87%AA%E5%8A%A8%E5%88%87%E6%8D%A2%E5%88%B0%E5%BD%93%E5%89%8D%E7%9B%AE%E5%BD%95/" title="NerdTree 自动切换到当前目录">NerdTree 自动切换到当前目录</a></li><li>
+          <a href="/2021-11-20-linux-c-%E9%9A%90%E8%97%8F-cin-%E8%BE%93%E5%85%A5/" title="Linux c&#43;&#43; 隐藏 cin 输入">Linux c&#43;&#43; 隐藏 cin 输入</a></li><li>
+          <a href="/2021-08-23-python-%E6%9C%AC%E5%9C%B0%E5%AE%89%E8%A3%85-requirements.txt/" title="python 本地安装 requirements.txt">python 本地安装 requirements.txt</a></li><li>
+          <a href="/2021-08-20-clickhouse-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" title="Clickhouse 安装与使用">Clickhouse 安装与使用</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2022-11-23 16:31:58">更新于 2022-11-23&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/" data-title="Linux fdisk 将剩余未分区的磁盘空间挂载" data-hashtags="Linux,fdisk,lvm,lvextend,lvdisplay,vgdisplay"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/" data-title="Linux fdisk 将剩余未分区的磁盘空间挂载" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/" data-title="Linux fdisk 将剩余未分区的磁盘空间挂载"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2022-11-23-linux-fdisk-%E5%B0%86%E5%89%A9%E4%BD%99%E6%9C%AA%E5%88%86%E5%8C%BA%E7%9A%84%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E6%8C%82%E8%BD%BD/" data-title="Linux fdisk 将剩余未分区的磁盘空间挂载"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/fdisk/" class="post-tag" title="标签 - Fdisk">Fdisk</a><a href="/tags/lvm/" class="post-tag" title="标签 - Lvm">Lvm</a><a href="/tags/lvextend/" class="post-tag" title="标签 - Lvextend">Lvextend</a><a href="/tags/lvdisplay/" class="post-tag" title="标签 - Lvdisplay">Lvdisplay</a><a href="/tags/vgdisplay/" class="post-tag" title="标签 - Vgdisplay">Vgdisplay</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2022-11-23-docker-%E4%BD%BF%E7%94%A8-systemctl/" class="post-nav-item" rel="prev" title="Docker 使用 systemctl"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Docker 使用 systemctl</a>
+      <a href="/2022-11-24-dockerfile-%E4%BD%BF%E7%94%A8-ssh-%E4%B8%8B%E8%BD%BD%E7%A7%81%E6%9C%89-git-%E9%A1%B9%E7%9B%AE/" class="post-nav-item" rel="next" title="Dockerfile 使用 ssh 下载私有 git 项目">Dockerfile 使用 ssh 下载私有 git 项目<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

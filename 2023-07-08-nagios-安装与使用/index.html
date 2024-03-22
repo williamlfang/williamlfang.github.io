@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>nagios 安装与使用 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Docker 安装 nagios4 安装 nagios 1 2 3 4 5 6 docker pull jasonrivers/nagios docker run --rm --name nagios4 -p 0.0.0.0:8080:80 jasonrivers/nagios:latest ## 我们需要配置一个用户，我们让docker容器中的nagios配置文件跟虚拟机磁盘建立联系 mkdir" /><meta name="keywords" content='Linux, ubuntu, CentOS, nagios, log, httpd' /><meta itemprop="name" content="nagios 安装与使用">
+<meta itemprop="description" content="Docker 安装 nagios4 安装 nagios 1 2 3 4 5 6 docker pull jasonrivers/nagios docker run --rm --name nagios4 -p 0.0.0.0:8080:80 jasonrivers/nagios:latest ## 我们需要配置一个用户，我们让docker容器中的nagios配置文件跟虚拟机磁盘建立联系 mkdir"><meta itemprop="datePublished" content="2023-07-08T16:09:22+00:00" />
+<meta itemprop="dateModified" content="2023-07-08T16:09:22+00:00" />
+<meta itemprop="wordCount" content="788"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,ubuntu,CentOS,nagios,log,httpd," /><meta property="og:title" content="nagios 安装与使用" />
+<meta property="og:description" content="Docker 安装 nagios4 安装 nagios 1 2 3 4 5 6 docker pull jasonrivers/nagios docker run --rm --name nagios4 -p 0.0.0.0:8080:80 jasonrivers/nagios:latest ## 我们需要配置一个用户，我们让docker容器中的nagios配置文件跟虚拟机磁盘建立联系 mkdir" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-07-08T16:09:22+00:00" />
+<meta property="article:modified_time" content="2023-07-08T16:09:22+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="nagios 安装与使用"/>
+<meta name="twitter:description" content="Docker 安装 nagios4 安装 nagios 1 2 3 4 5 6 docker pull jasonrivers/nagios docker run --rm --name nagios4 -p 0.0.0.0:8080:80 jasonrivers/nagios:latest ## 我们需要配置一个用户，我们让docker容器中的nagios配置文件跟虚拟机磁盘建立联系 mkdir"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" /><link rel="prev" href="https://williamlfang.github.io/2023-07-05-ubuntu-install-r4.3/" /><link rel="next" href="https://williamlfang.github.io/2023-07-09-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "nagios 安装与使用",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8\/"
+    },"genre": "posts","keywords": "Linux, ubuntu, CentOS, nagios, log, httpd","wordcount":  788 ,
+    "url": "https:\/\/williamlfang.github.io\/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8\/","datePublished": "2023-07-08T16:09:22+00:00","dateModified": "2023-07-08T16:09:22+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>nagios 安装与使用</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2023-07-08 16:09:22"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2023-07-08">2023-07-08</time></span>&nbsp;<span title="788 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 800 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#docker-安装-nagios4">Docker 安装 nagios4</a>
+      <ol>
+        <li><a href="#安装-nagios">安装 nagios</a></li>
+        <li><a href="#安装-apache2-与-httpd">安装 apache2 与 httpd</a></li>
+        <li><a href="#启动服务">启动服务</a></li>
+      </ol>
+    </li>
+    <li><a href="#使用">使用</a>
+      <ol>
+        <li><a href="#配置-nagios4etc">配置 nagios4/etc</a></li>
+        <li><a href="#添加-host">添加 host</a></li>
+      </ol>
+    </li>
+    <li><a href="#客户端安装-nrpe">客户端安装 nrpe</a>
+      <ol>
+        <li><a href="#配置">配置</a></li>
+        <li><a href="#测试">测试</a></li>
+      </ol>
+    </li>
+    <li><a href="#ref">Ref</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2023-07-08，文中内容可能已过时。</div>
+      </div>
+    </div><h1 id="docker-安装-nagios4" class="heading-element">
+  <a href="#docker-%e5%ae%89%e8%a3%85-nagios4" class="heading-mark"></a>Docker 安装 nagios4</h1><h2 id="安装-nagios" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-nagios" class="heading-mark"></a>安装 nagios</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker pull jasonrivers/nagios
+</span></span><span class="line"><span class="cl">docker run --rm --name nagios4 -p 0.0.0.0:8080:80 jasonrivers/nagios:latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 我们需要配置一个用户，我们让docker容器中的nagios配置文件跟虚拟机磁盘建立联系</span>
+</span></span><span class="line"><span class="cl">mkdir -p /opt/nagios4/etc
+</span></span><span class="line"><span class="cl">docker cp nagios4:/opt/nagios/etc /opt/nagios4/</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后退出这个 <code>docker</code> (ctl-c)。接下来我们需要给账户设置密码，使用了 <code>htpasswd</code> 这个工具。</p>
+<h2 id="安装-apache2-与-httpd" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-apache2-%e4%b8%8e-httpd" class="heading-mark"></a>安装 apache2 与 httpd</h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## ubuntu</span>
+</span></span><span class="line"><span class="cl">sudo apt install apache2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## CentOS</span>
+</span></span><span class="line"><span class="cl">sudo yum install httpd
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 生成密码</span>
+</span></span><span class="line"><span class="cl">sudo htpasswd -c /opt/nagios4/etc/htpasswd.users nagiosadmin
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">New password:
+</span></span><span class="line"><span class="cl">Re-type new password:
+</span></span><span class="line"><span class="cl">Adding password <span class="k">for</span> user nagiosadmin</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="启动服务" class="heading-element">
+  <a href="#%e5%90%af%e5%8a%a8%e6%9c%8d%e5%8a%a1" class="heading-mark"></a>启动服务</h2><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run -d --name nagios4 -p 0.0.0.0:8080:80 -v /opt/nagios4/etc:/opt/nagios/etc jasonrivers/nagios:latest</span></span></code></pre></td></tr></table>
+</div>
+</div><p>现在可以使用账号访问网页：http://127.0.0.1:8080/。</p>
+<h1 id="使用" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8" class="heading-mark"></a>使用</h1><h2 id="配置-nagios4etc" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae-nagios4etc" class="heading-mark"></a>配置 nagios4/etc</h2><p>通过指定目录，实现以任意添加 <code>*.cfg</code> 文件的方式来增加客户端监控项目。</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p /opt/nagios4
+</span></span><span class="line"><span class="cl">sudo docker cp nagios4:/opt/nagios/etc /opt/nagios4
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vim /opt/nagios4/etc/nagios.cfg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#cfg_dir=/opt/nagios/etc/servers</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#cfg_dir=/opt/nagios/etc/printers</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#cfg_dir=/opt/nagios/etc/switches</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#cfg_dir=/opt/nagios/etc/routers</span>
+</span></span><span class="line"><span class="cl"><span class="nv">cfg_dir</span><span class="o">=</span>/opt/nagios/etc/colo-machines
+</span></span><span class="line"><span class="cl"><span class="nv">cfg_dir</span><span class="o">=</span>/opt/nagios/etc/research-machines</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="添加-host" class="heading-element">
+  <a href="#%e6%b7%bb%e5%8a%a0-host" class="heading-mark"></a>添加 host</h2><p>可以参考 <code>/opt/nagios/etc/objectes/localhost.cfg</code>， 比如这个客户端 <code>/opt/nagios4/etc/research-machines/m2.cfg</code></p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 中间的内容块是用于设置设备信息的</span>
+</span></span><span class="line"><span class="cl">define host <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># use 关键字表示使用的模版，模版将在后续讲解，此处使用的是 linux-server 模版</span>
+</span></span><span class="line"><span class="cl">    use                             linux-server
+</span></span><span class="line"><span class="cl">    <span class="c1"># host_name 关键字表示机器的名字，也是在 Web 界面中显示的名字</span>
+</span></span><span class="line"><span class="cl">    host_name                       M2
+</span></span><span class="line"><span class="cl">    <span class="c1"># alias 表示机器的别名，一般用作机器别名的描述</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">alias</span>                           M2@WuyaCapital
+</span></span><span class="line"><span class="cl">    <span class="c1"># address 设置该机器的 IP 地址，以便与数据的获取与被动监控的请求</span>
+</span></span><span class="line"><span class="cl">    address                         192.168.1.162
+</span></span><span class="line"><span class="cl">    <span class="c1"># 最大的尝试次数，也就是在某服务监控出错再次运行监控命令获取数据的次数</span>
+</span></span><span class="line"><span class="cl">    max_check_attempts              <span class="m">3</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 检测的时间段</span>
+</span></span><span class="line"><span class="cl">    check_period                    24x7
+</span></span><span class="line"><span class="cl">    <span class="c1"># 发送消息提醒的时间间隔</span>
+</span></span><span class="line"><span class="cl">    notification_interval           <span class="m">30</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 发送消息提醒的时间段</span>
+</span></span><span class="line"><span class="cl">    notification_period             24x7
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">define service<span class="o">{</span>
+</span></span><span class="line"><span class="cl">    use                             local-service,graphed-service         <span class="p">;</span> Name of service template to use
+</span></span><span class="line"><span class="cl">    host_name                       M2
+</span></span><span class="line"><span class="cl">    service_description             Current Users
+</span></span><span class="line"><span class="cl">    check_command                   check_nrpe!check_users
+</span></span><span class="line"><span class="cl">    check_interval                  <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    retry_interval                  <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    check_period                    24x7
+</span></span><span class="line"><span class="cl">    notification_interval           <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    notification_period             24x7
+</span></span><span class="line"><span class="cl">    notifications_enabled           <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    register                        <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">define service<span class="o">{</span>
+</span></span><span class="line"><span class="cl">    use                             local-service,graphed-service         <span class="p">;</span> Name of service template to use
+</span></span><span class="line"><span class="cl">    host_name                       M2
+</span></span><span class="line"><span class="cl">    service_description             Total Procs
+</span></span><span class="line"><span class="cl">    check_command                   check_nrpe!check_total_procs
+</span></span><span class="line"><span class="cl">    check_interval                  <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    retry_interval                  <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    check_period                    24x7
+</span></span><span class="line"><span class="cl">    notification_interval           <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    notification_period             24x7
+</span></span><span class="line"><span class="cl">    notifications_enabled           <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    register                        <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时，我们需要修改命令</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim /opt/nagios4/etc/objects/command.cfg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># &#39;check_NRPE&#39; command definition</span>
+</span></span><span class="line"><span class="cl">define command<span class="o">{</span>
+</span></span><span class="line"><span class="cl">        command_name check_nrpe
+</span></span><span class="line"><span class="cl">        command_line <span class="nv">$USER1</span>$/check_nrpe -H <span class="nv">$HOSTADDRESS</span>$ -c <span class="nv">$ARG1</span>$
+</span></span><span class="line"><span class="cl">        <span class="o">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="客户端安装-nrpe" class="heading-element">
+  <a href="#%e5%ae%a2%e6%88%b7%e7%ab%af%e5%ae%89%e8%a3%85-nrpe" class="heading-mark"></a>客户端安装 nrpe</h1><h2 id="配置" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae" class="heading-mark"></a>配置</h2><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim /etc/nagios/nrpe.cfg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">command<span class="o">[</span>check_users<span class="o">]=</span>/usr/local/nagios/libexec/check_users -w <span class="m">5</span> -c <span class="m">10</span>
+</span></span><span class="line"><span class="cl">command<span class="o">[</span>check_load<span class="o">]=</span>/usr/local/nagios/libexec/check_load -r -w .15,.10,.05 -c .30,.25,.20
+</span></span><span class="line"><span class="cl">command<span class="o">[</span>check_hda1<span class="o">]=</span>/usr/local/nagios/libexec/check_disk -w 20% -c 10% -p /dev/hda1
+</span></span><span class="line"><span class="cl">command<span class="o">[</span>check_zombie_procs<span class="o">]=</span>/usr/local/nagios/libexec/check_procs -w <span class="m">5</span> -c <span class="m">10</span> -s Z
+</span></span><span class="line"><span class="cl">command<span class="o">[</span>check_total_procs<span class="o">]=</span>/usr/local/nagios/libexec/check_procs -w <span class="m">150</span> -c <span class="m">200</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">allowed_hosts</span><span class="o">=</span>127.0.0.1,192.168.1.82</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemctl <span class="nb">enable</span> nrpe
+</span></span><span class="line"><span class="cl">systemctl start nrpe</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="测试" class="heading-element">
+  <a href="#%e6%b5%8b%e8%af%95" class="heading-mark"></a>测试</h2><div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 服务器测试</span>
+</span></span><span class="line"><span class="cl">/opt/nagios/libexec/check_nrpe  -H 192.168.1.162 -p <span class="m">5666</span> -c check_total_procs
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">PROCS CRITICAL: <span class="m">605</span> processes <span class="p">|</span> <span class="nv">procs</span><span class="o">=</span>605<span class="p">;</span>150<span class="p">;</span>200<span class="p">;</span>0<span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="ref" class="heading-element">
+  <a href="#ref" class="heading-mark"></a>Ref</h1><ul>
+<li><a href="https://gist.github.com/evanjuang/d81ca6f05aa02e2d92ad68f5f867235c"target="_blank" rel="external nofollow noopener noreferrer">Nagios on CentOS 7<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2021-08-11-linux-%E8%A7%A3%E5%8E%8B-zip-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" title="Linux 解压 zip 中文乱码">Linux 解压 zip 中文乱码</a></li><li>
+          <a href="/2023-07-05-ubuntu-install-r4.3/" title="ubuntu install R4.3">ubuntu install R4.3</a></li><li>
+          <a href="/2023-06-26-zsh-no-match-found-for-/" title="zsh no match found for *">zsh no match found for *</a></li><li>
+          <a href="/2023-06-18-linux-%E8%AE%BE%E7%BD%AE-cpu-%E9%AB%98%E6%80%A7%E8%83%BDperformance%E6%A8%A1%E5%BC%8F/" title="Linux 设置 cpu 高性能performance模式">Linux 设置 cpu 高性能performance模式</a></li><li>
+          <a href="/2023-06-16-linux--%E6%96%B0%E8%B4%AD%E7%A1%AC%E7%9B%98%E6%89%A9%E5%AE%B9/" title="Linux: 新购硬盘扩容">Linux: 新购硬盘扩容</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2023-07-08 16:09:22">更新于 2023-07-08&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" data-title="nagios 安装与使用" data-hashtags="Linux,ubuntu,CentOS,nagios,log,httpd"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" data-title="nagios 安装与使用" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" data-title="nagios 安装与使用"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" data-title="nagios 安装与使用"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/ubuntu/" class="post-tag" title="标签 - Ubuntu">Ubuntu</a><a href="/tags/centos/" class="post-tag" title="标签 - CentOS">CentOS</a><a href="/tags/nagios/" class="post-tag" title="标签 - Nagios">Nagios</a><a href="/tags/log/" class="post-tag" title="标签 - Log">Log</a><a href="/tags/httpd/" class="post-tag" title="标签 - Httpd">Httpd</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2023-07-05-ubuntu-install-r4.3/" class="post-nav-item" rel="prev" title="ubuntu install R4.3"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>ubuntu install R4.3</a>
+      <a href="/2023-07-09-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="post-nav-item" rel="next" title="nagios 安装与使用">nagios 安装与使用<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

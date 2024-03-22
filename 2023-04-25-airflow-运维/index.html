@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>airflow 运维 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="使用 airflow 管理工作流。" /><meta name="keywords" content='linux, airflow, workflow, ops, devops' /><meta itemprop="name" content="airflow 运维">
+<meta itemprop="description" content="使用 airflow 管理工作流。"><meta itemprop="datePublished" content="2023-04-25T15:09:25+00:00" />
+<meta itemprop="dateModified" content="2023-04-25T15:09:25+00:00" />
+<meta itemprop="wordCount" content="986"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="linux,airflow,workflow,ops,devops," /><meta property="og:title" content="airflow 运维" />
+<meta property="og:description" content="使用 airflow 管理工作流。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-04-25T15:09:25+00:00" />
+<meta property="article:modified_time" content="2023-04-25T15:09:25+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="airflow 运维"/>
+<meta name="twitter:description" content="使用 airflow 管理工作流。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/" /><link rel="prev" href="https://williamlfang.github.io/2023-04-25-nginx-%E9%83%A8%E7%BD%B2%E5%B0%8F%E8%AE%B0/" /><link rel="next" href="https://williamlfang.github.io/2023-04-25-sqlite-%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "airflow 运维",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2023-04-25-airflow-%E8%BF%90%E7%BB%B4\/"
+    },"genre": "posts","keywords": "linux, airflow, workflow, ops, devops","wordcount":  986 ,
+    "url": "https:\/\/williamlfang.github.io\/2023-04-25-airflow-%E8%BF%90%E7%BB%B4\/","datePublished": "2023-04-25T15:09:25+00:00","dateModified": "2023-04-25T15:09:25+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>airflow 运维</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2023-04-25 15:09:25"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2023-04-25">2023-04-25</time></span>&nbsp;<span title="986 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#install">Install</a>
+      <ol>
+        <li><a href="#添加用户">添加用户</a></li>
+        <li><a href="#启动">启动</a></li>
+        <li><a href="#测试">测试</a></li>
+        <li><a href="#切换-db-数据库">切换 db 数据库</a>
+          <ol>
+            <li><a href="#mysql"><del>MySQL</del></a></li>
+          </ol>
+        </li>
+        <li><a href="#mariadb">MariaDB</a></li>
+      </ol>
+    </li>
+    <li><a href="#ref">Ref</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2023-04-25，文中内容可能已过时。</div>
+      </div>
+    </div><p>使用 <code>airflow</code> 管理工作流。</p>
+<h1 id="install" class="heading-element">
+  <a href="#install" class="heading-mark"></a>Install</h1><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 设置 DAG 目录</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AIRFLOW_HOME</span><span class="o">=</span>/root/app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 不显示 example 案例</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">AIRFLOW__CORE__LOAD_EXAMPLES</span><span class="o">=</span>False
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">airflow db init</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="添加用户" class="heading-element">
+  <a href="#%e6%b7%bb%e5%8a%a0%e7%94%a8%e6%88%b7" class="heading-mark"></a>添加用户</h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 需要确保 $AIRFLOW_HOME 是存在的，否则触发不同的 db，会导致数据库匹配不对，进而引发账户-密码错误</span>
+</span></span><span class="line"><span class="cl">airflow users create <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --username admin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --firstname admin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --lastname admin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --role Admin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --email admin@example.org</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="启动" class="heading-element">
+  <a href="#%e5%90%af%e5%8a%a8" class="heading-mark"></a>启动</h2><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 启动 webserver</span>
+</span></span><span class="line"><span class="cl">airflow webserver -p <span class="m">8080</span> -D
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 启动 scheduler</span>
+</span></span><span class="line"><span class="cl">airflow scheduler -D
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 1. vim ariflow.cfg</span>
+</span></span><span class="line"><span class="cl"><span class="nv">default_timezone</span> <span class="o">=</span> utc 修改为 <span class="nv">default_timezone</span> <span class="o">=</span> Asia/Shanghai
+</span></span><span class="line"><span class="cl"><span class="nv">default_ui_timezone</span> <span class="o">=</span> UTC 修改为 <span class="nv">default_ui_timezone</span> <span class="o">=</span> Asia/Shanghai</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="测试" class="heading-element">
+  <a href="#%e6%b5%8b%e8%af%95" class="heading-mark"></a>测试</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 先用 Python 测试代码</span>
+</span></span><span class="line"><span class="cl">python hello.py
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">airflow tasks list hello
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">airflow tasks <span class="nb">test</span> hello print_date
+</span></span><span class="line"><span class="cl">airflow tasks <span class="nb">test</span> hello py_say_hello <span class="m">20230514</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 启动一个 dag</span>
+</span></span><span class="line"><span class="cl">airflow dags list
+</span></span><span class="line"><span class="cl">airflow dags trigger pretrading.all.csv</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="切换-db-数据库" class="heading-element">
+  <a href="#%e5%88%87%e6%8d%a2-db-%e6%95%b0%e6%8d%ae%e5%ba%93" class="heading-mark"></a>切换 db 数据库</h2><p><code>airflow</code> 内置的默认数据库是 <code>sqlite</code>，这个主要是为了方便测试，不需要额外的配置即可启动 <code>airflow</code>。但是这种情况下，只能使用 <code>SequencialOperator</code>，无法实现并行化，因此官方不推荐。</p>
+<p>我们可以修改数据库为 <code>Postgre</code> 或者 <code>MySQl</code>，进行实现并行化。</p>
+<h3 id="mysql" class="heading-element">
+  <a href="#mysql" class="heading-mark"></a><del>MySQL</del></h3><h2 id="mariadb" class="heading-element">
+  <a href="#mariadb" class="heading-mark"></a>MariaDB</h2><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 需要这个 so 放在 /app</span>
+</span></span><span class="line"><span class="cl">libmysqlclient.so.18
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">setenforce <span class="m">0</span>
+</span></span><span class="line"><span class="cl">getenforce
+</span></span><span class="line"><span class="cl">vim /etc/selinux/config
+</span></span><span class="line"><span class="cl"><span class="nv">SELINUX</span><span class="o">=</span>disabled
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># This file controls the state of SELinux on the system.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># SELINUX= can take one of these three values:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enforcing - SELinux security policy is enforced.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># permissive - SELinux prints warnings instead of enforcing.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># disabled - No SELinux policy is loaded.</span>
+</span></span><span class="line"><span class="cl"><span class="nv">SELINUX</span><span class="o">=</span>disabled
+</span></span><span class="line"><span class="cl"><span class="c1"># SELINUXTYPE= can take one of three two values:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># targeted - Targeted processes are protected,</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># minimum - Modification of targeted policy. Only selected processes are protected.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># mls - Multi Level Security protection.</span>
+</span></span><span class="line"><span class="cl"><span class="nv">SELINUXTYPE</span><span class="o">=</span>targeted
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql-2022
+</span></span><span class="line"><span class="cl">sudo yum localinstall -y https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+</span></span><span class="line"><span class="cl">sudo yum install -y mysql-community-server
+</span></span><span class="line"><span class="cl">sudo systemctl start mysqld
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 首次安装的密码</span>
+</span></span><span class="line"><span class="cl">grep <span class="s2">&#34;temporary password&#34;</span> /var/log/mysqld.log
+</span></span><span class="line"><span class="cl"><span class="c1">## 如果办法登录</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 则使用一下方法，可以直接 mysql -u root -p 不用输秘密</span>
+</span></span><span class="line"><span class="cl">Open and edit /etc/my.cnf or /etc/mysql/my.cnf, depending on your distribution.
+</span></span><span class="line"><span class="cl">Add skip-grant-tables under <span class="o">[</span>mysqld<span class="o">]</span>
+</span></span><span class="line"><span class="cl">Restart MySQL
+</span></span><span class="line"><span class="cl">You should be able to log in to MySQL now using the below <span class="nb">command</span> mysql -u root -p
+</span></span><span class="line"><span class="cl">Run mysql&gt; flush privileges<span class="p">;</span>
+</span></span><span class="line"><span class="cl">Set new password by ALTER USER <span class="s1">&#39;root&#39;</span>@<span class="s1">&#39;localhost&#39;</span> IDENTIFIED BY <span class="s1">&#39;NewPassword&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">Go back to /etc/my.cnf and remove/comment skip-grant-tables
+</span></span><span class="line"><span class="cl">Restart MySQL
+</span></span><span class="line"><span class="cl">Now you will be able to login with the new password mysql -u root -p
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 报错：Your password does not satisfy the current policy requirements</span>
+</span></span><span class="line"><span class="cl">mysql&gt; SHOW VARIABLES LIKE <span class="s1">&#39;validate_password%&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">+--------------------------------------+--------+
+</span></span><span class="line"><span class="cl"><span class="p">|</span> Variable_name                        <span class="p">|</span> Value  <span class="p">|</span>
+</span></span><span class="line"><span class="cl">+--------------------------------------+--------+
+</span></span><span class="line"><span class="cl"><span class="p">|</span> validate_password_check_user_name    <span class="p">|</span> OFF    <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> validate_password_dictionary_file    <span class="p">|</span>        <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> validate_password_length             <span class="p">|</span> <span class="m">8</span>      <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> validate_password_mixed_case_count   <span class="p">|</span> <span class="m">1</span>      <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> validate_password_number_count       <span class="p">|</span> <span class="m">1</span>      <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> validate_password_policy             <span class="p">|</span> MEDIUM <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> validate_password_special_char_count <span class="p">|</span> <span class="m">1</span>      <span class="p">|</span>
+</span></span><span class="line"><span class="cl">+--------------------------------------+--------+
+</span></span><span class="line"><span class="cl"><span class="m">7</span> rows in <span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mysql&gt; SET GLOBAL <span class="nv">validate_password_length</span> <span class="o">=</span> 6<span class="p">;</span>
+</span></span><span class="line"><span class="cl">mysql&gt; SET GLOBAL <span class="nv">validate_password_policy</span> <span class="o">=</span> LOW<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mysql -uroot -p
+</span></span><span class="line"><span class="cl">CREATE DATABASE IF NOT EXISTS airflow DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci<span class="p">;</span>
+</span></span><span class="line"><span class="cl">create user <span class="s1">&#39;airflow&#39;</span>@<span class="s1">&#39;%&#39;</span> identified by <span class="s1">&#39;xxxxxxxx&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">grant all privileges on airflow.* to airflow@localhost identified by <span class="s1">&#39;xxxxxxxx&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">grant all privileges on airflow.* to <span class="s1">&#39;airflow&#39;</span>@<span class="s1">&#39;%&#39;</span> identified by <span class="s1">&#39;xxxxxxxx&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">flush privileges<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">select</span> user,authentication_string,host from mysql.user<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">+---------------+-------------------------------------------+-----------+
+</span></span><span class="line"><span class="cl"><span class="p">|</span> user          <span class="p">|</span> authentication_string                     <span class="p">|</span> host      <span class="p">|</span>
+</span></span><span class="line"><span class="cl">+---------------+-------------------------------------------+-----------+
+</span></span><span class="line"><span class="cl"><span class="p">|</span> root          <span class="p">|</span> *51F9815BB277B91759503A29D46EC9364D361F1C <span class="p">|</span> localhost <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> mysql.session <span class="p">|</span> *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE <span class="p">|</span> localhost <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> mysql.sys     <span class="p">|</span> *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE <span class="p">|</span> localhost <span class="p">|</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> airflow       <span class="p">|</span> *51F9815BB277B91759503A29D46EC9364D361F1C <span class="p">|</span> %         <span class="p">|</span>
+</span></span><span class="line"><span class="cl">+---------------+-------------------------------------------+-----------+
+</span></span><span class="line"><span class="cl"><span class="m">4</span> rows in <span class="nb">set</span> <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">executor</span> <span class="o">=</span> LocalExecutor
+</span></span><span class="line"><span class="cl"><span class="nv">sql_alchemy_conn</span> <span class="o">=</span> mysql://airflow:xxxxxxxx@localhost:3306/airflow?charset<span class="o">=</span>utf8
+</span></span><span class="line"><span class="cl"><span class="c1">#初始化数据库</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#如果前面的两个utf8没写好，可能会出现/airflow/lib/python3.7/encodings/cp1252.py错误</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 若之前使用sqllite初始化过,需要</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 重置数据库</span>
+</span></span><span class="line"><span class="cl">airflow db reset
+</span></span><span class="line"><span class="cl"><span class="c1"># 初始化数据库</span>
+</span></span><span class="line"><span class="cl">airflow db init
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 1067 - Invalid default value for ‘update_at‘</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## MySQLdb.OperationalError: (1067, &#34;Invalid default value for &#39;updated_at&#39;&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> GLOBAL <span class="nv">sql_mode</span> <span class="o">=</span><span class="s1">&#39;STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="ref" class="heading-element">
+  <a href="#ref" class="heading-mark"></a>Ref</h1></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-02-24-%E8%AF%81%E5%88%B8%E8%A1%8C%E6%83%85%E8%B0%83%E4%BC%98%E6%94%BB%E7%95%A5/" title="证券行情调优攻略">证券行情调优攻略</a></li><li>
+          <a href="/2022-09-13-linux-%E8%AE%BE%E7%BD%AE%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%E7%A8%8B%E5%BA%8F/" title="linux 设置超级用户程序">linux 设置超级用户程序</a></li><li>
+          <a href="/2022-09-10-git-%E6%B7%BB%E5%8A%A0%E9%9D%9E%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/" title="git 添加非用户权限">git 添加非用户权限</a></li><li>
+          <a href="/2022-05-13-%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%88%91%E8%BF%BD%E7%9A%84%E5%8D%9A%E5%AE%A2%E4%BB%AC/" title="那些年我追的博客们">那些年我追的博客们</a></li><li>
+          <a href="/2022-04-24-terminator-%E9%85%8D%E7%BD%AE%E6%96%B9%E6%A1%88/" title="Terminator 配置方案">Terminator 配置方案</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2023-04-25 15:09:25">更新于 2023-04-25&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/" data-title="airflow 运维" data-hashtags="linux,airflow,workflow,ops,devops"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/" data-hashtag="linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/" data-title="airflow 运维" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/" data-title="airflow 运维"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/" data-title="airflow 运维"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/airflow/" class="post-tag" title="标签 - Airflow">Airflow</a><a href="/tags/workflow/" class="post-tag" title="标签 - Workflow">Workflow</a><a href="/tags/ops/" class="post-tag" title="标签 - Ops">Ops</a><a href="/tags/devops/" class="post-tag" title="标签 - Devops">Devops</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2023-04-25-nginx-%E9%83%A8%E7%BD%B2%E5%B0%8F%E8%AE%B0/" class="post-nav-item" rel="prev" title="nginx 部署小记"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>nginx 部署小记</a>
+      <a href="/2023-04-25-sqlite-%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91/" class="post-nav-item" rel="next" title="sqlite 源代码编译">sqlite 源代码编译<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

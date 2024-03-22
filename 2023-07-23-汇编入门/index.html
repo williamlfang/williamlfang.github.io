@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>汇编入门 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="最近在学习汇编语言，这里做一下简要的记录，主要使用的参考书：
+
+Jonathan Bartlett: Learn to Program with Assembly: Foundational Learning for New Programmers
+Jonathan Bartlett: Programming from the Ground Up
+CSci 241: Assembly Language Programming
+MIT Computation Structures
+
+其实，我最早是先看了 PGU，因为这是一本开源书籍，后来才看阅读 LPA，发现 LPA 其实是 PGU 的出版社书籍，是对 PGU 进行更加系统化的整理，并升级了汇编到 x86-64 。所以推荐直接看 LPA 即可。" /><meta name="keywords" content='Linux, assembly, cs, x86, x86-64, 汇编, 编程, 计算机' /><meta itemprop="name" content="汇编入门">
+<meta itemprop="description" content="最近在学习汇编语言，这里做一下简要的记录，主要使用的参考书：
+
+Jonathan Bartlett: Learn to Program with Assembly: Foundational Learning for New Programmers
+Jonathan Bartlett: Programming from the Ground Up
+CSci 241: Assembly Language Programming
+MIT Computation Structures
+
+其实，我最早是先看了 PGU，因为这是一本开源书籍，后来才看阅读 LPA，发现 LPA 其实是 PGU 的出版社书籍，是对 PGU 进行更加系统化的整理，并升级了汇编到 x86-64 。所以推荐直接看 LPA 即可。"><meta itemprop="datePublished" content="2023-07-23T13:03:14+00:00" />
+<meta itemprop="dateModified" content="2023-07-23T13:03:14+00:00" />
+<meta itemprop="wordCount" content="4030"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,assembly,cs,x86,x86-64,汇编,编程,计算机," /><meta property="og:title" content="汇编入门" />
+<meta property="og:description" content="最近在学习汇编语言，这里做一下简要的记录，主要使用的参考书：
+
+Jonathan Bartlett: Learn to Program with Assembly: Foundational Learning for New Programmers
+Jonathan Bartlett: Programming from the Ground Up
+CSci 241: Assembly Language Programming
+MIT Computation Structures
+
+其实，我最早是先看了 PGU，因为这是一本开源书籍，后来才看阅读 LPA，发现 LPA 其实是 PGU 的出版社书籍，是对 PGU 进行更加系统化的整理，并升级了汇编到 x86-64 。所以推荐直接看 LPA 即可。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-07-23T13:03:14+00:00" />
+<meta property="article:modified_time" content="2023-07-23T13:03:14+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="汇编入门"/>
+<meta name="twitter:description" content="最近在学习汇编语言，这里做一下简要的记录，主要使用的参考书：
+
+Jonathan Bartlett: Learn to Program with Assembly: Foundational Learning for New Programmers
+Jonathan Bartlett: Programming from the Ground Up
+CSci 241: Assembly Language Programming
+MIT Computation Structures
+
+其实，我最早是先看了 PGU，因为这是一本开源书籍，后来才看阅读 LPA，发现 LPA 其实是 PGU 的出版社书籍，是对 PGU 进行更加系统化的整理，并升级了汇编到 x86-64 。所以推荐直接看 LPA 即可。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/" /><link rel="prev" href="https://williamlfang.github.io/2023-07-18-python3.11-%E6%97%A0%E6%B3%95%E5%AE%89%E8%A3%85-pycrypto/" /><link rel="next" href="https://williamlfang.github.io/2023-07-25-bash%E5%85%A5%E9%97%A8/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "汇编入门",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8\/"
+    },"genre": "posts","keywords": "Linux, assembly, cs, x86, x86-64, 汇编, 编程, 计算机","wordcount":  4030 ,
+    "url": "https:\/\/williamlfang.github.io\/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8\/","datePublished": "2023-07-23T13:03:14+00:00","dateModified": "2023-07-23T13:03:14+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>汇编入门</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/learning/" class="post-category" title="分类 - Learning"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Learning</a></span></div><div class="post-meta-line"><span title="发布于 2023-07-23 13:03:14"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2023-07-23">2023-07-23</time></span>&nbsp;<span title="4030 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 4100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 9 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#ch01为何学习汇编">Ch01：为何学习汇编</a>
+      <ol>
+        <li><a href="#理解计算机内部">理解计算机内部</a></li>
+        <li><a href="#学习汇编的好处">学习汇编的好处</a></li>
+        <li><a href="#汇编版本intel-vs-att">汇编版本：Intel vs AT&amp;T</a>
+          <ol>
+            <li><a href="#isa指令集">ISA：指令集</a></li>
+            <li><a href="#intel-与-att-风格">Intel 与 AT&amp;T 风格</a></li>
+            <li><a href="#r-vs-e">%r vs %e</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#ch02理解计算机如何工作">Ch02：理解计算机如何工作</a>
+      <ol>
+        <li><a href="#cpu-的组成与运行">CPU 的组成与运行</a></li>
+      </ol>
+    </li>
+    <li><a href="#ch03汇编基础">Ch03：汇编基础</a>
+      <ol>
+        <li><a href="#汇编语法">汇编语法</a>
+          <ol>
+            <li><a href="#globalglobl">global(globl)</a></li>
+            <li><a href="#_startentry-point">_start：entry point</a></li>
+            <li><a href="#label">label</a></li>
+            <li><a href="#rax-system-call-code">%rax: system call code</a></li>
+            <li><a href="#rdi-exit-status-code">%rdi: exit status code</a></li>
+          </ol>
+        </li>
+        <li><a href="#汇编工具">汇编工具</a>
+          <ol>
+            <li><a href="#as">as</a></li>
+            <li><a href="#ld">ld</a></li>
+          </ol>
+        </li>
+        <li><a href="#汇编周边相关工具">汇编周边（相关工具）</a>
+          <ol>
+            <li><a href="#hexdump">hexdump</a></li>
+            <li><a href="#objdump">objdump</a></li>
+          </ol>
+        </li>
+        <li><a href="#gdbcgdb">gdb(cgdb)</a>
+          <ol>
+            <li><a href="#disassemble">disassemble</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#ch04assembly-programming">Ch04：Assembly Programming</a>
+      <ol>
+        <li><a href="#寄存器">寄存器</a>
+          <ol>
+            <li><a href="#不同功能的寄存器">不同功能的寄存器</a></li>
+            <li><a href="#使用不同的字节计算内存与性能">使用不同的字节计算（内存与性能）</a></li>
+          </ol>
+        </li>
+        <li><a href="#运算符">运算符</a>
+          <ol>
+            <li><a href="#比较">比较</a>
+              <ol>
+                <li><a href="#eflags"><code>%eflags</code></a></li>
+                <li><a href="#cmp">cmp</a></li>
+              </ol>
+            </li>
+            <li><a href="#跳转">跳转</a>
+              <ol>
+                <li><a href="#数据">数据</a></li>
+                <li><a href="#bit-操作">bit 操作</a></li>
+              </ol>
+            </li>
+            <li><a href="#stack-与-function">stack 与 function</a></li>
+            <li><a href="#汇编函数">汇编函数</a></li>
+            <li><a href="#系统调用">系统调用</a></li>
+            <li><a href="#模块与链接">模块与链接</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#ch05计算机架构与设计">Ch05：计算机架构与设计</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2023-07-23，文中内容可能已过时。</div>
+      </div>
+    </div><p>最近在学习汇编语言，这里做一下简要的记录，主要使用的参考书：</p>
+<ul>
+<li>Jonathan Bartlett: <a href="https://www.amazon.com/-/zh/dp/1484274369/ref=sr_1_1?keywords=learn&#43;to&#43;program&#43;with&#43;assembly&amp;qid=1690090378&amp;sprefix=learn&#43;to&#43;program%2Caps%2C380&amp;sr=8-1"target="_blank" rel="external nofollow noopener noreferrer">Learn to Program with Assembly: Foundational Learning for New Programmers<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li>Jonathan Bartlett: <a href="https://www.amazon.com/-/zh/dp/0975283847/ref=sr_1_5?__mk_zh_CN=%E4%BA%9A%E9%A9%AC%E9%80%8A%E7%BD%91%E7%AB%99&amp;crid=3HQWUL7PU4EDU&amp;keywords=Jonathan&#43;Bartlett&amp;qid=1690090419&amp;sprefix=learn&#43;to&#43;program&#43;with&#43;assembly%2Caps%2C884&amp;sr=8-5"target="_blank" rel="external nofollow noopener noreferrer">Programming from the Ground Up<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://staffwww.fullcoll.edu/aclifton/courses/cs241/"target="_blank" rel="external nofollow noopener noreferrer">CSci 241: Assembly Language Programming<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://ocw.mit.edu/courses/6-004-computation-structures-spring-2017/"target="_blank" rel="external nofollow noopener noreferrer">MIT Computation Structures<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul>
+<p>其实，我最早是先看了 PGU，因为这是一本开源书籍，后来才看阅读 LPA，发现 LPA 其实是 PGU 的出版社书籍，是对 PGU 进行更加系统化的整理，并升级了汇编到 <code>x86-64</code> 。所以推荐直接看 LPA 即可。</p>
+<h1 id="ch01为何学习汇编" class="heading-element">
+  <a href="#ch01%e4%b8%ba%e4%bd%95%e5%ad%a6%e4%b9%a0%e6%b1%87%e7%bc%96" class="heading-mark"></a>Ch01：为何学习汇编</h1><h2 id="理解计算机内部" class="heading-element">
+  <a href="#%e7%90%86%e8%a7%a3%e8%ae%a1%e7%ae%97%e6%9c%ba%e5%86%85%e9%83%a8" class="heading-mark"></a>理解计算机内部</h2><p>计算机编程语言划分为</p>
+<ul>
+<li>High-level programming languages （HLPL）</li>
+<li>Low-level programming languages （LLPL）</li>
+</ul>
+<p>对于大部分的程序员，我们一般都使用 HLPL 进行编程开发，而较少使用（甚至看不懂）LLPL。这是因为随着计算机技术的发展，越来越多的高级编程语言为我们做了太多的事情，使得我们远离底层、面向问题进行编程。HLPL 主要做的事情是：</p>
+<ul>
+<li>通过逐层的抽象（Abstract），允许程序员尽量远离计算机底层技术，而直接调用编程语言提供的语法糖进行操作。这些编程语言通过 <code>compiler</code> 或者 <code>interpreter</code> 翻译成机器语言</li>
+<li>程序员不再思考计算机内部如何实现指令运算，而只需要按照高级程序语言的规则，把问题空间映射到解决方案空间。</li>
+</ul>
+<p>然后，如果我们需要更深入的理解计算机内部的运行机制，理解我们在高级编程语言设计的求解方案如何被映射到计算机的运行指令（机器语言，<code>0-1</code>），就需要站在计算的解读思考，理解操作指令在内部是如何被执行的。</p>
+<p>虽然现代计算机已经高度智能化，AI 正如火如荼的渗入我们生活的各个方面。但在底层，计算机其实只能进行有限的运算，理解特定的操作指令，即二进制代码（亦或机器代码）。我们这里说的理解计算机，当然不是直接去看由这些 <code>0-1</code> 所组成的机器代码，而是以人类可以理解的方式阅读机器代码。这就是汇编语言（<code>Assemly Language</code>）。</p>
+<p>可以把汇编理解成机器代码的翻译，而且这种关系是<strong>一一映射</strong>，即一个汇编指令就是代表一条计算机所能执行的最小单元指令，如数字相加：</p>
+<ul>
+<li>
+<p>对于高级语言：<code>a = 0 + 1</code></p>
+</li>
+<li>
+<p>对于机器代码：<code>48 83 c7 01</code></p>
+</li>
+<li>
+<p>对于汇编语言：<code>addq $1 %rdi</code></p>
+</li>
+</ul>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.global _start
+</span></span><span class="line"><span class="cl">_start:
+</span></span><span class="line"><span class="cl">    movq    $60, %rax
+</span></span><span class="line"><span class="cl">    movq    $0, %rdi
+</span></span><span class="line"><span class="cl">    addq    $1, %rdi
+</span></span><span class="line"><span class="cl">    syscall</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## assembling and linker into executable(elf)</span>
+</span></span><span class="line"><span class="cl">as test.asm -o test.o
+</span></span><span class="line"><span class="cl">ld test.o -o <span class="nb">test</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## run</span>
+</span></span><span class="line"><span class="cl">./test
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$?</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## disassembly with AT&amp;T</span>
+</span></span><span class="line"><span class="cl">objdump -M att -d test.o
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">test.o:     file format elf64-x86-64
+</span></span><span class="line"><span class="cl">Disassembly of section .text:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">0000000000000000</span> &lt;_start&gt;:
+</span></span><span class="line"><span class="cl">   0:   <span class="m">48</span> c7 c0 3c <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>    mov    <span class="nv">$0</span>x3c,%rax
+</span></span><span class="line"><span class="cl">   7:   <span class="m">48</span> c7 c7 <span class="m">00</span> <span class="m">00</span> <span class="m">00</span> <span class="m">00</span>    mov    <span class="nv">$0</span>x0,%rdi
+</span></span><span class="line"><span class="cl">   e:   <span class="m">48</span> <span class="m">83</span> c7 <span class="m">01</span>             add    <span class="nv">$0</span>x1,%rdi
+</span></span><span class="line"><span class="cl">  12:   0f <span class="m">05</span>                   syscall</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过上面的例子，我们可以知道计算系在底层是如何进行运算的</p>
+<ul>
+<li>先给寄存器 <code>%rdi</code> 初始化</li>
+<li>然后对寄存器 <code>%rdi</code> 执行 <code>add</code> 指令，这个对应对应了机器代码 <code>83</code></li>
+</ul>
+<p>可见，无论我们是否从事汇编开发，了解一些关于汇编的知识，有助于我们更加深入了解计算机内部的运行机制（英文说法是：under the hood）。</p>
+<h2 id="学习汇编的好处" class="heading-element">
+  <a href="#%e5%ad%a6%e4%b9%a0%e6%b1%87%e7%bc%96%e7%9a%84%e5%a5%bd%e5%a4%84" class="heading-mark"></a>学习汇编的好处</h2><ul>
+<li>know how the computer really works, underneath the hood, fundamentally</li>
+<li>demystifying the operation of your most basic tool: the processor, how the processor itself thinks about the code</li>
+<li>better mental model of compiler, debugging, optimization, high-performance-related work</li>
+</ul>
+<h2 id="汇编版本intel-vs-att" class="heading-element">
+  <a href="#%e6%b1%87%e7%bc%96%e7%89%88%e6%9c%acintel-vs-att" class="heading-mark"></a>汇编版本：Intel vs AT&amp;T</h2><p>在上面的例子中，我们使用了 <code>objdump</code> 工具用来<strong>把二进制代码翻译成汇编语言</strong>，其中</p>
+<ul>
+<li>
+<p><code>-d</code> 表示 <code>disassemle</code>，即反汇编。</p>
+</li>
+<li>
+<p><code>-M att</code> 表示使用 <code>AT&amp;T</code> 汇编风格展示</p>
+</li>
+</ul>
+<h3 id="isa指令集" class="heading-element">
+  <a href="#isa%e6%8c%87%e4%bb%a4%e9%9b%86" class="heading-mark"></a>ISA：指令集</h3><p><code>Instrument Set Architecture</code>（ISA）表示计算机可以识别的不同指令架构，主流的有：</p>
+<ul>
+<li><code>x86</code> 指令集，包括 <code>x86-32</code> 、<code>x86-64</code>，也称作 <code>AMD</code>（因为最初的 AMD 提出的）。这个大部分 <code>Unix-Linux</code> 使用。</li>
+<li><code>ARM</code> 指令集，主要是手机设备使用。</li>
+<li><code>PowerPC</code> 指令集</li>
+</ul>
+<h3 id="intel-与-att-风格" class="heading-element">
+  <a href="#intel-%e4%b8%8e-att-%e9%a3%8e%e6%a0%bc" class="heading-mark"></a>Intel 与 AT&amp;T 风格</h3><p>虽然有<code>assembler</code> 生成的机器代码都是一样的（才能保证计算机实现的结果的一致且唯一），不同的组织在如何表示 <code>assembly language</code> 风格上却有一定的区别。目前主要有两个风格的汇编代码：</p>
+<ul>
+<li><code>Intel</code> 也称作 <code>NASM</code>（Netwide Assembler），这个主要是 <code>Intel</code> 公司在操作手册所使用的的汇编风格。</li>
+<li><code>AT&amp;T</code> 也称作 <code>GAS</code>（GUN Assembler）这个是 <code>Linux</code> 、<code>GCC</code> 所采用的汇编风格。</li>
+</ul>
+<p>我们刚才说过，不同汇编语法只是的风格上有所差别，但最近生成的机器代码都是一样的。因此，也可以通过工具将两个汇编风格进行互转。以下是关于两者的参考链接：</p>
+<ul>
+<li>
+<p><a href="https://www.cs.mcgill.ca/~cs573/winter2001/AttLinux_syntax.htm"target="_blank" rel="external nofollow noopener noreferrer">AT&amp;T Syntax versus Intel Syntax<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+</li>
+<li>
+<p><a href="https://staffwww.fullcoll.edu/aclifton/courses/cs241/syntax.html"target="_blank" rel="external nofollow noopener noreferrer">Intel vs. AT&amp;T syntax<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+</li>
+<li>
+<p><a href="https://sdasgup3.github.io/Intel_Vs_Att_format/"target="_blank" rel="external nofollow noopener noreferrer">Differences in Intel (NASM) vs AT&amp;T (GAS) Syntax.<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Intel</th>
+<th>AT&amp;T</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>注释(comment)</td>
+<td>使用英文分号：<code>;</code></td>
+<td>使用 <code>#</code>，即 <code>c-style</code></td>
+</tr>
+<tr>
+<td>register</td>
+<td>不需要前缀 %<br />mov eas, 1</td>
+<td>需要带前缀 %<br />movq $1, %eax</td>
+</tr>
+<tr>
+<td>direction</td>
+<td>instr dest src<br />mov eas, 1</td>
+<td>instr src dest<br />movq $1, %eas</td>
+</tr>
+<tr>
+<td>memory<br />(address)</td>
+<td>mov     eax,[ebx] <br />mov     eax,[ebx+3]</td>
+<td>movl    (%ebx),%eax <br />movl    3(%ebx),%eax</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-vs-e" class="heading-element">
+  <a href="#r-vs-e" class="heading-mark"></a>%r vs %e</h3><p>由于汇编语言的发展经历了漫长的历史过程（最近甚至可以追溯到晶体管），汇编语言在表示寄存器的符号方面也经过多次调整：</p>
+<ul>
+<li><code>%rax</code></li>
+<li><code>%eax</code></li>
+<li><code>%ax</code></li>
+<li><code>%ah</code>, <code>%al</code></li>
+</ul>
+<p>可以参考以下链接，介绍相关的历史</p>
+<ul>
+<li><a href="https://www.cs.cmu.edu/~fp/courses/15213-s07/misc/asm64-handout.pdf"target="_blank" rel="external nofollow noopener noreferrer">x86-64 Machine-Level Programming<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul>
+<p><img loading="lazy" src="./assets/registers.png" alt="课程目标" srcset="./assets/registers.png?size=small, ./assets/registers.png?size=medium 1.5x, ./assets/registers.png?size=large 2x" data-title="课程目标" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h1 id="ch02理解计算机如何工作" class="heading-element">
+  <a href="#ch02%e7%90%86%e8%a7%a3%e8%ae%a1%e7%ae%97%e6%9c%ba%e5%a6%82%e4%bd%95%e5%b7%a5%e4%bd%9c" class="heading-mark"></a>Ch02：理解计算机如何工作</h1><h2 id="cpu-的组成与运行" class="heading-element">
+  <a href="#cpu-%e7%9a%84%e7%bb%84%e6%88%90%e4%b8%8e%e8%bf%90%e8%a1%8c" class="heading-mark"></a>CPU 的组成与运行</h2><p><img loading="lazy" src="./assets/cpu1.jpg" alt="./assets/cpu1.jpg" srcset="./assets/cpu1.jpg?size=small, ./assets/cpu1.jpg?size=medium 1.5x, ./assets/cpu1.jpg?size=large 2x" data-title="./assets/cpu1.jpg" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><img loading="lazy" src="./assets/cpu2.jpg" alt="./assets/cpu2.jpg" srcset="./assets/cpu2.jpg?size=small, ./assets/cpu2.jpg?size=medium 1.5x, ./assets/cpu2.jpg?size=large 2x" data-title="./assets/cpu2.jpg" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><img loading="lazy" src="./assets/cpu-run.png" alt="./assets/cpu-run.png" srcset="./assets/cpu-run.png?size=small, ./assets/cpu-run.png?size=medium 1.5x, ./assets/cpu-run.png?size=large 2x" data-title="./assets/cpu-run.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>可以说，<code>CPU</code> 充其量就是一个机械设备，只要不断电，它都会<strong>永不停歇</strong>地讯循环执行以上命令。而作为程序员，我们需要告诉 <code>CPU</code> 如何正确地、严格按照我们设计的方案执行。计算机无所谓对错（bug），它们只是一台机器，本身也无法写出 bug，真正写 bug 的是人。我之前看过一篇博客，说的就是我们在写代码时，一定要秉承着没有 <code>bug</code> 的想法，只要我们设计的程序没有 <code>bug</code>，<code>CPU</code> 就一定没有 <code>bug</code>。在计算机底层的机器代码眼里，世界只有 <code>0-1</code> ，或者说 <code>on-off</code>。</p>
+<blockquote>
+<p><em>“If you want more effective programmers, you will discover that they should not waste their time debugging, they should not introduce the bugs to start with.” —Edsger Dijkstra, Turing Award Lecture (1972)</em></p>
+<p>If you want a single piece of advice to reduce your bug count, it’s this: <em>Re-read your code frequently.</em> After writing a few lines of code (3 to 6 lines, a short block within a function), re-read them. That habit will save you more time than any other simple change you can make.</p>
+<ul>
+<li><a href="https://www.teamten.com/lawrence/programming/dont-write-bugs.html"target="_blank" rel="external nofollow noopener noreferrer">Don&rsquo;t write bugs<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul>
+</blockquote>
+<h1 id="ch03汇编基础" class="heading-element">
+  <a href="#ch03%e6%b1%87%e7%bc%96%e5%9f%ba%e7%a1%80" class="heading-mark"></a>Ch03：汇编基础</h1><p>首先介绍一个在 <code>x86-64</code> 架构中，不同的内存模块大小</p>
+<ul>
+<li>
+<p><code>1 byte</code> (8 bits, <code>0000 0000</code>)，范围为 <code>0-255</code>，即 <code>ASCII</code></p>
+</li>
+<li>
+<p><code>2 bytes</code> (16 bits)，即 <code>word</code> 、<code>short</code></p>
+</li>
+<li>
+<p><code>4 bytes</code> (32 bits)， 即 <code>double word</code>、<code>long</code></p>
+</li>
+<li>
+<p><code>8 bytes</code> (64 bits)，即 <code>quadword</code>，这是目前主流的 <code>x86-64</code> 系统</p>
+</li>
+</ul>
+<p>以上的内存模块可以理解成 <code>CPU</code> 每次提取（请求）内存的单元，比如对于一个汇编指令</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">## 取一个 byte: 00000010
+</span></span><span class="line"><span class="cl">movb $0b10, %rdi
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">## 取一个 long: 0000&#39;0000 0000&#39;0000 0000&#39;0000 0000&#39;0010
+</span></span><span class="line"><span class="cl">movq $1, %rdi
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">## 取一个 quadword: 0000&#39;0000 0000&#39;0000 0000&#39;0000 0000&#39;0000 0000&#39;0000 0000&#39;0000 0000&#39;0000 0000&#39;0010
+</span></span><span class="line"><span class="cl">movq $1, %rdi</span></span></code></pre></td></tr></table>
+</div>
+</div><p>而在操作系统层面，为了加快读取内存，往往还会在增加一层抽象，采用 <code>paging</code> 分页的方式，以更大的模块来分配内存，一般来说，默认的 <code>paging size</code> 是 <code>4k</code>(4096 bytes)。</p>
+<h2 id="汇编语法" class="heading-element">
+  <a href="#%e6%b1%87%e7%bc%96%e8%af%ad%e6%b3%95" class="heading-mark"></a>汇编语法</h2><p><img loading="lazy" src="./assets/ch03-demo-01.png" alt="./assets/ch03-demo-01.png" srcset="./assets/ch03-demo-01.png?size=small, ./assets/ch03-demo-01.png?size=medium 1.5x, ./assets/ch03-demo-01.png?size=large 2x" data-title="./assets/ch03-demo-01.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.global _start
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">_start:
+</span></span><span class="line"><span class="cl">    movq $60, %rax
+</span></span><span class="line"><span class="cl">    movq $123, %rdi
+</span></span><span class="line"><span class="cl">    syscall</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上面一个一个完整的汇编代码，我们可以进行编译，并打印出执行结果：</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">as ch03-demo01.asm -o ch03-demo01.o
+</span></span><span class="line"><span class="cl">ld ch03-demo01.o -o ch03-demo01
+</span></span><span class="line"><span class="cl">./ch03-demo01
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$?</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 运行结果即为上面的汇编指令： movq $123, %rdi</span>
+</span></span><span class="line"><span class="cl"><span class="m">123</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="globalglobl" class="heading-element">
+  <a href="#globalglobl" class="heading-mark"></a>global(globl)</h3><p><code>global</code> （也可以写作 <code>globl</code>，二者是等价的）告诉 <code>linker</code> 此处设定的 <code>label</code> 需要保留以备他用。一般来说，如果没有添加 <code>global</code> 指示，<code>linker</code> 会把当前模块下我们自己设定的变量名忽略，而添加了 <code>global</code>，则要求不要这么做，因为有可能其他的模块有使用到。</p>
+<p>特别的，<code>.global _start</code> 是作为可执行的入口，这个一定要保存。</p>
+<h3 id="_startentry-point" class="heading-element">
+  <a href="#_startentry-point" class="heading-mark"></a>_start：entry point</h3><p>这个是二进制的入库，相当于 <code>main</code> 在 <code>C/C++</code> 编程中的作用。无论汇编代码的顺序如何，操作系统在执行目标时，都是从 <code>_start</code> 开始逐行执行汇编代码。</p>
+<h3 id="label" class="heading-element">
+  <a href="#label" class="heading-mark"></a>label</h3><p>表示一个名称，但实际上该名称所在的内存地址起始位置（以及后面紧随的内存），用来给 <code>assembler</code> 找到相应的内存地址。</p>
+<h3 id="rax-system-call-code" class="heading-element">
+  <a href="#rax-system-call-code" class="heading-mark"></a>%rax: system call code</h3><p><code>%rax</code> (Accumulate) 表示寄存器的作用，通常用来代表系统调用的指令，如上述代码中我们将其设置为 <code>60</code>，这代表 <code>system call</code> 的 <code>sys_exit</code> 代号。</p>
+<p>具体的 <code>system call code</code> 可以参考：</p>
+<ul>
+<li>
+<p><a href="https://chromium.googlesource.com/chromiumos/docs/&#43;/master/constants/syscalls.md"target="_blank" rel="external nofollow noopener noreferrer">Linux System Call Table<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+</li>
+<li>
+<p><a href="https://filippo.io/linux-syscall-table/"target="_blank" rel="external nofollow noopener noreferrer">Searchable Linux Syscall Table for x86 and x86_64<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+</li>
+</ul>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Instruction: syscall
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Return value found in: %rax
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Syscalls are implemented in functions named as in the Entry point column, or with the DEFINE_SYSCALLx(%name% macro.</span></span></code></pre></td></tr></table>
+</div>
+</div><table>
+<thead>
+<tr>
+<th>%rax</th>
+<th>%rdi: <strong>arg0</strong></th>
+<th>Name</th>
+<th>Entry Point</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>unsigned int fd</td>
+<td>read</td>
+<td>sys_read</td>
+<td><a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/fs/read_write.c"target="_blank" rel="external nofollow noopener noreferrer">fs/read_write.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></td>
+</tr>
+<tr>
+<td>1</td>
+<td>unsigned int fd</td>
+<td>write</td>
+<td>sys_write</td>
+<td><a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/fs/read_write.c"target="_blank" rel="external nofollow noopener noreferrer">fs/read_write.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>const char *filename</td>
+<td>open</td>
+<td>sys_open</td>
+<td><a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/fs/open.c"target="_blank" rel="external nofollow noopener noreferrer">fs/open.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>unsigned int fd</td>
+<td>close</td>
+<td>sys_close</td>
+<td><a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/fs/open.c"target="_blank" rel="external nofollow noopener noreferrer">fs/open.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></td>
+</tr>
+<tr>
+<td>4</td>
+<td>const char *filename</td>
+<td>stat</td>
+<td>sys_newstat</td>
+<td><a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/fs/stat.c"target="_blank" rel="external nofollow noopener noreferrer">fs/stat.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>unsigned int fd</td>
+<td>fstat</td>
+<td>sys_newfstat</td>
+<td><a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/fs/stat.c"target="_blank" rel="external nofollow noopener noreferrer">fs/stat.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></td>
+</tr>
+<tr>
+<td>6</td>
+<td>const char *filename</td>
+<td>lstat</td>
+<td>sys_newlstat</td>
+<td><a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/fs/stat.c"target="_blank" rel="external nofollow noopener noreferrer">fs/stat.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></td>
+</tr>
+<tr>
+<td>&hellip;</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>60</td>
+<td>int error_code</td>
+<td>exit</td>
+<td>sys_exit</td>
+<td><a href="https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/kernel/exit.c"target="_blank" rel="external nofollow noopener noreferrer">kernel/exit.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="rdi-exit-status-code" class="heading-element">
+  <a href="#rdi-exit-status-code" class="heading-mark"></a>%rdi: exit status code</h3><p>用于保存系统调用的结果，访问为： <code>0~255</code></p>
+<h2 id="汇编工具" class="heading-element">
+  <a href="#%e6%b1%87%e7%bc%96%e5%b7%a5%e5%85%b7" class="heading-mark"></a>汇编工具</h2><h3 id="as" class="heading-element">
+  <a href="#as" class="heading-mark"></a>as</h3><h3 id="ld" class="heading-element">
+  <a href="#ld" class="heading-mark"></a>ld</h3><h2 id="汇编周边相关工具" class="heading-element">
+  <a href="#%e6%b1%87%e7%bc%96%e5%91%a8%e8%be%b9%e7%9b%b8%e5%85%b3%e5%b7%a5%e5%85%b7" class="heading-mark"></a>汇编周边（相关工具）</h2><h3 id="hexdump" class="heading-element">
+  <a href="#hexdump" class="heading-mark"></a>hexdump</h3><h3 id="objdump" class="heading-element">
+  <a href="#objdump" class="heading-mark"></a>objdump</h3><h2 id="gdbcgdb" class="heading-element">
+  <a href="#gdbcgdb" class="heading-mark"></a>gdb(cgdb)</h2><h3 id="disassemble" class="heading-element">
+  <a href="#disassemble" class="heading-mark"></a>disassemble</h3><h1 id="ch04assembly-programming" class="heading-element">
+  <a href="#ch04assembly-programming" class="heading-mark"></a>Ch04：Assembly Programming</h1><h2 id="寄存器" class="heading-element">
+  <a href="#%e5%af%84%e5%ad%98%e5%99%a8" class="heading-mark"></a>寄存器</h2><h3 id="不同功能的寄存器" class="heading-element">
+  <a href="#%e4%b8%8d%e5%90%8c%e5%8a%9f%e8%83%bd%e7%9a%84%e5%af%84%e5%ad%98%e5%99%a8" class="heading-mark"></a>不同功能的寄存器</h3><p>我们在 [寄存器历史](###%r vs %e)列举了 <code>x86-32</code> 与 <code>x86-64</code> 架构下的寄存器类型。这里做一个总结：</p>
+<ul>
+<li>
+<p><code>general-purpose registers</code></p>
+<ul>
+<li>
+<p><code>computational</code></p>
+<ul>
+<li>
+<p><code>%rax</code>: <code>accumulative</code> 累计量</p>
+<ul>
+<li>用来执行 <code>system call </code> 的代码</li>
+<li>用来保存 <code>mulq</code> 、<code>divq</code> 的结果</li>
+</ul>
+</li>
+<li>
+<p><code>%rbx</code>: <code>base indexing</code>，通常用来处理 <code>memory addressing</code> 相关的操作</p>
+</li>
+<li>
+<p><code>%rcx</code> : <code>counting register</code>，通过用在 <code>loop</code></p>
+</li>
+<li>
+<p><code>%rdx</code>: <code>data register</code>，用来保存数据相关，如对于 <code>mulq</code>、<code>divq</code> 等操作，由于只能通过 <code>register</code> 或者 <code>memory address</code>，通常是先把数值放到 <code>%rdx</code>，然后再与 <code>%rax</code> 进行操作</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>data-related</code></p>
+<ul>
+<li><code>%rsi</code>: <code>source index</code></li>
+<li><code>%rdi</code>: <code>destination index</code>，可以用来保存 <code>exit status code</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>specific-purpose registers</code></p>
+<ul>
+<li>
+<p><code>%rip</code>&rsquo;：<code>instrument point</code>，指向下一个指令的内存地址</p>
+<p><img loading="lazy" src="./assets/registers-ip.png" alt="./assets/registers-ip.png" srcset="./assets/registers-ip.png?size=small, ./assets/registers-ip.png?size=medium 1.5x, ./assets/registers-ip.png?size=large 2x" data-title="./assets/registers-ip.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+</li>
+<li>
+<p><code>%eflags</code> 用来处理跳转指令相关的操作</p>
+<p><img loading="lazy" src="./assets/eflags.png" alt="./assets/eflags.png" srcset="./assets/eflags.png?size=small, ./assets/eflags.png?size=medium 1.5x, ./assets/eflags.png?size=large 2x" data-title="./assets/eflags.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+</li>
+</ul>
+</li>
+</ul>
+<p><img loading="lazy" src="./assets/registers-layout.png" alt="./assets/registers-layout.png" srcset="./assets/registers-layout.png?size=small, ./assets/registers-layout.png?size=medium 1.5x, ./assets/registers-layout.png?size=large 2x" data-title="./assets/registers-layout.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><img loading="lazy" src="./assets/registers-x.png" alt="./assets/registers-x.png" srcset="./assets/registers-x.png?size=small, ./assets/registers-x.png?size=medium 1.5x, ./assets/registers-x.png?size=large 2x" data-title="./assets/registers-x.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><img loading="lazy" src="./assets/registers-i-p.png" alt="./assets/registers-i-p.png" srcset="./assets/registers-i-p.png?size=small, ./assets/registers-i-p.png?size=medium 1.5x, ./assets/registers-i-p.png?size=large 2x" data-title="./assets/registers-i-p.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h3 id="使用不同的字节计算内存与性能" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8%e4%b8%8d%e5%90%8c%e7%9a%84%e5%ad%97%e8%8a%82%e8%ae%a1%e7%ae%97%e5%86%85%e5%ad%98%e4%b8%8e%e6%80%a7%e8%83%bd" class="heading-mark"></a>使用不同的字节计算（内存与性能）</h3><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.global _start
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">_start:
+</span></span><span class="line"><span class="cl">         ##0000&#39;0001&#39;0000&#39;0010      ## %bh          ## %bl          ## %bx
+</span></span><span class="line"><span class="cl">    movw $0b0000000100000010, %bx   ## 0000&#39;0001    ## 0000&#39;0010    ##
+</span></span><span class="line"><span class="cl">    addb %bh, %bl                                   ## 2+1 = 3= 0000&#39;0011
+</span></span><span class="line"><span class="cl">    movb $0, %bh                    ## 0000&#39;0000
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    movq %rbx, %rdi                 ## %rbx: 0000&#39;0000|0000&#39;0011
+</span></span><span class="line"><span class="cl">                                    ## %rdi: 0000&#39;0000|0000&#39;0011 = 3
+</span></span><span class="line"><span class="cl">    ## ------------
+</span></span><span class="line"><span class="cl">    movq $60, %rax
+</span></span><span class="line"><span class="cl">    syscall</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="运算符" class="heading-element">
+  <a href="#%e8%bf%90%e7%ae%97%e7%ac%a6" class="heading-mark"></a>运算符</h2><ul>
+<li>
+<p><code>addq</code>:</p>
+<ul>
+<li>
+<p>format: <code>addq src dst</code></p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">## %rdi = %rdi + %ras
+</span></span><span class="line"><span class="cl">addq %rax, %rdi</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><code>subq</code></p>
+<ul>
+<li>
+<p>format: <code>subq src dst</code></p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">## %rdi = %rdi - %ras
+</span></span><span class="line"><span class="cl">subq %rax, %rdi</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><code>incq</code>：（+1）</p>
+<ul>
+<li>
+<p>format: <code>addq dst</code></p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">## %rdi = %rdi + 1
+</span></span><span class="line"><span class="cl">incq %rdi</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><code>decq</code>：（-1）</p>
+<ul>
+<li>
+<p>format: <code>decq dst</code></p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">## %rdi = %rdi - 1
+</span></span><span class="line"><span class="cl">decq %rdi</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><code>mulq</code></p>
+<ul>
+<li>
+<p>format: <code>mulq src</code></p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mulq %rdi</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>注意，<code>mulq</code> 和 <code>divq</code> 的作用结果保留在 <code>%rax</code>，而且只能用 <code>register</code> 或者 <code>memory address</code>，不能用普通的 <code>number value</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>divq</code></p>
+<ul>
+<li>format: <code>divq src</code></li>
+<li>与 <code>mulq</code> 相同</li>
+</ul>
+</li>
+</ul>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.global _start
+</span></span><span class="line"><span class="cl">.section .text
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">_start:
+</span></span><span class="line"><span class="cl">                        ## rdi      ## rax
+</span></span><span class="line"><span class="cl">    movq $3, %rdi       ## 3
+</span></span><span class="line"><span class="cl">    movq %rdi, %rax                 ## 3
+</span></span><span class="line"><span class="cl">    add %rdi, %rax                  ## 3+3=6
+</span></span><span class="line"><span class="cl">    mulq %rdi                       ## 3*6=18
+</span></span><span class="line"><span class="cl">    subq %rdi, %rax                 ## 18-3=15
+</span></span><span class="line"><span class="cl">    divq %rdi                       ## 15/3=5
+</span></span><span class="line"><span class="cl">    movq %rax, %rdi     ## 5
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    ## -------------
+</span></span><span class="line"><span class="cl">    movq $60, %rax
+</span></span><span class="line"><span class="cl">    syscall</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="比较" class="heading-element">
+  <a href="#%e6%af%94%e8%be%83" class="heading-mark"></a>比较</h3><h4 id="eflags" class="heading-element">
+  <a href="#eflags" class="heading-mark"></a><code>%eflags</code></h4><p>汇编在很多地方都使用 <code>%eflags</code> 来判断真假，比如</p>
+<ul>
+<li><code>jmp</code></li>
+<li><code>cmp</code></li>
+<li><code>looq</code>，是的，<code>loop</code> 也是通过调用 <code>decq %rcx</code>  是否为 <code>0</code> 来决定循环结束与否。（如果 <code>%rcx</code> 变为 <code>0</code>，则 <code>%eflags</code> 设置为 <code>true</code>（<code>ZF</code>））</li>
+</ul>
+<p>我们可以通过 <code>ZF</code> 或者 <code>CF</code> 进行跳转，但是这个有点不直观</p>
+<ul>
+<li><code>jz</code></li>
+<li><code>jnz</code></li>
+<li><code>jc</code></li>
+<li><code>jnc</code></li>
+</ul>
+<h4 id="cmp" class="heading-element">
+  <a href="#cmp" class="heading-mark"></a>cmp</h4><p>本质上，<code>cmp</code> 做的事情跟 <code>%eflags</code> 是相关的</p>
+<ul>
+<li>通过寄存器相减，得到一个值</li>
+<li>判断这个值是否为 <code>0</code> 然后进行 <code>ZF</code> 判断，</li>
+<li>但是，有意思的是，<code>cmp</code> 此时不会重置寄存器</li>
+<li>需要注意的是，由于 <code>cmp</code> 在实现上，是通过 <code>dst</code> 减去 <code>src</code> 的值来判断 <code>%eflags</code>，所以如果遇到一个寄存器与一个字面数值对比，<strong>一定要把字面数值放在前面，然后减法的操作是无效的</strong></li>
+</ul>
+<p>可以这样理解</p>
+<ul>
+<li>
+<p>在操作上：</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cmpq %rax, %rbx</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在内部实现上：</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">subq %rax, %rbx
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">## using %elags to jmp</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><code>je</code> : <code>%rax == %rbx</code></p>
+</li>
+<li>
+<p><code>jne</code></p>
+</li>
+<li>
+<p><code>ja</code>：jump <strong>A</strong>bove for <code>%rax &gt; %rbx</code></p>
+</li>
+<li>
+<p><code>jae</code></p>
+</li>
+<li>
+<p><code>jb</code>：jump <strong>B</strong>elow for <code>%rax &lt; %rbx</code></p>
+</li>
+<li>
+<p><code>jbe</code></p>
+</li>
+</ul>
+<p><img loading="lazy" src="./assets/cmp.png" alt="./assets/cmp.png" srcset="./assets/cmp.png?size=small, ./assets/cmp.png?size=medium 1.5x, ./assets/cmp.png?size=large 2x" data-title="./assets/cmp.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h3 id="跳转" class="heading-element">
+  <a href="#%e8%b7%b3%e8%bd%ac" class="heading-mark"></a>跳转</h3><p>在介绍不同<a href="##%e5%af%84%e5%ad%98%e5%99%a8">寄存器</a>的时候，我们区分了 <code>general</code> 与 <code>specific</code> ，其中有一个寄存器 <code>%rip</code> 指向下一个指令的内存地址，我们可以使用 <code>jmp</code> 来调整。本质上，<code>jmp</code> 是直接找到对应 <code>label</code> 上的内存地址，然后跳转到那里执行指令。</p>
+<p>因此，我们可以利用这一点，实现代码的<strong>跳转</strong>与<strong>循环</strong>。</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">.global _start
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">_start:
+</span></span><span class="line"><span class="cl">    movq $25, %rax
+</span></span><span class="line"><span class="cl">    jmp thelabel
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">somewhere:
+</span></span><span class="line"><span class="cl">    movq %rax, %rdi
+</span></span><span class="line"><span class="cl">    jmp anotherlabel
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">label1:
+</span></span><span class="line"><span class="cl">    addq %rbx, %rax
+</span></span><span class="line"><span class="cl">    movq $5, %rbx
+</span></span><span class="line"><span class="cl">    jmp here
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">labellabel:
+</span></span><span class="line"><span class="cl">    syscall
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">anotherlabel:
+</span></span><span class="line"><span class="cl">    movq $60, %rax
+</span></span><span class="line"><span class="cl">    jmp labellabel
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">thelabel:
+</span></span><span class="line"><span class="cl">    movq %rax, %rbx
+</span></span><span class="line"><span class="cl">    jmp there
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">here:
+</span></span><span class="line"><span class="cl">    divq %rbx
+</span></span><span class="line"><span class="cl">    jmp somewhere
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">there:
+</span></span><span class="line"><span class="cl">    addq $5, %rbx
+</span></span><span class="line"><span class="cl">    jmp label1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">anywhere:
+</span></span><span class="line"><span class="cl">    jmp thelabel</span></span></code></pre></td></tr></table>
+</div>
+</div><table>
+<thead>
+<tr>
+<th></th>
+<th>%rax</th>
+<th>%rbx</th>
+<th>%rdi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_start</td>
+<td>25</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>thelabel</td>
+<td></td>
+<td>25</td>
+<td></td>
+</tr>
+<tr>
+<td>there</td>
+<td></td>
+<td>5+25=30</td>
+<td></td>
+</tr>
+<tr>
+<td>label1</td>
+<td>30+25=55</td>
+<td>5</td>
+<td></td>
+</tr>
+<tr>
+<td>here</td>
+<td>55/5=11</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>somewhere</td>
+<td></td>
+<td></td>
+<td>11</td>
+</tr>
+<tr>
+<td>anotherlabel</td>
+<td>60</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>labellabel</td>
+<td>(syscall)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="数据" class="heading-element">
+  <a href="#%e6%95%b0%e6%8d%ae" class="heading-mark"></a>数据</h4><h4 id="bit-操作" class="heading-element">
+  <a href="#bit-%e6%93%8d%e4%bd%9c" class="heading-mark"></a>bit 操作</h4><h3 id="stack-与-function" class="heading-element">
+  <a href="#stack-%e4%b8%8e-function" class="heading-mark"></a>stack 与 function</h3><h3 id="汇编函数" class="heading-element">
+  <a href="#%e6%b1%87%e7%bc%96%e5%87%bd%e6%95%b0" class="heading-mark"></a>汇编函数</h3><h3 id="系统调用" class="heading-element">
+  <a href="#%e7%b3%bb%e7%bb%9f%e8%b0%83%e7%94%a8" class="heading-mark"></a>系统调用</h3><h3 id="模块与链接" class="heading-element">
+  <a href="#%e6%a8%a1%e5%9d%97%e4%b8%8e%e9%93%be%e6%8e%a5" class="heading-mark"></a>模块与链接</h3><h1 id="ch05计算机架构与设计" class="heading-element">
+  <a href="#ch05%e8%ae%a1%e7%ae%97%e6%9c%ba%e6%9e%b6%e6%9e%84%e4%b8%8e%e8%ae%be%e8%ae%a1" class="heading-mark"></a>Ch05：计算机架构与设计</h1></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-07-09-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" title="nagios 安装与使用">nagios 安装与使用</a></li><li>
+          <a href="/2023-07-08-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" title="nagios 安装与使用">nagios 安装与使用</a></li><li>
+          <a href="/2023-06-26-zsh-no-match-found-for-/" title="zsh no match found for *">zsh no match found for *</a></li><li>
+          <a href="/2023-06-18-linux-%E8%AE%BE%E7%BD%AE-cpu-%E9%AB%98%E6%80%A7%E8%83%BDperformance%E6%A8%A1%E5%BC%8F/" title="Linux 设置 cpu 高性能performance模式">Linux 设置 cpu 高性能performance模式</a></li><li>
+          <a href="/2023-06-16-linux--%E6%96%B0%E8%B4%AD%E7%A1%AC%E7%9B%98%E6%89%A9%E5%AE%B9/" title="Linux: 新购硬盘扩容">Linux: 新购硬盘扩容</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2023-07-23 13:03:14">更新于 2023-07-23&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/" data-title="汇编入门" data-hashtags="Linux,assembly,cs,x86,x86-64,汇编,编程,计算机"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/" data-title="汇编入门" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/" data-title="汇编入门"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/" data-title="汇编入门"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/assembly/" class="post-tag" title="标签 - Assembly">Assembly</a><a href="/tags/cs/" class="post-tag" title="标签 - Cs">Cs</a><a href="/tags/x86/" class="post-tag" title="标签 - X86">X86</a><a href="/tags/x86-64/" class="post-tag" title="标签 - X86-64">X86-64</a><a href="/tags/%E6%B1%87%E7%BC%96/" class="post-tag" title="标签 - 汇编">汇编</a><a href="/tags/%E7%BC%96%E7%A8%8B/" class="post-tag" title="标签 - 编程">编程</a><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/" class="post-tag" title="标签 - 计算机">计算机</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2023-07-18-python3.11-%E6%97%A0%E6%B3%95%E5%AE%89%E8%A3%85-pycrypto/" class="post-nav-item" rel="prev" title="python3.11 无法安装 pycrypto"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>python3.11 无法安装 pycrypto</a>
+      <a href="/2023-07-25-bash%E5%85%A5%E9%97%A8/" class="post-nav-item" rel="next" title="bash入门">bash入门<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

@@ -20,5 +20,128 @@
   <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/python-calling.png" alt="pybind11: passing named arguments" title="pybind11: passing named arguments" referrerpolicy="no-referrer"/></div><p><code>pybind11</code> allow us <strong>to expose c++ class/function to higher abstraction level of python programming language</strong>, bringing high performance and flexibility into <code>python</code>.</p>
 <p>To pass <strong>named arguments</strong> in <code>python</code>, it&rsquo;s required to specify argument names in <code>pybind11</code>&rsquo;s interface. In this post, I will illustrate how to do that.</p>]]></description>
 </item>
+<item>
+  <title>crontab vim 找不到 so 的解决方法</title>
+  <link>https://williamlfang.github.io/2023-09-22-crontab-vim-%E6%89%BE%E4%B8%8D%E5%88%B0-so-%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</link>
+  <pubDate>Fri, 22 Sep 2023 08:39:20 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-09-22-crontab-vim-%E6%89%BE%E4%B8%8D%E5%88%B0-so-%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</guid>
+  <description><![CDATA[<p>报错</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">crontab -e                                                                                                                                                                                                                                                                                                                                                 <span class="o">[</span>08:40:07<span class="o">]</span>
+</span></span><span class="line"><span class="cl">vim: error <span class="k">while</span> loading shared libraries: libpython3.9.so.1.0: cannot open shared object file: No such file or directory
+</span></span><span class="line"><span class="cl">crontab: <span class="s2">&#34;vim&#34;</span> exited with status <span class="m">127</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是因为 <code>vim</code> 编译的时候使用了动态库 <code>libpython3.9.so.1.0</code>，需要拷贝一份到</p>
+<ul>
+<li><code>/usr/lib</code></li>
+<li><code>/usr/lib64</code></li>
+</ul>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp /home/ops/vim9/local/lib/libpython3.9.so.1.0 /usr/lib
+</span></span><span class="line"><span class="cl">cp /home/ops/vim9/local/lib/libpython3.9.so.1.0 /usr/lib64</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果没有 <code>root</code> 权限，则可以通过 <code>alias</code> 来设置 <code>crontab</code> 命令</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">crontab</span><span class="o">=</span><span class="s2">&#34;export VISUAL=&#39;export VIMRUNTIME=</span><span class="nv">$HOME</span><span class="s2">/vim9/local/share/vim/vim90; LD_LIBRARY_PATH=</span><span class="nv">$HOME</span><span class="s2">/vim9/local/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2"> PATH=</span><span class="nv">$HOME</span><span class="s2">/vim9/local/bin:</span><span class="nv">$HOME</span><span class="s2">/vim9/local/node-v16.20.0-linux-x64/bin:</span><span class="nv">$PATH</span><span class="s2"> </span><span class="nv">$HOME</span><span class="s2">/vim9/local/bin/vim -u </span><span class="nv">$HOME</span><span class="s2">/vim9/.vimrc&#39;; crontab&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">crontab</span><span class="o">=</span><span class="s2">&#34;export VISUAL=nvim; crontab&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
+  <title>vim repl</title>
+  <link>https://williamlfang.github.io/2023-09-16-vim-repl/</link>
+  <pubDate>Sat, 16 Sep 2023 15:22:04 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-09-16-vim-repl/</guid>
+  <description><![CDATA[<p>在 <code>Vim</code> 环境中运行 <code>REPL</code> 程序。</p>
+<ul>
+<li>
+<p>使用触发键 <code>&lt;Leader&gt;t</code></p>
+</li>
+<li>
+<p>对于多个 <code>buffer</code> 的问题，需要改一下绑定键</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="s2">&#34; handling multi buffer switch:  https://github.com/sillybun/vim-repl/issues/19
+</span></span></span><span class="line"><span class="cl"><span class="s2">tnoremap &lt;Leader&gt;n &lt;C-w&gt;:bnext&lt;CR&gt;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>]]></description>
+</item>
+<item>
+  <title>vim markdown 配置</title>
+  <link>https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/</link>
+  <pubDate>Sun, 28 May 2023 00:52:23 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/featured.png" alt="vim markdown 配置" title="vim markdown 配置" referrerpolicy="no-referrer"/></div><p>为了支持 <code>markdown</code> 的相关功能</p>
+<ol>
+<li>可以按照标题级别进行折叠</li>
+<li>支持高亮代码块</li>
+<li>文本自动补全功能</li>
+<li>实时预览功能</li>
+</ol>]]></description>
+</item>
+<item>
+  <title>vim9 安装与配置coc.vim</title>
+  <link>https://williamlfang.github.io/2023-05-26-vim9-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AEcoc.vim/</link>
+  <pubDate>Fri, 26 May 2023 22:19:15 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-05-26-vim9-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AEcoc.vim/</guid>
+  <description><![CDATA[<p>安装 <code>vim9</code>，并使用 <code>coc.vim</code> 实现代码补全。我把常用的一些插件也放在这里，方便大家参考。</p>]]></description>
+</item>
+<item>
+  <title>python matplotlib 处理中文字体</title>
+  <link>https://williamlfang.github.io/2023-05-17-python-matplotlib-%E5%A4%84%E7%90%86%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/</link>
+  <pubDate>Wed, 17 May 2023 15:37:42 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-05-17-python-matplotlib-%E5%A4%84%E7%90%86%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93/</guid>
+  <description><![CDATA[<p>处理 <code>matplotlib</code> 中文字体无法显示的问题</p>]]></description>
+</item>
+<item>
+  <title>企业微信机器人</title>
+  <link>https://williamlfang.github.io/2023-04-04-%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA/</link>
+  <pubDate>Tue, 04 Apr 2023 21:25:46 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-04-04-%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA/</guid>
+  <description><![CDATA[开通企业微信应用 登录企业微信网站:https://work.weixin.qq.com/ &lsquo;应用管理 -&gt; (自建)创建应用&rsquo]]></description>
+</item>
+<item>
+  <title>Python openapi&#43;ChatGPT</title>
+  <link>https://williamlfang.github.io/2023-04-02-python-openapi-chatgpt/</link>
+  <pubDate>Sun, 02 Apr 2023 01:44:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-04-02-python-openapi-chatgpt/</guid>
+  <description><![CDATA[<p>使用 <code>python</code> 接口调用 <code>openapi chatgpt</code>。</p>]]></description>
+</item>
+<item>
+  <title>Vim: 源代码编译安装</title>
+  <link>https://williamlfang.github.io/2022-12-12-vim--%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/</link>
+  <pubDate>Mon, 12 Dec 2022 17:56:26 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2022-12-12-vim--%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/</guid>
+  <description><![CDATA[<p>从源代码编译安装 <code>Vim9.2</code>。</p>]]></description>
+</item>
 </channel>
 </rss>

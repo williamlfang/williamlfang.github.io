@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>vim markdown 配置 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="为了支持 markdown 的相关功能
+
+可以按照标题级别进行折叠
+支持高亮代码块
+文本自动补全功能
+实时预览功能
+" /><meta name="keywords" content='vim, markdown, highlight, python, R, c&#43;&#43;, cpp' /><meta itemprop="name" content="vim markdown 配置">
+<meta itemprop="description" content="为了支持 markdown 的相关功能
+
+可以按照标题级别进行折叠
+支持高亮代码块
+文本自动补全功能
+实时预览功能
+"><meta itemprop="datePublished" content="2023-05-28T00:52:23+00:00" />
+<meta itemprop="dateModified" content="2023-05-28T00:52:23+00:00" />
+<meta itemprop="wordCount" content="2184"><meta itemprop="image" content="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/featured.png" />
+<meta itemprop="keywords" content="vim,markdown,highlight,python,R,c&#43;&#43;,cpp," /><meta property="og:title" content="vim markdown 配置" />
+<meta property="og:description" content="为了支持 markdown 的相关功能
+
+可以按照标题级别进行折叠
+支持高亮代码块
+文本自动补全功能
+实时预览功能
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/" /><meta property="og:image" content="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/featured.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-05-28T00:52:23+00:00" />
+<meta property="article:modified_time" content="2023-05-28T00:52:23+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/featured.png" /><meta name="twitter:title" content="vim markdown 配置"/>
+<meta name="twitter:description" content="为了支持 markdown 的相关功能
+
+可以按照标题级别进行折叠
+支持高亮代码块
+文本自动补全功能
+实时预览功能
+"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/" /><link rel="prev" href="https://williamlfang.github.io/2023-05-27-vim-fzf-%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6/" /><link rel="next" href="https://williamlfang.github.io/2023-05-28-tmux-tab-%E4%B8%8E-ctr-i-%E5%BF%AB%E6%8D%B7%E9%94%AE%E5%86%B2%E7%AA%81/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "vim markdown 配置",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE\/featured.png",
+              "width":  3587 ,
+              "height":  974 
+            }],"genre": "posts","keywords": "vim, markdown, highlight, python, R, c\u002b\u002b, cpp","wordcount":  2184 ,
+    "url": "https:\/\/williamlfang.github.io\/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE\/","datePublished": "2023-05-28T00:52:23+00:00","dateModified": "2023-05-28T00:52:23+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>vim markdown 配置</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2023-05-28 00:52:23"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2023-05-28">2023-05-28</time></span>&nbsp;<span title="2184 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/featured.png" alt="/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/featured.png" data-title="/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/featured.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#coc-markdownlint">coc-markdownlint</a>
+          <ol>
+            <li><a href="#添加插件实现语法自动检查">添加插件，实现语法自动检查</a></li>
+            <li><a href="#自定义部分功能">自定义部分功能</a></li>
+          </ol>
+        </li>
+        <li><a href="#标题折叠">标题折叠</a></li>
+        <li><a href="#自动补全">自动补全</a></li>
+        <li><a href="#更加专注的写作">更加专注的写作</a></li>
+        <li><a href="#markdown-preview">markdown-preview</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2023-05-28，文中内容可能已过时。</div>
+      </div>
+    </div><p>为了支持 <code>markdown</code> 的相关功能</p>
+<ol>
+<li>可以按照标题级别进行折叠</li>
+<li>支持高亮代码块</li>
+<li>文本自动补全功能</li>
+<li>实时预览功能</li>
+</ol>
+<h2 id="coc-markdownlint" class="heading-element">
+  <a href="#coc-markdownlint" class="heading-mark"></a>coc-markdownlint</h2><h3 id="添加插件实现语法自动检查" class="heading-element">
+  <a href="#%e6%b7%bb%e5%8a%a0%e6%8f%92%e4%bb%b6%e5%ae%9e%e7%8e%b0%e8%af%ad%e6%b3%95%e8%87%aa%e5%8a%a8%e6%a3%80%e6%9f%a5" class="heading-mark"></a>添加插件，实现语法自动检查</h3><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="c">&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;&#34; Coc</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;&#34; extensions</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">coc_global_extensions</span> <span class="p">=</span> [<span class="s1">&#39;coc-tsserver&#39;</span><span class="p">,</span> <span class="s1">&#39;coc-json&#39;</span><span class="p">,</span> <span class="s1">&#39;coc-yaml&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;coc-clangd&#39;</span><span class="p">,</span> <span class="s1">&#39;coc-pyright&#39;</span><span class="p">,</span> <span class="s1">&#39;coc-jedi&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;coc-html&#39;</span><span class="p">,</span> <span class="s1">&#39;coc-css&#39;</span><span class="p">,</span> <span class="s1">&#39;coc-xml&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;coc-emmet&#39;</span><span class="p">,</span> <span class="s1">&#39;coc-snippets&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;coc-markdownlint&#39;</span><span class="p">,</span> <span class="s1">&#39;coc-highlight&#39;</span>]</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="自定义部分功能" class="heading-element">
+  <a href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e9%83%a8%e5%88%86%e5%8a%9f%e8%83%bd" class="heading-mark"></a>自定义部分功能</h3><p>在 <code>vim</code> 执行命令 <code>:CocConfig</code> 跳出 <code>coc-settings.json</code>。具体的检查规则可以参考默认配置文件：<a href="https://github.com/fannheyward/coc-markdownlint/blob/master/schemas/markdownlint-config-schema.json"target="_blank" rel="external nofollow noopener noreferrer">coc-markdownlint/schemas/markdownlint-config-schema.json<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，找到这个规则</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;default&#34;</span><span class="err">:</span> <span class="kc">true</span><span class="err">,</span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;properties&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;line_length&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;description&#34;</span><span class="p">:</span> <span class="s2">&#34;Number of characters&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;integer&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;minimum&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;default&#34;</span><span class="p">:</span> <span class="mi">80</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>去掉段落长度的检查。通常我们写 <code>markdown</code> 不可能把每一行限制在 <strong>80</strong> 个字符串的长度，因此需要将改检查功能关闭。</li>
+</ol>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl">  <span class="c1">// coc.markdown
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="s2">&#34;markdownlint.config&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;default&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;line_length&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;no-inline-html&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;allowed_elements&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;pre&#34;</span><span class="p">]</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;ul-indent&#34;</span><span class="p">:</span> <span class="p">{</span> <span class="nt">&#34;indent&#34;</span><span class="p">:</span> <span class="mi">4</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="err">,</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="标题折叠" class="heading-element">
+  <a href="#%e6%a0%87%e9%a2%98%e6%8a%98%e5%8f%a0" class="heading-mark"></a>标题折叠</h2><p>按照标题不同的级别进行折叠，有助于更加清晰的把握文章的框架。这里我比较推荐 <code>vim-minimd</code>，可以实现</p>
+<ul>
+<li><code>Space</code>: Fold or unfold the current header.</li>
+<li><code>n-Space</code>: Fold all headers of level n.</li>
+<li><code>Tab</code> or <code>]h</code>	Jump to next header.</li>
+<li><code>Shift-Tab</code> Jump to previous header.</li>
+</ul>
+<p>具体的指令如下：</p>
+<ul>
+<li>nmap <silent><buffer> <Space> :<C-u>MiniMDToggleFold<CR></li>
+<li>nmap <silent><buffer> <Tab> :<C-u>MiniMDNext<CR></li>
+<li>nmap <silent><buffer> <S-Tab> :<C-u>MiniMDPrev<CR></li>
+<li>nmap <silent><buffer> ]h :<C-u>MiniMDNext<CR></li>
+<li>nmap <silent><buffer> [h :<C-u>MiniMDPrev<CR></li>
+<li>nnoremap <silent><buffer> = :MiniMDPromote<CR></li>
+<li>nnoremap <silent><buffer> - :MiniMDDemote<CR></li>
+<li>nmap <silent><buffer> <CR> :MiniMDTaskToggle<CR></li>
+<li>vmap <silent><buffer> <CR> :MiniMDTaskToggle<CR></li>
+</ul>
+<p>同时，为了可以利用原来的 <code>markdown</code> 语法进行高亮，可以设置 <code>let g:default_markdown_syntax = 1</code>。这个需要配合插件 <code>tpope/vim-markdown</code></p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="c">&#34; markdown --------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;godlygeek/tabular&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; 这个显示有点问题</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; Plug &#39;preservim/vim-markdown&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; 用这个可以高亮语法</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;tpope/vim-markdown&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">vim_markdown_folding_disabled</span><span class="p">=</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; 这里面有部分是不支持的</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; let g:markdown_fenced_languages = [&#39;bash=sh&#39;, &#39;css&#39;, &#39;django&#39;, &#39;handlebars&#39;,</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;     \ &#39;javascript&#39;, &#39;js=javascript&#39;, &#39;json=javascript&#39;, &#39;perl&#39;, &#39;php&#39;,</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;     \ &#39;python&#39;, &#39;ruby&#39;, &#39;sass&#39;, &#39;xml&#39;, &#39;html&#39;, &#39;c++=cpp&#39;]</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">markdown_fenced_languages</span> <span class="p">=</span> [<span class="s1">&#39;bash=sh&#39;</span><span class="p">,</span> <span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="s1">&#39;ruby&#39;</span><span class="p">,</span> <span class="s1">&#39;c++=cpp&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;xml&#39;</span><span class="p">,</span> <span class="s1">&#39;html&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">,</span> <span class="s1">&#39;ruby&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;vim&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;javascript&#39;</span><span class="p">,</span> <span class="s1">&#39;js=javascript&#39;</span><span class="p">,</span> <span class="s1">&#39;json=javascript&#39;</span><span class="p">,</span> <span class="s1">&#39;perl&#39;</span><span class="p">,</span> <span class="s1">&#39;php&#39;</span>]
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">vim_markdown_math</span> <span class="p">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">vim_markdown_toc_autofit</span> <span class="p">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">markdown_syntax_conceal</span> <span class="p">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; 支持按照原来的 markdown 语法进行高亮</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">default_markdown_syntax</span> <span class="p">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;shushcat/vim-minimd&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; Space	    Fold or unfold the current header.</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; nSpace    Fold all headers of level n.</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="自动补全" class="heading-element">
+  <a href="#%e8%87%aa%e5%8a%a8%e8%a1%a5%e5%85%a8" class="heading-mark"></a>自动补全</h2><p>通过识别 <code>tmux</code> 页面的文本，进行自动补全。</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;prabirshrestha/async.vim&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;prabirshrestha/asyncomplete.vim&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;wellle/tmux-complete.vim&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">tmuxcomplete</span>#<span class="nx">asyncomplete_source_options</span> <span class="p">=</span> {
+</span></span><span class="line"><span class="cl">            \ <span class="s1">&#39;name&#39;</span>:      <span class="s1">&#39;tmuxcomplete&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            \ <span class="s1">&#39;whitelist&#39;</span>: [<span class="s1">&#39;*&#39;</span>]<span class="p">,</span>
+</span></span><span class="line"><span class="cl">            \ <span class="s1">&#39;config&#39;</span>: {
+</span></span><span class="line"><span class="cl">            \     <span class="s1">&#39;splitmode&#39;</span>:      <span class="s1">&#39;words&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            \     <span class="s1">&#39;filter_prefix&#39;</span>:   <span class="m">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            \     <span class="s1">&#39;show_incomplete&#39;</span>: <span class="m">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            \     <span class="s1">&#39;sort_candidates&#39;</span>: <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            \     <span class="s1">&#39;scrollback&#39;</span>:      <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            \     <span class="s1">&#39;truncate&#39;</span>:        <span class="m">0</span>
+</span></span><span class="line"><span class="cl">            \     }
+</span></span><span class="line"><span class="cl">            \ }
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">tmuxcomplete</span>#<span class="nx">trigger</span> <span class="p">=</span> <span class="s1">&#39;omnifunc&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">imap</span> <span class="p">&lt;</span><span class="nx">c</span><span class="p">-</span><span class="nx">space</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nx">Plug</span><span class="p">&gt;(</span><span class="nx">asyncomplete_force_refresh</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nx">inoremap</span> <span class="p">&lt;</span><span class="nx">expr</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nx">CR</span><span class="p">&gt;</span> <span class="nx">pumvisible</span><span class="p">()</span> ? <span class="nx">asyncomplete</span>#<span class="nx">close_popup</span><span class="p">()</span> . <span class="s2">&#34;\&lt;CR&gt;&#34;</span> : <span class="s2">&#34;\&lt;CR&gt;&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="更加专注的写作" class="heading-element">
+  <a href="#%e6%9b%b4%e5%8a%a0%e4%b8%93%e6%b3%a8%e7%9a%84%e5%86%99%e4%bd%9c" class="heading-mark"></a>更加专注的写作</h2><p>现在能真正静下心来、完整而严禁的写作时间，其实是非常珍贵的。一方面是由于外部的干扰因素太多，无法给以写作足够的空间和时间；另一方面，我们内心也变得浮躁，难以静心进行深度思考。</p>
+<p>这时候，我们希望能在工具上，对这些干扰因素进行限制，期待能营造一个良好的写作氛围（希望如此）。</p>
+<p><code>goyo</code> 这个就是为了此目的而生的，可以让我们在写作时，只需要面对一个屏幕，不用在意周遭环境。</p>
+<ul>
+<li>进入模式：<code>&lt;Leader&gt;gy</code></li>
+<li>退出模式：<code>&lt;Leader&gt;gy</code></li>
+</ul>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;junegunn/limelight.vim&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;junegunn/goyo.vim&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span><span class="p">!</span> <span class="nx">s</span>:<span class="nx">goyo_enter</span><span class="p">()</span> <span class="k">if</span> <span class="nx">executable</span><span class="p">(</span><span class="s1">&#39;tmux&#39;</span><span class="p">)</span> &amp;&amp; <span class="nx">strlen</span><span class="p">(</span>$<span class="nx">TMUX</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">silent</span> <span class="p">!</span><span class="nx">tmux</span> <span class="k">set</span> <span class="nx">status</span> <span class="nx">off</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">silent</span> <span class="p">!</span><span class="nx">tmux</span> <span class="nx">list</span><span class="p">-</span><span class="nx">panes</span> <span class="p">-</span><span class="nx">F</span> <span class="s1">&#39;\#F&#39;</span> <span class="p">|</span> <span class="nx">grep</span> <span class="p">-</span><span class="nx">q</span> <span class="nx">Z</span> <span class="p">||</span> <span class="nx">tmux</span> <span class="nx">resize</span><span class="p">-</span><span class="nx">pane</span> <span class="p">-</span><span class="nx">Z</span>
+</span></span><span class="line"><span class="cl">  <span class="k">endif</span>
+</span></span><span class="line"><span class="cl">  <span class="k">set</span> <span class="nx">noshowmode</span>
+</span></span><span class="line"><span class="cl">  <span class="k">set</span> <span class="nx">noshowcmd</span>
+</span></span><span class="line"><span class="cl">  <span class="k">set</span> <span class="nx">scrolloff</span><span class="p">=</span><span class="m">999</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Limelight</span>
+</span></span><span class="line"><span class="cl"><span class="c">  &#34; ...</span>
+</span></span><span class="line"><span class="cl"><span class="k">endfunction</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span><span class="p">!</span> <span class="nx">s</span>:<span class="nx">goyo_leave</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="nx">executable</span><span class="p">(</span><span class="s1">&#39;tmux&#39;</span><span class="p">)</span> &amp;&amp; <span class="nx">strlen</span><span class="p">(</span>$<span class="nx">TMUX</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">silent</span> <span class="p">!</span><span class="nx">tmux</span> <span class="k">set</span> <span class="nx">status</span> <span class="nx">on</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">silent</span> <span class="p">!</span><span class="nx">tmux</span> <span class="nx">list</span><span class="p">-</span><span class="nx">panes</span> <span class="p">-</span><span class="nx">F</span> <span class="s1">&#39;\#F&#39;</span> <span class="p">|</span> <span class="nx">grep</span> <span class="p">-</span><span class="nx">q</span> <span class="nx">Z</span> &amp;&amp; <span class="nx">tmux</span> <span class="nx">resize</span><span class="p">-</span><span class="nx">pane</span> <span class="p">-</span><span class="nx">Z</span>
+</span></span><span class="line"><span class="cl">  <span class="k">endif</span>
+</span></span><span class="line"><span class="cl">  <span class="k">set</span> <span class="nx">showmode</span>
+</span></span><span class="line"><span class="cl">  <span class="k">set</span> <span class="nx">showcmd</span>
+</span></span><span class="line"><span class="cl">  <span class="k">set</span> <span class="nx">scrolloff</span><span class="p">=</span><span class="m">5</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">Limelight</span><span class="p">!</span>
+</span></span><span class="line"><span class="cl"><span class="c">  &#34; ...</span>
+</span></span><span class="line"><span class="cl"><span class="k">endfunction</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; 进入goyo模式后自动触发limelight，退出则关闭</span>
+</span></span><span class="line"><span class="cl"><span class="k">autocmd</span><span class="p">!</span> <span class="nx">User</span> <span class="nx">GoyoEnter</span> <span class="nx">nested</span> <span class="nx">call</span> <span class="p">&lt;</span><span class="nx">SID</span><span class="p">&gt;</span><span class="nx">goyo_enter</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;进入goyo模式后自动触发limelight,退出后则关闭</span>
+</span></span><span class="line"><span class="cl"><span class="k">autocmd</span><span class="p">!</span> <span class="nx">User</span> <span class="nx">GoyoLeave</span> <span class="nx">nested</span> <span class="nx">call</span> <span class="p">&lt;</span><span class="nx">SID</span><span class="p">&gt;</span><span class="nx">goyo_leave</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34;Goyo</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; Color name (:help cterm-colors) or ANSI code</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">limelight_conceal_ctermfg</span> <span class="p">=</span> <span class="s1">&#39;Gray&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">limelight_conceal_ctermfg</span> <span class="p">=</span> <span class="m">240</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; Color name (:help gui-colors) or RGB color</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">limelight_conceal_guifg</span> <span class="p">=</span> <span class="s1">&#39;DarkGray&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">limelight_conceal_guifg</span> <span class="p">=</span> <span class="s1">&#39;#777777&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; 包含的前后段的数量</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">limelight_paragraph_span</span> <span class="p">=</span> <span class="m">2</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; Set it to -1 not to overrule hlsearch</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">limelight_priority</span> <span class="p">=</span> <span class="m">-1</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; Goyo配置</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">goyo_width</span> <span class="p">=</span> <span class="m">80</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">goyo_height</span> <span class="p">=</span> <span class="m">90</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">goyo_linenr</span> <span class="p">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; limelight键盘映射</span>
+</span></span><span class="line"><span class="cl"><span class="nx">nmap</span> <span class="p">&lt;</span><span class="nx">Leader</span><span class="p">&gt;</span><span class="nx">gy</span> :<span class="nx">Goyo</span><span class="p">&lt;</span><span class="nx">CR</span><span class="p">&gt;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="markdown-preview" class="heading-element">
+  <a href="#markdown-preview" class="heading-mark"></a>markdown-preview</h2><p><code>vim</code> 支持对 <code>markdown</code> 文档执行实时的渲染，并通过浏览器打开。同时，在页面浏览器模式中，页面会随着当前光标自动随行移动，非常便捷。</p>
+<ol>
+<li>
+<p>安装插件</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;iamcco/markdown-preview.nvim&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在 <code>vim</code> 执行命令</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="p">:</span><span class="nx">PlugInstall</span>
+</span></span><span class="line"><span class="cl"><span class="p">:</span><span class="nx">call</span> <span class="nx">mkdp</span>#<span class="nx">util</span>#<span class="nx">install</span><span class="p">()</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>设置</p>
+<ul>
+<li>显示网页地址，可以在终端直接打开，这个有助于远程文本在本地打开： <code>let g:mkdp_echo_preview_url = 1</code></li>
+<li>设置网页地址，默认是本地地址：<code>let g:mkdp_echo_preview_url = 1</code></li>
+<li>设置访问端口，默认是随机，我们可以把端口固定下来，方便打开页面：<code>let g:mkdp_port = '1111'</code></li>
+<li>设置页面主题颜色，一般是黑色模式：<code>let g:mkdp_theme = 'dark'</code></li>
+<li>默认打开网页：<code>let g:mkdp_browser = '/usr/bin/firefox'</code></li>
+</ul>
+</li>
+<li>
+<p>使用</p>
+<ul>
+<li>开启Mardown预览 <code>:MarkdownPreview</code></li>
+<li>关闭Mardown预览 <code>:MarkdownPreviewStop</code></li>
+</ul>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="c">&#34; example -------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="nx">nmap</span> <span class="p">&lt;</span><span class="nx">Leader</span><span class="p">&gt;</span><span class="nx">mp</span> <span class="p">&lt;</span><span class="nx">Plug</span><span class="p">&gt;</span><span class="nx">MarkdownPreview</span>
+</span></span><span class="line"><span class="cl"><span class="nx">nmap</span> <span class="p">&lt;</span><span class="nx">Leader</span><span class="p">&gt;</span><span class="nx">ms</span> <span class="p">&lt;</span><span class="nx">Plug</span><span class="p">&gt;</span><span class="nx">MarkdownPreviewStop</span>
+</span></span><span class="line"><span class="cl"><span class="nx">nmap</span> <span class="p">&lt;</span><span class="nx">Leader</span><span class="p">&gt;</span><span class="nx">mt</span> <span class="p">&lt;</span><span class="nx">Plug</span><span class="p">&gt;</span><span class="nx">MarkdownPreviewToggle</span>
+</span></span><span class="line"><span class="cl">``</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<p><img loading="lazy" src="/post/2023-05-28-vim-markdown-%e9%85%8d%e7%bd%ae/mkd-preview.png" alt="maarkdown-preview" srcset="/post/2023-05-28-vim-markdown-%e9%85%8d%e7%bd%ae/mkd-preview.png?size=small, /post/2023-05-28-vim-markdown-%e9%85%8d%e7%bd%ae/mkd-preview.png?size=medium 1.5x, /post/2023-05-28-vim-markdown-%e9%85%8d%e7%bd%ae/mkd-preview.png?size=large 2x" data-title="maarkdown-preview" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="c">&#34; markdown-preview</span>
+</span></span><span class="line"><span class="cl"><span class="nx">Plug</span> <span class="s1">&#39;iamcco/markdown-preview.nvim&#39;</span><span class="p">,</span> { <span class="s1">&#39;do&#39;</span>: <span class="s1">&#39;cd app &amp;&amp; yarn install&#39;</span>  }
+</span></span><span class="line"><span class="cl"><span class="c">&#34; set to 1, nvim will open the preview window after entering the markdown buffer</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default: 0</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_auto_start</span> <span class="p">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; set to 1, the nvim will auto close current preview window when change</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; from markdown buffer to another buffer</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default: 1</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_auto_close</span> <span class="p">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; set to 1, the vim will refresh markdown when save the buffer or</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; leave from insert mode, default 0 is auto refresh markdown as you edit or</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; move the cursor</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default: 0</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_refresh_slow</span> <span class="p">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; set to 1, the MarkdownPreview command can be use for all files,</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; by default it can be use in markdown file</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default: 0</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_command_for_global</span> <span class="p">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; set to 1, preview server available to others in your network</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; by default, the server listens on localhost (127.0.0.1)</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default: 0</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_open_to_the_world</span> <span class="p">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; use custom IP to open preview page</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; useful when you work in remote vim and preview on local browser</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; more detail see: https://github.com/iamcco/markdown-preview.nvim/pull/9</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default empty</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_open_ip</span> <span class="p">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; specify browser to open preview page</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; for path with space</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; valid: `/path/with\ space/xxx`</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; invalid: `/path/with\\ space/xxx`</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default: &#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_browser</span> <span class="p">=</span> <span class="s1">&#39;/usr/bin/firefox&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; set to 1, echo preview page url in command line when open preview page</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default is 0</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_echo_preview_url</span> <span class="p">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; a custom vim function name to open preview page</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; this function will receive url as param</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; default is empty</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_browserfunc</span> <span class="p">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nx">OpenMarkdownPreview</span> <span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">execute</span> <span class="s2">&#34;silent ! firefox --new-window &#34;</span> . <span class="nx">a</span>:<span class="nx">url</span>
+</span></span><span class="line"><span class="cl"><span class="k">endfunction</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_browserfunc</span> <span class="p">=</span> <span class="s1">&#39;OpenMarkdownPreview&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; options for markdown render</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; mkit: markdown-it options for render</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; katex: katex options for math</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; uml: markdown-it-plantuml options</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; maid: mermaid options</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; disable_sync_scroll: if disable sync scroll, default 0</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; sync_scroll_type: &#39;middle&#39;, &#39;top&#39; or &#39;relative&#39;, default value is &#39;middle&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;   middle: mean the cursor position alway show at the middle of the preview page</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;   top: mean the vim top viewport alway show at the top of the preview page</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34;   relative: mean the cursor position alway show at the relative positon of the preview page</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; hide_yaml_meta: if hide yaml metadata, default is 1</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; sequence_diagrams: js-sequence-diagrams options</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; content_editable: if enable content editable for preview page, default: v:false</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; disable_filename: if disable filename header for preview page, default: 0</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_preview_options</span> <span class="p">=</span> {
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;mkit&#39;</span>: {}<span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;katex&#39;</span>: {}<span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;uml&#39;</span>: {}<span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;maid&#39;</span>: {}<span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;disable_sync_scroll&#39;</span>: <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;sync_scroll_type&#39;</span>: <span class="s1">&#39;middle&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;hide_yaml_meta&#39;</span>: <span class="m">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;sequence_diagrams&#39;</span>: {}<span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;flowchart_diagrams&#39;</span>: {}<span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;content_editable&#39;</span>: <span class="nx">v</span>:<span class="nx">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;disable_filename&#39;</span>: <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    \ <span class="s1">&#39;toc&#39;</span>: {}
+</span></span><span class="line"><span class="cl">    \ }
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; use a custom markdown style must be absolute path</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; like &#39;/Users/username/markdown.css&#39; or expand(&#39;~/markdown.css&#39;)</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_markdown_css</span> <span class="p">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; use a custom highlight style must absolute path</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; like &#39;/Users/username/highlight.css&#39; or expand(&#39;~/highlight.css&#39;)</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_highlight_css</span> <span class="p">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; use a custom port to start server or empty for random</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_port</span> <span class="p">=</span> <span class="s1">&#39;1111&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; preview page title</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; ${name} will be replace with the file name</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_page_title</span> <span class="p">=</span> <span class="s1">&#39;「${name}」&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; recognized filetypes</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; these filetypes will have MarkdownPreview... commands</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_filetypes</span> <span class="p">=</span> [<span class="s1">&#39;markdown&#39;</span>]
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; set default theme (dark or light)</span>
+</span></span><span class="line"><span class="cl"><span class="c">&#34; By default the theme is define according to the preferences of the system</span>
+</span></span><span class="line"><span class="cl"><span class="k">let</span> <span class="nx">g</span>:<span class="nx">mkdp_theme</span> <span class="p">=</span> <span class="s1">&#39;dark&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">&#34; example -------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="nx">nmap</span> <span class="p">&lt;</span><span class="nx">Leader</span><span class="p">&gt;</span><span class="nx">mp</span> <span class="p">&lt;</span><span class="nx">Plug</span><span class="p">&gt;</span><span class="nx">MarkdownPreview</span>
+</span></span><span class="line"><span class="cl"><span class="nx">nmap</span> <span class="p">&lt;</span><span class="nx">Leader</span><span class="p">&gt;</span><span class="nx">ms</span> <span class="p">&lt;</span><span class="nx">Plug</span><span class="p">&gt;</span><span class="nx">MarkdownPreviewStop</span>
+</span></span><span class="line"><span class="cl"><span class="nx">nmap</span> <span class="p">&lt;</span><span class="nx">Leader</span><span class="p">&gt;</span><span class="nx">mt</span> <span class="p">&lt;</span><span class="nx">Plug</span><span class="p">&gt;</span><span class="nx">MarkdownPreviewToggle</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-05-26-vim9-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AEcoc.vim/" title="vim9 安装与配置coc.vim">vim9 安装与配置coc.vim</a></li><li>
+          <a href="/2022-12-12-vim--%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/" title="Vim: 源代码编译安装">Vim: 源代码编译安装</a></li><li>
+          <a href="/2022-05-13-%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%88%91%E8%BF%BD%E7%9A%84%E5%8D%9A%E5%AE%A2%E4%BB%AC/" title="那些年我追的博客们">那些年我追的博客们</a></li><li>
+          <a href="/2023-05-27-vim-fzf-%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6/" title="vim fzf 打开文件">vim fzf 打开文件</a></li><li>
+          <a href="/2023-05-27-tmux-%E5%AF%BC%E8%87%B4-vim-color-scheme-%E6%97%A0%E6%B3%95%E6%98%BE%E7%A4%BA%E7%9A%84%E9%97%AE%E9%A2%98/" title="tmux 导致 vim color scheme 无法显示的问题">tmux 导致 vim color scheme 无法显示的问题</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2023-05-28 00:52:23">更新于 2023-05-28&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/" data-title="vim markdown 配置" data-hashtags="vim,markdown,highlight,python,R,c&#43;&#43;,cpp"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/" data-hashtag="vim"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/" data-title="vim markdown 配置" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/" data-title="vim markdown 配置"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/" data-title="vim markdown 配置"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/vim/" class="post-tag" title="标签 - Vim">Vim</a><a href="/tags/markdown/" class="post-tag" title="标签 - Markdown">Markdown</a><a href="/tags/highlight/" class="post-tag" title="标签 - Highlight">Highlight</a><a href="/tags/python/" class="post-tag" title="标签 - Python">Python</a><a href="/tags/r/" class="post-tag" title="标签 - R">R</a><a href="/tags/c&#43;&#43;/" class="post-tag" title="标签 - C&#43;&#43;">C&#43;&#43;</a><a href="/tags/cpp/" class="post-tag" title="标签 - Cpp">Cpp</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2023-05-27-vim-fzf-%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6/" class="post-nav-item" rel="prev" title="vim fzf 打开文件"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>vim fzf 打开文件</a>
+      <a href="/2023-05-28-tmux-tab-%E4%B8%8E-ctr-i-%E5%BF%AB%E6%8D%B7%E9%94%AE%E5%86%B2%E7%AA%81/" class="post-nav-item" rel="next" title="tmux tab 与 ctr i 快捷键冲突">tmux tab 与 ctr i 快捷键冲突<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

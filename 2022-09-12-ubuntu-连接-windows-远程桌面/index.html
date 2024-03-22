@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Ubuntu 连接 Windows 远程桌面 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="在 Ubuntu 机器连接远程 Windows 虚拟机" /><meta name="keywords" content='Windows, xfreerdp, remote, desktop' /><meta itemprop="name" content="Ubuntu 连接 Windows 远程桌面">
+<meta itemprop="description" content="在 Ubuntu 机器连接远程 Windows 虚拟机"><meta itemprop="datePublished" content="2022-09-12T13:37:28+00:00" />
+<meta itemprop="dateModified" content="2022-09-12T13:37:28+00:00" />
+<meta itemprop="wordCount" content="1408"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Windows,xfreerdp,remote,desktop," /><meta property="og:title" content="Ubuntu 连接 Windows 远程桌面" />
+<meta property="og:description" content="在 Ubuntu 机器连接远程 Windows 虚拟机" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-12T13:37:28+00:00" />
+<meta property="article:modified_time" content="2022-09-12T13:37:28+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Ubuntu 连接 Windows 远程桌面"/>
+<meta name="twitter:description" content="在 Ubuntu 机器连接远程 Windows 虚拟机"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/" /><link rel="prev" href="https://williamlfang.github.io/2022-09-10-git-%E6%B7%BB%E5%8A%A0%E9%9D%9E%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/" /><link rel="next" href="https://williamlfang.github.io/2022-09-13-git-%E4%BF%AE%E6%94%B9-https-%E4%B8%BA-ssh/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Ubuntu 连接 Windows 远程桌面",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2\/"
+    },"genre": "posts","keywords": "Windows, xfreerdp, remote, desktop","wordcount":  1408 ,
+    "url": "https:\/\/williamlfang.github.io\/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2\/","datePublished": "2022-09-12T13:37:28+00:00","dateModified": "2022-09-12T13:37:28+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Ubuntu 连接 Windows 远程桌面</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2022-09-12 13:37:28"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2022-09-12">2022-09-12</time></span>&nbsp;<span title="1408 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1500 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#安装-freerdp">安装 FreeRDP</a></li>
+        <li><a href="#使用">使用</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2022-09-12，文中内容可能已过时。</div>
+      </div>
+    </div><p>在 <code>Ubuntu</code> 机器连接远程 <code>Windows</code> 虚拟机</p>
+<h2 id="安装-freerdp" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-freerdp" class="heading-mark"></a>安装 FreeRDP</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span><span class="lnt">142
+</span><span class="lnt">143
+</span><span class="lnt">144
+</span><span class="lnt">145
+</span><span class="lnt">146
+</span><span class="lnt">147
+</span><span class="lnt">148
+</span><span class="lnt">149
+</span><span class="lnt">150
+</span><span class="lnt">151
+</span><span class="lnt">152
+</span><span class="lnt">153
+</span><span class="lnt">154
+</span><span class="lnt">155
+</span><span class="lnt">156
+</span><span class="lnt">157
+</span><span class="lnt">158
+</span><span class="lnt">159
+</span><span class="lnt">160
+</span><span class="lnt">161
+</span><span class="lnt">162
+</span><span class="lnt">163
+</span><span class="lnt">164
+</span><span class="lnt">165
+</span><span class="lnt">166
+</span><span class="lnt">167
+</span><span class="lnt">168
+</span><span class="lnt">169
+</span><span class="lnt">170
+</span><span class="lnt">171
+</span><span class="lnt">172
+</span><span class="lnt">173
+</span><span class="lnt">174
+</span><span class="lnt">175
+</span><span class="lnt">176
+</span><span class="lnt">177
+</span><span class="lnt">178
+</span><span class="lnt">179
+</span><span class="lnt">180
+</span><span class="lnt">181
+</span><span class="lnt">182
+</span><span class="lnt">183
+</span><span class="lnt">184
+</span><span class="lnt">185
+</span><span class="lnt">186
+</span><span class="lnt">187
+</span><span class="lnt">188
+</span><span class="lnt">189
+</span><span class="lnt">190
+</span><span class="lnt">191
+</span><span class="lnt">192
+</span><span class="lnt">193
+</span><span class="lnt">194
+</span><span class="lnt">195
+</span><span class="lnt">196
+</span><span class="lnt">197
+</span><span class="lnt">198
+</span><span class="lnt">199
+</span><span class="lnt">200
+</span><span class="lnt">201
+</span><span class="lnt">202
+</span><span class="lnt">203
+</span><span class="lnt">204
+</span><span class="lnt">205
+</span><span class="lnt">206
+</span><span class="lnt">207
+</span><span class="lnt">208
+</span><span class="lnt">209
+</span><span class="lnt">210
+</span><span class="lnt">211
+</span><span class="lnt">212
+</span><span class="lnt">213
+</span><span class="lnt">214
+</span><span class="lnt">215
+</span><span class="lnt">216
+</span><span class="lnt">217
+</span><span class="lnt">218
+</span><span class="lnt">219
+</span><span class="lnt">220
+</span><span class="lnt">221
+</span><span class="lnt">222
+</span><span class="lnt">223
+</span><span class="lnt">224
+</span><span class="lnt">225
+</span><span class="lnt">226
+</span><span class="lnt">227
+</span><span class="lnt">228
+</span><span class="lnt">229
+</span><span class="lnt">230
+</span><span class="lnt">231
+</span><span class="lnt">232
+</span><span class="lnt">233
+</span><span class="lnt">234
+</span><span class="lnt">235
+</span><span class="lnt">236
+</span><span class="lnt">237
+</span><span class="lnt">238
+</span><span class="lnt">239
+</span><span class="lnt">240
+</span><span class="lnt">241
+</span><span class="lnt">242
+</span><span class="lnt">243
+</span><span class="lnt">244
+</span><span class="lnt">245
+</span><span class="lnt">246
+</span><span class="lnt">247
+</span><span class="lnt">248
+</span><span class="lnt">249
+</span><span class="lnt">250
+</span><span class="lnt">251
+</span><span class="lnt">252
+</span><span class="lnt">253
+</span><span class="lnt">254
+</span><span class="lnt">255
+</span><span class="lnt">256
+</span><span class="lnt">257
+</span><span class="lnt">258
+</span><span class="lnt">259
+</span><span class="lnt">260
+</span><span class="lnt">261
+</span><span class="lnt">262
+</span><span class="lnt">263
+</span><span class="lnt">264
+</span><span class="lnt">265
+</span><span class="lnt">266
+</span><span class="lnt">267
+</span><span class="lnt">268
+</span><span class="lnt">269
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get install -y freerdp2-x11
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">xfreerdp --help
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">FreeRDP - A Free Remote Desktop Protocol Implementation
+</span></span><span class="line"><span class="cl">See www.freerdp.com <span class="k">for</span> more information
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Usage: xfreerdp <span class="o">[</span>file<span class="o">]</span> <span class="o">[</span>options<span class="o">]</span> <span class="o">[</span>/v:&lt;server&gt;<span class="o">[</span>:port<span class="o">]]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Syntax:
+</span></span><span class="line"><span class="cl">    /flag <span class="o">(</span>enables flag<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /option:&lt;value&gt; <span class="o">(</span>specifies option with value<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    +toggle -toggle <span class="o">(</span>enables or disables toggle, where <span class="s1">&#39;/&#39;</span> is a synonym of <span class="s1">&#39;+&#39;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    /a:&lt;addin&gt;<span class="o">[</span>,&lt;options&gt;<span class="o">]</span>            Addin
+</span></span><span class="line"><span class="cl">    /action-script:&lt;file-name&gt;        Action script
+</span></span><span class="line"><span class="cl">    /admin                            Admin <span class="o">(</span>or console<span class="o">)</span> session
+</span></span><span class="line"><span class="cl">    +aero                             Enable desktop composition
+</span></span><span class="line"><span class="cl">    /app:&lt;path&gt; or <span class="o">||</span>&lt;alias&gt;          Remote application program
+</span></span><span class="line"><span class="cl">    /app-cmd:&lt;parameters&gt;             Remote application command-line parameters
+</span></span><span class="line"><span class="cl">    /app-file:&lt;file-name&gt;             File to open with remote application
+</span></span><span class="line"><span class="cl">    /app-guid:&lt;app-guid&gt;              Remote application GUID
+</span></span><span class="line"><span class="cl">    /app-icon:&lt;icon-path&gt;             Remote application icon <span class="k">for</span> user interface
+</span></span><span class="line"><span class="cl">    /app-name:&lt;app-name&gt;              Remote application name <span class="k">for</span> user interface
+</span></span><span class="line"><span class="cl">    /app-workdir:&lt;workspace path&gt;     Remote application workspace path
+</span></span><span class="line"><span class="cl">    /assistance:&lt;password&gt;            Remote assistance password
+</span></span><span class="line"><span class="cl">    /auto-request-control             Automatically request remote assistance
+</span></span><span class="line"><span class="cl">                                      input control
+</span></span><span class="line"><span class="cl">    +async-channels                   Enable Asynchronous channels
+</span></span><span class="line"><span class="cl">                                      <span class="o">(</span>experimental<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    +async-input                      Enable Asynchronous input
+</span></span><span class="line"><span class="cl">    +async-update                     Enable Asynchronous update
+</span></span><span class="line"><span class="cl">    /audio-mode:&lt;mode&gt;                Audio output mode
+</span></span><span class="line"><span class="cl">    +auth-only                        Enable Authenticate only
+</span></span><span class="line"><span class="cl">    -authentication                   Disable Authentication <span class="o">(</span>experimental<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    +auto-reconnect                   Enable Automatic reconnection
+</span></span><span class="line"><span class="cl">    /auto-reconnect-max-retries:&lt;retries&gt;
+</span></span><span class="line"><span class="cl">                                      Automatic reconnection maximum retries, <span class="m">0</span>
+</span></span><span class="line"><span class="cl">                                      <span class="k">for</span> unlimited <span class="o">[</span>0,1000<span class="o">]</span>
+</span></span><span class="line"><span class="cl">    +bitmap-cache                     Enable bitmap cache
+</span></span><span class="line"><span class="cl">    /bpp:&lt;depth&gt;                      Session bpp <span class="o">(</span>color depth<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /buildconfig                      Print the build configuration
+</span></span><span class="line"><span class="cl">    /cert:<span class="o">[</span>deny,ignore,name:&lt;name&gt;,tofu,fingerprint:&lt;hash&gt;:&lt;<span class="nb">hash</span> as hex&gt;
+</span></span><span class="line"><span class="cl">          <span class="o">[</span>,fingerprint:&lt;hash&gt;:&lt;another hash&gt;<span class="o">]]</span>
+</span></span><span class="line"><span class="cl">                                      Certificate accept options. Use with care!
+</span></span><span class="line"><span class="cl">                                      * deny         ... Automatically abort
+</span></span><span class="line"><span class="cl">                                      connection <span class="k">if</span> the certificate does not
+</span></span><span class="line"><span class="cl">                                      match, no user interaction.           *
+</span></span><span class="line"><span class="cl">                                      ignore       ... Ignore the certificate
+</span></span><span class="line"><span class="cl">                                      checks altogether <span class="o">(</span>overrules all other
+</span></span><span class="line"><span class="cl">                                      options<span class="o">)</span>                           * name
+</span></span><span class="line"><span class="cl">                                             ... Use the alternate &lt;name&gt;
+</span></span><span class="line"><span class="cl">                                      instead of the certificate subject to
+</span></span><span class="line"><span class="cl">                                      match locally stored certificates * tofu
+</span></span><span class="line"><span class="cl">                                            ... Accept certificate
+</span></span><span class="line"><span class="cl">                                      unconditionally on first connect and deny
+</span></span><span class="line"><span class="cl">                                      on subsequent connections <span class="k">if</span> the
+</span></span><span class="line"><span class="cl">                                      certificate does not match * fingerprints
+</span></span><span class="line"><span class="cl">                                      ... A list of certificate hashes that are
+</span></span><span class="line"><span class="cl">                                      accepted unconditionally <span class="k">for</span> a connection
+</span></span><span class="line"><span class="cl">    /cert-deny                        <span class="o">[</span>deprecated, use /cert:deny<span class="o">]</span> Automatically
+</span></span><span class="line"><span class="cl">                                      abort connection <span class="k">for</span> any certificate that
+</span></span><span class="line"><span class="cl">                                      can not be validated.
+</span></span><span class="line"><span class="cl">    /cert-ignore                      <span class="o">[</span>deprecated, use /cert:ignore<span class="o">]</span> Ignore
+</span></span><span class="line"><span class="cl">                                      certificate
+</span></span><span class="line"><span class="cl">    /cert-name:&lt;name&gt;                 <span class="o">[</span>deprecated, use /cert:name:&lt;name&gt;<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                      Certificate name
+</span></span><span class="line"><span class="cl">    /cert-tofu                        <span class="o">[</span>deprecated, use /cert:tofu<span class="o">]</span> Automatically
+</span></span><span class="line"><span class="cl">                                      accept certificate on first connect
+</span></span><span class="line"><span class="cl">    /client-build-number:&lt;number&gt;     Client Build Number sent to server
+</span></span><span class="line"><span class="cl">                                      <span class="o">(</span>influences smartcard behaviour, see
+</span></span><span class="line"><span class="cl">                                      <span class="o">[</span>MS-RDPESC<span class="o">])</span>
+</span></span><span class="line"><span class="cl">    /client-hostname:&lt;name&gt;           Client Hostname to send to server
+</span></span><span class="line"><span class="cl">    -clipboard                        Disable Redirect clipboard
+</span></span><span class="line"><span class="cl">    /codec-cache:<span class="o">[</span>rfx<span class="p">|</span>nsc<span class="p">|</span>jpeg<span class="o">]</span>       Bitmap codec cache
+</span></span><span class="line"><span class="cl">    -compression                      Disable compression
+</span></span><span class="line"><span class="cl">    /compression-level:&lt;level&gt;        Compression level <span class="o">(</span>0,1,2<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    +credentials-delegation           Enable credentials delegation
+</span></span><span class="line"><span class="cl">    /d:&lt;domain&gt;                       Domain
+</span></span><span class="line"><span class="cl">    -decorations                      Disable Window decorations
+</span></span><span class="line"><span class="cl">    /disp                             Display control
+</span></span><span class="line"><span class="cl">    /drive:&lt;name&gt;,&lt;path&gt;              Redirect directory &lt;path&gt; as named share
+</span></span><span class="line"><span class="cl">                                      &lt;name&gt;. Hotplug support is enabled with
+</span></span><span class="line"><span class="cl">                                      /drive:hotplug,*. This argument provides
+</span></span><span class="line"><span class="cl">                                      the same <span class="k">function</span> as <span class="s2">&#34;Drives that I plug
+</span></span></span><span class="line"><span class="cl"><span class="s2">                                      in later&#34;</span> option in MSTSC.
+</span></span><span class="line"><span class="cl">    +drives                           Enable Redirect all mount points as shares
+</span></span><span class="line"><span class="cl">    /dvc:&lt;channel&gt;<span class="o">[</span>,&lt;options&gt;<span class="o">]</span>        Dynamic virtual channel
+</span></span><span class="line"><span class="cl">    /dynamic-resolution               Send resolution updates when the window is
+</span></span><span class="line"><span class="cl">                                      resized
+</span></span><span class="line"><span class="cl">    /echo                             Echo channel
+</span></span><span class="line"><span class="cl">    -encryption                       Disable Encryption <span class="o">(</span>experimental<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /encryption-methods:<span class="o">[</span>40,<span class="o">][</span>56,<span class="o">][</span>128,<span class="o">][</span>FIPS<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                      RDP standard security encryption methods
+</span></span><span class="line"><span class="cl">    /f                                Fullscreen mode <span class="o">(</span>&lt;Ctrl&gt;+&lt;Alt&gt;+&lt;Enter&gt;
+</span></span><span class="line"><span class="cl">                                      toggles fullscreen<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    -fast-path                        Disable fast-path input/output
+</span></span><span class="line"><span class="cl">    +fipsmode                         Enable FIPS mode
+</span></span><span class="line"><span class="cl">    /floatbar<span class="o">[</span>:sticky:<span class="o">[</span>on<span class="p">|</span>off<span class="o">]</span>,default:<span class="o">[</span>visible<span class="p">|</span>hidden<span class="o">]</span>,show:
+</span></span><span class="line"><span class="cl">               <span class="o">[</span>always<span class="p">|</span>fullscreen<span class="o">||</span>window<span class="o">]]</span>
+</span></span><span class="line"><span class="cl">                                      floatbar is disabled by default <span class="o">(</span>when
+</span></span><span class="line"><span class="cl">                                      enabled defaults to sticky in fullscreen
+</span></span><span class="line"><span class="cl">                                      mode<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    -fonts                            Disable smooth fonts <span class="o">(</span>ClearType<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /frame-ack:&lt;number&gt;               Number of frame acknowledgement
+</span></span><span class="line"><span class="cl">    /from-stdin<span class="o">[</span>:force<span class="o">]</span>               Read credentials from stdin. With &lt;force&gt;
+</span></span><span class="line"><span class="cl">                                      the prompt is <span class="k">done</span> before connection,
+</span></span><span class="line"><span class="cl">                                      otherwise on server request.
+</span></span><span class="line"><span class="cl">    /g:&lt;gateway&gt;<span class="o">[</span>:&lt;port&gt;<span class="o">]</span>             Gateway Hostname
+</span></span><span class="line"><span class="cl">    /gateway-usage-method:<span class="o">[</span>direct<span class="p">|</span>detect<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                      Gateway usage method
+</span></span><span class="line"><span class="cl">    /gd:&lt;domain&gt;                      Gateway domain
+</span></span><span class="line"><span class="cl">    /gdi:sw<span class="p">|</span>hw                        GDI rendering
+</span></span><span class="line"><span class="cl">    /geometry                         Geometry tracking channel
+</span></span><span class="line"><span class="cl">    +gestures                         Enable Consume multitouch input locally
+</span></span><span class="line"><span class="cl">    /gfx<span class="o">[</span>:RFX<span class="o">]</span>                        RDP8 graphics pipeline
+</span></span><span class="line"><span class="cl">    +gfx-progressive                  Enable RDP8 graphics pipeline using progressive
+</span></span><span class="line"><span class="cl">                                      codec
+</span></span><span class="line"><span class="cl">    +gfx-small-cache                  Enable RDP8 graphics pipeline using small cache
+</span></span><span class="line"><span class="cl">                                      mode
+</span></span><span class="line"><span class="cl">    +gfx-thin-client                  Enable RDP8 graphics pipeline using thin client
+</span></span><span class="line"><span class="cl">                                      mode
+</span></span><span class="line"><span class="cl">    +glyph-cache                      Enable Glyph cache <span class="o">(</span>experimental<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /gp:&lt;password&gt;                    Gateway password
+</span></span><span class="line"><span class="cl">    -grab-keyboard                    Disable Grab keyboard
+</span></span><span class="line"><span class="cl">    /gt:<span class="o">[</span>rpc<span class="p">|</span>http<span class="p">|</span>auto<span class="o">]</span>               Gateway transport <span class="nb">type</span>
+</span></span><span class="line"><span class="cl">    /gu:<span class="o">[[</span>&lt;domain&gt;<span class="se">\]</span>&lt;user&gt;<span class="p">|</span>&lt;user&gt;<span class="o">[</span>@&lt;domain&gt;<span class="o">]]</span>
+</span></span><span class="line"><span class="cl">                                      Gateway username
+</span></span><span class="line"><span class="cl">    /gat:&lt;access token&gt;               Gateway Access Token
+</span></span><span class="line"><span class="cl">    /h:&lt;height&gt;                       Height
+</span></span><span class="line"><span class="cl">    -heartbeat                        Disable Support heartbeat PDUs
+</span></span><span class="line"><span class="cl">    /help                             Print <span class="nb">help</span>
+</span></span><span class="line"><span class="cl">    +home-drive                       Enable Redirect user home as share
+</span></span><span class="line"><span class="cl">    /ipv6                             Prefer IPv6 AAA record over IPv4 A record
+</span></span><span class="line"><span class="cl">    /jpeg                             JPEG codec support
+</span></span><span class="line"><span class="cl">    /jpeg-quality:&lt;percentage&gt;        JPEG quality
+</span></span><span class="line"><span class="cl">    /kbd:0x&lt;id&gt; or &lt;name&gt;             Keyboard layout
+</span></span><span class="line"><span class="cl">    /kbd-lang:0x&lt;id&gt;                  Keyboard active language identifier
+</span></span><span class="line"><span class="cl">    /kbd-fn-key:&lt;value&gt;               Function key value
+</span></span><span class="line"><span class="cl">    /kbd-list                         List keyboard layouts
+</span></span><span class="line"><span class="cl">    /kbd-lang-list                    List keyboard languages
+</span></span><span class="line"><span class="cl">    /kbd-subtype:&lt;id&gt;                 Keyboard subtype
+</span></span><span class="line"><span class="cl">    /kbd-type:&lt;id&gt;                    Keyboard <span class="nb">type</span>
+</span></span><span class="line"><span class="cl">    /load-balance-info:&lt;info-string&gt;  Load balance info
+</span></span><span class="line"><span class="cl">    /log-filters:&lt;tag&gt;:&lt;level&gt;<span class="o">[</span>,&lt;tag&gt;:&lt;level&gt;<span class="o">[</span>,...<span class="o">]]</span>
+</span></span><span class="line"><span class="cl">                                      Set logger filters, see wLog<span class="o">(</span>7<span class="o">)</span> <span class="k">for</span>
+</span></span><span class="line"><span class="cl">                                      details
+</span></span><span class="line"><span class="cl">    /log-level:<span class="o">[</span>OFF<span class="p">|</span>FATAL<span class="p">|</span>ERROR<span class="p">|</span>WARN<span class="p">|</span>INFO<span class="p">|</span>DEBUG<span class="p">|</span>TRACE<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                      Set the default log level, see wLog<span class="o">(</span>7<span class="o">)</span> <span class="k">for</span>
+</span></span><span class="line"><span class="cl">                                      details
+</span></span><span class="line"><span class="cl">    /max-fast-path-size:&lt;size&gt;        Specify maximum fast-path update size
+</span></span><span class="line"><span class="cl">    /max-loop-time:&lt;time&gt;             Specify maximum <span class="nb">time</span> in milliseconds spend
+</span></span><span class="line"><span class="cl">                                      treating packets
+</span></span><span class="line"><span class="cl">    +menu-anims                       Enable menu animations
+</span></span><span class="line"><span class="cl">    /microphone<span class="o">[</span>:<span class="o">[</span>sys:&lt;sys&gt;,<span class="o">][</span>dev:&lt;dev&gt;,<span class="o">][</span>format:&lt;format&gt;,<span class="o">][</span>rate:&lt;rate&gt;,<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                 <span class="o">[</span>channel:&lt;channel&gt;<span class="o">]]</span> Audio input <span class="o">(</span>microphone<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /monitor-list                     List detected monitors
+</span></span><span class="line"><span class="cl">    /monitors:&lt;id&gt;<span class="o">[</span>,&lt;id&gt;<span class="o">[</span>,...<span class="o">]]</span>       Select monitors to use
+</span></span><span class="line"><span class="cl">    -mouse-motion                     Disable Send mouse motion
+</span></span><span class="line"><span class="cl">    /multimon<span class="o">[</span>:force<span class="o">]</span>                 Use multiple monitors
+</span></span><span class="line"><span class="cl">    +multitouch                       Enable Redirect multitouch input
+</span></span><span class="line"><span class="cl">    +multitransport                   Enable Support multitransport protocol
+</span></span><span class="line"><span class="cl">    -nego                             Disable protocol security negotiation
+</span></span><span class="line"><span class="cl">    /network:<span class="o">[</span>modem<span class="p">|</span>broadband<span class="p">|</span>broadband-low<span class="p">|</span>broadband-high<span class="p">|</span>wan<span class="p">|</span>lan<span class="p">|</span>auto<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                      Network connection <span class="nb">type</span>
+</span></span><span class="line"><span class="cl">    /nsc                              NSCodec support
+</span></span><span class="line"><span class="cl">    +offscreen-cache                  Enable offscreen bitmap cache
+</span></span><span class="line"><span class="cl">    /orientation:<span class="o">[</span>0<span class="p">|</span>90<span class="p">|</span>180<span class="p">|</span>270<span class="o">]</span>       Orientation of display in degrees
+</span></span><span class="line"><span class="cl">    +old-license                      Enable Use the old license workflow <span class="o">(</span>no CAL and
+</span></span><span class="line"><span class="cl">                                      hwId <span class="nb">set</span> to 0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /p:&lt;password&gt;                     Password
+</span></span><span class="line"><span class="cl">    /parallel<span class="o">[</span>:&lt;name&gt;<span class="o">[</span>,&lt;path&gt;<span class="o">]]</span>       Redirect parallel device
+</span></span><span class="line"><span class="cl">    /parent-window:&lt;window-id&gt;        Parent window id
+</span></span><span class="line"><span class="cl">    +password-is-pin                  Enable Use smart card authentication with
+</span></span><span class="line"><span class="cl">                                      password as smart card PIN
+</span></span><span class="line"><span class="cl">    /pcb:&lt;blob&gt;                       Preconnection Blob
+</span></span><span class="line"><span class="cl">    /pcid:&lt;id&gt;                        Preconnection Id
+</span></span><span class="line"><span class="cl">    /pheight:&lt;height&gt;                 Physical height of display <span class="o">(</span>in
+</span></span><span class="line"><span class="cl">                                      millimeters<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /play-rfx:&lt;pcap-file&gt;             Replay rfx pcap file
+</span></span><span class="line"><span class="cl">    /port:&lt;number&gt;                    Server port
+</span></span><span class="line"><span class="cl">    -suppress-output                  Disable suppress output when minimized
+</span></span><span class="line"><span class="cl">    +print-reconnect-cookie           Enable Print base64 reconnect cookie after
+</span></span><span class="line"><span class="cl">                                      connecting
+</span></span><span class="line"><span class="cl">    /printer<span class="o">[</span>:&lt;name&gt;<span class="o">[</span>,&lt;driver&gt;<span class="o">]]</span>      Redirect printer device
+</span></span><span class="line"><span class="cl">    /proxy:<span class="o">[</span>&lt;proto&gt;://<span class="o">][</span>&lt;user&gt;:&lt;password&gt;@<span class="o">]</span>&lt;host&gt;:&lt;port&gt;
+</span></span><span class="line"><span class="cl">                                      Proxy settings: override env. var <span class="o">(</span>see
+</span></span><span class="line"><span class="cl">                                      also environment variable below<span class="o">)</span>. Protocol
+</span></span><span class="line"><span class="cl">                                      <span class="s2">&#34;socks5&#34;</span> should be given explicitly where
+</span></span><span class="line"><span class="cl">                                      <span class="s2">&#34;http&#34;</span> is default.
+</span></span><span class="line"><span class="cl">    /pth:&lt;password-hash&gt;              Pass the <span class="nb">hash</span> <span class="o">(</span>restricted admin mode<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /pwidth:&lt;width&gt;                   Physical width of display <span class="o">(</span>in millimeters<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /rdp2tcp:&lt;executable path<span class="o">[</span>:arg...<span class="o">]</span>&gt;
+</span></span><span class="line"><span class="cl">                                      TCP redirection
+</span></span><span class="line"><span class="cl">    /reconnect-cookie:&lt;base64-cookie&gt; Pass base64 reconnect cookie to the
+</span></span><span class="line"><span class="cl">                                      connection
+</span></span><span class="line"><span class="cl">    /redirect-prefer:&lt;FQDN<span class="p">|</span>IP<span class="p">|</span>NETBIOS&gt;,<span class="o">[</span>...<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                      Override the preferred redirection order
+</span></span><span class="line"><span class="cl">    /relax-order-checks               Do not check <span class="k">if</span> a RDP order was announced
+</span></span><span class="line"><span class="cl">                                      during capability exchange, only use when
+</span></span><span class="line"><span class="cl">                                      connecting to a buggy server
+</span></span><span class="line"><span class="cl">    /restricted-admin                 Restricted admin mode
+</span></span><span class="line"><span class="cl">    /rfx                              RemoteFX
+</span></span><span class="line"><span class="cl">    /rfx-mode:<span class="o">[</span>image<span class="p">|</span>video<span class="o">]</span>           RemoteFX mode
+</span></span><span class="line"><span class="cl">    /scale:<span class="o">[</span>100<span class="p">|</span>140<span class="p">|</span>180<span class="o">]</span>              Scaling factor of the display
+</span></span><span class="line"><span class="cl">    /scale-desktop:&lt;percentage&gt;       Scaling factor <span class="k">for</span> desktop applications
+</span></span><span class="line"><span class="cl">                                      <span class="o">(</span>value between <span class="m">100</span> and 500<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /scale-device:100<span class="p">|</span>140<span class="p">|</span><span class="m">180</span>         Scaling factor <span class="k">for</span> app store applications
+</span></span><span class="line"><span class="cl">    /sec:<span class="o">[</span>rdp<span class="p">|</span>tls<span class="p">|</span>nla<span class="p">|</span>ext<span class="o">]</span>            Force specific protocol security
+</span></span><span class="line"><span class="cl">    +sec-ext                          Enable NLA extended protocol security
+</span></span><span class="line"><span class="cl">    -sec-nla                          Disable NLA protocol security
+</span></span><span class="line"><span class="cl">    -sec-rdp                          Disable RDP protocol security
+</span></span><span class="line"><span class="cl">    -sec-tls                          Disable TLS protocol security
+</span></span><span class="line"><span class="cl">    /serial<span class="o">[</span>:&lt;name&gt;<span class="o">[</span>,&lt;path&gt;<span class="o">[</span>,&lt;driver&gt;<span class="o">[</span>,permissive<span class="o">]]]]</span>
+</span></span><span class="line"><span class="cl">                                      Redirect serial device
+</span></span><span class="line"><span class="cl">    /shell:&lt;shell&gt;                    Alternate shell
+</span></span><span class="line"><span class="cl">    /shell-dir:&lt;dir&gt;                  Shell working directory
+</span></span><span class="line"><span class="cl">    /size:&lt;width&gt;x&lt;height&gt; or &lt;percent&gt;%<span class="o">[</span>wh<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                      Screen size
+</span></span><span class="line"><span class="cl">    /smart-sizing<span class="o">[</span>:&lt;width&gt;x&lt;height&gt;<span class="o">]</span>  Scale remote desktop to window size
+</span></span><span class="line"><span class="cl">    /smartcard<span class="o">[</span>:&lt;str&gt;<span class="o">[</span>,&lt;str&gt;...<span class="o">]]</span>     Redirect the smartcard devices containing
+</span></span><span class="line"><span class="cl">                                      any of the &lt;str&gt; in their names.
+</span></span><span class="line"><span class="cl">    /smartcard-logon                  Activates Smartcard Logon authentication.
+</span></span><span class="line"><span class="cl">                                      <span class="o">(</span>EXPERIMENTAL: NLA not supported<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /sound<span class="o">[</span>:<span class="o">[</span>sys:&lt;sys&gt;,<span class="o">][</span>dev:&lt;dev&gt;,<span class="o">][</span>format:&lt;format&gt;,<span class="o">][</span>rate:&lt;rate&gt;,<span class="o">]</span>
+</span></span><span class="line"><span class="cl">            <span class="o">[</span>channel:&lt;channel&gt;,<span class="o">][</span>latency:&lt;latency&gt;,<span class="o">][</span>quality:&lt;quality&gt;<span class="o">]]</span>
+</span></span><span class="line"><span class="cl">                                      Audio output <span class="o">(</span>sound<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /span                             Span screen over multiple monitors
+</span></span><span class="line"><span class="cl">    /spn-class:&lt;service-class&gt;        SPN authentication service class
+</span></span><span class="line"><span class="cl">    /ssh-agent                        SSH Agent forwarding channel
+</span></span><span class="line"><span class="cl">    /t:&lt;title&gt;                        Window title
+</span></span><span class="line"><span class="cl">    -themes                           Disable themes
+</span></span><span class="line"><span class="cl">    /timeout:&lt;<span class="nb">time</span> in ms&gt;             Advanced setting <span class="k">for</span> high latency links:
+</span></span><span class="line"><span class="cl">                                      Adjust connection timeout, use <span class="k">if</span> you
+</span></span><span class="line"><span class="cl">                                      encounter timeout failures with your
+</span></span><span class="line"><span class="cl">                                      connection
+</span></span><span class="line"><span class="cl">    /tls-ciphers:<span class="o">[</span>netmon<span class="p">|</span>ma<span class="p">|</span>ciphers<span class="o">]</span>  Allowed TLS ciphers
+</span></span><span class="line"><span class="cl">    /tls-seclevel:&lt;level&gt;             TLS security level - defaults to <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    -toggle-fullscreen                Disable Alt+Ctrl+Enter to toggle
+</span></span><span class="line"><span class="cl">                                      fullscreen
+</span></span><span class="line"><span class="cl">    /tune:&lt;setting:value&gt;,&lt;setting:value&gt;
+</span></span><span class="line"><span class="cl">                                      <span class="o">[</span>experimental<span class="o">]</span> directly manipulate freerdp
+</span></span><span class="line"><span class="cl">                                      settings, use with extreme caution!
+</span></span><span class="line"><span class="cl">    /tune-list                        Print options allowed <span class="k">for</span> /tune
+</span></span><span class="line"><span class="cl">    /u:<span class="o">[[</span>&lt;domain&gt;<span class="se">\]</span>&lt;user&gt;<span class="p">|</span>&lt;user&gt;<span class="o">[</span>@&lt;domain&gt;<span class="o">]]</span>
+</span></span><span class="line"><span class="cl">                                      Username
+</span></span><span class="line"><span class="cl">    +unmap-buttons                    Enable Let server see real physical pointer
+</span></span><span class="line"><span class="cl">                                      button
+</span></span><span class="line"><span class="cl">    /usb:<span class="o">[</span>dbg,<span class="o">][</span>id:&lt;vid&gt;:&lt;pid&gt;#...,<span class="o">][</span>addr:&lt;bus&gt;:&lt;addr&gt;#...,<span class="o">][</span>auto<span class="o">]</span>
+</span></span><span class="line"><span class="cl">                                      Redirect USB device
+</span></span><span class="line"><span class="cl">    /v:&lt;server&gt;<span class="o">[</span>:port<span class="o">]</span>                Server hostname
+</span></span><span class="line"><span class="cl">    /vc:&lt;channel&gt;<span class="o">[</span>,&lt;options&gt;<span class="o">]</span>         Static virtual channel
+</span></span><span class="line"><span class="cl">    /version                          Print version
+</span></span><span class="line"><span class="cl">    /video                            Video optimized remoting channel
+</span></span><span class="line"><span class="cl">    /vmconnect<span class="o">[</span>:&lt;vmid&gt;<span class="o">]</span>               Hyper-V console <span class="o">(</span>use port 2179, disable
+</span></span><span class="line"><span class="cl">                                      negotiation<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    /w:&lt;width&gt;                        Width
+</span></span><span class="line"><span class="cl">    -wallpaper                        Disable wallpaper
+</span></span><span class="line"><span class="cl">    +window-drag                      Enable full window drag
+</span></span><span class="line"><span class="cl">    /window-position:&lt;xpos&gt;x&lt;ypos&gt;    window position
+</span></span><span class="line"><span class="cl">    /wm-class:&lt;class-name&gt;            Set the WM_CLASS hint <span class="k">for</span> the window
+</span></span><span class="line"><span class="cl">                                      instance
+</span></span><span class="line"><span class="cl">    /workarea                         Use available work area
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Examples:
+</span></span><span class="line"><span class="cl">    xfreerdp connection.rdp /p:Pwd123! /f
+</span></span><span class="line"><span class="cl">    xfreerdp /u:CONTOSO<span class="se">\J</span>ohnDoe /p:Pwd123! /v:rdp.contoso.com
+</span></span><span class="line"><span class="cl">    xfreerdp /u:JohnDoe /p:Pwd123! /w:1366 /h:768 /v:192.168.1.100:4489
+</span></span><span class="line"><span class="cl">    xfreerdp /u:JohnDoe /p:Pwd123! /vmconnect:C824F53E-95D2-46C6-9A18-23A5BB403532 /v:192.168.1.100</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="使用" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8" class="heading-mark"></a>使用</h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">xfreerdp /w:1920 /h:1080 /u:<span class="s2">&#34;Administrator&#34;</span> /p:xxxxxxxxx /v:10.32.233.100:3389</span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2022-09-10-git-%E6%B7%BB%E5%8A%A0%E9%9D%9E%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/" title="git 添加非用户权限">git 添加非用户权限</a></li><li>
+          <a href="/2022-05-13-%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%88%91%E8%BF%BD%E7%9A%84%E5%8D%9A%E5%AE%A2%E4%BB%AC/" title="那些年我追的博客们">那些年我追的博客们</a></li><li>
+          <a href="/2022-05-13-%E4%B8%8A%E4%BA%A4%E6%89%80sse%E7%9B%B8%E5%85%B3%E6%8A%80%E6%9C%AF%E6%B1%87%E6%80%BB/" title="上交所sse相关技术汇总">上交所sse相关技术汇总</a></li><li>
+          <a href="/2022-04-30-%E6%8E%A8%E8%8D%90%E7%94%B5%E5%AD%90%E4%B9%A6%E7%BD%91%E7%AB%99/" title="推荐电子书网站">推荐电子书网站</a></li><li>
+          <a href="/2022-04-24-terminator-%E9%85%8D%E7%BD%AE%E6%96%B9%E6%A1%88/" title="Terminator 配置方案">Terminator 配置方案</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2022-09-12 13:37:28">更新于 2022-09-12&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/" data-title="Ubuntu 连接 Windows 远程桌面" data-hashtags="Windows,xfreerdp,remote,desktop"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/" data-hashtag="Windows"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/" data-title="Ubuntu 连接 Windows 远程桌面" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/" data-title="Ubuntu 连接 Windows 远程桌面"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2022-09-12-ubuntu-%E8%BF%9E%E6%8E%A5-windows-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/" data-title="Ubuntu 连接 Windows 远程桌面"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/windows/" class="post-tag" title="标签 - Windows">Windows</a><a href="/tags/xfreerdp/" class="post-tag" title="标签 - Xfreerdp">Xfreerdp</a><a href="/tags/remote/" class="post-tag" title="标签 - Remote">Remote</a><a href="/tags/desktop/" class="post-tag" title="标签 - Desktop">Desktop</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2022-09-10-git-%E6%B7%BB%E5%8A%A0%E9%9D%9E%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/" class="post-nav-item" rel="prev" title="git 添加非用户权限"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>git 添加非用户权限</a>
+      <a href="/2022-09-13-git-%E4%BF%AE%E6%94%B9-https-%E4%B8%BA-ssh/" class="post-nav-item" rel="next" title="git 修改 https 为 ssh">git 修改 https 为 ssh<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

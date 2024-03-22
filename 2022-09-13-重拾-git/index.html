@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>重拾 git - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="重新学习 git。 安装 配置:configgit 要求给出开发人员的基本信息： 名字 邮件 这是为了更好的最终文件修改人。这个配置可以是全局、或者单独针" /><meta name="keywords" content='git' /><meta itemprop="name" content="重拾 git">
+<meta itemprop="description" content="重新学习 git。 安装 配置:configgit 要求给出开发人员的基本信息： 名字 邮件 这是为了更好的最终文件修改人。这个配置可以是全局、或者单独针"><meta itemprop="datePublished" content="2022-09-13T13:06:53+00:00" />
+<meta itemprop="dateModified" content="2022-09-13T13:06:53+00:00" />
+<meta itemprop="wordCount" content="2441"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="git," /><meta property="og:title" content="重拾 git" />
+<meta property="og:description" content="重新学习 git。 安装 配置:configgit 要求给出开发人员的基本信息： 名字 邮件 这是为了更好的最终文件修改人。这个配置可以是全局、或者单独针" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2022-09-13-%E9%87%8D%E6%8B%BE-git/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-09-13T13:06:53+00:00" />
+<meta property="article:modified_time" content="2022-09-13T13:06:53+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="重拾 git"/>
+<meta name="twitter:description" content="重新学习 git。 安装 配置:configgit 要求给出开发人员的基本信息： 名字 邮件 这是为了更好的最终文件修改人。这个配置可以是全局、或者单独针"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2022-09-13-%E9%87%8D%E6%8B%BE-git/" /><link rel="prev" href="https://williamlfang.github.io/2022-09-13-c-thread-%E7%BA%BF%E7%A8%8B%E5%88%9B%E5%BB%BA%E6%97%B6%E7%BB%91%E6%A0%B8/" /><link rel="next" href="https://williamlfang.github.io/2022-09-13-v2ray%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "重拾 git",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2022-09-13-%E9%87%8D%E6%8B%BE-git\/"
+    },"genre": "posts","keywords": "git","wordcount":  2441 ,
+    "url": "https:\/\/williamlfang.github.io\/2022-09-13-%E9%87%8D%E6%8B%BE-git\/","datePublished": "2022-09-13T13:06:53+00:00","dateModified": "2022-09-13T13:06:53+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>重拾 git</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2022-09-13 13:06:53"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2022-09-13">2022-09-13</time></span>&nbsp;<span title="2441 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2500 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#安装">安装</a></li>
+    <li><a href="#配置config">配置:config</a>
+      <ol>
+        <li><a href="#global">global</a></li>
+      </ol>
+    </li>
+    <li><a href="#使用">使用</a>
+      <ol>
+        <li><a href="#新建空项目init">新建空项目:init</a></li>
+        <li><a href="#添加文件add">添加文件:add</a></li>
+        <li><a href="#提交修改commit">提交修改:commit</a></li>
+        <li><a href="#查看当前状态status">查看当前状态:status</a></li>
+        <li><a href="#查看不同diff">查看不同:diff</a></li>
+        <li><a href="#查看日志log">查看日志:log</a></li>
+        <li><a href="#回滚reset">回滚:reset</a></li>
+        <li><a href="#重看logreflog">重看log:reflog</a></li>
+        <li><a href="#撤销修改checkout">撤销修改:checkout</a>
+          <ol>
+            <li><a href="#在工作区未提交">在工作区未提交</a></li>
+            <li><a href="#已经-add-到缓存区">已经 add 到缓存区</a></li>
+            <li><a href="#已经-commit-到分支">已经 commit 到分支</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2022-09-13，文中内容可能已过时。</div>
+      </div>
+    </div><p>重新学习 git。</p>
+<h1 id="安装" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h1><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"></code></pre></td></tr></table>
+</div>
+</div><h1 id="配置config" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%aeconfig" class="heading-mark"></a>配置:config</h1><p>git 要求给出开发人员的基本信息：</p>
+<ol>
+<li>名字</li>
+<li>邮件</li>
+</ol>
+<p>这是为了更好的最终文件修改人。这个配置可以是全局、或者单独针对某个项目。</p>
+<h2 id="global" class="heading-element">
+  <a href="#global" class="heading-mark"></a>global</h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git config --global user.name <span class="s2">&#34;william&#34;</span>
+</span></span><span class="line"><span class="cl">git config --global user.email <span class="s2">&#34;william.x.x@gmail.com&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="使用" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8" class="heading-mark"></a>使用</h1><h2 id="新建空项目init" class="heading-element">
+  <a href="#%e6%96%b0%e5%bb%ba%e7%a9%ba%e9%a1%b9%e7%9b%aeinit" class="heading-mark"></a>新建空项目:init</h2><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdri testing
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> testing
+</span></span><span class="line"><span class="cl">git init
+</span></span><span class="line"><span class="cl">Initialized empty Git repository in /tmp/testing/.git/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ls -alh</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="添加文件add" class="heading-element">
+  <a href="#%e6%b7%bb%e5%8a%a0%e6%96%87%e4%bb%b6add" class="heading-mark"></a>添加文件:add</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git add readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git add install.sh</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="提交修改commit" class="heading-element">
+  <a href="#%e6%8f%90%e4%ba%a4%e4%bf%ae%e6%94%b9commit" class="heading-mark"></a>提交修改:commit</h2><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git commit -m <span class="s2">&#34;init project and add readme&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>master <span class="o">(</span>root-commit<span class="o">)</span> f78741f<span class="o">]</span> init project and add readme
+</span></span><span class="line"><span class="cl"> <span class="m">2</span> files changed, <span class="m">2</span> insertions<span class="o">(</span>+<span class="o">)</span>
+</span></span><span class="line"><span class="cl"> create mode <span class="m">100644</span> install.sh
+</span></span><span class="line"><span class="cl"> create mode <span class="m">100644</span> readme.md</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="查看当前状态status" class="heading-element">
+  <a href="#%e6%9f%a5%e7%9c%8b%e5%bd%93%e5%89%8d%e7%8a%b6%e6%80%81status" class="heading-mark"></a>查看当前状态:status</h2><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;hello, world&#34;</span> &gt;&gt; readme.md
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;this is new line&#34;</span> &gt;&gt; readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">On branch master
+</span></span><span class="line"><span class="cl">Changes not staged <span class="k">for</span> commit:
+</span></span><span class="line"><span class="cl">  <span class="o">(</span>use <span class="s2">&#34;git add &lt;file&gt;...&#34;</span> to update what will be committed<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">(</span>use <span class="s2">&#34;git checkout -- &lt;file&gt;...&#34;</span> to discard changes in working directory<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        modified:   readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">no changes added to commit <span class="o">(</span>use <span class="s2">&#34;git add&#34;</span> and/or <span class="s2">&#34;git commit -a&#34;</span><span class="o">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="查看不同diff" class="heading-element">
+  <a href="#%e6%9f%a5%e7%9c%8b%e4%b8%8d%e5%90%8cdiff" class="heading-mark"></a>查看不同:diff</h2><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git diff readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">diff --git a/readme.md b/readme.md
+</span></span><span class="line"><span class="cl">index 63173a9..cea5572 <span class="m">100644</span>
+</span></span><span class="line"><span class="cl">--- a/readme.md
+</span></span><span class="line"><span class="cl">+++ b/readme.md
+</span></span><span class="line"><span class="cl">@@ -1 +1,3 @@
+</span></span><span class="line"><span class="cl"> <span class="c1"># git testing</span>
+</span></span><span class="line"><span class="cl">+hello, world
+</span></span><span class="line"><span class="cl">+this is new line</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="查看日志log" class="heading-element">
+  <a href="#%e6%9f%a5%e7%9c%8b%e6%97%a5%e5%bf%97log" class="heading-mark"></a>查看日志:log</h2><p>git 处理的是每一次修改的快照(snapshot)，为每一次的修改生成一次 log 条目，用于查看该次修改的日志说明。</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git log
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit 3a0003085047a83783a7fff67b3904ccd2154ff0 <span class="o">(</span>HEAD -&gt; master<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 09:05:39 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    modify readme
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit f78741f31fe3f5600a8c003aa456744668a09da2
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 08:58:23 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    init project and add readme</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="回滚reset" class="heading-element">
+  <a href="#%e5%9b%9e%e6%bb%9areset" class="heading-mark"></a>回滚:reset</h2><p><code>HEAD</code> 表示当前版本号，可以使用 <code>HEAD^</code> 返回上一个版本，或者 <code>HEAD~n</code> 返回之前n个版本</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 上一个版本，也可以用 HEAD~n，其中n表示之前多少个log</span>
+</span></span><span class="line"><span class="cl">git reset --hard HEAD^
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">HEAD is now at f78741f init project and add readme
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git log
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit f78741f31fe3f5600a8c003aa456744668a09da2 <span class="o">(</span>HEAD -&gt; master<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 08:58:23 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    init project and add readme</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当然，如果我们想恢复之前的第二个修改，在上面的 <code>git log</code> 我们知道这个版本的修改 <code>commit id</code></p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">commit 3a0003085047a83783a7fff67b3904ccd2154ff0 <span class="o">(</span>HEAD -&gt; master<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 09:05:39 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    modify readme</span></span></code></pre></td></tr></table>
+</div>
+</div><p>所以我们还是可以在不同的 <code>commit id</code> 来回跳转的</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 一般写前面几位就可以了，不需要整个 id</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#git reset --hard 3a0003085047a83783a7fff67b3904ccd2154ff0</span>
+</span></span><span class="line"><span class="cl">git reset --hard 3a0003
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit 3a0003085047a83783a7fff67b3904ccd2154ff0 <span class="o">(</span>HEAD -&gt; master<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 09:05:39 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    modify readme
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit f78741f31fe3f5600a8c003aa456744668a09da2
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 08:58:23 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    init project and add readme</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们看到，当前的版本又重新回到的最近的修改了。Git 的版本回退速度非常快，因为 Git 在内部有个指向当前版本的HEAD指针，当你回退版本的时候，Git 仅仅是把 HEAD 从指向对应的 <code>commit id</code>。</p>
+<h2 id="重看logreflog" class="heading-element">
+  <a href="#%e9%87%8d%e7%9c%8blogreflog" class="heading-mark"></a>重看log:reflog</h2><p>像上面那样，如果我们 <code>reset</code> 了 <code>HEAD</code>，结果把屏幕清除了，导致我们记不起之前的 <code>commit id</code>。该怎么办呢？其实 git 提供了对每次修改的记录查新，可以很方便的看到每次操作的历史记录</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git reflog
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">3a00030 <span class="o">(</span>HEAD -&gt; master<span class="o">)</span> HEAD@<span class="o">{</span>0<span class="o">}</span>: reset: moving to 3a0003
+</span></span><span class="line"><span class="cl">f78741f HEAD@<span class="o">{</span>1<span class="o">}</span>: reset: moving to HEAD^
+</span></span><span class="line"><span class="cl">3a00030 <span class="o">(</span>HEAD -&gt; master<span class="o">)</span> HEAD@<span class="o">{</span>2<span class="o">}</span>: commit: modify readme
+</span></span><span class="line"><span class="cl">f78741f HEAD@<span class="o">{</span>3<span class="o">}</span>: commit <span class="o">(</span>initial<span class="o">)</span>: init project and add readme</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从上面的记录我们看到，<code>reset: moving to HEAD^</code> 是我们把 <code>HEAD</code> 往前回滚了一次，到了 <code>f78741f</code> ，这时候 <code>3a00030</code> 就是后面一条最新的版本，所以还是可以回滚到这个版本的</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git reset --hard 3a0003</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="撤销修改checkout" class="heading-element">
+  <a href="#%e6%92%a4%e9%94%80%e4%bf%ae%e6%94%b9checkout" class="heading-mark"></a>撤销修改:checkout</h2><p>有时候，我们对于修改的文件，想要丢弃，恢复到原先的状态。这时候可以使用 <code>checkout</code></p>
+<h3 id="在工作区未提交" class="heading-element">
+  <a href="#%e5%9c%a8%e5%b7%a5%e4%bd%9c%e5%8c%ba%e6%9c%aa%e6%8f%90%e4%ba%a4" class="heading-mark"></a>在工作区未提交</h3><p>如果我们的修改只是在工作区，则可以直接丢弃修改即可</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git status .
+</span></span><span class="line"><span class="cl">On branch master
+</span></span><span class="line"><span class="cl">nothing to commit, working tree clean
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;add extra line&#34;</span> &gt;&gt; readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git status .
+</span></span><span class="line"><span class="cl">On branch master
+</span></span><span class="line"><span class="cl">Changes not staged <span class="k">for</span> commit:
+</span></span><span class="line"><span class="cl">  <span class="o">(</span>use <span class="s2">&#34;git add &lt;file&gt;...&#34;</span> to update what will be committed<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">(</span>use <span class="s2">&#34;git checkout -- &lt;file&gt;...&#34;</span> to discard changes in working directory<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        modified:   readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">no changes added to commit <span class="o">(</span>use <span class="s2">&#34;git add&#34;</span> and/or <span class="s2">&#34;git commit -a&#34;</span><span class="o">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>从上面我们看出来，当前工作区有一个 <code>modified</code> 没有提交到缓存区 <code>Changes not staged for commit</code>。如果我们想放弃本次修改，可以直接使用命令 <code>checkout</code></p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git checkout readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">On branch master
+</span></span><span class="line"><span class="cl">nothing to commit, working tree clean</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，本次修改已经被丢弃，当前分支是干净的。</p>
+<h3 id="已经-add-到缓存区" class="heading-element">
+  <a href="#%e5%b7%b2%e7%bb%8f-add-%e5%88%b0%e7%bc%93%e5%ad%98%e5%8c%ba" class="heading-mark"></a>已经 add 到缓存区</h3><p>如果修改已经提交到了缓存区，我们可以用 <code>reset HEAD filename</code> 将缓存区(stage)退回到与当前分支一样的状态(<code>HEAD</code>)，然后在用 <code>checkout</code> 丢弃修改</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;add extra line&#34;</span> &gt;&gt; readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git add readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git status .
+</span></span><span class="line"><span class="cl">On branch master
+</span></span><span class="line"><span class="cl">Changes to be committed:
+</span></span><span class="line"><span class="cl">  <span class="o">(</span>use <span class="s2">&#34;git reset HEAD &lt;file&gt;...&#34;</span> to unstage<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        modified:   readme.md</span></span></code></pre></td></tr></table>
+</div>
+</div><p>看到上面的已经被 <code>add</code> 到了缓存区。那么，我们可以用 <code>reset HEAD &lt;file&gt;</code> 命令将其从缓存区放弃</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 先将其从缓存区放弃</span>
+</span></span><span class="line"><span class="cl">git reset HEAD readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 然后在从工作区放弃</span>
+</span></span><span class="line"><span class="cl">git checkout readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 现在查看状态已经是干净的了</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git status
+</span></span><span class="line"><span class="cl">On branch master
+</span></span><span class="line"><span class="cl">nothing to commit, working tree clean</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="已经-commit-到分支" class="heading-element">
+  <a href="#%e5%b7%b2%e7%bb%8f-commit-%e5%88%b0%e5%88%86%e6%94%af" class="heading-mark"></a>已经 commit 到分支</h3><p>对于已经提交到分支的修改，我们可以用 <code>reset commit_id</code> 退回到上一个版本（这个 <code>commit_id</code> 指的是上一个版本号）。</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;add extra line3&#34;</span> &gt;&gt; readme.md
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git add readme.md
+</span></span><span class="line"><span class="cl">git commit -m <span class="s2">&#34;add extra line3 into readme&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git log
+</span></span><span class="line"><span class="cl">commit 18529d695e8e4ce797f7878135369a11ef658549 <span class="o">(</span>HEAD -&gt; master<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 11:07:35 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    add extra line3 in readme
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit 9205b630a3efd2b5c2ddd7ea732a53e5f0a3bd6e
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 10:54:59 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    add extra line in readme
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit 3a0003085047a83783a7fff67b3904ccd2154ff0
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 09:05:39 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    modify readme
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit f78741f31fe3f5600a8c003aa456744668a09da2
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 08:58:23 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    init project and add readme</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们发现本次修改已经在当前分支了，log 已经能查询本次修改。那么，我们可以退回上一次的修改，<code>commit_id</code> 对应是 <code>9205b630a3efd2b5c2ddd7ea732a53e5f0a3bd6e</code></p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git reset --hard 9205b630a3efd2b5c2ddd7ea732a53e5f0a3bd6e
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">git log
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit 9205b630a3efd2b5c2ddd7ea732a53e5f0a3bd6e <span class="o">(</span>HEAD -&gt; master<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 10:54:59 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    add extra line in readme
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit 3a0003085047a83783a7fff67b3904ccd2154ff0
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 09:05:39 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    modify readme
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">commit f78741f31fe3f5600a8c003aa456744668a09da2
+</span></span><span class="line"><span class="cl">Author: “williamlfang” &lt;“william.lian.fang@gmail.com”&gt;
+</span></span><span class="line"><span class="cl">Date:   Sun Jul <span class="m">24</span> 08:58:23 <span class="m">2022</span> +0800
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    init project and add readme</span></span></code></pre></td></tr></table>
+</div>
+</div><p>现在已经没有 <code>line3</code> 的修改记录了。</p>
+<blockquote>
+<p>如果没有添加 –hard 这表示本次修改依然保留在工作区</p>
+</blockquote></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2022-09-13-git-%E4%BF%AE%E6%94%B9-https-%E4%B8%BA-ssh/" title="git 修改 https 为 ssh">git 修改 https 为 ssh</a></li><li>
+          <a href="/2022-09-10-git-%E6%B7%BB%E5%8A%A0%E9%9D%9E%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/" title="git 添加非用户权限">git 添加非用户权限</a></li><li>
+          <a href="/2022-09-13-c-thread-%E7%BA%BF%E7%A8%8B%E5%88%9B%E5%BB%BA%E6%97%B6%E7%BB%91%E6%A0%B8/" title="c&#43;&#43; thread 线程创建时绑核">c&#43;&#43; thread 线程创建时绑核</a></li><li>
+          <a href="/2022-09-13-ubuntu20-%E5%AE%89%E8%A3%85-docky/" title="ubuntu20 安装 docky">ubuntu20 安装 docky</a></li><li>
+          <a href="/2022-09-13-ubuntu-%E5%8F%AF%E4%BB%A5-ping-%E5%88%AB%E4%BA%BA%E6%97%A0%E6%B3%95%E4%BB%8E%E5%A4%96%E9%9D%A2-ping-%E8%87%AA%E5%B7%B1/" title="ubuntu 可以 ping 别人,无法从外面 ping 自己">ubuntu 可以 ping 别人,无法从外面 ping 自己</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2022-09-13 13:06:53">更新于 2022-09-13&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2022-09-13-%E9%87%8D%E6%8B%BE-git/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2022-09-13-%E9%87%8D%E6%8B%BE-git/" data-title="重拾 git" data-hashtags="git"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2022-09-13-%E9%87%8D%E6%8B%BE-git/" data-hashtag="git"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2022-09-13-%E9%87%8D%E6%8B%BE-git/" data-title="重拾 git" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2022-09-13-%E9%87%8D%E6%8B%BE-git/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2022-09-13-%E9%87%8D%E6%8B%BE-git/" data-title="重拾 git"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2022-09-13-%E9%87%8D%E6%8B%BE-git/" data-title="重拾 git"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/git/" class="post-tag" title="标签 - Git">Git</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2022-09-13-c-thread-%E7%BA%BF%E7%A8%8B%E5%88%9B%E5%BB%BA%E6%97%B6%E7%BB%91%E6%A0%B8/" class="post-nav-item" rel="prev" title="c&#43;&#43; thread 线程创建时绑核"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>c&#43;&#43; thread 线程创建时绑核</a>
+      <a href="/2022-09-13-v2ray%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/" class="post-nav-item" rel="next" title="v2ray配置教程">v2ray配置教程<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

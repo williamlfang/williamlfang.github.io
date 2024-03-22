@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>如何徒手写一个申万行业分类数据 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="申万行业分类作为国内比较权威的A股分类标准，对于研究股票具有重要的参考价值。我们观察到，目前市面上（至少免费层面）没有一个相对完善、完整的历史数据与每日更新数据。
+
+
+号称国内数据之王的万得，一方面对于用户提取的数据量有严格的限制，这导致我们在复原历史数据的过程经常会触发阈值；另一方面，我们发现万得会确实部分数据，以及存在臭名昭著的脏数据问题。比如，万得由于授权原因，无法提供上交所科创板股票的申万行业分类数据；再比如，这个票 000008.SZ，我们通过申万网站查询该票的历史变更情况：
+
+可以查询到该票其实应该数据机械设备，相应的申万行业代码为 801890.SI，但是万得竟然标注为 801050.SI。
+
+而根据《申万行业分类2014标准》这个代码对应的行业是 有色金属，简单查询这个股票即可以这个完全没有涉及金属业务，明显存在数据错误。
+
+
+我们之前依赖一个 HF 的 stock.industry 数据库，后面发现这个也是完全瞎扯，他们直接利用现在的行业代码去更新历史的数据，没有考虑这个票在历史可能存在的主营业务发生变化、或者产生了重组，申万会相应的调整行业分类。
+
+" /><meta name="keywords" content='申万, 行业, 分类, 一级, 指数, 万得, sw, industry' /><meta itemprop="name" content="如何徒手写一个申万行业分类数据">
+<meta itemprop="description" content="申万行业分类作为国内比较权威的A股分类标准，对于研究股票具有重要的参考价值。我们观察到，目前市面上（至少免费层面）没有一个相对完善、完整的历史数据与每日更新数据。
+
+
+号称国内数据之王的万得，一方面对于用户提取的数据量有严格的限制，这导致我们在复原历史数据的过程经常会触发阈值；另一方面，我们发现万得会确实部分数据，以及存在臭名昭著的脏数据问题。比如，万得由于授权原因，无法提供上交所科创板股票的申万行业分类数据；再比如，这个票 000008.SZ，我们通过申万网站查询该票的历史变更情况：
+
+可以查询到该票其实应该数据机械设备，相应的申万行业代码为 801890.SI，但是万得竟然标注为 801050.SI。
+
+而根据《申万行业分类2014标准》这个代码对应的行业是 有色金属，简单查询这个股票即可以这个完全没有涉及金属业务，明显存在数据错误。
+
+
+我们之前依赖一个 HF 的 stock.industry 数据库，后面发现这个也是完全瞎扯，他们直接利用现在的行业代码去更新历史的数据，没有考虑这个票在历史可能存在的主营业务发生变化、或者产生了重组，申万会相应的调整行业分类。
+
+"><meta itemprop="datePublished" content="2023-04-15T13:55:24+00:00" />
+<meta itemprop="dateModified" content="2023-04-15T13:55:24+00:00" />
+<meta itemprop="wordCount" content="1042"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="申万,行业,分类,一级,指数,万得,sw,industry," /><meta property="og:title" content="如何徒手写一个申万行业分类数据" />
+<meta property="og:description" content="申万行业分类作为国内比较权威的A股分类标准，对于研究股票具有重要的参考价值。我们观察到，目前市面上（至少免费层面）没有一个相对完善、完整的历史数据与每日更新数据。
+
+
+号称国内数据之王的万得，一方面对于用户提取的数据量有严格的限制，这导致我们在复原历史数据的过程经常会触发阈值；另一方面，我们发现万得会确实部分数据，以及存在臭名昭著的脏数据问题。比如，万得由于授权原因，无法提供上交所科创板股票的申万行业分类数据；再比如，这个票 000008.SZ，我们通过申万网站查询该票的历史变更情况：
+
+可以查询到该票其实应该数据机械设备，相应的申万行业代码为 801890.SI，但是万得竟然标注为 801050.SI。
+
+而根据《申万行业分类2014标准》这个代码对应的行业是 有色金属，简单查询这个股票即可以这个完全没有涉及金属业务，明显存在数据错误。
+
+
+我们之前依赖一个 HF 的 stock.industry 数据库，后面发现这个也是完全瞎扯，他们直接利用现在的行业代码去更新历史的数据，没有考虑这个票在历史可能存在的主营业务发生变化、或者产生了重组，申万会相应的调整行业分类。
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-04-15T13:55:24+00:00" />
+<meta property="article:modified_time" content="2023-04-15T13:55:24+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="如何徒手写一个申万行业分类数据"/>
+<meta name="twitter:description" content="申万行业分类作为国内比较权威的A股分类标准，对于研究股票具有重要的参考价值。我们观察到，目前市面上（至少免费层面）没有一个相对完善、完整的历史数据与每日更新数据。
+
+
+号称国内数据之王的万得，一方面对于用户提取的数据量有严格的限制，这导致我们在复原历史数据的过程经常会触发阈值；另一方面，我们发现万得会确实部分数据，以及存在臭名昭著的脏数据问题。比如，万得由于授权原因，无法提供上交所科创板股票的申万行业分类数据；再比如，这个票 000008.SZ，我们通过申万网站查询该票的历史变更情况：
+
+可以查询到该票其实应该数据机械设备，相应的申万行业代码为 801890.SI，但是万得竟然标注为 801050.SI。
+
+而根据《申万行业分类2014标准》这个代码对应的行业是 有色金属，简单查询这个股票即可以这个完全没有涉及金属业务，明显存在数据错误。
+
+
+我们之前依赖一个 HF 的 stock.industry 数据库，后面发现这个也是完全瞎扯，他们直接利用现在的行业代码去更新历史的数据，没有考虑这个票在历史可能存在的主营业务发生变化、或者产生了重组，申万会相应的调整行业分类。
+
+"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/" /><link rel="prev" href="https://williamlfang.github.io/2023-04-04-%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA/" /><link rel="next" href="https://williamlfang.github.io/2023-04-15-tmux-%E7%AA%97%E5%8F%A3%E9%87%8D%E5%91%BD%E5%90%8D-rename-window/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "如何徒手写一个申万行业分类数据",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE\/"
+    },"genre": "posts","keywords": "申万, 行业, 分类, 一级, 指数, 万得, sw, industry","wordcount":  1042 ,
+    "url": "https:\/\/williamlfang.github.io\/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE\/","datePublished": "2023-04-15T13:55:24+00:00","dateModified": "2023-04-15T13:55:24+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>如何徒手写一个申万行业分类数据</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2023-04-15 13:55:24"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2023-04-15">2023-04-15</time></span>&nbsp;<span title="1042 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#如何找思路">如何找思路</a>
+      <ol>
+        <li><a href="#技多不压身">技多不压身</a></li>
+        <li><a href="#犹抱琵琶半遮面">犹抱琵琶半遮面</a></li>
+        <li><a href="#柳暗花明又一村">柳暗花明又一村</a></li>
+      </ol>
+    </li>
+    <li><a href="#如何清洗数据">如何清洗数据</a>
+      <ol>
+        <li><a href="#去读-pdf-数据">去读 pdf 数据</a></li>
+        <li><a href="#清洗数据">清洗数据</a></li>
+        <li><a href="#生成目标数据">生成目标数据</a></li>
+      </ol>
+    </li>
+    <li><a href="#数据入库">数据入库</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2023-04-15，文中内容可能已过时。</div>
+      </div>
+    </div><p>申万行业分类作为国内比较权威的A股分类标准，对于研究股票具有重要的参考价值。我们观察到，目前市面上（至少免费层面）没有一个相对完善、完整的历史数据与每日更新数据。</p>
+<ul>
+<li>
+<p>号称国内数据之王的万得，一方面对于用户提取的数据量有严格的限制，这导致我们在复原历史数据的过程经常会触发阈值；另一方面，我们发现万得会确实部分数据，以及存在臭名昭著的脏数据问题。比如，万得由于授权原因，无法提供上交所科创板股票的申万行业分类数据；再比如，这个票 <code>000008.SZ</code>，我们通过申万网站查询该票的历史变更情况：</p>
+<p><img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/000008.SZ.png" alt="000008.SZ" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/000008.SZ.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/000008.SZ.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/000008.SZ.png?size=large 2x" data-title="000008.SZ" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>可以查询到该票其实应该数据<code>机械设备</code>，相应的申万行业代码为 <code>801890.SI</code>，但是万得竟然标注为 <code>801050.SI</code>。</p>
+<p><img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/000008.SZ-error-indexcode.png" alt="000008.SZ" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/000008.SZ-error-indexcode.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/000008.SZ-error-indexcode.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/000008.SZ-error-indexcode.png?size=large 2x" data-title="000008.SZ" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>而根据《申万行业分类2014标准》这个代码对应的行业是 <code>有色金属</code>，简单查询这个股票即可以这个完全没有涉及金属业务，明显存在数据错误。</p>
+</li>
+<li>
+<p>我们之前依赖一个 HF 的 <code>stock.industry</code> 数据库，后面发现这个也是完全瞎扯，他们直接利用现在的行业代码去更新历史的数据，没有考虑这个票在历史可能存在的主营业务发生变化、或者产生了重组，申万会相应的调整行业分类。</p>
+</li>
+</ul>
+<h1 id="如何找思路" class="heading-element">
+  <a href="#%e5%a6%82%e4%bd%95%e6%89%be%e6%80%9d%e8%b7%af" class="heading-mark"></a>如何找思路</h1><p>最简单的思路是：去申万官网查看是否提供历史数据。不过很遗憾，这个数据其实算收费项目，对方并不提供历史的行业分类数据。</p>
+<h2 id="技多不压身" class="heading-element">
+  <a href="#%e6%8a%80%e5%a4%9a%e4%b8%8d%e5%8e%8b%e8%ba%ab" class="heading-mark"></a>技多不压身</h2><p>凡事难不倒一个会爬虫的开发，我查看发现申万网站提供了股票历史的分类记录，可以通过该记录条款，逐一地把历史的分类数据还原。</p>
+<p><img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw-website.png" alt="申万指数官网" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw-website.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw-website.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw-website.png?size=large 2x" data-title="申万指数官网" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>下载得到的数据是这样的：</p>
+<p><img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw-codes.png" alt="申万指数官网" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw-codes.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw-codes.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw-codes.png?size=large 2x" data-title="申万指数官网" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h2 id="犹抱琵琶半遮面" class="heading-element">
+  <a href="#%e7%8a%b9%e6%8a%b1%e7%90%b5%e7%90%b6%e5%8d%8a%e9%81%ae%e9%9d%a2" class="heading-mark"></a>犹抱琵琶半遮面</h2><p>查看上面的数据，我们发现申万只提供了内部的行业代码（如 <code>000001.SZ</code> 最近的行业代码是 <code>480301</code>，这个表示：</p>
+<ul>
+<li>一级行业分类是<code>银行</code></li>
+<li>二级行业分类是<code>股份制银行II</code></li>
+<li>三级行业分类是<code>股份制银行III</code></li>
+</ul>
+<p><img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/480301.png" alt="申万指数官网" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/480301.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/480301.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/480301.png?size=large 2x" data-title="申万指数官网" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>现在有点麻烦的是，研究员希望我们提供对应的<code>申万指数代码</code>，即我们经常看到的 <code>801780.SI</code>(一级行业代码)。</p>
+<p>目前的情况是，我们已经得到申万内部的一个行业代码，需要将其映射到外部常用的<code>申万指数代码</code>。这个肯定需要从其他地方获取相关的信息。</p>
+<h2 id="柳暗花明又一村" class="heading-element">
+  <a href="#%e6%9f%b3%e6%9a%97%e8%8a%b1%e6%98%8e%e5%8f%88%e4%b8%80%e6%9d%91" class="heading-mark"></a>柳暗花明又一村</h2><p>这时候需要用梯子查找信息了。经过一番摸鱼后，发现几个宝贝玩意：</p>
+<ol>
+<li>申万分别在 2011、2014、2021 发现了三份研究报告，介绍了申万行业指数的编制规则与调整说明</li>
+<li>其中 2011、2014 的两份报告中，有明确说明内部行业代码与对应的指数代码，我们可以利用这个信息做一个映射</li>
+<li>而在 2021 的这份数据，则没有对照表，我发现聚宽提供了一份行业名称与指数代码的<a href="https://www.joinquant.com/help/api/plateData#%E7%94%B3%E4%B8%87%E4%B8%80%E7%BA%A7%E8%A1%8C%E4%B8%9A"target="_blank" rel="external nofollow noopener noreferrer">对照表<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，那么我们可以通过名称找到对应的指数代码</li>
+</ol>
+<p><img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2011.png" alt="申万指数官网" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2011.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2011.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2011.png?size=large 2x" data-title="申万指数官网" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>
+<img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2014.png" alt="申万指数官网" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2014.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2014.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2014.png?size=large 2x" data-title="申万指数官网" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>
+<img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2021.png" alt="申万指数官网" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2021.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2021.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/sw2021.png?size=large 2x" data-title="申万指数官网" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>
+<img loading="lazy" src="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/jq-sw.png" alt="申万指数官网" srcset="/post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/jq-sw.png?size=small, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/jq-sw.png?size=medium 1.5x, /post/2023-04-15-%e5%a6%82%e4%bd%95%e5%be%92%e6%89%8b%e5%86%99%e4%b8%80%e4%b8%aa%e7%94%b3%e4%b8%87%e8%a1%8c%e4%b8%9a%e5%88%86%e7%b1%bb%e6%95%b0%e6%8d%ae/jq-sw.png?size=large 2x" data-title="申万指数官网" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>目前看，食材都已就绪。</p>
+<h1 id="如何清洗数据" class="heading-element">
+  <a href="#%e5%a6%82%e4%bd%95%e6%b8%85%e6%b4%97%e6%95%b0%e6%8d%ae" class="heading-mark"></a>如何清洗数据</h1><h2 id="去读-pdf-数据" class="heading-element">
+  <a href="#%e5%8e%bb%e8%af%bb-pdf-%e6%95%b0%e6%8d%ae" class="heading-mark"></a>去读 pdf 数据</h2><h2 id="清洗数据" class="heading-element">
+  <a href="#%e6%b8%85%e6%b4%97%e6%95%b0%e6%8d%ae" class="heading-mark"></a>清洗数据</h2><h2 id="生成目标数据" class="heading-element">
+  <a href="#%e7%94%9f%e6%88%90%e7%9b%ae%e6%a0%87%e6%95%b0%e6%8d%ae" class="heading-mark"></a>生成目标数据</h2><h1 id="数据入库" class="heading-element">
+  <a href="#%e6%95%b0%e6%8d%ae%e5%85%a5%e5%ba%93" class="heading-mark"></a>数据入库</h1></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-04-04-%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA/" title="企业微信机器人">企业微信机器人</a></li><li>
+          <a href="/2023-04-02-python-openapi-chatgpt/" title="Python openapi&#43;ChatGPT">Python openapi&#43;ChatGPT</a></li><li>
+          <a href="/2023-04-01-c-virtual-base-class/" title="C&#43;&#43; virtual base class">C&#43;&#43; virtual base class</a></li><li>
+          <a href="/2023-02-27-ssh-auto-logout-%E8%87%AA%E5%8A%A8%E8%B6%85%E6%97%B6%E9%80%80%E5%87%BA/" title="ssh auto logout 自动超时退出">ssh auto logout 自动超时退出</a></li><li>
+          <a href="/2023-02-24-%E8%AF%81%E5%88%B8%E8%A1%8C%E6%83%85%E8%B0%83%E4%BC%98%E6%94%BB%E7%95%A5/" title="证券行情调优攻略">证券行情调优攻略</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2023-04-15 13:55:24">更新于 2023-04-15&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/" data-title="如何徒手写一个申万行业分类数据" data-hashtags="申万,行业,分类,一级,指数,万得,sw,industry"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/" data-hashtag="申万"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/" data-title="如何徒手写一个申万行业分类数据" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/" data-title="如何徒手写一个申万行业分类数据"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2023-04-15-%E5%A6%82%E4%BD%95%E5%BE%92%E6%89%8B%E5%86%99%E4%B8%80%E4%B8%AA%E7%94%B3%E4%B8%87%E8%A1%8C%E4%B8%9A%E5%88%86%E7%B1%BB%E6%95%B0%E6%8D%AE/" data-title="如何徒手写一个申万行业分类数据"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/%E7%94%B3%E4%B8%87/" class="post-tag" title="标签 - 申万">申万</a><a href="/tags/%E8%A1%8C%E4%B8%9A/" class="post-tag" title="标签 - 行业">行业</a><a href="/tags/%E5%88%86%E7%B1%BB/" class="post-tag" title="标签 - 分类">分类</a><a href="/tags/%E4%B8%80%E7%BA%A7/" class="post-tag" title="标签 - 一级">一级</a><a href="/tags/%E6%8C%87%E6%95%B0/" class="post-tag" title="标签 - 指数">指数</a><a href="/tags/%E4%B8%87%E5%BE%97/" class="post-tag" title="标签 - 万得">万得</a><a href="/tags/sw/" class="post-tag" title="标签 - Sw">Sw</a><a href="/tags/industry/" class="post-tag" title="标签 - Industry">Industry</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2023-04-04-%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA/" class="post-nav-item" rel="prev" title="企业微信机器人"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>企业微信机器人</a>
+      <a href="/2023-04-15-tmux-%E7%AA%97%E5%8F%A3%E9%87%8D%E5%91%BD%E5%90%8D-rename-window/" class="post-nav-item" rel="next" title="tmux 窗口重命名:rename window">tmux 窗口重命名:rename window<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

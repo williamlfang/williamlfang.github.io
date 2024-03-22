@@ -1,0 +1,43 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Kill - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/kill/</link>
+    <description>Kill - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 09 Feb 2023 18:48:33 &#43;0000</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/kill/" rel="self" type="application/rss+xml" /><item>
+  <title>killx</title>
+  <link>https://williamlfang.github.io/2023-02-09-killx/</link>
+  <pubDate>Thu, 09 Feb 2023 18:48:33 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-02-09-killx/</guid>
+  <description><![CDATA[<p>通过获取进程 <code>PID</code> 来杀死进程。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">killx <span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">list</span><span class="o">=</span><span class="k">$(</span>ps aux <span class="p">|</span> grep -i <span class="nv">$1</span><span class="p">|</span> grep -v grep <span class="p">|</span>grep -v color<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&#34;</span><span class="nv">$list</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">dead</span><span class="o">=</span><span class="k">$(</span>ps aux <span class="p">|</span> grep -i <span class="nv">$1</span><span class="p">|</span> grep -v grep<span class="p">|</span> grep -v color <span class="p">|</span> awk <span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;Killing... </span><span class="nv">$1</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="nv">$dead</span> <span class="p">|</span>xargs <span class="nb">kill</span> -9
+</span></span><span class="line"><span class="cl">    <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;Not running </span><span class="nv">$1</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+</channel>
+</rss>
