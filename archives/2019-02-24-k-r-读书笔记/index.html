@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>K&amp;R 读书笔记 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="“The C Programming Language” 是计算机编程的经典之作，别名 K&amp;R。
+这是一本简短精悍的书籍，介绍了 C 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书^[可以参考这个链接看看现在有哪些优秀的 C 编程数据：The Definitive C Book Guide and List - Stack Overflow]尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 C 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引^[关于 C 的历史，这里有一篇 Dennis Ritchie 写的文章可供参考：The Development of the C Language]。" /><meta name="keywords" content='K&amp;R, D.Ritchie, c, unix' /><meta itemprop="name" content="K&amp;R 读书笔记">
+<meta itemprop="description" content="“The C Programming Language” 是计算机编程的经典之作，别名 K&amp;R。
+这是一本简短精悍的书籍，介绍了 C 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书^[可以参考这个链接看看现在有哪些优秀的 C 编程数据：The Definitive C Book Guide and List - Stack Overflow]尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 C 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引^[关于 C 的历史，这里有一篇 Dennis Ritchie 写的文章可供参考：The Development of the C Language]。"><meta itemprop="datePublished" content="2019-02-24T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-02-24T00:00:00+00:00" />
+<meta itemprop="wordCount" content="5640"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="K&amp;R,D.Ritchie,c,unix," /><meta property="og:title" content="K&amp;R 读书笔记" />
+<meta property="og:description" content="“The C Programming Language” 是计算机编程的经典之作，别名 K&amp;R。
+这是一本简短精悍的书籍，介绍了 C 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书^[可以参考这个链接看看现在有哪些优秀的 C 编程数据：The Definitive C Book Guide and List - Stack Overflow]尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 C 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引^[关于 C 的历史，这里有一篇 Dennis Ritchie 写的文章可供参考：The Development of the C Language]。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2019-02-24T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-02-24T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="K&amp;R 读书笔记"/>
+<meta name="twitter:description" content="“The C Programming Language” 是计算机编程的经典之作，别名 K&amp;R。
+这是一本简短精悍的书籍，介绍了 C 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书^[可以参考这个链接看看现在有哪些优秀的 C 编程数据：The Definitive C Book Guide and List - Stack Overflow]尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 C 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引^[关于 C 的历史，这里有一篇 Dennis Ritchie 写的文章可供参考：The Development of the C Language]。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" /><link rel="prev" href="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" /><link rel="next" href="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "K\u0026R 读书笔记",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0\/"
+    },"genre": "posts","keywords": "K\u0026R, D.Ritchie, c, unix","wordcount":  5640 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0\/","datePublished": "2019-02-24T00:00:00+00:00","dateModified": "2019-02-24T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="wide"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>K&amp;R 读书笔记</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2019-02-24 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2019-02-24">2019-02-24</time></span>&nbsp;<span title="5640 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 5700 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 12 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#概览">概览</a></li>
+    <li><a href="#part-i入门准备">PART I：入门准备</a>
+      <ol>
+        <li><a href="#chap-1-hello-world">Chap. 1: Hello, world!</a>
+          <ol>
+            <li><a href="#经典例子">经典例子</a></li>
+            <li><a href="#温度转换">温度转换</a></li>
+            <li><a href="#格式化输入输出">格式化输入、输出</a></li>
+            <li><a href="#关于-for-与-while">关于 <code>for</code> 与 <code>while</code></a></li>
+            <li><a href="#关于预处理">关于预处理</a></li>
+            <li><a href="#getchar"><code>getchar</code></a></li>
+            <li><a href="#函数封装">函数封装</a></li>
+            <li><a href="#作用域scope">作用域(scope)</a></li>
+            <li><a href="#c编程工程项目"><code>C</code>编程工程项目</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#part-iic-语言核心概念">PART II：<code>C</code> 语言核心概念</a>
+      <ol>
+        <li><a href="#chap-2-types-operators-and-expression">Chap. 2: Types, Operators, and Expression</a>
+          <ol>
+            <li><a href="#变量名">变量名</a></li>
+            <li><a href="#基本数据类型">基本数据类型</a></li>
+            <li><a href="#拓展数据类型">拓展数据类型</a></li>
+            <li><a href="#常量">常量</a></li>
+            <li><a href="#类型转换">类型转换</a></li>
+            <li><a href="#运算">运算</a></li>
+          </ol>
+        </li>
+        <li><a href="#chap-3-control-flow">Chap. 3: Control Flow</a>
+          <ol>
+            <li><a href="#if-else"><code>if-else</code></a></li>
+            <li><a href="#switch"><code>switch</code></a></li>
+            <li><a href="#for-与-while"><code>for</code> 与 <code>while</code></a></li>
+            <li><a href="#break与continue"><code>break</code>与<code>continue</code></a></li>
+          </ol>
+        </li>
+        <li><a href="#chap-4-functions-and-program-structure">Chap. 4: Functions and Program Structure</a></li>
+        <li><a href="#chap-5-pointers-and-arrays">Chap. 5: Pointers and Arrays</a></li>
+        <li><a href="#chap-6-structures">Chap. 6: Structures</a></li>
+      </ol>
+    </li>
+    <li><a href="#part-iii使用标准库">PART III：使用标准库</a></li>
+    <li><a href="#part-iv编译原理">PART IV：编译原理</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2019-02-24，文中内容可能已过时。</div>
+      </div>
+    </div><p>“The C Programming Language” 是计算机编程的经典之作，别名 <code>K&amp;R</code>。</p>
+<p>这是一本简短精悍的书籍，介绍了 <code>C</code> 语言的编程核心、ANSI 规范、编译原理等诸多方面的内容。现在很难想象这本不足 200 页的小书^[可以参考这个链接看看现在有哪些优秀的 C 编程数据：<a href="https://stackoverflow.com/questions/562303/the-definitive-c-book-guide-and-list"target="_blank" rel="external nofollow noopener noreferrer">The Definitive C Book Guide and List - Stack Overflow<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>]尽然能够放得下这么多的内容，可以说是提纲挈领、言简意垓。尤其是附录A部分，只是简要介绍了 <code>C</code> 的编译原理，区区几页纸张就足以为后人编写各式不同的编译器提供指引^[关于 <code>C</code> 的历史，这里有一篇 Dennis Ritchie 写的文章可供参考：<a href="https://www.bell-labs.com/usr/dmr/www/chist.html"target="_blank" rel="external nofollow noopener noreferrer">The Development of the C Language<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>]。</p>
+<h1 id="概览" class="heading-element">
+  <a href="#%e6%a6%82%e8%a7%88" class="heading-mark"></a>概览</h1><p><figure><a class="lightgallery" href="./c.jpg?size=large" data-thumbnail="./c.jpg?size=small" data-sub-html="<h2>K&amp;amp;R: 经典之作</h2><p>K&amp;R: 经典之作</p>"><img loading="lazy" src="./c.jpg" alt="K&amp;amp;R: 经典之作" srcset="./c.jpg?size=small, ./c.jpg?size=medium 1.5x, ./c.jpg?size=large 2x" data-title="K&amp;R: 经典之作" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">K&amp;R: 经典之作</figcaption>
+  </figure></p>
+<p>根据我対本书的理解，把整本书籍分成四部分</p>
+<ul>
+<li>第一部分：简单介绍 <code>C</code>，重点在于说明为何要把 <code>C</code> 设计成如此简要。一方面，是受到当时程序运行的硬件条件限制，最早 K.Tompson 和 D.Ritchie 是在 PDP-7、PDP-11 上面实现了 Unix 操作系统，然后才决定设计一款与这个 Unix 操作系统配套的编程语言，这必然要求新语言一定要足够精简以适应操作系统対性能的极致考验；另一方面，「小而美」是当时学术领域的一个普遍认可的观念，即根据「奥卡姆」定律：如无必要，请勿增添。因此，我们现在看到，<code>C</code> 语言最核心的内容其实很少，关键词不到 30 个，基本上达到了高级编程语言能够触摸的「底层地板」，但通过一定的设计之后，由这些命令组成的程序却又有着强大的能够，既能够实现対底层硬件（指针是 <code>C</code> 语言的核心，即变量在内存的地址）的直接操控，又能提供简洁明确的逻辑范式。
+<ul>
+<li>
+<p>Chapter 0: Introduction</p>
+<ul>
+<li>
+<blockquote>
+<p>C is a general-purpose programming language。</p>
+</blockquote>
+<p><code>C</code> 是一个通用的编程语言，既能够用于编写操作系统这类高难度的「程序」，也提供了一套开发高级程序的工具。</p>
+</li>
+<li>
+<blockquote>
+<p>[page.3]</p>
+<p>we believe strongly that the way to learn a new language is to write programs in it.</p>
+</blockquote>
+<p>其实编程就像一门传统的手艺活，需要不停的练习才能达到掌握，即 “learning by doing”。多敲键盘，多写代码，这是唯一无二的学习方法。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Chapter 1: A Tutorial Introduction</p>
+</li>
+</ul>
+</li>
+<li>第二部分：介绍 <code>C</code> 编程语言的核心。
+<ul>
+<li>Chapter 2: Type, Operators, and Expression</li>
+<li>Chapter 3: Control Flow</li>
+<li>Chapter 4: Functions and Program Structure</li>
+<li>Chapter 5: Pointers and Arrays</li>
+<li>Chapter 6 Structures</li>
+</ul>
+</li>
+<li>第三部分：介绍标准库
+<ul>
+<li>Chapter 7: Input and Output</li>
+<li>Chapter 8: The Unix System Interface</li>
+</ul>
+</li>
+<li>第四部分：附录：编译器
+<ul>
+<li>Appendix A: Reference Manual</li>
+<li>Appendix B: Standard Library</li>
+</ul>
+</li>
+</ul>
+<h1 id="part-i入门准备" class="heading-element">
+  <a href="#part-i%e5%85%a5%e9%97%a8%e5%87%86%e5%a4%87" class="heading-mark"></a>PART I：入门准备</h1><h2 id="chap-1-hello-world" class="heading-element">
+  <a href="#chap-1-hello-world" class="heading-mark"></a>Chap. 1: Hello, world!</h2><h3 id="经典例子" class="heading-element">
+  <a href="#%e7%bb%8f%e5%85%b8%e4%be%8b%e5%ad%90" class="heading-mark"></a>经典例子</h3><p>经典的 <code>Hello, world</code> 就是从这里诞生的。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// hello.c
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 经典 Hello, World
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Hello, world.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap1/hello-c.png?size=large" data-thumbnail="./chap1/hello-c.png?size=small" data-sub-html="<h2>Hello, world.</h2><p>Hello, world</p>"><img loading="lazy" src="./chap1/hello-c.png" alt="Hello, world." srcset="./chap1/hello-c.png?size=small, ./chap1/hello-c.png?size=medium 1.5x, ./chap1/hello-c.png?size=large 2x" data-title="Hello, world" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Hello, world.</figcaption>
+  </figure></p>
+<p>这个例子虽然看起来十分的简单，却涉及到相当多的关于该程序的知识点，因而也往往成了一门编程语言入门的「见面礼」，正如书上说的：</p>
+<blockquote>
+<p>[page.5]</p>
+<p>This is the big hurdle; to leap over it, you have to be able to</p>
+<ul>
+<li>create the program text somewhere</li>
+<li>compile it successfully</li>
+<li>load it</li>
+<li>run it</li>
+<li>and find out where you output went</li>
+</ul>
+</blockquote>
+<p><figure><a class="lightgallery" href="./chap.1/hello.png?size=large" data-thumbnail="./chap.1/hello.png?size=small" data-sub-html="<h2>Hello, world.</h2><p>Hello, world</p>"><img loading="lazy" src="./chap.1/hello.png" alt="Hello, world." srcset="./chap.1/hello.png?size=small, ./chap.1/hello.png?size=medium 1.5x, ./chap.1/hello.png?size=large 2x" data-title="Hello, world" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Hello, world.</figcaption>
+  </figure></p>
+<h3 id="温度转换" class="heading-element">
+  <a href="#%e6%b8%a9%e5%ba%a6%e8%bd%ac%e6%8d%a2" class="heading-mark"></a>温度转换</h3><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// f-c.c
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 摄氏温度、华氏温度之间的转换
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#define BEGIN 0
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define END 300
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define STEP 20
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">BEGIN</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">END</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">STEP</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%3d</span><span class="se">\t</span><span class="s">%5.1f</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">32</span><span class="p">)</span><span class="o">*</span><span class="mf">5.0</span><span class="o">/</span><span class="mi">9</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap.1/f-c.png?size=large" data-thumbnail="./chap.1/f-c.png?size=small" data-sub-html="<h2>f-c 温度转换</h2><p>f-c 温度转换</p>"><img loading="lazy" src="./chap.1/f-c.png" alt="f-c 温度转换" srcset="./chap.1/f-c.png?size=small, ./chap.1/f-c.png?size=medium 1.5x, ./chap.1/f-c.png?size=large 2x" data-title="f-c 温度转换" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">f-c 温度转换</figcaption>
+  </figure></p>
+<h3 id="格式化输入输出" class="heading-element">
+  <a href="#%e6%a0%bc%e5%bc%8f%e5%8c%96%e8%be%93%e5%85%a5%e8%be%93%e5%87%ba" class="heading-mark"></a>格式化输入、输出</h3><p>这里补充一下关于 <code>printf</code> 与 <code>scanf</code> 格式化的知识点：</p>
+<ul>
+<li>我们知道，<code>C</code> 被设计的非常的简洁，核心代码量极小，甚至都不提供输入、输出这样常用的函数，因为有时候程序确实不需要这些函数也能运行，从而可以省下不必要的函数载入消耗。</li>
+<li><code>ANSI C</code> 提供了输入输出的标准库，在 <code>stdio.h</code> 中定义了函数原形，我们可以把这个标准库载入后，调用输入输出函数。</li>
+<li>关于 <code>printf</code> 的说明
+<ul>
+<li>要求参数是一个 <strong>字符串</strong>，而不能是单个的<strong>字符</strong>。前者使用双引号 <code>“”</code>，后者使用单引号 <code>‘’</code>，而且前者的后面是 <code>\0</code> 做为字符串结束标识。</li>
+<li>可以定义输出格式
+<ul>
+<li><code>%d</code>：简单的私进制整型</li>
+<li><code>%6d</code>：宽度为 6 位</li>
+<li><code>%06d</code>：宽度为 6 位，且不足 6 位时以 <code>0</code> 代替</li>
+<li><code>%06.1f</code>：浮点数，最大宽度为 6，小数点保留 1 位，且补足 6 位时以 <code>0</code> 代替</li>
+<li><code>%c</code>：单个字符串</li>
+<li><code>%p</code>：指针</li>
+<li><code>%o</code>：八进制</li>
+<li><code>%x</code>：十六进制</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>关于 <code>scanf</code> 的说明
+<ul>
+<li>接受输入，可以接受连续输入，中间以空格键区分，使用 <code>ctrl+d</code> 标示结束输入</li>
+<li>把<strong>输入值的指针</strong>赋值给指定的变量，因此需要放入变量的指针，而不是变量本身，这一点往往容易出错</li>
+</ul>
+</li>
+</ul>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// printf-scanf.c
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 格式化输入、输出
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">14</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">float</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">23.55656</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%12d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%5.2f</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%o</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%x</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%p</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Enter two number</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d%f&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%f</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap1/printf-scanf.png?size=large" data-thumbnail="./chap1/printf-scanf.png?size=small" data-sub-html="<h2>printf-scanf 格式化输入、输出</h2><p>printf-scanf 格式化输入、输出</p>"><img loading="lazy" src="./chap1/printf-scanf.png" alt="printf-scanf 格式化输入、输出" srcset="./chap1/printf-scanf.png?size=small, ./chap1/printf-scanf.png?size=medium 1.5x, ./chap1/printf-scanf.png?size=large 2x" data-title="printf-scanf 格式化输入、输出" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">printf-scanf 格式化输入、输出</figcaption>
+  </figure></p>
+<h3 id="关于-for-与-while" class="heading-element">
+  <a href="#%e5%85%b3%e4%ba%8e-for-%e4%b8%8e-while" class="heading-mark"></a>关于 <code>for</code> 与 <code>while</code></h3><p>书中其实是分别用了 <code>for</code> 和 <code>while</code> 两种逻辑结构来対温度进制进行转换。这两类逻辑都是属于<strong>循环结构</strong>，一般来说，</p>
+<ul>
+<li>对于有确定循环次数的逻辑，我们使用 <code>for</code></li>
+<li>而对于未知循环次数的逻辑，则使用 <code>while</code></li>
+</ul>
+<blockquote>
+<p>[page.14]</p>
+<p>The choice between while and for is arbitrary, based on which seems clearer. The for is usually appropriate for loops in which <strong>the initialization and increment are single statements and logically related</strong>, since it is more compact than while and it <strong>keeps the loop control statements together in one place</strong>.</p>
+</blockquote>
+<h3 id="关于预处理" class="heading-element">
+  <a href="#%e5%85%b3%e4%ba%8e%e9%a2%84%e5%a4%84%e7%90%86" class="heading-mark"></a>关于预处理</h3><p><code>macro</code> 也称作<strong>预处理指令</strong>，是预处理器在编译前，执行的特殊命令，可以是插入头文件、定义全局常量、执行逻辑分支等。需要注意的是，预处理指令实际上不是一个 <code>C</code> 语句，因此<strong>不能在预处理命令后面添加分号 <code>;</code></strong>。</p>
+<ul>
+<li><code>#include &lt;stdio.h&gt;</code>：就是把头文件插入到源文件，从而保证编译器能够找到声明</li>
+<li><code>#ifndef</code>、<code>#endif</code>：预处理器执行分支逻辑</li>
+<li><code>#define</code>：可以理解成定义了一个全局变量，实际上不是这样的，而是把源文件中出现的所有字符都替换为我们预定义的<strong>变量字面值</strong>，从而达到固定程序有关变量数值的目的，因此是<strong>不可改变的</strong></li>
+</ul>
+<h3 id="getchar" class="heading-element">
+  <a href="#getchar" class="heading-mark"></a><code>getchar</code></h3><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 获取单个字符，然后计算一共输入多少字符
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="p">(</span><span class="nf">getchar</span><span class="p">()</span> <span class="o">!=</span> <span class="n">EOF</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">len</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">Total char: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">len</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap1/getchar.png?size=large" data-thumbnail="./chap1/getchar.png?size=small" data-sub-html="<h2>gechar 获取单个字符</h2><p>gechar 获取单个字符</p>"><img loading="lazy" src="./chap1/getchar.png" alt="gechar 获取单个字符" srcset="./chap1/getchar.png?size=small, ./chap1/getchar.png?size=medium 1.5x, ./chap1/getchar.png?size=large 2x" data-title="gechar 获取单个字符" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">gechar 获取单个字符</figcaption>
+  </figure></p>
+<h3 id="函数封装" class="heading-element">
+  <a href="#%e5%87%bd%e6%95%b0%e5%b0%81%e8%a3%85" class="heading-mark"></a>函数封装</h3><blockquote>
+<p>[page.24]</p>
+<p>With properly designed functions, it is possible to ignore <em>how</em> a job is done; knowing what is done is sufficient.</p>
+</blockquote>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 计算 power 函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">power</span><span class="p">(</span><span class="kt">int</span> <span class="n">base</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">myprintf</span><span class="p">(</span><span class="kt">char</span> <span class="n">msg</span><span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">pow</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 可以保存结果
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">pow</span> <span class="o">=</span> <span class="nf">power</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d^%d </span><span class="se">\t</span><span class="s">= %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">pow</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 可以直接调用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d^%d </span><span class="se">\t</span><span class="s">= %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="nf">power</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">10</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">msg</span><span class="p">[</span><span class="mi">100</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">strcpy</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s">&#34;hello, world&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">myprintf</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">strcpy</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s">&#34;This is function.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">myprintf</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">power</span><span class="p">(</span><span class="kt">int</span> <span class="n">base</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">*=</span> <span class="n">base</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">myprintf</span><span class="p">(</span><span class="kt">char</span> <span class="n">msg</span><span class="p">[])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">// -----------------------</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">// -----------------------</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap1/function.png?size=large" data-thumbnail="./chap1/function.png?size=small" data-sub-html="<h2>函数封装</h2><p>函数封装</p>"><img loading="lazy" src="./chap1/function.png" alt="函数封装" srcset="./chap1/function.png?size=small, ./chap1/function.png?size=medium 1.5x, ./chap1/function.png?size=large 2x" data-title="函数封装" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">函数封装</figcaption>
+  </figure></p>
+<h3 id="作用域scope" class="heading-element">
+  <a href="#%e4%bd%9c%e7%94%a8%e5%9f%9fscope" class="heading-mark"></a>作用域(scope)</h3><p><code>C</code> 使用一対大括号<code>{}</code>来聚合多个命令语句块，并形成一个变量的作用域(scope)。这类变量我们称之为 <code>automatic</code>。作用域遵从「可高不可低」的原则，即</p>
+<ul>
+<li>一个作用域内部的变量只在本作用域内有效（包含子域）</li>
+<li>更高层次的作用域无法调用子域变量</li>
+</ul>
+<blockquote>
+<p>[page.31]</p>
+<p>Because automatic variables come and go with function invocation, <strong>they do not retain their values from one call to the next</strong>, and must be explicitly get upon each entry. If they are not set, they will contain garbage.</p>
+</blockquote>
+<p>比如</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 作用域
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 全局变量
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">g</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;g = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">g</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">--</span><span class="n">g</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;a = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">--</span><span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;## 进入低级作用域 -------------------------</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 可以调用更高的作用域
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;a = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 全局变量始终有效
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;g = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">g</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">--</span><span class="n">g</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;a = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="o">--</span><span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 只在这个层次的 {} 之内修改才有效
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;a = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;## 返回高级作用域 -------------------------</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 不可以调用 {} 内更低的作用域
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;a = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 全局变量始终有效
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;g = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">g</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap1/scope.png?size=large" data-thumbnail="./chap1/scope.png?size=small" data-sub-html="<h2>Build As Project</h2><p>Build As Project</p>"><img loading="lazy" src="./chap1/scope.png" alt="Build As Project" srcset="./chap1/scope.png?size=small, ./chap1/scope.png?size=medium 1.5x, ./chap1/scope.png?size=large 2x" data-title="Build As Project" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Build As Project</figcaption>
+  </figure></p>
+<p>从函数调用的角度看这个问题，每次调用一个函数，<code>C</code> 是默认使用 <code>pass-by-value</code> 把常量复制后再传入到函数主体，因此，在函数里面対参数的修改，实际上不会影响原来传递的参数值。如果想要对其进行修改，则需要 <code>pass-by-reference</code> 或则 <code>pass-by-pointer</code>。^[从内存地址的角度看，二者是同一个东西，都是变量的一种「映射」，只不过 <code>reference</code> 是别名，而 <code>pointer</code> 是内存实实在在的地址。]</p>
+<h3 id="c编程工程项目" class="heading-element">
+  <a href="#c%e7%bc%96%e7%a8%8b%e5%b7%a5%e7%a8%8b%e9%a1%b9%e7%9b%ae" class="heading-mark"></a><code>C</code>编程工程项目</h3><p>对于一个小型的工程项目，比如上面这个函数封装的例子，我们只需要把所有的函数原型和函数定义写在 <code>main</code> 同在的源文件，然后直接编译就可以运行了。但是对于一个大型的 <code>C</code> 程序开发项目，往往会涉及到非常多的文件关联，主函数起到的只是一个做为程序入口用于调用其他的功能模块，而这些功能模块，又都是根据各自的特征分布的各个源文件中。这在编译的时候，就需要告诉编译器各个模块之间的关联关系。这就是<strong>头文件</strong>的作用。</p>
+<ul>
+<li>
+<p>把所有的函数原型放在一个头文件 <code>myfunctions.h</code> 里面，指明函数的基本结构，但没有函数体</p>
+<ul>
+<li>
+<p>由于头文件可能会在多个功能模块中被重复载入，因此需要使用预处理命令</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#ifndef __MYFUNCTIONS__H__
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define __MYFUNCTIONS__H__
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1">// ------------------------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="err">函数原型声明</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ------------------------------
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#endif</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p>在 <code>myfunctions.c</code> 编写函数主体，主要需要把头文件载入，<code>#include “myfunctions.h”</code></p>
+</li>
+<li>
+<p>在 <code>main</code> 函数源文件中，由于需要调用函数主体，因此也需要把头文件载入，向编译器表明函数原型</p>
+</li>
+<li>
+<p>之后便可以直接调用函数</p>
+</li>
+<li>
+<p>编译的时候，可以使用命令，或者在 <code>Sublime</code> 里面设置</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="s2">&#34;cmd&#34;</span>: <span class="o">[</span><span class="s2">&#34;gcc -std=c11 -Wall </span><span class="si">${</span><span class="nv">file_path</span><span class="si">}</span><span class="s2">/*.c -o </span><span class="si">${</span><span class="nv">file_base_name</span><span class="si">}</span><span class="s2">&#34;</span><span class="o">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>即把所有的文件都进行编译，然后自动进行链接</p>
+</li>
+</ul>
+<p><figure><a class="lightgallery" href="./chap1/project.png?size=large" data-thumbnail="./chap1/project.png?size=small" data-sub-html="<h2>Build As Project</h2><p>Build As Project</p>"><img loading="lazy" src="./chap1/project.png" alt="Build As Project" srcset="./chap1/project.png?size=small, ./chap1/project.png?size=medium 1.5x, ./chap1/project.png?size=large 2x" data-title="Build As Project" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Build As Project</figcaption>
+  </figure></p>
+<h1 id="part-iic-语言核心概念" class="heading-element">
+  <a href="#part-iic-%e8%af%ad%e8%a8%80%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" class="heading-mark"></a>PART II：<code>C</code> 语言核心概念</h1><h2 id="chap-2-types-operators-and-expression" class="heading-element">
+  <a href="#chap-2-types-operators-and-expression" class="heading-mark"></a>Chap. 2: Types, Operators, and Expression</h2><h3 id="变量名" class="heading-element">
+  <a href="#%e5%8f%98%e9%87%8f%e5%90%8d" class="heading-mark"></a>变量名</h3><blockquote>
+<p>There are two hard things in computer science: cache invalidation and naming things.</p>
+<p>– Phil Karlton</p>
+</blockquote>
+<p>以上这句经典台词常常被用来形容给变量取一个合适的名称是多么的困难，既要简短以减少输入时间，又要直观以方便阅读。</p>
+<p>一般来说，以下几点是在 <code>c</code> 编程中需要注意的：</p>
+<ul>
+<li><code>c</code> 是<strong>対大小写敏感</strong>的编程语言，也就意味着 <code>x</code> 与 <code>X</code> 代表两个不同的变量。其实还可以进一步引申出来，绝大部分的 <code>c-family</code>，也都遵从大小写敏感的原则，如 <code>R</code>、<code>python</code>。当然，还是有很多的编程语言是不限制大小写的，比如数据库操作语言 <code>SQL</code> 。</li>
+<li><code>c</code> 要求变量名<strong>以英文字母、下划线开头</strong>、并可以在非开头部分<strong>使用阿拉伯数字</strong>。注意，这个往往是初学者容易犯错的地方：<em>变量名不能以数字开头</em>。</li>
+<li>以下划线开头的变量往往有特殊的意义，一般是标准开预先定义的变量名，或则是一类全局变量名。</li>
+<li>变量名应<strong>以字见意</strong>，<strong>能够从字面意思推断出该变量代表的具体含义</strong>。虽然类似 <code>a</code>、<code>aa</code>、<code>b</code> 这些名称也是合法的，但无法看出来他们各自代表什么意思，因此不利于代码阅读。另外，现在很多的 <code>IDE</code> 都有提供变量的模糊匹配功能，比如 <code>Sublime</code> 中使用 <code>ctrl+d</code> 或则 <code>alt+f3</code> 是可以直接找到与该名称匹配的所有变量，而如果使用 <code>a</code> 、<code>aa</code> 这类名称，则会困难很多。</li>
+</ul>
+<h3 id="基本数据类型" class="heading-element">
+  <a href="#%e5%9f%ba%e6%9c%ac%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b" class="heading-mark"></a>基本数据类型</h3><p>一般来说，基本数据类型的具体位长，与本地机器有关。</p>
+<ul>
+<li>
+<p><code>char</code>： <code>ANSI</code> 支持的单个字母，并以整数表示。如 <code>A</code> 是对应 <code>65</code>。<code>char</code> 一共有 <code>256</code> 个，一般是以整数的形式表示。需要注意的是，<code>char</code> 和我们在标准库使用的 <code>string</code> 是不一样的， <code>char</code> 使用整数表示，只占用一个字节(byte，一共有 $2^8$)；而 <code>string</code> 是字符串，本质上是一个 <code>char array[]</code>，并且以 <code>\0</code> 标示结尾（虽然打印的时候看不到，这个是系统自动加上的）。因此，<code>A</code> 与 <code>“A”</code> 是两个不一样的变量，前者是一个字符，只有一个字节，而后者多了一个结尾符号 <code>\0</code>，因此占用了两个字符。</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// char 与 string 区别
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="sc">&#39;A&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof </span><span class="se">\&#39;</span><span class="s">A</span><span class="se">\&#39;</span><span class="s">: %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">s</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;A&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof </span><span class="se">\&#34;</span><span class="s">A</span><span class="se">\&#34;</span><span class="s">: %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap2/char-string.png?size=large" data-thumbnail="./chap2/char-string.png?size=small" data-sub-html="<h2>char 与 string</h2><p>char 与 string</p>"><img loading="lazy" src="./chap2/char-string.png" alt="char 与 string" srcset="./chap2/char-string.png?size=small, ./chap2/char-string.png?size=medium 1.5x, ./chap2/char-string.png?size=large 2x" data-title="char 与 string" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">char 与 string</figcaption>
+  </figure></p>
+</li>
+<li>
+<p><code>short</code>、<code>int</code>、<code>long</code>、<code>long long</code>：整型。</p>
+</li>
+<li>
+<p><code>float</code>、<code>double</code>、<code>long double</code>：浮点型。尽量使用 <code>double</code> 类型，一方面是因为精度更高；另一方面，传统上认为 <code>float</code> 可以节省内存空间，但是现在对于大内存时代，已经不是问题，而且很多的内存机制会自动进行 <code>double</code> 的补齐，所以直接使用 <code>double</code> 性能是会更佳。</p>
+</li>
+</ul>
+<p>我们可以查看一下系统的基本数据类型长度</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="c1">// 查看 sizeof()
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof(char) </span><span class="se">\t</span><span class="s">= %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">char</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof(short) </span><span class="se">\t</span><span class="s">= %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">short</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof(int) </span><span class="se">\t</span><span class="s">= %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof(long) </span><span class="se">\t</span><span class="s">= %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">long</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof(float) </span><span class="se">\t</span><span class="s">= %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof(double) </span><span class="se">\t</span><span class="s">= %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;sizeof(long double) </span><span class="se">\t</span><span class="s">= %ld</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">long</span> <span class="kt">double</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap2/sizeof.png?size=large" data-thumbnail="./chap2/sizeof.png?size=small" data-sub-html="<h2>sizeof</h2><p>sizeof</p>"><img loading="lazy" src="./chap2/sizeof.png" alt="sizeof" srcset="./chap2/sizeof.png?size=small, ./chap2/sizeof.png?size=medium 1.5x, ./chap2/sizeof.png?size=large 2x" data-title="sizeof" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">sizeof</figcaption>
+  </figure></p>
+<h3 id="拓展数据类型" class="heading-element">
+  <a href="#%e6%8b%93%e5%b1%95%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b" class="heading-mark"></a>拓展数据类型</h3><ul>
+<li><code>enum</code>：整型，并以 <code>1</code> 递增。如果没有指定初始，则以 <code>0</code> 开始计数。</li>
+<li><code>structure</code>：结构体。</li>
+<li><code>pointer</code>：指针，即变量在内存的地址。</li>
+<li><code>array</code></li>
+</ul>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">enum</span> <span class="n">Market</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sse</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">szse</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">unknown</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">Market</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">typedef</span> <span class="k">struct</span> <span class="n">Book</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">title</span><span class="p">[</span><span class="mi">50</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">author</span><span class="p">[</span><span class="mi">50</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">Book</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// enum
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Market</span> <span class="n">mkt</span> <span class="o">=</span> <span class="n">szse</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;market code: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mkt</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// structure
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Book</span> <span class="n">mybook</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#34;C Programing Learning Note&#34;</span><span class="p">,</span> <span class="s">&#34;william&#34;</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s: </span><span class="se">\&#34;</span><span class="s">%s</span><span class="se">\&#34;\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mybook</span><span class="p">.</span><span class="n">author</span><span class="p">,</span> <span class="n">mybook</span><span class="p">.</span><span class="n">title</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// pointer to structure
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">Book</span> <span class="o">*</span><span class="n">pbook</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">mybook</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">strcpy</span><span class="p">(</span><span class="n">pbook</span><span class="o">-&gt;</span><span class="n">title</span><span class="p">,</span> <span class="s">&#34;A personal remark&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s: </span><span class="se">\&#34;</span><span class="s">%s</span><span class="se">\&#34;\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">pbook</span><span class="o">-&gt;</span><span class="n">author</span><span class="p">,</span> <span class="n">pbook</span><span class="o">-&gt;</span><span class="n">title</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// array
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">l</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;l[0]: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">char</span> <span class="n">s</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&#34;This is a really long string&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap2/ext.png?size=large" data-thumbnail="./chap2/ext.png?size=small" data-sub-html="<h2>扩展数据类型</h2><p>扩展数据类型</p>"><img loading="lazy" src="./chap2/ext.png" alt="扩展数据类型" srcset="./chap2/ext.png?size=small, ./chap2/ext.png?size=medium 1.5x, ./chap2/ext.png?size=large 2x" data-title="扩展数据类型" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">扩展数据类型</figcaption>
+  </figure></p>
+<h3 id="常量" class="heading-element">
+  <a href="#%e5%b8%b8%e9%87%8f" class="heading-mark"></a>常量</h3><p>常量，顾名思义，就是不可以更改的变量，本质上还是一个变量，只不过不能对其进行修改值，但可以在命令语句中调用。</p>
+<ul>
+<li>
+<p>字面常量（literal constant）：字符常量 <code>a</code>、<code>A</code>，字符串常量 <code>“a long string”</code>。</p>
+</li>
+<li>
+<p>常量表达式（constant expression）：即<strong>在编译的时候就可以确定的表达式</strong></p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">constant</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 编译的时候已经确定了 j 的值
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">100</span><span class="p">)</span><span class="o">*</span><span class="n">i</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="类型转换" class="heading-element">
+  <a href="#%e7%b1%bb%e5%9e%8b%e8%bd%ac%e6%8d%a2" class="heading-mark"></a>类型转换</h3><p>类型转换有两种实现方式：</p>
+<ul>
+<li>
+<p>显示转换，即明确写明需要转换的目标类型</p>
+</li>
+<li>
+<p>隐式转换，系统根据一定的转换规则把原来的数据转换为目标数据，<strong>注意原来的数据类型是不变的，改变的是取值后的数据</strong>：</p>
+<ul>
+<li>
+<p>一般是采用<strong>低阶到高阶的顺序</strong>，即占用字节少的数据类型补齐成占用字节多的数据类型，以补齐所需的内存空间</p>
+<blockquote>
+<p><code>char -&gt; int -&gt; float -&gt; double</code></p>
+<p><code>short -&gt; long</code></p>
+</blockquote>
+</li>
+<li>
+<p>对于溢出数据所标示数值范围的，则会根据数据类型所占用的范围进行循环，比如</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">short</span> <span class="n">si</span> <span class="o">=</span> <span class="mi">32768</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nf">printf</span><span class="p">(</span><span class="s">&#34;si = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">si</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 得到 si = -32767
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+</ul>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">65</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">double</span> <span class="n">f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 整数截断
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">f</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;f = %d/2: %.2f</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// explicit converse
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="n">i</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;f = (double) %d / 2 = %.2f</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// implicit converse
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">int</span> <span class="n">ii</span> <span class="o">=</span> <span class="n">f</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;ii = %f: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">ii</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// implicit converse
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;i = %d --&gt; c = %c</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">short</span> <span class="n">si</span> <span class="o">=</span> <span class="mi">32768</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;si = %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">si</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap2/converse.png?size=large" data-thumbnail="./chap2/converse.png?size=small" data-sub-html="<h2>类型转换</h2><p>类型转换</p>"><img loading="lazy" src="./chap2/converse.png" alt="类型转换" srcset="./chap2/converse.png?size=small, ./chap2/converse.png?size=medium 1.5x, ./chap2/converse.png?size=large 2x" data-title="类型转换" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">类型转换</figcaption>
+  </figure></p>
+<p><figure><a class="lightgallery" href="./chap2/p44.png?size=large" data-thumbnail="./chap2/p44.png?size=small" data-sub-html="<h2>page.44</h2><p>page.44</p>"><img loading="lazy" src="./chap2/p44.png" alt="page.44" srcset="./chap2/p44.png?size=small, ./chap2/p44.png?size=medium 1.5x, ./chap2/p44.png?size=large 2x" data-title="page.44" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">page.44</figcaption>
+  </figure></p>
+<h3 id="运算" class="heading-element">
+  <a href="#%e8%bf%90%e7%ae%97" class="heading-mark"></a>运算</h3><ul>
+<li>
+<p>函数运算优先级最高</p>
+</li>
+<li>
+<p>变量自增、自减</p>
+</li>
+<li>
+<p>算数运算</p>
+</li>
+<li>
+<p>逻辑运算</p>
+</li>
+<li>
+<p>复合运算符 <code>op=</code>，根据上面的运算优先级，<code>op=</code> 是先计算等式左边，得到值后再进行复合运算，即</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">x</span> <span class="o">*=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span><span class="p">;</span> <span class="c1">// x = x*(y+z);
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p><figure><a class="lightgallery" href="./chap2/p53.png?size=large" data-thumbnail="./chap2/p53.png?size=small" data-sub-html="<h2>page.53</h2><p>page.53</p>"><img loading="lazy" src="./chap2/p53.png" alt="page.53" srcset="./chap2/p53.png?size=small, ./chap2/p53.png?size=medium 1.5x, ./chap2/p53.png?size=large 2x" data-title="page.53" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">page.53</figcaption>
+  </figure></p>
+<h2 id="chap-3-control-flow" class="heading-element">
+  <a href="#chap-3-control-flow" class="heading-mark"></a>Chap. 3: Control Flow</h2><h3 id="if-else" class="heading-element">
+  <a href="#if-else" class="heading-mark"></a><code>if-else</code></h3><div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">statement</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">statement</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="n">statement</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>expression</code> 为逻辑判断，结果如果是非零（<code>0</code>），则表示逻辑为真；如果是零（<code>0</code>），则代表逻辑为假</p>
+</li>
+<li>
+<p>注意语句后面使用分号 <code>;</code> 代表该语句结束</p>
+</li>
+<li>
+<p><code>if-else</code> 遵从 <strong>就近原则</strong>，即会寻找最近的 <code>else</code> 进行配对</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">statement</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="n">statement</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>虽然看起来，我们使用了缩进试图表示 <code>else</code> 是与第一个 <code>if</code> 配对，当时要记住，<code>c</code> 其实不不像 <code>python</code> 是严格使用缩进来表示代码运行逻辑的。因此，此处的运行到第二个 <code>if</code> 后，会直接与 <code>else</code> 配对，即</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">expression</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">expression</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">statement</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">statement</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>当然，如果需要表达另外一个意思，需要使用 <code>{}</code> 来划分代码块</p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="n">expression</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">expression</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">statement</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">statement</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="switch" class="heading-element">
+  <a href="#switch" class="heading-mark"></a><code>switch</code></h3><p><code>switch</code>  使用<strong>整型变量来判断需要执行哪个命令语句</strong>。</p>
+<div class="highlight" id="id-20"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">switch</span> <span class="p">(</span><span class="n">expressoin</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="n">constant</span><span class="o">-</span><span class="nl">expression</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="n">constant</span><span class="o">-</span><span class="nl">expression</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">do</span><span class="o">-</span><span class="n">something</span> <span class="n">statement</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="for-与-while" class="heading-element">
+  <a href="#for-%e4%b8%8e-while" class="heading-mark"></a><code>for</code> 与 <code>while</code></h3><p>其实两者是可以互相转换的</p>
+<p><figure><a class="lightgallery" href="./chap2/p60.png?size=large" data-thumbnail="./chap2/p60.png?size=small" data-sub-html="<h2>page.60</h2><p>page.60</p>"><img loading="lazy" src="./chap2/p60.png" alt="page.60" srcset="./chap2/p60.png?size=small, ./chap2/p60.png?size=medium 1.5x, ./chap2/p60.png?size=large 2x" data-title="page.60" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">page.60</figcaption>
+  </figure></p>
+<ul>
+<li><code>while</code> 是先执行判断条件，如果没有符合的，则一步都不会执行下面的语句</li>
+<li>为了至少执行一次，我们可以使用 <code>do-while</code>。</li>
+</ul>
+<div class="highlight" id="id-21"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">END</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;## while ------------</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Enter a number: &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">END</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 如果 i &lt; END 不成立，则一次都不执行
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">END</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">++</span><span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">## do while ---------</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;Enter a number: &#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">scanf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">END</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 无论 i &lt; END 是否成立，都至少执行一次
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">do</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="o">++</span><span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">END</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./chap2/do-while.png?size=large" data-thumbnail="./chap2/do-while.png?size=small" data-sub-html="<h2>do-while</h2><p>do-while</p>"><img loading="lazy" src="./chap2/do-while.png" alt="do-while" srcset="./chap2/do-while.png?size=small, ./chap2/do-while.png?size=medium 1.5x, ./chap2/do-while.png?size=large 2x" data-title="do-while" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">do-while</figcaption>
+  </figure></p>
+<h3 id="break与continue" class="heading-element">
+  <a href="#break%e4%b8%8econtinue" class="heading-mark"></a><code>break</code>与<code>continue</code></h3><p>可以控制循环逻辑的执行：</p>
+<ul>
+<li><code>break</code> 提前退出整个循环</li>
+<li><code>continue</code> 不执行本次循环，但需要继续执行省下的循环^[<code>R</code> 使用 <code>next</code>， <code>python</code> 使用 <code>continue</code>]</li>
+</ul>
+<h2 id="chap-4-functions-and-program-structure" class="heading-element">
+  <a href="#chap-4-functions-and-program-structure" class="heading-mark"></a>Chap. 4: Functions and Program Structure</h2><blockquote>
+<p>本章的内容非常的翔实，不仅介绍了函数封装的基本知识，更是重点分析如何构建一个完整的 <code>c</code> 项目程序，从使用头文件、声明外部变量、到分离编译、函数调用等高级功能。</p>
+</blockquote>
+<h2 id="chap-5-pointers-and-arrays" class="heading-element">
+  <a href="#chap-5-pointers-and-arrays" class="heading-mark"></a>Chap. 5: Pointers and Arrays</h2><h2 id="chap-6-structures" class="heading-element">
+  <a href="#chap-6-structures" class="heading-mark"></a>Chap. 6: Structures</h2><h1 id="part-iii使用标准库" class="heading-element">
+  <a href="#part-iii%e4%bd%bf%e7%94%a8%e6%a0%87%e5%87%86%e5%ba%93" class="heading-mark"></a>PART III：使用标准库</h1><h1 id="part-iv编译原理" class="heading-element">
+  <a href="#part-iv%e7%bc%96%e8%af%91%e5%8e%9f%e7%90%86" class="heading-mark"></a>PART IV：编译原理</h1></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" title="Emacs: 神的编辑器">Emacs: 神的编辑器</a></li><li>
+          <a href="/archives/2019-01-16-2018%E5%B9%B4%E4%BC%9A%E6%80%BB%E7%BB%93%E5%A4%A7%E7%BA%B2/" title="2018年会总结大纲">2018年会总结大纲</a></li><li>
+          <a href="/archives/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/" title="Sublime 编译 运行 c/c&#43;&#43; 文件">Sublime 编译 运行 c/c&#43;&#43; 文件</a></li><li>
+          <a href="/archives/2017-12-10-clion-%E6%9C%80%E5%A5%BD%E7%94%A8%E7%9A%84-c-c&#43;&#43;-ide/" title="CLion：最好用的 C-C&#43;&#43; IDE">CLion：最好用的 C-C&#43;&#43; IDE</a></li><li>
+          <a href="/archives/2017-11-10-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%8A%E6%9C%9F%E6%89%80/" title="交易所数据爬虫之上期所">交易所数据爬虫之上期所</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2019-02-24 00:00:00">更新于 2019-02-24&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" data-title="K&amp;R 读书笔记" data-hashtags="K&amp;R,D.Ritchie,c,unix"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" data-hashtag="K&amp;R"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" data-title="K&amp;R 读书笔记" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" data-title="K&amp;R 读书笔记"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" data-title="K&amp;R 读书笔记"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/kr/" class="post-tag" title="标签 - K&amp;R">K&amp;R</a><a href="/tags/d.ritchie/" class="post-tag" title="标签 - D.Ritchie">D.Ritchie</a><a href="/tags/c/" class="post-tag" title="标签 - C">C</a><a href="/tags/unix/" class="post-tag" title="标签 - Unix">Unix</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" class="post-nav-item" rel="prev" title="Emacs: 神的编辑器"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Emacs: 神的编辑器</a>
+      <a href="/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" class="post-nav-item" rel="next" title="tmux:终端神器">tmux:终端神器<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

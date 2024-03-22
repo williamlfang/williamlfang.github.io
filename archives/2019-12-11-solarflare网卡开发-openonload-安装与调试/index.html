@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Solarflare网卡开发：openonload 安装与调试 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="这个教程将系统介绍如何实现基于 solarflare 网卡技术进行高频交易系统开发。" /><meta name="keywords" content='solarflare, openonload, 网络编程' /><meta itemprop="name" content="Solarflare网卡开发：openonload 安装与调试">
+<meta itemprop="description" content="这个教程将系统介绍如何实现基于 solarflare 网卡技术进行高频交易系统开发。"><meta itemprop="datePublished" content="2019-12-11T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-12-11T00:00:00+00:00" />
+<meta itemprop="wordCount" content="3913"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="solarflare,openonload,网络编程," /><meta property="og:title" content="Solarflare网卡开发：openonload 安装与调试" />
+<meta property="og:description" content="这个教程将系统介绍如何实现基于 solarflare 网卡技术进行高频交易系统开发。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2019-12-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-12-11T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Solarflare网卡开发：openonload 安装与调试"/>
+<meta name="twitter:description" content="这个教程将系统介绍如何实现基于 solarflare 网卡技术进行高频交易系统开发。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" /><link rel="prev" href="https://williamlfang.github.io/archives/2019-12-10-ubuntu-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-wireshark/" /><link rel="next" href="https://williamlfang.github.io/archives/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Solarflare网卡开发：openonload 安装与调试",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95\/"
+    },"genre": "posts","keywords": "solarflare, openonload, 网络编程","wordcount":  3913 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95\/","datePublished": "2019-12-11T00:00:00+00:00","dateModified": "2019-12-11T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Solarflare网卡开发：openonload 安装与调试</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2019-12-11 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2019-12-11">2019-12-11</time></span>&nbsp;<span title="3913 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 4000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 8 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#openonload-技术">OpenOnload 技术</a>
+      <ol>
+        <li><a href="#固件信息">固件信息</a></li>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#卸载">卸载</a></li>
+        <li><a href="#使用">使用</a>
+          <ol>
+            <li><a href="#使用-spinning-模式加速应用">使用 spinning 模式加速应用</a></li>
+            <li><a href="#使用-internal-模式加速应用">使用 internal 模式加速应用</a></li>
+          </ol>
+        </li>
+        <li><a href="#demo">demo</a></li>
+        <li><a href="#主要应用">主要应用</a></li>
+        <li><a href="#测试">测试</a>
+          <ol>
+            <li><a href="#服务器与客户端">服务器与客户端</a></li>
+            <li><a href="#延时测试">延时测试</a>
+              <ol>
+                <li><a href="#网络架构">网络架构</a></li>
+                <li><a href="#软件安装">软件安装</a>
+                  <ol>
+                    <li><a href="#安装-openonload">安装 openonload</a></li>
+                    <li><a href="#安装-netperf">安装 Netperf</a></li>
+                    <li><a href="#安装-sfnettest">安装 sfnettest</a></li>
+                    <li><a href="#调优设置">调优设置</a></li>
+                  </ol>
+                </li>
+                <li><a href="#sfnettest-延时测试">sfnettest 延时测试</a>
+                  <ol>
+                    <li><a href="#参数说明">参数说明</a></li>
+                    <li><a href="#服务器">服务器</a></li>
+                    <li><a href="#tcp-测试">TCP 测试</a></li>
+                    <li><a href="#udp-测试">UDP 测试</a></li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2019-12-11，文中内容可能已过时。</div>
+      </div>
+    </div><p>这个教程将系统介绍如何实现基于 solarflare 网卡技术进行高频交易系统开发。</p>
+<h1 id="openonload-技术" class="heading-element">
+  <a href="#openonload-%e6%8a%80%e6%9c%af" class="heading-mark"></a>OpenOnload 技术</h1><h2 id="固件信息" class="heading-element">
+  <a href="#%e5%9b%ba%e4%bb%b6%e4%bf%a1%e6%81%af" class="heading-mark"></a>固件信息</h2><p>可以通过命令查看当前的网卡连接情况</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ip address
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span class="m">65536</span> qdisc noqueue state UNKNOWN group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span></span><span class="line"><span class="cl">    inet 127.0.0.1/8 scope host lo
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">    inet6 ::1/128 scope host
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">2: enp5s0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc pfifo_fast state UP group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 4c:ed:fb:c2:25:67 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 192.168.1.115/24 brd 192.168.1.255 scope global noprefixroute dynamic enp5s0
+</span></span><span class="line"><span class="cl">       valid_lft 1496sec preferred_lft 1496sec
+</span></span><span class="line"><span class="cl">    inet6 fe80::6804:b02d:fb9f:19b0/64 scope link noprefixroute
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">3: enp1s0f0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc mq state DOWN group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 00:0f:53:5d:d3:90 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">4: enp1s0f1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="m">1500</span> qdisc mq state UP group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 00:0f:53:5d:d3:91 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 192.168.1.112/24 brd 192.168.1.255 scope global noprefixroute dynamic enp1s0f1
+</span></span><span class="line"><span class="cl">       valid_lft 1544sec preferred_lft 1544sec
+</span></span><span class="line"><span class="cl">    inet6 fe80::20f:53ff:fe5d:d391/64 scope link
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">5: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu <span class="m">1500</span> qdisc noqueue state DOWN group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 52:54:00:c5:0a:77 brd ff:ff:ff:ff:ff:ff
+</span></span><span class="line"><span class="cl">    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0
+</span></span><span class="line"><span class="cl">       valid_lft forever preferred_lft forever
+</span></span><span class="line"><span class="cl">6: virbr0-nic: &lt;BROADCAST,MULTICAST&gt; mtu <span class="m">1500</span> qdisc pfifo_fast master virbr0 state DOWN group default qlen <span class="m">1000</span>
+</span></span><span class="line"><span class="cl">    link/ether 52:54:00:c5:0a:77 brd ff:ff:ff:ff:ff:ff</span></span></code></pre></td></tr></table>
+</div>
+</div><p>厂商的MAC地址前四位是00:0F，以此判断哪个网卡为Solarflare的网卡。因此，我们可以看出以下两个网卡为 Solarflare</p>
+<ul>
+<li><code>enp1s0f0</code></li>
+<li><code>enp1s0f1</code></li>
+</ul>
+<p>我们还可以通过命令查看具体的网卡信息</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 需要先安装 openonload</span>
+</span></span><span class="line"><span class="cl">ethtool -i enp1s0f1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">driver: sfc
+</span></span><span class="line"><span class="cl">version: 4.15.0.1012
+</span></span><span class="line"><span class="cl">firmware-version: 4.7.1.1001 rx1 tx1
+</span></span><span class="line"><span class="cl">expansion-rom-version:
+</span></span><span class="line"><span class="cl">bus-info: 0000:01:00.1
+</span></span><span class="line"><span class="cl">supports-statistics: yes
+</span></span><span class="line"><span class="cl">supports-test: yes
+</span></span><span class="line"><span class="cl">supports-eeprom-access: no
+</span></span><span class="line"><span class="cl">supports-register-dump: yes
+</span></span><span class="line"><span class="cl">supports-priv-flags: yes</span></span></code></pre></td></tr></table>
+</div>
+</div><p>##下载驱动</p>
+<p><code>OpenOnload</code> 原先是作为一个独立的开发项目存在，在<a href="https://www.openonload.org/download.html"target="_blank" rel="external nofollow noopener noreferrer">官网<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>可以获取相关的资讯，或者直接进入<a href="https://www.openonload.org/download/"target="_blank" rel="external nofollow noopener noreferrer">下载网页<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>获取指定版本的驱动。</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span><span class="lnt">94
+</span><span class="lnt">95
+</span><span class="lnt">96
+</span><span class="lnt">97
+</span><span class="lnt">98
+</span><span class="lnt">99
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">https://www.openonload.org/download/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Index of /download/
+</span></span><span class="line"><span class="cl">../
+</span></span><span class="line"><span class="cl">ppc/                                               15-Feb-2016 11:19                   -
+</span></span><span class="line"><span class="cl">sfnettest/                                         29-Oct-2013 15:45                   -
+</span></span><span class="line"><span class="cl">sfptpd_reverse_ptp_preview/                        18-Aug-2017 10:59                   -
+</span></span><span class="line"><span class="cl">sysjitter/                                         30-May-2017 17:08                   -
+</span></span><span class="line"><span class="cl">efx_ioctl_timesync.h                               23-Jun-2016 16:50               <span class="m">10271</span>
+</span></span><span class="line"><span class="cl">openonload-201502-ChangeLog.txt                    01-Mar-2015 11:34               <span class="m">65722</span>
+</span></span><span class="line"><span class="cl">openonload-201502-README.txt                       01-Mar-2015 11:34                <span class="m">3011</span>
+</span></span><span class="line"><span class="cl">openonload-201502-ReleaseNotes.txt                 01-Mar-2015 11:34               <span class="m">11998</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u1-ChangeLog.txt                 30-Mar-2015 16:35               <span class="m">67171</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u1-README.txt                    30-Mar-2015 16:35                <span class="m">3030</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u1-ReleaseNotes.txt              30-Mar-2015 16:35               <span class="m">14761</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u1.tgz                           30-Mar-2015 16:35             <span class="m">3061647</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u1.tgz.md5                       30-Mar-2015 16:35                  <span class="m">59</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u2-ChangeLog.txt                 04-Jun-2015 16:52               <span class="m">70484</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u2-README.txt                    04-Jun-2015 16:52                <span class="m">3161</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u2-ReleaseNotes.txt              04-Jun-2015 16:52               <span class="m">16556</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u2.tgz                           04-Jun-2015 16:52             <span class="m">3081875</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u2.tgz.md5                       04-Jun-2015 16:52                  <span class="m">59</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u3-ChangeLog.txt                 19-Aug-2015 15:54               <span class="m">70604</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u3-README.txt                    19-Aug-2015 15:54                <span class="m">3161</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u3-ReleaseNotes.txt              19-Aug-2015 15:54               <span class="m">16967</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u3.tgz                           19-Aug-2015 15:54             <span class="m">3276190</span>
+</span></span><span class="line"><span class="cl">openonload-201502-u3.tgz.md5                       19-Aug-2015 15:54                  <span class="m">59</span>
+</span></span><span class="line"><span class="cl">openonload-201502.tgz                              01-Mar-2015 11:34             <span class="m">3056445</span>
+</span></span><span class="line"><span class="cl">openonload-201502.tgz.md5                          01-Mar-2015 11:34                  <span class="m">56</span>
+</span></span><span class="line"><span class="cl">openonload-201509-ChangeLog.txt                    06-Oct-2015 16:26               <span class="m">79017</span>
+</span></span><span class="line"><span class="cl">openonload-201509-README.txt                       06-Oct-2015 16:26                <span class="m">3145</span>
+</span></span><span class="line"><span class="cl">openonload-201509-ReleaseNotes.txt                 06-Oct-2015 16:26               <span class="m">10035</span>
+</span></span><span class="line"><span class="cl">openonload-201509-u1-ChangeLog.txt                 01-Feb-2016 15:51               <span class="m">84338</span>
+</span></span><span class="line"><span class="cl">openonload-201509-u1-README.txt                    01-Feb-2016 15:51                <span class="m">3171</span>
+</span></span><span class="line"><span class="cl">openonload-201509-u1-ReleaseNotes.txt              01-Feb-2016 15:51               <span class="m">12329</span>
+</span></span><span class="line"><span class="cl">openonload-201509-u1.tgz                           01-Feb-2016 15:51             <span class="m">3367951</span>
+</span></span><span class="line"><span class="cl">openonload-201509-u1.tgz.md5                       01-Feb-2016 15:51                  <span class="m">59</span>
+</span></span><span class="line"><span class="cl">openonload-201509.tgz                              06-Oct-2015 16:26             <span class="m">3328928</span>
+</span></span><span class="line"><span class="cl">openonload-201509.tgz.md5                          06-Oct-2015 16:26                  <span class="m">56</span>
+</span></span><span class="line"><span class="cl">openonload-201606-ChangeLog.txt                    30-Jun-2016 17:14               <span class="m">90351</span>
+</span></span><span class="line"><span class="cl">openonload-201606-README.txt                       30-Jun-2016 17:14                <span class="m">3162</span>
+</span></span><span class="line"><span class="cl">openonload-201606-ReleaseNotes.txt                 30-Jun-2016 17:14                <span class="m">7501</span>
+</span></span><span class="line"><span class="cl">openonload-201606-preview1.zip                     02-Jun-2016 19:06             <span class="m">4544551</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1-ChangeLog.txt                 03-Nov-2016 17:33               <span class="m">94806</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1-README.txt                    03-Nov-2016 17:33                <span class="m">3178</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1-ReleaseNotes.txt              03-Nov-2016 17:33               <span class="m">13160</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.1-ChangeLog.txt               01-Feb-2017 15:01               <span class="m">95339</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.1-README.txt                  01-Feb-2017 15:01                <span class="m">3173</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.1-ReleaseNotes.txt            01-Feb-2017 15:01               <span class="m">13564</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.1.tgz                         01-Feb-2017 15:01             <span class="m">4416893</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.1.tgz.md5                     01-Feb-2017 15:01                  <span class="m">61</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.2-ChangeLog.txt               16-Mar-2017 16:34               <span class="m">96359</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.2-README.txt                  16-Mar-2017 16:34                <span class="m">3196</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.2-ReleaseNotes.txt            16-Mar-2017 16:34               <span class="m">14428</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.2.tgz                         16-Mar-2017 16:34             <span class="m">4451313</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.2.tgz.md5                     16-Mar-2017 16:34                  <span class="m">61</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.3-ChangeLog.txt               27-Jun-2017 10:12               <span class="m">97889</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.3-README.txt                  27-Jun-2017 10:12                <span class="m">3192</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.3-ReleaseNotes.txt            27-Jun-2017 10:12               <span class="m">16072</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.3.tgz                         27-Jun-2017 10:12             <span class="m">4916267</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.tgz                           03-Nov-2016 17:33             <span class="m">4605605</span>
+</span></span><span class="line"><span class="cl">openonload-201606-u1.tgz.md5                       03-Nov-2016 17:33                  <span class="m">59</span>
+</span></span><span class="line"><span class="cl">openonload-201606.tgz                              30-Jun-2016 17:14             <span class="m">4170978</span>
+</span></span><span class="line"><span class="cl">openonload-201606.tgz.md5                          30-Jun-2016 17:14                  <span class="m">56</span>
+</span></span><span class="line"><span class="cl">openonload-201710-ChangeLog.txt                    10-Oct-2017 15:32              <span class="m">108975</span>
+</span></span><span class="line"><span class="cl">openonload-201710-README.txt                       10-Oct-2017 15:32                <span class="m">3194</span>
+</span></span><span class="line"><span class="cl">openonload-201710-ReleaseNotes.txt                 10-Oct-2017 15:32                <span class="m">9522</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1-ChangeLog.txt                 23-Jan-2018 14:58              <span class="m">109112</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1-README.txt                    23-Jan-2018 14:58                <span class="m">3178</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1-ReleaseNotes.txt              23-Jan-2018 14:58                <span class="m">9802</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1.1-ChangeLog.txt               23-Apr-2018 16:08              <span class="m">109283</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1.1-README.txt                  23-Apr-2018 16:08                <span class="m">3219</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1.1-ReleaseNotes.txt            23-Apr-2018 16:08               <span class="m">10557</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1.1.tgz                         23-Apr-2018 16:08             <span class="m">4879299</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1.1.tgz.md5                     23-Apr-2018 16:08                  <span class="m">61</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1.tgz                           23-Jan-2018 14:58             <span class="m">4890521</span>
+</span></span><span class="line"><span class="cl">openonload-201710-u1.tgz.md5                       23-Jan-2018 14:58                  <span class="m">59</span>
+</span></span><span class="line"><span class="cl">openonload-201710.tgz                              10-Oct-2017 15:32             <span class="m">4875622</span>
+</span></span><span class="line"><span class="cl">openonload-201710.tgz.md5                          11-Oct-2017 07:50                  <span class="m">56</span>
+</span></span><span class="line"><span class="cl">openonload-201805-ChangeLog.txt                    09-May-2018 08:38              <span class="m">118468</span>
+</span></span><span class="line"><span class="cl">openonload-201805-README.txt                       09-May-2018 08:38                <span class="m">3282</span>
+</span></span><span class="line"><span class="cl">openonload-201805-ReleaseNotes.txt                 09-May-2018 08:38               <span class="m">14680</span>
+</span></span><span class="line"><span class="cl">openonload-201805-u1-ChangeLog.txt                 28-Aug-2018 09:51              <span class="m">118663</span>
+</span></span><span class="line"><span class="cl">openonload-201805-u1-README.txt                    28-Aug-2018 09:51                <span class="m">3276</span>
+</span></span><span class="line"><span class="cl">openonload-201805-u1-ReleaseNotes.txt              28-Aug-2018 09:51               <span class="m">15603</span>
+</span></span><span class="line"><span class="cl">openonload-201805-u1.tgz                           28-Aug-2018 09:51             <span class="m">4659172</span>
+</span></span><span class="line"><span class="cl">openonload-201805-u1.tgz.md5                       28-Aug-2018 09:51                  <span class="m">59</span>
+</span></span><span class="line"><span class="cl">openonload-201805.tgz                              09-May-2018 08:38             <span class="m">4682883</span>
+</span></span><span class="line"><span class="cl">openonload-201805.tgz.md5                          09-May-2018 08:38                  <span class="m">56</span>
+</span></span><span class="line"><span class="cl">openonload-201811-ChangeLog.txt                    03-Dec-2018 23:39              <span class="m">129366</span>
+</span></span><span class="line"><span class="cl">openonload-201811-README.txt                       03-Dec-2018 23:39                <span class="m">3384</span>
+</span></span><span class="line"><span class="cl">openonload-201811-ReleaseNotes.txt                 03-Dec-2018 23:39                <span class="m">8249</span>
+</span></span><span class="line"><span class="cl">openonload-201811-u1-ChangeLog.txt                 02-Jul-2019 10:53              <span class="m">133385</span>
+</span></span><span class="line"><span class="cl">openonload-201811-u1-README.txt                    02-Jul-2019 10:53                <span class="m">3415</span>
+</span></span><span class="line"><span class="cl">openonload-201811-u1-ReleaseNotes.txt              02-Jul-2019 10:53                <span class="m">9679</span>
+</span></span><span class="line"><span class="cl">openonload-201811-u1.tgz                           02-Jul-2019 10:53             <span class="m">4978077</span>
+</span></span><span class="line"><span class="cl">openonload-201811-u1.tgz.md5                       02-Jul-2019 10:53                  <span class="m">59</span>
+</span></span><span class="line"><span class="cl">openonload-201811.tgz                              03-Dec-2018 23:39             <span class="m">4951381</span>
+</span></span><span class="line"><span class="cl">openonload-201811.tgz.md5                          03-Dec-2018 23:39                  <span class="m">56</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="安装" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 进入相应的文件夹</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> openonload-201811/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 源代码存放</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> scripts/
+</span></span><span class="line"><span class="cl">ll
+</span></span><span class="line"><span class="cl">total 240K
+</span></span><span class="line"><span class="cl">drwxr-xr-x. <span class="m">6</span> fl fl 4.0K Dec  <span class="m">3</span>  <span class="m">2018</span> .
+</span></span><span class="line"><span class="cl">drwxr-xr-x. <span class="m">7</span> fl fl  <span class="m">243</span> Dec  <span class="m">9</span> 03:39 ..
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  <span class="m">154</span> Apr <span class="m">12</span>  <span class="m">2018</span> check_binary_presence
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  <span class="m">329</span> Apr <span class="m">12</span>  <span class="m">2018</span> check_header_presence
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  <span class="m">358</span> Apr <span class="m">12</span>  <span class="m">2018</span> check_library_presence
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  <span class="m">573</span> Apr <span class="m">12</span>  <span class="m">2018</span> check_prototype
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 2.2K Nov  <span class="m">8</span>  <span class="m">2018</span> libc_compat.sh
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 1.4K Apr <span class="m">12</span>  <span class="m">2018</span> mmake
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  16K Nov  <span class="m">8</span>  <span class="m">2018</span> mmakebuildtree
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  15K Nov  <span class="m">8</span>  <span class="m">2018</span> mmaketool
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  13K Nov  <span class="m">9</span>  <span class="m">2018</span> onload
+</span></span><span class="line"><span class="cl">drwxr-xr-x. <span class="m">2</span> fl fl   <span class="m">75</span> Oct <span class="m">26</span>  <span class="m">2018</span> onload_apps
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 6.0K Nov  <span class="m">8</span>  <span class="m">2018</span> onload_build
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  27K Dec  <span class="m">3</span>  <span class="m">2018</span> onload_install
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  19K Jul <span class="m">16</span>  <span class="m">2018</span> onload_iptables
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 8.2K Nov  <span class="m">8</span>  <span class="m">2018</span> onload_metrics
+</span></span><span class="line"><span class="cl">drwxr-xr-x. <span class="m">2</span> fl fl 4.0K Dec  <span class="m">3</span>  <span class="m">2018</span> onload_misc
+</span></span><span class="line"><span class="cl">drwxr-xr-x. <span class="m">2</span> fl fl 4.0K Nov  <span class="m">9</span>  <span class="m">2018</span> onload_profiles
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 2.2K Jul <span class="m">16</span>  <span class="m">2018</span> onload_rpmtest
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 3.3K Nov  <span class="m">8</span>  <span class="m">2018</span> onload_tcpdump
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 8.0K Nov  <span class="m">9</span>  <span class="m">2018</span> onload_tool
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  <span class="m">748</span> Apr <span class="m">12</span>  <span class="m">2018</span> sfcaffinity
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl  30K Apr <span class="m">12</span>  <span class="m">2018</span> sfcaffinity_config
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> fl fl  15K Apr <span class="m">12</span>  <span class="m">2018</span> sfcaffinity.py
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 6.5K Apr <span class="m">12</span>  <span class="m">2018</span> sfcirqaffinity
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> fl fl 4.6K Apr <span class="m">12</span>  <span class="m">2018</span> sfcmask.py
+</span></span><span class="line"><span class="cl">drwxr-xr-x. <span class="m">2</span> fl fl  <span class="m">108</span> Dec  <span class="m">3</span>  <span class="m">2018</span> sh
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> fl fl 1.1K Apr <span class="m">12</span>  <span class="m">2018</span> zf_debug
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 搭建环境</span>
+</span></span><span class="line"><span class="cl">locate crti.o
+</span></span><span class="line"><span class="cl"><span class="nv">LIBRARY_PATH</span><span class="o">=</span>/usr/lib64:<span class="nv">$LIBRARY_PATH</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> LIBRARY_PATH
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./onload_build
+</span></span><span class="line"><span class="cl"><span class="c1">## 执行安装</span>
+</span></span><span class="line"><span class="cl">./onload_install
+</span></span><span class="line"><span class="cl"><span class="c1">#加载 onload</span>
+</span></span><span class="line"><span class="cl">onload_tool reload
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 开启 rx1 tx1 模式</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Ref： https://support.solarflare.com/docs/SF-103837-CD</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Adapters Software Support</span>
+</span></span><span class="line"><span class="cl">sfboot --adapter<span class="o">=</span>enp1s0f1 firmware-variant<span class="o">=</span>ultra-low-latency
+</span></span><span class="line"><span class="cl"><span class="c1">## 需要重启</span>
+</span></span><span class="line"><span class="cl">sudo reboot now
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 查看即可显示</span>
+</span></span><span class="line"><span class="cl">ethtool -i enp1s0f1
+</span></span><span class="line"><span class="cl">driver: sfc
+</span></span><span class="line"><span class="cl">version: 4.15.0.1012
+</span></span><span class="line"><span class="cl">firmware-version: 6.2.7.1001 rx1 tx1
+</span></span><span class="line"><span class="cl">expansion-rom-version:
+</span></span><span class="line"><span class="cl">bus-info: 0000:01:00.1
+</span></span><span class="line"><span class="cl">supports-statistics: yes
+</span></span><span class="line"><span class="cl">supports-test: yes
+</span></span><span class="line"><span class="cl">supports-eeprom-access: no
+</span></span><span class="line"><span class="cl">supports-register-dump: yes
+</span></span><span class="line"><span class="cl">supports-priv-flags: yes</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="卸载" class="heading-element">
+  <a href="#%e5%8d%b8%e8%bd%bd" class="heading-mark"></a>卸载</h2><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#unload onload</span>
+</span></span><span class="line"><span class="cl">onload_tool unload
+</span></span><span class="line"><span class="cl"><span class="c1">#remove sfc</span>
+</span></span><span class="line"><span class="cl">modprobe –r sfc
+</span></span><span class="line"><span class="cl"><span class="c1">#if found any sfc rpm, then remove them</span>
+</span></span><span class="line"><span class="cl">rpm -qa <span class="p">|</span> grep sfc
+</span></span><span class="line"><span class="cl">rpm -e *sfc*.rpm
+</span></span><span class="line"><span class="cl"><span class="c1">#unintall onload</span>
+</span></span><span class="line"><span class="cl">./onload_misc/onload_uninstall</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="使用" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8" class="heading-mark"></a>使用</h2><p>OpenOnload有两种模式。</p>
+<ul>
+<li>Spinning模式（busy-wait）中，加速进程的每个线程会占用一整个CPU core，始终处于waiting状态。通过htop可以看到该CPU的使用率为100%。spinning模式速度更快，但是要注意CPU core的数量。</li>
+<li>Interrupt模式中，线程不会占用满一个CPU core，但可以将中断Interrupt放在一个CPU core。interrupt模式也有加速效果，理论上比spinning略差一些。当服务器上总线程数大于CPU core的数量时，interrupt可能优于spinning，需要测试来论证。</li>
+</ul>
+<h3 id="使用-spinning-模式加速应用" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8-spinning-%e6%a8%a1%e5%bc%8f%e5%8a%a0%e9%80%9f%e5%ba%94%e7%94%a8" class="heading-mark"></a>使用 spinning 模式加速应用</h3><p>查看CPU core序号（注意，一般服务器是从0开始排序，也有不正常的版本，请查证。否则OpenOnload选择的CPU core可能不存在）</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">egrep <span class="s2">&#34;(id|processo).*:|^ *</span>$<span class="s2">&#34;</span> /proc/cpuinfo</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">onload -p latency taskset -c <span class="m">3</span> ./<span class="o">[</span>Application<span class="o">]</span>
+</span></span><span class="line"><span class="cl">onload --profile<span class="o">=</span>latency taskset -c <span class="m">2</span> ./<span class="o">[</span>Application<span class="o">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中，<code>-c</code> 参数选择 CPU core 的号码，也可以选择多个core：<code>-c 2,3</code>。选择core的数量与进程的线程数有关。</p>
+<h3 id="使用-internal-模式加速应用" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8-internal-%e6%a8%a1%e5%bc%8f%e5%8a%a0%e9%80%9f%e5%ba%94%e7%94%a8" class="heading-mark"></a>使用 internal 模式加速应用</h3><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">onload ./<span class="o">[</span>Application<span class="o">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="demo" class="heading-element">
+  <a href="#demo" class="heading-mark"></a>demo</h2><p>所有运行的demo都在我们事先下载得到的压缩包里面。一般来说</p>
+<ul>
+<li>files under the <code>gnu</code> directory are 32-bit (if these are built)</li>
+<li>files under the <code>gnu_x86_64</code> directory are 64-bit.</li>
+</ul>
+<p>我们进入 <code>gnu_x86_64</code> 的文件夹即可。</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> scripts/
+</span></span><span class="line"><span class="cl"><span class="c1">## 增加环境路径</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PWD</span><span class="s2">:</span><span class="nv">$PATH</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 使用 64 位进行编译</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ../build/gnu_x86_64/tests/ef_vi/
+</span></span><span class="line"><span class="cl"><span class="c1">## 先清理，然后安装</span>
+</span></span><span class="line"><span class="cl">make clean <span class="o">&amp;&amp;</span> make
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">pwd</span>
+</span></span><span class="line"><span class="cl">/root/openonload-201811/build/gnu_x86_64/tests/ef_vi
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ls -alh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">total <span class="m">5304</span>
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root      <span class="m">1</span> Nov <span class="m">17</span> 03:53 copy.depends
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root      <span class="m">0</span> Nov <span class="m">17</span> 03:53 copy.done
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">343784</span> Nov <span class="m">25</span> 04:24 efforward
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">2724</span> Nov <span class="m">25</span> 04:24 efforward.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">79712</span> Nov <span class="m">25</span> 04:24 efforward.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">387320</span> Nov <span class="m">25</span> 04:24 efforward_packed
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">2745</span> Nov <span class="m">25</span> 04:24 efforward_packed.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">86952</span> Nov <span class="m">25</span> 04:24 efforward_packed.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">368680</span> Nov <span class="m">25</span> 04:24 efjumborx
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">2670</span> Nov <span class="m">25</span> 04:24 efjumborx.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">80384</span> Nov <span class="m">25</span> 04:24 efjumborx.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">465904</span> Nov <span class="m">25</span> 04:24 eflatency
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">5631</span> Nov <span class="m">25</span> 04:24 eflatency.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root <span class="m">121064</span> Nov <span class="m">25</span> 04:24 eflatency.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">326256</span> Nov <span class="m">25</span> 04:24 efrss
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">2658</span> Nov <span class="m">25</span> 04:24 efrss.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">67640</span> Nov <span class="m">25</span> 04:24 efrss.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">421928</span> Nov <span class="m">25</span> 04:24 efsend
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">5366</span> Nov <span class="m">25</span> 04:24 efsend_common.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">33168</span> Nov <span class="m">25</span> 04:24 efsend_common.o
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">5437</span> Nov <span class="m">25</span> 04:24 efsend.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">51224</span> Nov <span class="m">25</span> 04:24 efsend.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">427032</span> Nov <span class="m">25</span> 04:24 efsend_pio
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">5446</span> Nov <span class="m">25</span> 04:24 efsend_pio.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">45840</span> Nov <span class="m">25</span> 04:24 efsend_pio.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">435640</span> Nov <span class="m">25</span> 04:24 efsend_pio_warm
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">5563</span> Nov <span class="m">25</span> 04:24 efsend_pio_warm.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">63160</span> Nov <span class="m">25</span> 04:24 efsend_pio_warm.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">409200</span> Nov <span class="m">25</span> 04:24 efsend_timestamping
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">5476</span> Nov <span class="m">25</span> 04:24 efsend_timestamping.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">43816</span> Nov <span class="m">25</span> 04:24 efsend_timestamping.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">410640</span> Nov <span class="m">25</span> 04:24 efsink
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">2733</span> Nov <span class="m">25</span> 04:24 efsink.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">97664</span> Nov <span class="m">25</span> 04:24 efsink.o
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root <span class="m">369440</span> Nov <span class="m">25</span> 04:24 efsink_packed
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">2736</span> Nov <span class="m">25</span> 04:24 efsink_packed.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">65952</span> Nov <span class="m">25</span> 04:24 efsink_packed.o
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root    <span class="m">150</span> Nov <span class="m">17</span> 03:53 GNUmakefile
+</span></span><span class="line"><span class="cl">-rwxr-xr-x. <span class="m">1</span> root root   <span class="m">5220</span> Nov <span class="m">25</span> 04:24 stats
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root   <span class="m">2623</span> Nov <span class="m">25</span> 04:24 utils.d
+</span></span><span class="line"><span class="cl">-rw-r--r--. <span class="m">1</span> root root  <span class="m">79648</span> Nov <span class="m">25</span> 04:24 utils.o</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="主要应用" class="heading-element">
+  <a href="#%e4%b8%bb%e8%a6%81%e5%ba%94%e7%94%a8" class="heading-mark"></a>主要应用</h2><p><figure><a class="lightgallery" href="./ef_apps.png?size=large" data-thumbnail="./ef_apps.png?size=small" data-sub-html="<h2>efvi</h2><p>efvi</p>"><img loading="lazy" src="./ef_apps.png" alt="efvi" srcset="./ef_apps.png?size=small, ./ef_apps.png?size=medium 1.5x, ./ef_apps.png?size=large 2x" data-title="efvi" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">efvi</figcaption>
+  </figure></p>
+<h2 id="测试" class="heading-element">
+  <a href="#%e6%b5%8b%e8%af%95" class="heading-mark"></a>测试</h2><h3 id="服务器与客户端" class="heading-element">
+  <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8%e4%b8%8e%e5%ae%a2%e6%88%b7%e7%ab%af" class="heading-mark"></a>服务器与客户端</h3><p><figure><a class="lightgallery" href="./ef_latency_eg.png?size=large" data-thumbnail="./ef_latency_eg.png?size=small" data-sub-html="<h2>latency</h2><p>latency</p>"><img loading="lazy" src="./ef_latency_eg.png" alt="latency" srcset="./ef_latency_eg.png?size=small, ./ef_latency_eg.png?size=medium 1.5x, ./ef_latency_eg.png?size=large 2x" data-title="latency" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">latency</figcaption>
+  </figure></p>
+<h3 id="延时测试" class="heading-element">
+  <a href="#%e5%bb%b6%e6%97%b6%e6%b5%8b%e8%af%95" class="heading-mark"></a>延时测试</h3><h4 id="网络架构" class="heading-element">
+  <a href="#%e7%bd%91%e7%bb%9c%e6%9e%b6%e6%9e%84" class="heading-mark"></a>网络架构</h4><ul>
+<li>两台机器都配备 Solarflare 网络适配器</li>
+<li>两台机器使用一根光纤线连接 Solarflare 接口</li>
+<li>分别为两块卡上的 Solarflare 接口配置一个 IP 地址， 使得它们之间可以通讯，使用 ping 命令验证连接</li>
+<li>OpenOnload 都分别安装到两台机器上</li>
+<li>Solarflare 的 sfnettest 和 <strong>NetPerf</strong> 都分别安装到两台机器上</li>
+</ul>
+<h4 id="软件安装" class="heading-element">
+  <a href="#%e8%bd%af%e4%bb%b6%e5%ae%89%e8%a3%85" class="heading-mark"></a>软件安装</h4><h5 id="安装-openonload" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-openonload" class="heading-mark"></a>安装 openonload</h5><div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 进入相应的文件夹</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> openonload-201811/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 源代码存放</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> scripts/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 搭建环境</span>
+</span></span><span class="line"><span class="cl">./onload_build
+</span></span><span class="line"><span class="cl"><span class="c1">## 执行安装</span>
+</span></span><span class="line"><span class="cl">./onload_install
+</span></span><span class="line"><span class="cl"><span class="c1">#加载 onload</span>
+</span></span><span class="line"><span class="cl">onload_tool reload</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="安装-netperf" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-netperf" class="heading-mark"></a>安装 Netperf</h5><div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget http://repo.iotti.biz/CentOS/7/x86_64/netperf-2.7.0-1.el7.lux.x86_64.rpm
+</span></span><span class="line"><span class="cl">rpm -i netperf-2.7.0-1.el7.lux.x86_64.rpm</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="安装-sfnettest" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-sfnettest" class="heading-mark"></a>安装 sfnettest</h5><div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://www.openonload.org/download/sfnettest/sfnettest-1.5.0.tgz
+</span></span><span class="line"><span class="cl">tar xvf sfnettest-1.5.0.tgz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> sfnettest-1.5.0/src
+</span></span><span class="line"><span class="cl">make</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="调优设置" class="heading-element">
+  <a href="#%e8%b0%83%e4%bc%98%e8%ae%be%e7%bd%ae" class="heading-mark"></a>调优设置</h5><div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 停止 cpuspeed 服务以避免进入省电模式，降低CPU时钟速度</span>
+</span></span><span class="line"><span class="cl">systemctl stop cpuspeed
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 停止 irqbalance 服务器以防止 OS 在可用的CPU内核之间重新平衡中断</span>
+</span></span><span class="line"><span class="cl">systemctl stop irqbalance
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 停止防火墙辐射器以消除简介消耗</span>
+</span></span><span class="line"><span class="cl">systemctl stop firewalld
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 禁用 interrupt moderation</span>
+</span></span><span class="line"><span class="cl">ethtool -C enp1s0f1 rx-usecs-irq <span class="m">0</span> adaptive-rx off
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 启动低延时配置：tuned-adm</span>
+</span></span><span class="line"><span class="cl">tuned-adm list
+</span></span><span class="line"><span class="cl">tuned-adm profile network-latency
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 防止系统进入 CPU 低功耗模式　cstates</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 参考博文: https://williamlfang.github.io/post/2019-12-11-linux-调整-cstate-实现cpu超频/</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="sfnettest-延时测试" class="heading-element">
+  <a href="#sfnettest-%e5%bb%b6%e6%97%b6%e6%b5%8b%e8%af%95" class="heading-mark"></a>sfnettest 延时测试</h4><h5 id="参数说明" class="heading-element">
+  <a href="#%e5%8f%82%e6%95%b0%e8%af%b4%e6%98%8e" class="heading-mark"></a>参数说明</h5><ul>
+<li><code>--profile=latency</code>：测试延时模式</li>
+<li><code>taskset -c 1</code>：绑定 cpu core 的号码 1</li>
+<li><code>--maxms=10000</code> 指发送的最大数据包大小</li>
+<li><code>--affinity &quot;1;1&quot;</code> 指使用 <code>core 1</code> 发送，使用 <code>core 1</code> 接收（可以选不同的core）</li>
+</ul>
+<h5 id="服务器" class="heading-element">
+  <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8" class="heading-mark"></a>服务器</h5><p>首先，在服务器开启</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">onload --profile<span class="o">=</span>latency taskset -c <span class="m">1</span> ./sfnt-pingpong --maxms<span class="o">=</span><span class="m">10000</span> --affinity 1,1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行成功后等待客户端接入</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">oo:sfnt-pingpong<span class="o">[</span>17337<span class="o">]</span>: Using OpenOnload <span class="m">201811</span> Copyright 2006-2018 Solarflare Communications, 2002-2005 Level <span class="m">5</span> Networks <span class="o">[</span>2<span class="o">]</span>
+</span></span><span class="line"><span class="cl">sfnt-pingpong: server: waiting <span class="k">for</span> client to connect...</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="tcp-测试" class="heading-element">
+  <a href="#tcp-%e6%b5%8b%e8%af%95" class="heading-mark"></a>TCP 测试</h5><div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">onload --profile<span class="o">=</span>latency taskset -c <span class="m">1</span> ./sfnt-pingpong --maxms<span class="o">=</span><span class="m">10000</span> --affinity 1,1 tcp 127.0.0.1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行结果如下</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">oo:sfnt-pingpong<span class="o">[</span>17093<span class="o">]</span>: Using OpenOnload <span class="m">201811</span> Copyright 2006-2018 Solarflare Communications, 2002-2005 Level <span class="m">5</span> Networks <span class="o">[</span>4<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># cmdline: ./sfnt-pingpong --maxms=10000 --affinity 1,1 tcp 127.0.0.1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># version: 1.5.0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># src: 8dc3b027d85b28bedf9fd731362e4968</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># date: Wed Dec 11 02:19:49 EST 2019</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># uname: Linux localhost.localdomain 3.10.0-1062.4.1.el7.x86_64 #1 SMP Fri Oct 18 17:15:30 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># cpu: model name	: Intel(R) Core(TM) i5-8500 CPU @ 3.00GHz</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># lspci: 01:00.0 Ethernet controller: Solarflare Communications SFC9120 10G Ethernet Controller (rev 01)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># lspci: 01:00.1 Ethernet controller: Solarflare Communications SFC9120 10G Ethernet Controller (rev 01)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># lspci: 05:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f0: driver: sfc</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f0: version: 4.15.0.1012</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f0: bus-info: 0000:01:00.0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f1: driver: sfc</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f1: version: 4.15.0.1012</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f1: bus-info: 0000:01:00.1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp5s0: driver: r8169</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp5s0: version:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp5s0: bus-info: 0000:05:00.0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0: driver: bridge</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0: version: 2.3</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0: bus-info: N/A</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0-nic: driver: tun</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0-nic: version: 1.6</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0-nic: bus-info: tap</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ram: MemTotal:        7872940 kB</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># tsc_hz: 2999998960</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># LD_PRELOAD=libonload.so</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># onload_version=201811</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># EF_TCP_FASTSTART_INIT=0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># EF_POLL_USEC=100000</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># EF_TCP_FASTSTART_IDLE=0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># server LD_PRELOAD=libonload.so</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># percentile=99</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#	size	mean	min	median	max	%ile	stddev	iter</span>
+</span></span><span class="line"><span class="cl">	1	7668	6472	7556	35283	8855	522	<span class="m">650000</span>
+</span></span><span class="line"><span class="cl">	2	7064	6133	7010	257486	8064	469	<span class="m">705000</span>
+</span></span><span class="line"><span class="cl">	4	6964	6123	6982	16029	7967	369	<span class="m">716000</span>
+</span></span><span class="line"><span class="cl">	8	6915	6093	6911	16987	7923	401	<span class="m">721000</span>
+</span></span><span class="line"><span class="cl">	16	6904	6113	6866	22018	7916	403	<span class="m">722000</span>
+</span></span><span class="line"><span class="cl">	32	6888	6118	6827	15773	7875	384	<span class="m">723000</span>
+</span></span><span class="line"><span class="cl">	64	6880	6114	6820	16818	7862	390	<span class="m">724000</span>
+</span></span><span class="line"><span class="cl">	128	6895	6172	6833	14807	7890	397	<span class="m">723000</span>
+</span></span><span class="line"><span class="cl">	256	6909	6122	6850	20069	7911	391	<span class="m">721000</span>
+</span></span><span class="line"><span class="cl">	512	6861	6118	6805	308711	7840	527	<span class="m">726000</span>
+</span></span><span class="line"><span class="cl">	1024	6869	6139	6806	27147	7875	407	<span class="m">725000</span>
+</span></span><span class="line"><span class="cl">	2048	7124	6391	7064	19685	8141	412	<span class="m">699000</span>
+</span></span><span class="line"><span class="cl">	4096	7397	6523	7357	20114	8455	437	<span class="m">674000</span>
+</span></span><span class="line"><span class="cl">	8192	7675	6839	7612	19902	8757	432	<span class="m">649000</span>
+</span></span><span class="line"><span class="cl">	16384	8481	7628	8417	17966	9577	412	<span class="m">588000</span>
+</span></span><span class="line"><span class="cl">	32768	10136	9162	10063	19106	11376	477	<span class="m">492000</span>
+</span></span><span class="line"><span class="cl">	65536	20403	18129	20392	41106	22849	1070	<span class="m">245000</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>测试结果按照发送数据包大小进行排列，输出结果为 RTT(round-trip-time)/2的平均延时时间，单位(ns)，并且列出了最小值、中位数、最大值、百分位以及标准差。比如一个 <code>32</code> 字节的数据包</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#	size	mean	min	median	max	%ile	stddev	iter</span>
+</span></span><span class="line"><span class="cl">	32	6888	6118	6827	15773	7875	384	<span class="m">723000</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>平均延时为 6.888us</li>
+<li>最快延时 6.118us</li>
+<li>最长延时 7.875us</li>
+<li>标准差为 0.364us</li>
+</ul>
+<h5 id="udp-测试" class="heading-element">
+  <a href="#udp-%e6%b5%8b%e8%af%95" class="heading-mark"></a>UDP 测试</h5><p>执行命令</p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">onload --profile<span class="o">=</span>latency taskset -c <span class="m">1</span> ./sfnt-pingpong --maxms<span class="o">=</span><span class="m">10000</span> --affinity 1,1 udp 127.0.0.1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>得到结果：<strong>果然 UDP 大法好</strong>。</p>
+<div class="highlight" id="id-20"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">oo:sfnt-pingpong<span class="o">[</span>17576<span class="o">]</span>: Using OpenOnload <span class="m">201811</span> Copyright 2006-2018 Solarflare Communications, 2002-2005 Level <span class="m">5</span> Networks <span class="o">[</span>6<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># cmdline: ./sfnt-pingpong --maxms=10000 --affinity 1,1 udp 127.0.0.1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># version: 1.5.0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># src: 8dc3b027d85b28bedf9fd731362e4968</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># date: Wed Dec 11 02:27:16 EST 2019</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># uname: Linux localhost.localdomain 3.10.0-1062.4.1.el7.x86_64 #1 SMP Fri Oct 18 17:15:30 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># cpu: model name   : Intel(R) Core(TM) i5-8500 CPU @ 3.00GHz</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># lspci: 01:00.0 Ethernet controller: Solarflare Communications SFC9120 10G Ethernet Controller (rev 01)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># lspci: 01:00.1 Ethernet controller: Solarflare Communications SFC9120 10G Ethernet Controller (rev 01)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># lspci: 05:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 15)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f0: driver: sfc</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f0: version: 4.15.0.1012</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f0: bus-info: 0000:01:00.0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f1: driver: sfc</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f1: version: 4.15.0.1012</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp1s0f1: bus-info: 0000:01:00.1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp5s0: driver: r8169</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp5s0: version:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># enp5s0: bus-info: 0000:05:00.0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0: driver: bridge</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0: version: 2.3</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0: bus-info: N/A</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0-nic: driver: tun</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0-nic: version: 1.6</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># virbr0-nic: bus-info: tap</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ram: MemTotal:        7872940 kB</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># tsc_hz: 2999999520</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># LD_PRELOAD=libonload.so</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># onload_version=201811</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># EF_TCP_FASTSTART_INIT=0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># EF_POLL_USEC=100000</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># EF_TCP_FASTSTART_IDLE=0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># server LD_PRELOAD=libonload.so</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># percentile=99</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   size    mean    min median  max %ile    stddev  iter</span>
+</span></span><span class="line"><span class="cl">  <span class="m">0</span>   <span class="m">6216</span>    <span class="m">5434</span>    <span class="m">6120</span>    <span class="m">27259</span>   <span class="m">7171</span>    <span class="m">452</span> <span class="m">800000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">1</span>   <span class="m">5929</span>    <span class="m">5424</span>    <span class="m">5892</span>    <span class="m">24829</span>   <span class="m">6764</span>    <span class="m">310</span> <span class="m">839000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">2</span>   <span class="m">5841</span>    <span class="m">5272</span>    <span class="m">5844</span>    <span class="m">19435</span>   <span class="m">6659</span>    <span class="m">289</span> <span class="m">852000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">4</span>   <span class="m">5809</span>    <span class="m">5261</span>    <span class="m">5798</span>    <span class="m">14376</span>   <span class="m">6647</span>    <span class="m">349</span> <span class="m">857000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">8</span>   <span class="m">5793</span>    <span class="m">5232</span>    <span class="m">5776</span>    <span class="m">15298</span>   <span class="m">6636</span>    <span class="m">354</span> <span class="m">859000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">16</span>  <span class="m">5746</span>    <span class="m">5248</span>    <span class="m">5715</span>    <span class="m">13638</span>   <span class="m">6570</span>    <span class="m">349</span> <span class="m">866000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">32</span>  <span class="m">5762</span>    <span class="m">5255</span>    <span class="m">5735</span>    <span class="m">141833</span>  <span class="m">6587</span>    <span class="m">382</span> <span class="m">864000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">64</span>  <span class="m">5716</span>    <span class="m">5246</span>    <span class="m">5686</span>    <span class="m">20291</span>   <span class="m">6553</span>    <span class="m">367</span> <span class="m">871000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">128</span> <span class="m">5697</span>    <span class="m">5231</span>    <span class="m">5663</span>    <span class="m">14968</span>   <span class="m">6526</span>    <span class="m">356</span> <span class="m">874000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">256</span> <span class="m">5692</span>    <span class="m">5212</span>    <span class="m">5665</span>    <span class="m">368520</span>  <span class="m">6528</span>    <span class="m">528</span> <span class="m">874000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">512</span> <span class="m">5687</span>    <span class="m">5251</span>    <span class="m">5654</span>    <span class="m">17424</span>   <span class="m">6486</span>    <span class="m">330</span> <span class="m">875000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">1024</span>    <span class="m">5788</span>    <span class="m">5307</span>    <span class="m">5748</span>    <span class="m">13709</span>   <span class="m">6590</span>    <span class="m">336</span> <span class="m">860000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">1472</span>    <span class="m">5824</span>    <span class="m">5341</span>    <span class="m">5788</span>    <span class="m">13610</span>   <span class="m">6634</span>    <span class="m">343</span> <span class="m">854000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">1473</span>    <span class="m">5827</span>    <span class="m">5333</span>    <span class="m">5793</span>    <span class="m">21815</span>   <span class="m">6637</span>    <span class="m">343</span> <span class="m">854000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">2048</span>    <span class="m">5895</span>    <span class="m">5449</span>    <span class="m">5868</span>    <span class="m">17404</span>   <span class="m">6696</span>    <span class="m">304</span> <span class="m">844000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">4096</span>    <span class="m">6091</span>    <span class="m">5566</span>    <span class="m">6055</span>    <span class="m">17905</span>   <span class="m">6951</span>    <span class="m">377</span> <span class="m">817000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">8192</span>    <span class="m">6737</span>    <span class="m">6056</span>    <span class="m">6719</span>    <span class="m">27552</span>   <span class="m">7744</span>    <span class="m">422</span> <span class="m">739000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">16384</span>   <span class="m">7414</span>    <span class="m">6852</span>    <span class="m">7359</span>    <span class="m">250894</span>  <span class="m">8421</span>    <span class="m">506</span> <span class="m">672000</span>
+</span></span><span class="line"><span class="cl">  <span class="m">32768</span>   <span class="m">8869</span>    <span class="m">8177</span>    <span class="m">8785</span>    <span class="m">22277</span>   <span class="m">10025</span>   <span class="m">440</span> <span class="m">562000</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2019-12-10-ubuntu-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-wireshark/" title="Ubuntu 源代码安装 wireshark">Ubuntu 源代码安装 wireshark</a></li><li>
+          <a href="/archives/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" title="Clion 远程调试">Clion 远程调试</a></li><li>
+          <a href="/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" title="tmux:终端神器">tmux:终端神器</a></li><li>
+          <a href="/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" title="K&amp;R 读书笔记">K&amp;R 读书笔记</a></li><li>
+          <a href="/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" title="Emacs: 神的编辑器">Emacs: 神的编辑器</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2019-12-11 00:00:00">更新于 2019-12-11&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" data-title="Solarflare网卡开发：openonload 安装与调试" data-hashtags="solarflare,openonload,网络编程"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" data-hashtag="solarflare"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" data-title="Solarflare网卡开发：openonload 安装与调试" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" data-title="Solarflare网卡开发：openonload 安装与调试"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" data-title="Solarflare网卡开发：openonload 安装与调试"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/solarflare/" class="post-tag" title="标签 - Solarflare">Solarflare</a><a href="/tags/openonload/" class="post-tag" title="标签 - Openonload">Openonload</a><a href="/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" class="post-tag" title="标签 - 网络编程">网络编程</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2019-12-10-ubuntu-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-wireshark/" class="post-nav-item" rel="prev" title="Ubuntu 源代码安装 wireshark"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Ubuntu 源代码安装 wireshark</a>
+      <a href="/archives/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/" class="post-nav-item" rel="next" title="C&#43;&#43;日志模块:loguru">C&#43;&#43;日志模块:loguru<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

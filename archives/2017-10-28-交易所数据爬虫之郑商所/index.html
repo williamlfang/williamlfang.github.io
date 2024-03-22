@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>交易所数据爬虫之郑商所 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="利用 `R` 对郑州商品交易所进行网络爬虫，获取日行情数据、成交排名、仓单数据等。" /><meta name="keywords" content='Futures, 期货, 数据, R' /><meta itemprop="name" content="交易所数据爬虫之郑商所">
+<meta itemprop="description" content="利用 `R` 对郑州商品交易所进行网络爬虫，获取日行情数据、成交排名、仓单数据等。"><meta itemprop="datePublished" content="2017-10-28T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-10-28T00:00:00+00:00" />
+<meta itemprop="wordCount" content="4064"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Futures,期货,数据,R," /><meta property="og:title" content="交易所数据爬虫之郑商所" />
+<meta property="og:description" content="利用 `R` 对郑州商品交易所进行网络爬虫，获取日行情数据、成交排名、仓单数据等。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2017-10-28T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-28T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="交易所数据爬虫之郑商所"/>
+<meta name="twitter:description" content="利用 `R` 对郑州商品交易所进行网络爬虫，获取日行情数据、成交排名、仓单数据等。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/" /><link rel="prev" href="https://williamlfang.github.io/archives/2017-10-25-pkd/" /><link rel="next" href="https://williamlfang.github.io/archives/2017-11-05-%E5%8D%87%E7%BA%A7-rstudio-server/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "交易所数据爬虫之郑商所",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80\/"
+    },"genre": "posts","keywords": "Futures, 期货, 数据, R","wordcount":  4064 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80\/","datePublished": "2017-10-28T00:00:00+00:00","dateModified": "2017-10-28T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": "利用 `R` 对郑州商品交易所进行网络爬虫，获取日行情数据、成交排名、仓单数据等。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="wide"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>交易所数据爬虫之郑商所</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/data/" class="post-category" title="分类 - Data"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Data</a></span></div><div class="post-meta-line"><span title="发布于 2017-10-28 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2017-10-28">2017-10-28</time></span>&nbsp;<span title="4064 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 4100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 9 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#诡异的郑商所">诡异的郑商所</a></li>
+    <li><a href="#工具箱">工具箱</a>
+      <ol>
+        <li><a href="#rselenium"><code>RSelenium</code></a></li>
+        <li><a href="#rvest"><code>rvest</code></a></li>
+      </ol>
+    </li>
+    <li><a href="#日行情数据">日行情数据</a>
+      <ol>
+        <li><a href="#静态链接">静态链接</a>
+          <ol>
+            <li><a href="#定位网页">定位网页</a></li>
+            <li><a href="#下载数据文件">下载数据文件</a></li>
+          </ol>
+        </li>
+        <li><a href="#网页内容爬虫">网页内容爬虫</a>
+          <ol>
+            <li><a href="#识别网页内容">识别网页内容</a></li>
+          </ol>
+        </li>
+        <li><a href="#demo">Demo</a></li>
+      </ol>
+    </li>
+    <li><a href="#成交持仓排名">成交持仓排名</a>
+      <ol>
+        <li><a href="#持仓排名地址">持仓排名地址</a></li>
+        <li><a href="#demo-1">Demo</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2017-10-28，文中内容可能已过时。</div>
+      </div>
+    </div><p>上回我介绍了如何<a href="https://williamlfang.github.io/post/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/"target="_blank" rel="external nofollow noopener noreferrer">对中金所进行网络爬虫<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，获得了股指期货相关的历史日行情数据和成交排名数据。同样的，我们也可以使用类似的爬虫技术，对郑商所进行网络爬虫。</p>
+<h1 id="诡异的郑商所" class="heading-element">
+  <a href="#%e8%af%a1%e5%bc%82%e7%9a%84%e9%83%91%e5%95%86%e6%89%80" class="heading-mark"></a>诡异的郑商所</h1><p>不过与中金所网络爬虫不一样的一点是，中金所本身提供了数据文件的<strong>静态链接地址</strong>，我们只需要解析到不同交易日期所对应的链接，就能够把数据下载到本地。而郑商所虽然也同样提供了文件的静态链接，<strong>但是</strong>，我在爬虫的过程中发现了一个小小的问题：有部分的交易数据，郑商所不知道出于何种原因（有可能是原始的数据文件丢失，或者路径存储错误），竟然找不到当日对应的数据文件链接。也就是说，对于这些交易日，我们是无法直接下载文件的。因此，对于这些没有提供链接的数据，我们只能采用页面爬虫的技术，通过读取网页的数据，经过数据清理、规整等步骤，再保存到本地文件。</p>
+<p>针对网站页面的数据进行爬虫，会涉及到 <code>DOM</code> 构造、<code>HTML</code> 元素解析、文本识别、正则表达等诸多方面的技术。在接下来的内容里，我会重点介绍如何在网页中找到我们需要的数据。</p>
+<p><figure><a class="lightgallery" href="./czce01.png?size=large" data-thumbnail="./czce01.png?size=small" data-sub-html="<h2>郑商所网站提供期货与期权相关的数据</h2><p>郑商所网站提供期货与期权相关的数据</p>"><img loading="lazy" src="./czce01.png" alt="郑商所网站提供期货与期权相关的数据" srcset="./czce01.png?size=small, ./czce01.png?size=medium 1.5x, ./czce01.png?size=large 2x" data-title="郑商所网站提供期货与期权相关的数据" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">郑商所网站提供期货与期权相关的数据</figcaption>
+  </figure></p>
+<h1 id="工具箱" class="heading-element">
+  <a href="#%e5%b7%a5%e5%85%b7%e7%ae%b1" class="heading-mark"></a>工具箱</h1><p>对于网页内容进行爬虫、识别网页内容、获取目标数据或文本等，我们需要使用到 <code>HTML</code> 相关的技术手段。最原始的一种办法是通过 <code>wget</code> 把整个网页下载到本地，然后再进行内容解析；或者使用 <code>libcur</code> 来读取远程的内容并传递到系统的内存。这些技术难度较大，而且得到的数据并不是结构性的，使用正则获取目标数据比较坎坷。万幸的是，已经有人通过软件包的形式，为我们把这些基础的工作都处理完成了，我们只需要调用相关的函数，即可实现简单的网页爬虫。</p>
+<p>以下两个 <code>R</code> 的扩展包就是针对网络爬虫而开发的。</p>
+<h2 id="rselenium" class="heading-element">
+  <a href="#rselenium" class="heading-mark"></a><code>RSelenium</code></h2><p><code>Selenium</code> 是一款网络驱动，作为<strong>无头浏览器</strong>(headless webdriver)驱动，提供了高性能的网络测试、页面加载、网络解析等功能。基于这项技术所提供的 <code>API</code> 调用端口，我们可以使用不同的编程语言来调用浏览器功能，从而实现了开发-测试的无缝连接。</p>
+<p><code>RSelenium</code> 就是 <code>Selenium</code> 在 <code>R</code> 语言下的扩展包，集成了大量可供调用的函数，使得我们只需要在 <code>R</code> 中调用函数并传入参数，即可对网页进行解析。</p>
+<h2 id="rvest" class="heading-element">
+  <a href="#rvest" class="heading-mark"></a><code>rvest</code></h2><p>这个是大神 <strong>Wickham Hadley</strong> 编写的一个针对网页爬虫的扩展包，封装了 <code>Linux</code> 下的 <code>libcur</code> 库，因此能够提供对网页页面的 <code>DOM</code> 解析。这个包返回一个结构化的对象，可以通过 <code>R</code> 的函数对其进行数据清理；同时它还针对不同的编码进行自动化的识别，这点对于中文网站尤其重要，否则，编码错误会导致我们爬虫的数据出现乱码的悲剧。</p>
+<h1 id="日行情数据" class="heading-element">
+  <a href="#%e6%97%a5%e8%a1%8c%e6%83%85%e6%95%b0%e6%8d%ae" class="heading-mark"></a>日行情数据</h1><h2 id="静态链接" class="heading-element">
+  <a href="#%e9%9d%99%e6%80%81%e9%93%be%e6%8e%a5" class="heading-mark"></a>静态链接</h2><p>我们在对中金所进行爬虫的那篇博客里面，已经讲到如何通过 <code>Chrome</code> 的 <code>Inspect</code> 功能来获取网页的元素。通过查找特定位置的 <code>HTML</code> 标签，我们可以得到该位置所对应的具体信息。</p>
+<h3 id="定位网页" class="heading-element">
+  <a href="#%e5%ae%9a%e4%bd%8d%e7%bd%91%e9%a1%b5" class="heading-mark"></a>定位网页</h3><p>首先我们需要做的是先尝试定位某个交易日的日行情数据存放网页，通过输入交易日，然后点击查询，我们便可以看到需要查找的交易数据。</p>
+<p><figure><a class="lightgallery" href="./daily01.png?size=large" data-thumbnail="./daily01.png?size=small" data-sub-html="<h2>通过交易日期查找日行情数据</h2><p>通过交易日期查找日行情数据</p>"><img loading="lazy" src="./daily01.png" alt="通过交易日期查找日行情数据" srcset="./daily01.png?size=small, ./daily01.png?size=medium 1.5x, ./daily01.png?size=large 2x" data-title="通过交易日期查找日行情数据" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">通过交易日期查找日行情数据</figcaption>
+  </figure></p>
+<p>这个便是我们需要进行爬虫的单独网页。</p>
+<p><figure><a class="lightgallery" href="./daily02.png?size=large" data-thumbnail="./daily02.png?size=small" data-sub-html="<h2>承载数据的具体网页</h2><p>承载数据的具体网页</p>"><img loading="lazy" src="./daily02.png" alt="承载数据的具体网页" srcset="./daily02.png?size=small, ./daily02.png?size=medium 1.5x, ./daily02.png?size=large 2x" data-title="承载数据的具体网页" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">承载数据的具体网页</figcaption>
+  </figure></p>
+<p>我们来看看当天的网页地址，比如：<code>http://www.czce.com.cn/portal/DFSStaticFiles/Future/2017/20171026/FutureDataDaily.htm</code>。主要是由以下几个部分组成的：</p>
+<ul>
+<li><code>http://www.czce.com.cn/portal/DFSStaticFiles/Future/</code>：这个可以当成是日行情的根目录。</li>
+<li><code>2017/20171026/FutureDataDaily.htm</code>：这个命名规则很明显，由 <code>YYYY/YYYYmm/FutureDataDaily.htm</code> 构成。我们可以根据交易日来提取日期组成。</li>
+</ul>
+<h3 id="下载数据文件" class="heading-element">
+  <a href="#%e4%b8%8b%e8%bd%bd%e6%95%b0%e6%8d%ae%e6%96%87%e4%bb%b6" class="heading-mark"></a>下载数据文件</h3><p>在数据文件对应的 <code>excel</code> / <code>txt</code> 点击右键，然后使用 <code>Ctrl + F</code> 查找 <code>excel</code>，我们便可以定位到数据文件了。</p>
+<p><figure><a class="lightgallery" href="./daily03.png?size=large" data-thumbnail="./daily03.png?size=small" data-sub-html="<h2>通过元素审查获取标签的具体信息</h2><p>通过元素审查获取标签的具体信息</p>"><img loading="lazy" src="./daily03.png" alt="通过元素审查获取标签的具体信息" srcset="./daily03.png?size=small, ./daily03.png?size=medium 1.5x, ./daily03.png?size=large 2x" data-title="通过元素审查获取标签的具体信息" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">通过元素审查获取标签的具体信息</figcaption>
+  </figure></p>
+<p>一看吓一跳，似乎这个数据文件是一个动态的脚本，好像很难识别的样子。不过，各位不要被这个「纸老虎」吓到了，我们可以手动打开一个网页试试看，有木有惊喜呢。</p>
+<p><figure><a class="lightgallery" href="./daily04.png?size=large" data-thumbnail="./daily04.png?size=small" data-sub-html="<h2>原来也是一个静态文件地址</h2><p>原来也是一个静态文件地址</p>"><img loading="lazy" src="./daily04.png" alt="原来也是一个静态文件地址" srcset="./daily04.png?size=small, ./daily04.png?size=medium 1.5x, ./daily04.png?size=large 2x" data-title="原来也是一个静态文件地址" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">原来也是一个静态文件地址</figcaption>
+  </figure></p>
+<p>具体地，我们看到这个数据文件对应的链接地址是：<code>http://www.czce.com.cn/portal/DFSStaticFiles/Future/2017/20171026/FutureDataDaily.xls</code>，对其进行拆解看：</p>
+<ul>
+<li><code>http://www.czce.com.cn/portal/DFSStaticFiles/Future/</code>：数据文件所在的根目录</li>
+<li><code>2017/20171026/FutureDataDaily.xls</code>：具体的文件地址，通用格式为 <code>YYYY/YYYYmmdd/FutureDataDaily.xls</code>，也就是说，我们可以根据历史的交易日期来生成所以交易日的文件链接，然后呢，通过遍礼下载得到我们想要的数据即可。</li>
+</ul>
+<p>不过，这里有一个小小的坑，就是郑商所在 <code>2015-10-01</code> 前后有变动过相对路径的根目录的名称，也就是说，这个地方需要我们用交易日期来判断。我们来看看这段代码是这样写的：</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">## 在 2015-10-01 之前</span>
+</span></span><span class="line"><span class="cl"><span class="n">exchURL1</span> <span class="o">&lt;-</span> <span class="s">&#34;http://www.czce.com.cn/portal/exchange/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 在 2015-10-01 之后</span>
+</span></span><span class="line"><span class="cl"><span class="n">exchURL2</span> <span class="o">&lt;-</span> <span class="s">&#34;http://www.czce.com.cn/portal/DFSStaticFiles/Future/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tempDir</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span><span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">dir.exists</span><span class="p">(</span><span class="n">tempDir</span><span class="p">))</span> <span class="nf">dir.create</span><span class="p">(</span><span class="n">tempDir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tempYear</span> <span class="o">&lt;-</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span>
+</span></span><span class="line"><span class="cl"><span class="n">tempTradingDay</span> <span class="o">&lt;-</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">days]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 需要改变根目录地址</span>
+</span></span><span class="line"><span class="cl"><span class="n">tempURL</span> <span class="o">&lt;-</span> <span class="nf">ifelse</span><span class="p">(</span><span class="n">tempTradingDay</span> <span class="o">&lt;</span> <span class="s">&#39;20151001&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL1</span><span class="p">,</span> <span class="n">tempYear</span><span class="p">,</span> <span class="s">&#39;/datadaily/&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;.txt&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL2</span><span class="p">,</span> <span class="n">tempYear</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;/FutureDataDaily.xls&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">destFile</span> <span class="o">&lt;-</span>  <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">ifelse</span><span class="p">(</span><span class="n">tempTradingDay</span> <span class="o">&lt;</span> <span class="s">&#39;20151001&#39;</span><span class="p">,</span><span class="s">&#39;.txt&#39;</span><span class="p">,</span><span class="s">&#39;.xls&#39;</span><span class="p">))</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后便可以开启并行模式下载数据了：</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">try</span><span class="p">(</span><span class="nf">download.file</span><span class="p">(</span><span class="n">tempURL</span><span class="p">,</span> <span class="n">destFile</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;wb&#39;</span><span class="p">))</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="网页内容爬虫" class="heading-element">
+  <a href="#%e7%bd%91%e9%a1%b5%e5%86%85%e5%ae%b9%e7%88%ac%e8%99%ab" class="heading-mark"></a>网页内容爬虫</h2><p>如果事情都是按照我们预期，作为强迫症的我，必然要求这个世界能够按照自然界最优雅的方式来运行。可以，世界太大，坏人太多，结局很不好。</p>
+<p>以上介绍了使用静态网页链接地址来下载文件，可惜对于部分的交易日期，郑商所似乎把原始的数据文件弄丢了。这个不得了，我们得程序现在罢工了，无法再继续下载数据了。</p>
+<p>不过所幸的是，我们还有另外一套网页爬虫的技术。</p>
+<h3 id="识别网页内容" class="heading-element">
+  <a href="#%e8%af%86%e5%88%ab%e7%bd%91%e9%a1%b5%e5%86%85%e5%ae%b9" class="heading-mark"></a>识别网页内容</h3><p>我们知道，任何的网页，后面其实都是一堆的 <code>HTML</code> 代码而已，无他。所以，即使我们无法找到（郑商所没有提供）数据文件的链接地址，我们还是可以通过爬虫抓取网页的数据。这个就需要用到 <code>Selenium</code>。</p>
+<p>首先需要做的是，开启 <code>selenium</code> 驱动，通过命令行来模拟网页访问，读取网页内容。</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">java -jar selenium-server-standalone-3.5.1.jar</span></span></code></pre></td></tr></table>
+</div>
+</div><p>接下来，我们可以通过 <code>RSelenium</code> 提供的端口，把数据载入内容。这样，我们通过使用 <code>Firefox</code> 来模拟登陆网页，然后读取具体的信息，找到相应的数据节点，并正确的识别节点内容。</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="n">tempPage</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;http://www.czce.com.cn/portal/exchange/jyxx/hq/hq&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;.html&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">remDr</span> <span class="o">&lt;-</span> <span class="nf">remoteDriver</span><span class="p">(</span><span class="n">remoteServerAddr</span> <span class="o">=</span><span class="s">&#39;localhost&#39;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">,</span><span class="n">port</span> <span class="o">=</span> <span class="m">4444</span>
+</span></span><span class="line"><span class="cl">                <span class="p">,</span><span class="n">browserName</span> <span class="o">=</span> <span class="s">&#39;firefox&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">remDr</span><span class="o">$</span><span class="nf">getStatus</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">remDr</span><span class="o">$</span><span class="nf">open</span><span class="p">(</span><span class="n">silent</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">remDr</span><span class="o">$</span><span class="nf">navigate</span><span class="p">(</span><span class="n">tempPage</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tempTable</span> <span class="o">&lt;-</span> <span class="n">remDr</span><span class="o">$</span><span class="nf">findElements</span><span class="p">(</span><span class="n">using</span> <span class="o">=</span> <span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;table&#39;</span><span class="p">)</span><span class="n">[[3]]</span>
+</span></span><span class="line"><span class="cl"><span class="n">tempHTML</span> <span class="o">&lt;-</span> <span class="n">tempTable</span><span class="o">$</span><span class="nf">getElementAttribute</span><span class="p">(</span><span class="s">&#39;outerHTML&#39;</span><span class="p">)</span><span class="n">[[1]]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>现在，我们把整个网页的内容加载到 <code>R</code> 的工作空间，接下来便可以使用 <code>rvest</code> 来解析网页内容了：</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="n">webData</span> <span class="o">&lt;-</span> <span class="n">tempHTML</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">read_html</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;GB18030&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">html_node</span><span class="p">(</span><span class="s">&#39;table&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">html_table</span><span class="p">(</span><span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">as.data.table</span><span class="p">()</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="n">.[</span><span class="m">-1</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">rbind</span><span class="p">(</span><span class="nf">data.table</span><span class="p">(</span><span class="n">X1</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)),</span> <span class="n">.,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">webData[1</span><span class="p">,</span> <span class="n">X1</span> <span class="o">:=</span> <span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;郑州商品交易所每日行情表(&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">tempTradingDay</span><span class="p">),</span> <span class="n">format</span> <span class="o">=</span> <span class="s">&#39;%Y%m%d&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                         <span class="s">&#39;)&#39;</span><span class="p">)</span><span class="n">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>整理数据，并写入文件</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="n">cols</span> <span class="o">&lt;-</span> <span class="nf">colnames</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span><span class="n">[2</span><span class="o">:</span><span class="nf">ncol</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">webData[</span><span class="p">,</span> <span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">:=</span> <span class="nf">lapply</span><span class="p">(</span><span class="n">.SD</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">gsub</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}),</span> <span class="n">.SDcols</span> <span class="o">=</span> <span class="n">cols]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">print</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">fwrite</span><span class="p">(</span><span class="n">webData</span><span class="p">,</span> <span class="n">destFile</span><span class="p">,</span> <span class="n">col.names</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后是扫尾工作，记得把不用的内存空间释放出来，下面是在 <code>Linux</code> 操作系统的命令，<code>Windows</code> 的各位可以自行 Google 搜索（不要用百度！不要用百度！不要用百度！）</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1"># remDr$quit()</span>
+</span></span><span class="line"><span class="cl"><span class="nf">try</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">system</span><span class="p">(</span><span class="s">&#39;pkill -f firefox&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">system</span><span class="p">(</span><span class="s">&#39;pkill -f geckodriver&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">system</span><span class="p">(</span><span class="s">&#39;rm -rf /tmp/rust_mozprofile*&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="demo" class="heading-element">
+  <a href="#demo" class="heading-mark"></a>Demo</h2><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##! czce.R</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 这是主函数:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 用于从 郑商所 网站爬虫期货交易的日行情数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## daily</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 注意:</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Author: fl@hicloud-investment.com</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## CreateDate: 2017-10-16</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 0: 初始化，载入包，设定初始条件</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="nf">rm</span><span class="p">(</span><span class="n">list</span> <span class="o">=</span> <span class="nf">ls</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="n">logMainScript</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;czce.R&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="p">(</span><span class="nf">class</span><span class="p">(</span><span class="nf">try</span><span class="p">(</span><span class="nf">setwd</span><span class="p">(</span><span class="s">&#39;/home/fl/myData/&#39;</span><span class="p">)))</span> <span class="o">==</span> <span class="s">&#39;try-error&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">setwd</span><span class="p">(</span><span class="s">&#39;/run/user/1000/gvfs/sftp:host=192.168.1.166,user=fl/home/fl/myData&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nf">suppressMessages</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">source</span><span class="p">(</span><span class="s">&#39;./R/Rconfig/myInit.R&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">RSelenium</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 1: 获取对应的交易日期</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="n">ChinaFuturesCalendar</span> <span class="o">&lt;-</span> <span class="nf">fread</span><span class="p">(</span><span class="s">&#34;./data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">colClasses</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">character</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;nights&#34;</span><span class="p">,</span><span class="s">&#34;days&#34;</span><span class="p">)))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">.[days</span> <span class="o">&lt;</span> <span class="nf">format</span><span class="p">(</span><span class="nf">Sys.Date</span><span class="p">(),</span><span class="s">&#39;%Y%m%d&#39;</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">exchCalendar</span> <span class="o">&lt;-</span> <span class="n">ChinaFuturesCalendar[</span><span class="p">,</span><span class="s">&#34;:=&#34;</span><span class="p">(</span><span class="n">calendarYear</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarYearMonth</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">6</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarMonth</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarDay</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">))</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">dataPath</span> <span class="o">&lt;-</span> <span class="s">&#39;/home/william/Documents/Exchange/CZCE/&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># dataPath &lt;- &#34;./data/Bar/Exchange/CZCE/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">##------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span><span class="p">(</span><span class="nf">Sys.info</span><span class="p">()</span><span class="n">[</span><span class="s">&#39;sysname&#39;</span><span class="n">]</span> <span class="o">==</span> <span class="s">&#39;Windows&#39;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">Sys.setenv</span><span class="p">(</span><span class="s">&#34;R_ZIPCMD&#34;</span> <span class="o">=</span> <span class="s">&#34;D:/Program Files/Rtools/bin/zip.exe&#34;</span><span class="p">)</span> <span class="c1">## path to zip.exe</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## CZCE: 郑商所</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 1.持仓排名</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 2.仓单日报</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 在 2015-10-01 之前</span>
+</span></span><span class="line"><span class="cl"><span class="n">exchURL1</span> <span class="o">&lt;-</span> <span class="s">&#34;http://www.czce.com.cn/portal/exchange/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 在 2015-10-01 之后</span>
+</span></span><span class="line"><span class="cl"><span class="n">exchURL2</span> <span class="o">&lt;-</span> <span class="s">&#34;http://www.czce.com.cn/portal/DFSStaticFiles/Future/&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">czceData</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">tempDir</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span><span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">dir.exists</span><span class="p">(</span><span class="n">tempDir</span><span class="p">))</span> <span class="nf">dir.create</span><span class="p">(</span><span class="n">tempDir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">tempYear</span> <span class="o">&lt;-</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">tempTradingDay</span> <span class="o">&lt;-</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">days]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">tempURL</span> <span class="o">&lt;-</span> <span class="nf">ifelse</span><span class="p">(</span><span class="n">tempTradingDay</span> <span class="o">&lt;</span> <span class="s">&#39;20151001&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL1</span><span class="p">,</span> <span class="n">tempYear</span><span class="p">,</span> <span class="s">&#39;/datadaily/&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;.txt&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL2</span><span class="p">,</span> <span class="n">tempYear</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;/FutureDataDaily.xls&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">destFile</span> <span class="o">&lt;-</span>  <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="nf">ifelse</span><span class="p">(</span><span class="n">tempTradingDay</span> <span class="o">&lt;</span> <span class="s">&#39;20151001&#39;</span><span class="p">,</span><span class="s">&#39;.txt&#39;</span><span class="p">,</span><span class="s">&#39;.xls&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">tryNo</span> <span class="o">&lt;-</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">while</span><span class="p">(</span> <span class="p">(</span><span class="o">!</span><span class="nf">file.exists</span><span class="p">(</span><span class="n">destFile</span><span class="p">)</span> <span class="o">|</span> <span class="nf">file.size</span><span class="p">(</span><span class="n">destFile</span><span class="p">)</span> <span class="o">&lt;</span> <span class="m">1000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tryNo</span> <span class="o">&lt;</span> <span class="m">20</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="p">(</span><span class="nf">class</span><span class="p">(</span><span class="nf">try</span><span class="p">(</span><span class="nf">download.file</span><span class="p">(</span><span class="n">tempURL</span><span class="p">,</span> <span class="n">destFile</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;wb&#39;</span><span class="p">)))</span> <span class="o">==</span> <span class="s">&#39;try-error&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">tempPage</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;http://www.czce.com.cn/portal/exchange/jyxx/hq/hq&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;.html&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">remDr</span> <span class="o">&lt;-</span> <span class="nf">remoteDriver</span><span class="p">(</span><span class="n">remoteServerAddr</span> <span class="o">=</span><span class="s">&#39;localhost&#39;</span>
+</span></span><span class="line"><span class="cl">                      <span class="p">,</span><span class="n">port</span> <span class="o">=</span> <span class="m">4444</span>
+</span></span><span class="line"><span class="cl">                      <span class="p">,</span><span class="n">browserName</span> <span class="o">=</span> <span class="s">&#39;firefox&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="n">remDr</span><span class="o">$</span><span class="nf">getStatus</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">remDr</span><span class="o">$</span><span class="nf">open</span><span class="p">(</span><span class="n">silent</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="n">remDr</span><span class="o">$</span><span class="nf">navigate</span><span class="p">(</span><span class="n">tempPage</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="n">tempTable</span> <span class="o">&lt;-</span> <span class="n">remDr</span><span class="o">$</span><span class="nf">findElements</span><span class="p">(</span><span class="n">using</span> <span class="o">=</span> <span class="s">&#39;tag&#39;</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;table&#39;</span><span class="p">)</span><span class="n">[[3]]</span>
+</span></span><span class="line"><span class="cl">      <span class="n">tempHTML</span> <span class="o">&lt;-</span> <span class="n">tempTable</span><span class="o">$</span><span class="nf">getElementAttribute</span><span class="p">(</span><span class="s">&#39;outerHTML&#39;</span><span class="p">)</span><span class="n">[[1]]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">webData</span> <span class="o">&lt;-</span> <span class="n">tempHTML</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">          <span class="nf">read_html</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s">&#39;GB18030&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">          <span class="nf">html_node</span><span class="p">(</span><span class="s">&#39;table&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">          <span class="nf">html_table</span><span class="p">(</span><span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">          <span class="nf">as.data.table</span><span class="p">()</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">          <span class="n">.[</span><span class="m">-1</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">          <span class="nf">rbind</span><span class="p">(</span><span class="nf">data.table</span><span class="p">(</span><span class="n">X1</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)),</span> <span class="n">.,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">webData[1</span><span class="p">,</span> <span class="n">X1</span> <span class="o">:=</span> <span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;郑州商品交易所每日行情表(&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                               <span class="nf">as.Date</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">tempTradingDay</span><span class="p">),</span> <span class="n">format</span> <span class="o">=</span> <span class="s">&#39;%Y%m%d&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                               <span class="s">&#39;)&#39;</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">cols</span> <span class="o">&lt;-</span> <span class="nf">colnames</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span><span class="n">[2</span><span class="o">:</span><span class="nf">ncol</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">      <span class="n">webData[</span><span class="p">,</span> <span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">:=</span> <span class="nf">lapply</span><span class="p">(</span><span class="n">.SD</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">gsub</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span> <span class="n">.SDcols</span> <span class="o">=</span> <span class="n">cols]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nf">print</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nf">fwrite</span><span class="p">(</span><span class="n">webData</span><span class="p">,</span> <span class="n">destFile</span><span class="p">,</span> <span class="n">col.names</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1"># remDr$quit()</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">try</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">system</span><span class="p">(</span><span class="s">&#39;pkill -f firefox&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">system</span><span class="p">(</span><span class="s">&#39;pkill -f geckodriver&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">system</span><span class="p">(</span><span class="s">&#39;rm -rf /tmp/rust_mozprofile*&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tryNo</span> <span class="o">&lt;-</span> <span class="n">tryNo</span> <span class="o">+</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 2: 开启并行计算模式，下载数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># cl &lt;- makeCluster(max(round(detectCores()*3/4),4), type=&#39;FORK&#39;)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># parSapply(cl, 1:nrow(ChinaFuturesCalendar), function(i){</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   ## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   try(czceData(i))</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   ## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># })</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># stopCluster(cl)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="nf">sapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">ChinaFuturesCalendar</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">try</span><span class="p">(</span><span class="nf">czceData</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="成交持仓排名" class="heading-element">
+  <a href="#%e6%88%90%e4%ba%a4%e6%8c%81%e4%bb%93%e6%8e%92%e5%90%8d" class="heading-mark"></a>成交持仓排名</h1><h2 id="持仓排名地址" class="heading-element">
+  <a href="#%e6%8c%81%e4%bb%93%e6%8e%92%e5%90%8d%e5%9c%b0%e5%9d%80" class="heading-mark"></a>持仓排名地址</h2><p>与日行情数据爬虫相类似，我们也一样可以对期货公司层面的成交持仓排名数据进行网络爬虫。这里需要做的，其实就是把日行情数据的网页地址换成持仓排名的网页地址，即</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">## 直接下载文件的链接</span>
+</span></span><span class="line"><span class="cl"><span class="n">tempURL</span> <span class="o">&lt;-</span> <span class="nf">ifelse</span><span class="p">(</span><span class="n">tempTradingDay</span> <span class="o">&lt;</span> <span class="s">&#39;20151001&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL1</span><span class="p">,</span> <span class="n">tempYear</span><span class="p">,</span> <span class="s">&#39;/datatradeholding/&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;.txt&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL2</span><span class="p">,</span> <span class="n">tempYear</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;/FutureDataHolding.xls&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 数据爬虫的网页地址</span>
+</span></span><span class="line"><span class="cl"><span class="n">tempPage</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;http://www.czce.com.cn/portal/exchange/jyxx/pm/pm&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;.html&#39;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="demo-1" class="heading-element">
+  <a href="#demo-1" class="heading-mark"></a>Demo</h2><p>好吧，剩下就就直接上干货喽。</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## czce.R</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 用于下载郑商所期货公司持仓排名数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Author: William Fang</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Date  : 2017-08-21</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 0: 初始化，载入包，设定初始条件</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="nf">rm</span><span class="p">(</span><span class="n">list</span> <span class="o">=</span> <span class="nf">ls</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="n">logMainScript</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;czce.R&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># setwd(&#39;/home/fl/myData/&#39;)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="p">(</span><span class="nf">class</span><span class="p">(</span><span class="nf">try</span><span class="p">(</span><span class="nf">setwd</span><span class="p">(</span><span class="s">&#39;/home/fl/myData/&#39;</span><span class="p">)))</span> <span class="o">==</span> <span class="s">&#39;try-error&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">setwd</span><span class="p">(</span><span class="s">&#39;/run/user/1000/gvfs/sftp:host=192.168.1.166,user=fl/home/fl/myData&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">suppressMessages</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">source</span><span class="p">(</span><span class="s">&#39;./R/Rconfig/myInit.R&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">RSelenium</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">Sys.setlocale</span><span class="p">(</span><span class="s">&#34;LC_ALL&#34;</span><span class="p">,</span> <span class="s">&#39;en_US.UTF-8&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ChinaFuturesCalendar</span> <span class="o">&lt;-</span> <span class="nf">fread</span><span class="p">(</span><span class="s">&#34;./data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">colClasses</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">character</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;nights&#34;</span><span class="p">,</span><span class="s">&#34;days&#34;</span><span class="p">)))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">.[days</span> <span class="o">&lt;</span> <span class="nf">format</span><span class="p">(</span><span class="nf">Sys.Date</span><span class="p">(),</span><span class="s">&#39;%Y%m%d&#39;</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">exchCalendar</span> <span class="o">&lt;-</span> <span class="n">ChinaFuturesCalendar[</span><span class="p">,</span><span class="s">&#34;:=&#34;</span><span class="p">(</span><span class="n">calendarYear</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarYearMonth</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">6</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarMonth</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarDay</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">))</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">dataPath</span> <span class="o">&lt;-</span> <span class="s">&#39;/home/william/Documents/oiRank/CZCE/&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># dataPath &lt;- &#34;./data/Bar/Exchange/CZCE/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">##------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span><span class="p">(</span><span class="nf">Sys.info</span><span class="p">()</span><span class="n">[</span><span class="s">&#39;sysname&#39;</span><span class="n">]</span> <span class="o">==</span> <span class="s">&#39;Windows&#39;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">Sys.setenv</span><span class="p">(</span><span class="s">&#34;R_ZIPCMD&#34;</span> <span class="o">=</span> <span class="s">&#34;D:/Program Files/Rtools/bin/zip.exe&#34;</span><span class="p">)</span> <span class="c1">## path to zip.exe</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## CZCE: 郑商所</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 1.持仓排名</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 2.仓单日报</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 在 2015-10-01 之前</span>
+</span></span><span class="line"><span class="cl"><span class="n">exchURL1</span> <span class="o">&lt;-</span> <span class="s">&#34;http://www.czce.com.cn/portal/exchange/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 在 2015-10-01 之后</span>
+</span></span><span class="line"><span class="cl"><span class="n">exchURL2</span> <span class="o">&lt;-</span> <span class="s">&#34;http://www.czce.com.cn/portal/DFSStaticFiles/Future/&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">czceData</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">tempDir</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span><span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">dir.exists</span><span class="p">(</span><span class="n">tempDir</span><span class="p">))</span> <span class="nf">dir.create</span><span class="p">(</span><span class="n">tempDir</span><span class="p">,</span> <span class="n">recursive</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">tempYear</span> <span class="o">&lt;-</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span>
+</span></span><span class="line"><span class="cl">  <span class="n">tempTradingDay</span> <span class="o">&lt;-</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">days]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">tempURL</span> <span class="o">&lt;-</span> <span class="nf">ifelse</span><span class="p">(</span><span class="n">tempTradingDay</span> <span class="o">&lt;</span> <span class="s">&#39;20151001&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL1</span><span class="p">,</span> <span class="n">tempYear</span><span class="p">,</span> <span class="s">&#39;/datatradeholding/&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;.txt&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL2</span><span class="p">,</span> <span class="n">tempYear</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;/FutureDataHolding.xls&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">destFile</span> <span class="o">&lt;-</span>  <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="s">&#34;/&#34;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="nf">ifelse</span><span class="p">(</span><span class="n">tempTradingDay</span> <span class="o">&lt;</span> <span class="s">&#39;20151001&#39;</span><span class="p">,</span><span class="s">&#39;.txt&#39;</span><span class="p">,</span><span class="s">&#39;.xls&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">tryNo</span> <span class="o">&lt;-</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">while</span><span class="p">(</span> <span class="p">(</span><span class="o">!</span><span class="nf">file.exists</span><span class="p">(</span><span class="n">destFile</span><span class="p">)</span> <span class="o">|</span> <span class="nf">file.size</span><span class="p">(</span><span class="n">destFile</span><span class="p">)</span> <span class="o">&lt;</span> <span class="m">1000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tryNo</span> <span class="o">&lt;</span> <span class="m">20</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="p">(</span><span class="nf">class</span><span class="p">(</span><span class="nf">try</span><span class="p">(</span><span class="nf">download.file</span><span class="p">(</span><span class="n">tempURL</span><span class="p">,</span> <span class="n">destFile</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;wb&#39;</span><span class="p">)))</span> <span class="o">==</span> <span class="s">&#39;try-error&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">tempPage</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;http://www.czce.com.cn/portal/exchange/jyxx/pm/pm&#39;</span><span class="p">,</span> <span class="n">tempTradingDay</span><span class="p">,</span> <span class="s">&#39;.html&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">webData</span> <span class="o">&lt;-</span> <span class="n">tempPage</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">read_html</span><span class="p">(</span><span class="n">encoding</span> <span class="o">=</span> <span class="s">&#39;GB18030&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#39;table&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">html_table</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">.[</span><span class="m">-1</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">.[[1]]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">as.data.table</span><span class="p">()</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">rbind</span><span class="p">(</span><span class="nf">data.table</span><span class="p">(</span><span class="n">X1</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)),</span> <span class="n">.,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="n">webData[1</span><span class="p">,</span> <span class="n">X1</span> <span class="o">:=</span> <span class="nf">paste0</span><span class="p">(</span><span class="s">&#39;郑州商品交易所持仓排行表(&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                               <span class="nf">as.Date</span><span class="p">(</span><span class="nf">as.character</span><span class="p">(</span><span class="n">tempTradingDay</span><span class="p">),</span> <span class="n">format</span> <span class="o">=</span> <span class="s">&#39;%Y%m%d&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                               <span class="s">&#39;)&#39;</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">cols</span> <span class="o">&lt;-</span> <span class="nf">colnames</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span><span class="n">[2</span><span class="o">:</span><span class="nf">ncol</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">      <span class="n">webData[</span><span class="p">,</span> <span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">:=</span> <span class="nf">lapply</span><span class="p">(</span><span class="n">.SD</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">gsub</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}),</span> <span class="n">.SDcols</span> <span class="o">=</span> <span class="n">cols]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="c1"># grep(&#34;名次&#34;, tempData$X1) %&gt;% length()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="n">webTitle</span> <span class="o">&lt;-</span> <span class="n">tempPage</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">read_html</span><span class="p">(</span><span class="n">encoding</span> <span class="o">=</span> <span class="s">&#39;GB18030&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">html_nodes</span><span class="p">(</span><span class="s">&#39;font&#39;</span><span class="p">)</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">html_text</span><span class="p">()</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                  <span class="nf">.[grep</span><span class="p">(</span><span class="s">&#39;品种|合约代码&#39;</span><span class="p">,</span><span class="n">.)]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="kr">for</span> <span class="p">(</span><span class="n">j</span> <span class="kr">in</span> <span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">webTitle</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tempRow</span> <span class="o">&lt;-</span> <span class="nf">grep</span><span class="p">(</span><span class="s">&#34;名次&#34;</span><span class="p">,</span> <span class="n">webData</span><span class="o">$</span><span class="n">X1</span><span class="p">)</span><span class="n">[j]</span> <span class="o">-</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">webData[tempRow</span><span class="p">,</span> <span class="n">X1</span> <span class="o">:=</span> <span class="n">webTitle[j]]</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nf">print</span><span class="p">(</span><span class="n">webData</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="nf">fwrite</span><span class="p">(</span><span class="n">webData</span><span class="p">,</span> <span class="n">destFile</span><span class="p">,</span> <span class="n">col.names</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tryNo</span> <span class="o">&lt;-</span> <span class="n">tryNo</span> <span class="o">+</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 2: 开启并行计算模式，下载数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="n">cl</span> <span class="o">&lt;-</span> <span class="nf">makeCluster</span><span class="p">(</span><span class="nf">max</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="nf">detectCores</span><span class="p">()</span><span class="o">*</span><span class="m">3</span><span class="o">/</span><span class="m">4</span><span class="p">),</span><span class="m">4</span><span class="p">),</span> <span class="n">type</span><span class="o">=</span><span class="s">&#39;FORK&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">parSapply</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">ChinaFuturesCalendar</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">try</span><span class="p">(</span><span class="nf">czceData</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nf">stopCluster</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># sapply(1:nrow(ChinaFuturesCalendar), function(i){</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   try(czceData(i))</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># })</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ## =============================================================================</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" title="交易所数据爬虫之中金所">交易所数据爬虫之中金所</a></li><li>
+          <a href="/archives/2017-10-25-pkd/" title="PKD">PKD</a></li><li>
+          <a href="/archives/2017-10-17-sa%E9%98%BF%E5%88%97%E5%85%8B%E8%B0%A2%E8%80%B6%E7%BB%B4%E5%A5%87/" title="S·A·阿列克谢耶维奇">S·A·阿列克谢耶维奇</a></li><li>
+          <a href="/archives/2017-10-15-chan2017-machine-trading/" title="chan2017: Machine Trading">chan2017: Machine Trading</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2017-10-28 00:00:00">更新于 2017-10-28&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/" data-title="交易所数据爬虫之郑商所" data-hashtags="Futures,期货,数据,R"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/" data-hashtag="Futures"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/" data-title="交易所数据爬虫之郑商所" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/" data-title="交易所数据爬虫之郑商所"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2017-10-28-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E9%83%91%E5%95%86%E6%89%80/" data-title="交易所数据爬虫之郑商所"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/futures/" class="post-tag" title="标签 - Futures">Futures</a><a href="/tags/%E6%9C%9F%E8%B4%A7/" class="post-tag" title="标签 - 期货">期货</a><a href="/tags/%E6%95%B0%E6%8D%AE/" class="post-tag" title="标签 - 数据">数据</a><a href="/tags/r/" class="post-tag" title="标签 - R">R</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2017-10-25-pkd/" class="post-nav-item" rel="prev" title="PKD"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>PKD</a>
+      <a href="/archives/2017-11-05-%E5%8D%87%E7%BA%A7-rstudio-server/" class="post-nav-item" rel="next" title="升级 Rstudio Server">升级 Rstudio Server<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

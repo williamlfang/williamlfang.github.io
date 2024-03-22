@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>交易所数据爬虫之中金所 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。
+中金所网站提供股指期货相关的重要数据
+  
+从中金所网站可以得到大量股指期货、国债以及国债期货相关的重要交易数据，如日行情数据、期货公司持仓排名数据、仓单数据等。 通过网络爬虫技术，我们可以下载得到历史的所有数据，为后期的量化建模与收益率回测提供数据支持。本篇文章讨论了
+
+如何识别中金所网址，找到对应的数据文件链接
+使用并行计算模式下载所有的历史数据文件
+" /><meta name="keywords" content='R, 数据, 爬虫, 交易所' /><meta itemprop="name" content="交易所数据爬虫之中金所">
+<meta itemprop="description" content="针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。
+中金所网站提供股指期货相关的重要数据
+  
+从中金所网站可以得到大量股指期货、国债以及国债期货相关的重要交易数据，如日行情数据、期货公司持仓排名数据、仓单数据等。 通过网络爬虫技术，我们可以下载得到历史的所有数据，为后期的量化建模与收益率回测提供数据支持。本篇文章讨论了
+
+如何识别中金所网址，找到对应的数据文件链接
+使用并行计算模式下载所有的历史数据文件
+"><meta itemprop="datePublished" content="2017-10-23T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-10-24T00:00:00+00:00" />
+<meta itemprop="wordCount" content="3828"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="R,数据,爬虫,交易所," /><meta property="og:title" content="交易所数据爬虫之中金所" />
+<meta property="og:description" content="针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。
+中金所网站提供股指期货相关的重要数据
+  
+从中金所网站可以得到大量股指期货、国债以及国债期货相关的重要交易数据，如日行情数据、期货公司持仓排名数据、仓单数据等。 通过网络爬虫技术，我们可以下载得到历史的所有数据，为后期的量化建模与收益率回测提供数据支持。本篇文章讨论了
+
+如何识别中金所网址，找到对应的数据文件链接
+使用并行计算模式下载所有的历史数据文件
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2017-10-23T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-24T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="交易所数据爬虫之中金所"/>
+<meta name="twitter:description" content="针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。
+中金所网站提供股指期货相关的重要数据
+  
+从中金所网站可以得到大量股指期货、国债以及国债期货相关的重要交易数据，如日行情数据、期货公司持仓排名数据、仓单数据等。 通过网络爬虫技术，我们可以下载得到历史的所有数据，为后期的量化建模与收益率回测提供数据支持。本篇文章讨论了
+
+如何识别中金所网址，找到对应的数据文件链接
+使用并行计算模式下载所有的历史数据文件
+"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" /><link rel="prev" href="https://williamlfang.github.io/archives/2017-10-17-sa%E9%98%BF%E5%88%97%E5%85%8B%E8%B0%A2%E8%80%B6%E7%BB%B4%E5%A5%87/" /><link rel="next" href="https://williamlfang.github.io/archives/2017-10-25-pkd/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "交易所数据爬虫之中金所",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80\/"
+    },"genre": "posts","keywords": "R, 数据, 爬虫, 交易所","wordcount":  3828 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80\/","datePublished": "2017-10-23T00:00:00+00:00","dateModified": "2017-10-24T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="wide"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>交易所数据爬虫之中金所</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/data/" class="post-category" title="分类 - Data"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Data</a></span></div><div class="post-meta-line"><span title="发布于 2017-10-23 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2017-10-23">2017-10-23</time></span>&nbsp;<span title="更新于 2017-10-24 00:00:00"><i class="fa-regular fa-calendar-check fa-fw me-1" aria-hidden="true"></i><time datetime="2017-10-24">2017-10-24</time></span>&nbsp;<span title="3828 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 3900 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 8 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#配置文件">配置文件</a></li>
+    <li><a href="#日行情数据">日行情数据</a>
+      <ol>
+        <li><a href="#识别文件链接">识别文件链接</a></li>
+        <li><a href="#文件命名规则">文件命名规则</a></li>
+        <li><a href="#行情数据">行情数据</a></li>
+        <li><a href="#并行下载">并行下载</a></li>
+      </ol>
+    </li>
+    <li><a href="#成交持仓排名">成交持仓排名</a>
+      <ol>
+        <li><a href="#识别文件链接-1">识别文件链接</a></li>
+        <li><a href="#成交持仓排名数据">成交持仓排名数据</a></li>
+        <li><a href="#并行下载-1">并行下载</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2017-10-24，文中内容可能已过时。</div>
+      </div>
+    </div><p>针对中金所网站进行自动化网络爬虫，下载交易相关的数据，如日行情数据、期货公司持仓排名数据、仓单数据等。</p>
+<p><figure><a class="lightgallery" href="./cffex01.png?size=large" data-thumbnail="./cffex01.png?size=small" data-sub-html="<h2>中金所网站提供股指期货相关的重要数据</h2><p>中金所网站提供股指期货相关的重要数据</p>"><img loading="lazy" src="./cffex01.png" alt="中金所网站提供股指期货相关的重要数据" srcset="./cffex01.png?size=small, ./cffex01.png?size=medium 1.5x, ./cffex01.png?size=large 2x" data-title="中金所网站提供股指期货相关的重要数据" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">中金所网站提供股指期货相关的重要数据</figcaption>
+  </figure></p>
+<p>从<a href="http://www.cffex.com.cn/sj/hqsj/rtj/"target="_blank" rel="external nofollow noopener noreferrer">中金所网站<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>可以得到大量股指期货、国债以及国债期货相关的重要交易数据，如日行情数据、期货公司持仓排名数据、仓单数据等。 通过网络爬虫技术，我们可以下载得到历史的所有数据，为后期的量化建模与收益率回测提供数据支持。本篇文章讨论了</p>
+<ul>
+<li>如何识别中金所网址，找到对应的数据文件链接</li>
+<li>使用并行计算模式下载所有的历史数据文件</li>
+</ul>
+<h1 id="配置文件" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" class="heading-mark"></a>配置文件</h1><p>配置文件位于 <code>myInit.R</code>，如果没有安装相关的软件包，我这里已经写好一个命令行，会自动启动安装程序。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## myInit.R</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 初始化设置</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># __1. 账号、密码__</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 文件路径</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 需要的软件包</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># __4. 参数设置__</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="n">pkgs</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;data.table&#34;</span><span class="p">,</span><span class="s">&#34;parallel&#34;</span><span class="p">,</span><span class="s">&#34;downloader&#34;</span><span class="p">,</span><span class="s">&#34;magrittr&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span><span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">pkgs[</span><span class="o">!</span><span class="n">pkgs</span> <span class="o">%in%</span> <span class="nf">installed.packages</span><span class="p">()</span><span class="n">]</span><span class="p">)</span> <span class="o">!=</span> <span class="m">0</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">sapply</span><span class="p">(</span><span class="n">pkgs[</span><span class="o">!</span><span class="n">pkgs</span> <span class="o">%in%</span> <span class="nf">installed.packages</span><span class="p">()</span><span class="n">]</span><span class="p">,</span> <span class="n">install.packages</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="nf">sapply</span><span class="p">(</span><span class="n">pkgs</span><span class="p">,</span> <span class="n">require</span><span class="p">,</span> <span class="n">character.only</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时，我建议使用 <code>Chrome</code> 浏览器，并安装一款非常好用的<code>HTML</code> 页面解析插件 <code>SelectGadget</code>，可以用来探测网页元素，方便我们查找相应的路径。</p>
+<hr>
+<h1 id="日行情数据" class="heading-element">
+  <a href="#%e6%97%a5%e8%a1%8c%e6%83%85%e6%95%b0%e6%8d%ae" class="heading-mark"></a>日行情数据</h1><p>中金所网站提供了所有股指期货的历史行情数据：</p>
+<ul>
+<li><code>IC</code></li>
+<li><code>IF</code></li>
+<li><code>IH</code></li>
+<li><code>T</code></li>
+<li><code>TF</code></li>
+</ul>
+<h2 id="识别文件链接" class="heading-element">
+  <a href="#%e8%af%86%e5%88%ab%e6%96%87%e4%bb%b6%e9%93%be%e6%8e%a5" class="heading-mark"></a>识别文件链接</h2><p>为了找到行情数据对应的文件链接，我们首先点击左栏的 <code>行情数据</code>/<code>日统计</code>，得到当日收盘后统计的理日行情数据列表。</p>
+<p><figure><a class="lightgallery" href="./daily01.png?size=large" data-thumbnail="./daily01.png?size=small" data-sub-html="<h2>日行情数据所在</h2><p>日行情数据所在</p>"><img loading="lazy" src="./daily01.png" alt="日行情数据所在" srcset="./daily01.png?size=small, ./daily01.png?size=medium 1.5x, ./daily01.png?size=large 2x" data-title="日行情数据所在" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">日行情数据所在</figcaption>
+  </figure></p>
+<p>这里，我们可以有两种方法来下载得到数据</p>
+<ul>
+<li>直接读取页面数据，但只适用获得当日的收盘日行情数据，对于历史的数据，则无法读取。</li>
+<li>查找相关的文件链接，查看交易所是否提供了直接可下载的链接。一般而言，文件命令规则会与交易日期相关，从而满足我们下载历史数据的要求。</li>
+</ul>
+<p>让我们把页面往下拽一拽，会有惊喜哦。</p>
+<p><figure><a class="lightgallery" href="./daily02.png?size=large" data-thumbnail="./daily02.png?size=small" data-sub-html="<h2>中金所提供了附件下载</h2><p>中金所提供了附件下载</p>"><img loading="lazy" src="./daily02.png" alt="中金所提供了附件下载" srcset="./daily02.png?size=small, ./daily02.png?size=medium 1.5x, ./daily02.png?size=large 2x" data-title="中金所提供了附件下载" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">中金所提供了附件下载</figcaption>
+  </figure></p>
+<p>这个链接即是中金所存储日行情数据的文件所在，可以直接点击下载。</p>
+<blockquote>
+<p>当然，如果只是手动点击下载的话（估计右手要变残废），这么简单粗暴的手段，我们就不用在花费大力气来探讨了。</p>
+</blockquote>
+<p>怎么去查找这个文件的具体链接地址呢？我们现在只是看到一个网页页面，似乎无从下手。如果就这样轻易放弃，那也太不是我的风格了。幸好，我对网页设计也是有所了解，也独立搭建过个人博客（包括但不限于本博客网站），其实这个看似页面的“东西”，后面隐藏了许多我们看不到的“东西”。</p>
+<p>这里我使用 <code>Chrome</code>，可以右击鼠标，选择 <code>Inspect</code>，会弹出网页的具体元素。有没有被惊喜到？原来我们看见的网站页面，竟然是有这样一对代码组合而成的。使用 <code>Ctrl + F</code> 查找关键字 <code>日行情数据</code>，我们发现，原来这个文件确实指向了一个具体的链接地址。</p>
+<p><figure><a class="lightgallery" href="./daily03.png?size=large" data-thumbnail="./daily03.png?size=small" data-sub-html="<h2>查看HTML元素</h2><p>查看HTML元素</p>"><img loading="lazy" src="./daily03.png" alt="查看HTML元素" srcset="./daily03.png?size=small, ./daily03.png?size=medium 1.5x, ./daily03.png?size=large 2x" data-title="查看HTML元素" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">查看HTML元素</figcaption>
+  </figure></p>
+<p>对于链接地址，一般有两种形式</p>
+<ul>
+<li>静态链接：即链接指向一个相对路径，这个路径是显式的。比如我们在上面看到的链接，显示一个相对根目录的相对路径，<code>href=&quot;./201710/17/20171017_1.csv&quot;</code>，文件路径是显式、具体的。我们可以直接在浏览器打开这个文件来查看，或者使用 <code>R</code> 直接读取文件数据。</li>
+<li>动态链接：即由一段 <code>Javascript</code> 来控制操作，只有鼠标点击才能进行下一步的操作如下载。对于这类链接的解析，我们需要使用脚本解析或者模拟鼠标操作（我会在另外一篇博客讨论如何使用 <code>Selenium</code> 模拟鼠标下载大商所的数据）。</li>
+</ul>
+<p>如此一来，我们便知道需要下载的文件链接全称是</p>
+<ul>
+<li><code>根目录</code>：<code>http://www.cffex.com.cn/sj/hqsj/rtj</code></li>
+<li><code>相对路径</code>：<code>/201710/17/20171017_1.csv</code></li>
+</ul>
+<h2 id="文件命名规则" class="heading-element">
+  <a href="#%e6%96%87%e4%bb%b6%e5%91%bd%e5%90%8d%e8%a7%84%e5%88%99" class="heading-mark"></a>文件命名规则</h2><p>文件的命令规律果然是以交易日为基础，在上面稍作变动，即 <code>/yyyymm/dd/yyyymmdd_1.csv</code>。对于历史的数据，我们只要使用循环来编写后面的相对文件路径，即可获取所有的历史数据文件所对应的网页链接。</p>
+<p>这里我使用到了之前介绍的<a href="https://williamlfang.github.io/post/2017-10-10-%E4%B8%AD%E5%9B%BD%E6%9C%9F%E8%B4%A7%E4%BA%A4%E6%98%93%E6%97%A5%E5%8E%86/"target="_blank" rel="external nofollow noopener noreferrer">中国期货交易日历表<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，使用这个日历表来生成相应的文件路径。</p>
+<h2 id="行情数据" class="heading-element">
+  <a href="#%e8%a1%8c%e6%83%85%e6%95%b0%e6%8d%ae" class="heading-mark"></a>行情数据</h2><p>我们先来看看现实是不是真是如我们所预想的，包含所有的行情数据。首先来读取某一天的数据文件看看</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">Sys.setlocale</span><span class="p">(</span><span class="s">&#34;LC_ALL&#34;</span><span class="p">,</span> <span class="s">&#39;en_US.UTF-8&#39;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[1] &#34;LC_CTYPE=en_US.UTF-8;LC_NUMERIC=C;LC_TIME=en_US.UTF-8;LC_COLLATE=en_US.UTF-8;LC_MONETARY=en_US.UTF-8;LC_MESSAGES=en_US.UTF-8;LC_PAPER=zh_CN.UTF-8;LC_NAME=C;LC_ADDRESS=C;LC_TELEPHONE=C;LC_MEASUREMENT=zh_CN.UTF-8;LC_IDENTIFICATION=C&#34;</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">magrittr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">readr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">exchURL</span> <span class="o">&lt;-</span> <span class="s">&#39;http://www.cffex.com.cn/sj/hqsj/rtj&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">tempURL</span> <span class="o">&lt;-</span> <span class="s">&#39;/201710/17/20171017_1.csv&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">dataFile</span> <span class="o">&lt;-</span> <span class="nf">paste</span><span class="p">(</span><span class="n">exchURL</span><span class="p">,</span> <span class="n">tempURL</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">dt</span> <span class="o">&lt;-</span> <span class="n">dataFile</span> <span class="o">%&gt;%</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">.,</span> <span class="n">locale</span> <span class="o">=</span> <span class="nf">locale</span><span class="p">(</span><span class="n">encoding</span> <span class="o">=</span> <span class="s">&#34;GB18030&#34;</span><span class="p">))</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Parsed with column specification:
+</span></span><span class="line"><span class="cl">cols(
+</span></span><span class="line"><span class="cl">  合约代码 = col_character(),
+</span></span><span class="line"><span class="cl">  今开盘 = col_double(),
+</span></span><span class="line"><span class="cl">  最高价 = col_double(),
+</span></span><span class="line"><span class="cl">  最低价 = col_double(),
+</span></span><span class="line"><span class="cl">  成交量 = col_double(),
+</span></span><span class="line"><span class="cl">  成交金额 = col_double(),
+</span></span><span class="line"><span class="cl">  持仓量 = col_double(),
+</span></span><span class="line"><span class="cl">  持仓变化 = col_double(),
+</span></span><span class="line"><span class="cl">  今收盘 = col_double(),
+</span></span><span class="line"><span class="cl">  今结算 = col_double(),
+</span></span><span class="line"><span class="cl">  前结算 = col_double(),
+</span></span><span class="line"><span class="cl">  涨跌1 = col_double(),
+</span></span><span class="line"><span class="cl">  涨跌2 = col_double(),
+</span></span><span class="line"><span class="cl">  `隐含波动率(%)` = col_character(),
+</span></span><span class="line"><span class="cl">  Delta = col_character()
+</span></span><span class="line"><span class="cl">)</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Warning: 6 parsing failures.
+</span></span><span class="line"><span class="cl">row col   expected     actual                                                           file
+</span></span><span class="line"><span class="cl">  5  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+</span></span><span class="line"><span class="cl"> 10  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+</span></span><span class="line"><span class="cl"> 15  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+</span></span><span class="line"><span class="cl"> 19  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+</span></span><span class="line"><span class="cl"> 23  -- 15 columns 14 columns &#39;http://www.cffex.com.cn/sj/hqsj/rtj/201710/17/20171017_1.csv&#39;
+</span></span><span class="line"><span class="cl">... ... .......... .......... ..............................................................
+</span></span><span class="line"><span class="cl">See problems(...) for more details.</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">print</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># A tibble: 24 × 15
+</span></span><span class="line"><span class="cl">   合约代码 今开盘 最高价 最低价 成交量 成交金额 持仓量 持仓变化 今收盘 今结算 前结算 涨跌1 涨跌2 `隐含波动率(%)` Delta
+</span></span><span class="line"><span class="cl">   &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;
+</span></span><span class="line"><span class="cl"> 1 IC1710    6600   6653.  6584.  10644 1407964.  13681    -2199  6592.  6604.  6628. -35.8 -23.4 --              --
+</span></span><span class="line"><span class="cl"> 2 IC1711    6568.  6618   6553.   3270  430422.   6064     1692  6561.  6571.  6597. -36.6 -26   --              --
+</span></span><span class="line"><span class="cl"> 3 IC1712    6544   6597.  6523.   1041  136429.   7769      236  6531   6542   6572. -41.2 -30.2 --              --
+</span></span><span class="line"><span class="cl"> 4 IC1803    6489   6525.  6463.    277   35942.   2124       55  6470   6480.  6511. -40.8 -30.4 --              --
+</span></span><span class="line"><span class="cl"> 5 小计        NA     NA     NA   15232 2010756.  29638     -216    NA     NA     NA   NA    NA   &lt;NA&gt;            &lt;NA&gt;
+</span></span><span class="line"><span class="cl"> 6 IF1710    3914   3928.  3909.  10887 1279659.  16859    -3096  3911   3917.  3924  -13    -7.4 --              --
+</span></span><span class="line"><span class="cl"> 7 IF1711    3913   3925   3906    3723  437320.   7226     2224  3906   3913   3922. -15.6  -8.6 --              --
+</span></span><span class="line"><span class="cl"> 8 IF1712    3911   3923.  3904    1293  151760.  12518      170  3906   3910.  3919. -13.2  -8.8 --              --
+</span></span><span class="line"><span class="cl"> 9 IF1803    3918.  3923   3904.    298   34976.   3509       10  3907.  3911   3920. -13.2  -8.8 --              --
+</span></span><span class="line"><span class="cl">10 小计        NA     NA     NA   16201 1903714.  40112     -692    NA     NA     NA   NA    NA   &lt;NA&gt;            &lt;NA&gt;
+</span></span><span class="line"><span class="cl"># … with 14 more rows</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="并行下载" class="heading-element">
+  <a href="#%e5%b9%b6%e8%a1%8c%e4%b8%8b%e8%bd%bd" class="heading-mark"></a>并行下载</h2><p>哦科，到此为止，所有的材料已经准备完毕：</p>
+<ul>
+<li>使用交易日历表生成相对路径，并与根目录结合，生成<strong>所有的历史日行情数据文件链接</strong></li>
+<li>读取的文件确认为目标数据</li>
+</ul>
+<p>接下来，我们只需要打开 <code>R</code> 中的并行计算模式，即可开启下载中金所所有的日行情数据了。</p>
+<ul>
+<li><code>dataPath</code> 是下载文件的保存路径，根据需要来修改</li>
+<li>可以根据操作系统的性能不同，设置开启的并行计算核数，使用命令 <code>detectCores()</code> 来获取当前操作系统的最大 <code>CPU</code> 核数</li>
+<li>我使用的是 <code>Linux</code> 操作系统，在该操作系统下，<code>parallel</code> 开启 <code>FORK</code> 并行计算模式，能够增强性能。如果是在 <code>Windows</code> 操作系统，需要开启 <code>PSOCK</code> 模式，同时记得在工作区添加软件包与变量</li>
+<li><code>download.file</code> 有一个参数 <code>mode</code>，在 <code>Linux</code> 操作系统休不需要设置，当时在 <code>Windows</code> 操作系统下需要设置为 <code>wb</code>， 否则保存的文件是空的。我这里为了跨平台使用，统一设置为 <code>wb</code></li>
+<li>运行完成后，记得使用命令 <code>stopCluster()</code> 关闭并行模式，否则后续的运算会比较占用资源</li>
+</ul>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 1: 获取对应的交易日期</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="n">ChinaFuturesCalendar</span> <span class="o">&lt;-</span> <span class="nf">fread</span><span class="p">(</span><span class="s">&#34;./data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">colClasses</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">character</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;nights&#34;</span><span class="p">,</span><span class="s">&#34;days&#34;</span><span class="p">)))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">.[days</span> <span class="o">&lt;</span> <span class="nf">format</span><span class="p">(</span><span class="nf">Sys.Date</span><span class="p">(),</span><span class="s">&#39;%Y%m%d&#39;</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">exchCalendar</span> <span class="o">&lt;-</span> <span class="n">ChinaFuturesCalendar[</span><span class="p">,</span><span class="s">&#34;:=&#34;</span><span class="p">(</span><span class="n">calendarYear</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarYearMonth</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">6</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarDay</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">))</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">exchURL</span> <span class="o">&lt;-</span> <span class="s">&#34;http://www.cffex.com.cn/sj/hqsj/rtj/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">dataPath</span> <span class="o">&lt;-</span> <span class="s">&#39;/home/william/Documents/Exchange/CFFEX/&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># dataPath &lt;- &#34;./data/Bar/Exchange/CFFEX/&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 2: 开启并行计算模式，下载数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="n">cl</span> <span class="o">&lt;-</span> <span class="nf">makeCluster</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="nf">detectCores</span><span class="p">()</span><span class="o">/</span><span class="m">4</span><span class="p">),</span> <span class="n">type</span><span class="o">=</span><span class="s">&#39;FORK&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">parSapply</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">ChinaFuturesCalendar</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tempDir</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span><span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYear]</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">dir.exists</span><span class="p">(</span><span class="n">tempDir</span><span class="p">))</span> <span class="nf">dir.create</span><span class="p">(</span><span class="n">tempDir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">tempURL</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL</span><span class="p">,</span> <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarYearMonth]</span><span class="p">,</span><span class="s">&#39;/&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">calendarDay]</span><span class="p">,</span><span class="s">&#39;/&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">days]</span><span class="p">,</span><span class="s">&#39;_1.csv&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">destFile</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">tempDir</span><span class="p">,</span><span class="s">&#39;/&#39;</span><span class="p">,</span><span class="n">exchCalendar[i</span><span class="p">,</span><span class="n">days]</span><span class="p">,</span><span class="s">&#39;.csv&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">while</span> <span class="p">(</span> <span class="o">!</span><span class="nf">file.exists</span><span class="p">(</span><span class="n">destFile</span><span class="p">)</span> <span class="o">|</span> <span class="nf">file.size</span><span class="p">(</span><span class="n">destFile</span><span class="p">)</span> <span class="o">&lt;</span> <span class="m">200</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">try</span><span class="p">(</span><span class="nf">download.file</span><span class="p">(</span><span class="n">tempURL</span><span class="p">,</span> <span class="n">destFile</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;wb&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nf">stopCluster</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h1 id="成交持仓排名" class="heading-element">
+  <a href="#%e6%88%90%e4%ba%a4%e6%8c%81%e4%bb%93%e6%8e%92%e5%90%8d" class="heading-mark"></a>成交持仓排名</h1><p>利用相同的技术手段，我们也可以从中金所网站下载当日收盘后的期货公司成交持仓排名数据。这份数据包含了<strong>成交量与当日收盘后持仓排名前20</strong>的期货公司详细数据。通过分析持仓数量变动，我们可以挖掘到各个期货公司主力资金对市场走势的情绪判断，从而对未来的期货价格走势产生一定的影响。</p>
+<p><figure><a class="lightgallery" href="./oi01.png?size=large" data-thumbnail="./oi01.png?size=small" data-sub-html="<h2>中金所在每日收盘后公布成交排名</h2><p>中金所在每日收盘后公布成交排名</p>"><img loading="lazy" src="./oi01.png" alt="中金所在每日收盘后公布成交排名" srcset="./oi01.png?size=small, ./oi01.png?size=medium 1.5x, ./oi01.png?size=large 2x" data-title="中金所在每日收盘后公布成交排名" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">中金所在每日收盘后公布成交排名</figcaption>
+  </figure></p>
+<h2 id="识别文件链接-1" class="heading-element">
+  <a href="#%e8%af%86%e5%88%ab%e6%96%87%e4%bb%b6%e9%93%be%e6%8e%a5-1" class="heading-mark"></a>识别文件链接</h2><p>我们点击某一天的交易日期，然后点击查询，即可看到当日的各股指期货品种的成交持仓排名数据。</p>
+<p><figure><a class="lightgallery" href="./oi02.png?size=large" data-thumbnail="./oi02.png?size=small" data-sub-html="<h2>显示排名前20的期货公司成交数据</h2><p>显示排名前20的期货公司成交数据</p>"><img loading="lazy" src="./oi02.png" alt="显示排名前20的期货公司成交数据" srcset="./oi02.png?size=small, ./oi02.png?size=medium 1.5x, ./oi02.png?size=large 2x" data-title="显示排名前20的期货公司成交数据" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">显示排名前20的期货公司成交数据</figcaption>
+  </figure></p>
+<p>参考日行情部分的方法，我们使用 <code>Chrome</code> 的 <code>Inspect</code> 功能来解析数据文件所对应的链接。可以看到，成交持仓排名的数据文件命名规则是 <code>yyyymm/dd/&lt;id&gt;_1.csv</code>，其中 <code>id</code> 就是合约品种代码。如此一来，我们也是可以利用中国期货交易日历来生成所有的历史文件对应的网站链接。</p>
+<p><figure><a class="lightgallery" href="./oi03.png?size=large" data-thumbnail="./oi03.png?size=small" data-sub-html="<h2>查看数据文件的相对链接路径</h2><p>查看数据文件的相对链接路径</p>"><img loading="lazy" src="./oi03.png" alt="查看数据文件的相对链接路径" srcset="./oi03.png?size=small, ./oi03.png?size=medium 1.5x, ./oi03.png?size=large 2x" data-title="查看数据文件的相对链接路径" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">查看数据文件的相对链接路径</figcaption>
+  </figure></p>
+<p>与日行情数据不同，成交持仓排名的数据是分合约品种来设定的，即每一个合约品种单独保存为一个数据文件。由于不同的股指期货品种上市日期不一样，这里我们需要单独设置。</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## CFFEX: 中期所</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 1. IC：中证500       --&gt; 2015-04-16</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 2. IF：沪深300       --&gt; 2010-04-16</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 3. IH：上证50        --&gt; 2015-04-16</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 4. T ：10年期国债    --&gt; 2015-03-20</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 5. TF：5年期国债     --&gt; 2013-09-06</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="n">productSet</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">productID</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;IC&#39;</span><span class="p">,</span><span class="s">&#39;IF&#39;</span><span class="p">,</span><span class="s">&#39;IH&#39;</span><span class="p">,</span><span class="s">&#39;T&#39;</span><span class="p">,</span><span class="s">&#39;TF&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                         <span class="n">startDate</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;20150416&#39;</span><span class="p">,</span><span class="s">&#39;20100416&#39;</span><span class="p">,</span><span class="s">&#39;20150416&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                       <span class="s">&#39;20150320&#39;</span><span class="p">,</span><span class="s">&#39;20130906&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">productCalenar</span> <span class="o">&lt;-</span> <span class="nf">lapply</span><span class="p">(</span><span class="n">productSet[</span><span class="p">,</span><span class="n">productID]</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">res</span> <span class="o">&lt;-</span> <span class="n">exchCalendar[days</span> <span class="o">&gt;=</span> <span class="n">productSet[productID</span> <span class="o">==</span> <span class="n">id</span><span class="p">,</span> <span class="n">startDate]]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="p">,</span> <span class="n">productID</span> <span class="o">:=</span> <span class="n">id]</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="o">%&gt;%</span> <span class="nf">rbindlist</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------------------------------</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="成交持仓排名数据" class="heading-element">
+  <a href="#%e6%88%90%e4%ba%a4%e6%8c%81%e4%bb%93%e6%8e%92%e5%90%8d%e6%95%b0%e6%8d%ae" class="heading-mark"></a>成交持仓排名数据</h2><p>我们来检查一下数据是不是正确的。</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="n">exchURL</span> <span class="o">&lt;-</span> <span class="s">&#39;http://www.cffex.com.cn/sj/ccpm&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">tempURL</span> <span class="o">&lt;-</span> <span class="s">&#39;/201710/17/IF_1.csv&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">dataFile</span> <span class="o">&lt;-</span> <span class="nf">paste</span><span class="p">(</span><span class="n">exchURL</span><span class="p">,</span> <span class="n">tempURL</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">dt</span> <span class="o">&lt;-</span> <span class="n">dataFile</span> <span class="o">%&gt;%</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">.,</span> <span class="n">locale</span> <span class="o">=</span> <span class="nf">locale</span><span class="p">(</span><span class="n">encoding</span> <span class="o">=</span> <span class="s">&#34;GB18030&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">print</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># A tibble: 46 × 9
+</span></span><span class="line"><span class="cl">   交易日   合约   会员类别   总成交量   比上交易日增减 总持买单量       比上交易日增减_1 总持卖单量 比上一交易日增减
+</span></span><span class="line"><span class="cl">   &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;chr&gt;            &lt;chr&gt;            &lt;chr&gt;      &lt;chr&gt;
+</span></span><span class="line"><span class="cl"> 1 20171017 IF1710 期货公司   21774      -1166          16859            -3096            16859      -3096
+</span></span><span class="line"><span class="cl"> 2 20171017 IF1710 非期货公司 0          0              0                0                0          0
+</span></span><span class="line"><span class="cl"> 3 20171017 IF1712 期货公司   2586       -530           12518            170              12518      170
+</span></span><span class="line"><span class="cl"> 4 20171017 IF1712 非期货公司 0          0              0                0                0          0
+</span></span><span class="line"><span class="cl"> 5 交易日   合约   排名       成交量排名 &lt;NA&gt;           &lt;NA&gt;             持买单量排名     &lt;NA&gt;       &lt;NA&gt;
+</span></span><span class="line"><span class="cl"> 6 &lt;NA&gt;     &lt;NA&gt;   &lt;NA&gt;       会员简称   成交量         比上一交易日增减 会员简称         持买单量   比上一交易日增减
+</span></span><span class="line"><span class="cl"> 7 20171017 IF1710 1          中信期货   2670           19               中信期货         1704       -444
+</span></span><span class="line"><span class="cl"> 8 20171017 IF1710 2          国泰君安   1269           -100             五矿经易         1595       -73
+</span></span><span class="line"><span class="cl"> 9 20171017 IF1710 3          银河期货   1163           172              国泰君安         1448       -63
+</span></span><span class="line"><span class="cl">10 20171017 IF1710 4          海通期货   1055           -6               申银万国         721        -197
+</span></span><span class="line"><span class="cl"># … with 36 more rows</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="并行下载-1" class="heading-element">
+  <a href="#%e5%b9%b6%e8%a1%8c%e4%b8%8b%e8%bd%bd-1" class="heading-mark"></a>并行下载</h2><p>具体的说明参照日行情的并行下载说明。这里直接上干货。</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## cffex.R</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 用于下载中金所期货公司持仓排名数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Author: William Fang</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Date  : 2017-08-21</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 0: 初始化，载入包，设定初始条件</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="nf">rm</span><span class="p">(</span><span class="n">list</span> <span class="o">=</span> <span class="nf">ls</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="n">logMainScript</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;cffex.R&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">setwd</span><span class="p">(</span><span class="s">&#39;/home/fl/myData/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">suppressMessages</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">source</span><span class="p">(</span><span class="s">&#39;./R/Rconfig/myInit.R&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 1: 获取对应的交易日期</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="n">ChinaFuturesCalendar</span> <span class="o">&lt;-</span> <span class="nf">fread</span><span class="p">(</span><span class="s">&#34;./data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">colClasses</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">character</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;nights&#34;</span><span class="p">,</span><span class="s">&#34;days&#34;</span><span class="p">)))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">.[days</span> <span class="o">&lt;</span> <span class="nf">format</span><span class="p">(</span><span class="nf">Sys.Date</span><span class="p">(),</span><span class="s">&#39;%Y%m%d&#39;</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">exchCalendar</span> <span class="o">&lt;-</span> <span class="n">ChinaFuturesCalendar[</span><span class="p">,</span><span class="s">&#34;:=&#34;</span><span class="p">(</span><span class="n">calendarYear</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">4</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarYearMonth</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">6</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarMonth</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">6</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                           <span class="n">calendarDay</span> <span class="o">=</span> <span class="nf">substr</span><span class="p">(</span><span class="n">days</span><span class="p">,</span><span class="m">7</span><span class="p">,</span><span class="m">8</span><span class="p">))</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">exchURL</span> <span class="o">&lt;-</span> <span class="s">&#34;http://www.cffex.com.cn/fzjy/ccpm/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">dataPath</span> <span class="o">&lt;-</span> <span class="s">&#39;/home/william/Documents/oiRank/CFFEX/&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># dataPath &lt;- &#34;./data/oiRank/CFFEX/&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## CFFEX: 中期所</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 1. IC：中证500       --&gt; 2015-04-16</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 2. IF：沪深300       --&gt; 2010-04-16</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 3. IH：上证50        --&gt; 2015-04-16</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 4. T ：10年期国债    --&gt; 2015-03-20</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 5. TF：5年期国债     --&gt; 2013-09-06</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="n">productSet</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">productID</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;IC&#39;</span><span class="p">,</span><span class="s">&#39;IF&#39;</span><span class="p">,</span><span class="s">&#39;IH&#39;</span><span class="p">,</span><span class="s">&#39;T&#39;</span><span class="p">,</span><span class="s">&#39;TF&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                         <span class="n">startDate</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;20150416&#39;</span><span class="p">,</span><span class="s">&#39;20100416&#39;</span><span class="p">,</span><span class="s">&#39;20150416&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                       <span class="s">&#39;20150320&#39;</span><span class="p">,</span><span class="s">&#39;20130906&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">productCalenar</span> <span class="o">&lt;-</span> <span class="nf">lapply</span><span class="p">(</span><span class="n">productSet[</span><span class="p">,</span><span class="n">productID]</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">res</span> <span class="o">&lt;-</span> <span class="n">exchCalendar[days</span> <span class="o">&gt;=</span> <span class="n">productSet[productID</span> <span class="o">==</span> <span class="n">id</span><span class="p">,</span> <span class="n">startDate]]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="p">,</span> <span class="n">productID</span> <span class="o">:=</span> <span class="n">id]</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span> <span class="o">%&gt;%</span> <span class="nf">rbindlist</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="n">cffexData</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">calendarYear</span><span class="p">,</span> <span class="n">calendarMonth</span><span class="p">,</span> <span class="n">calendarDay</span><span class="p">,</span> <span class="n">productID</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tempURL</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">exchURL</span><span class="p">,</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">calendarYear</span><span class="p">,</span> <span class="n">calendarMonth</span><span class="p">),</span> <span class="s">&#39;/&#39;</span><span class="p">,</span> <span class="n">calendarDay</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="n">productID</span><span class="p">,</span><span class="s">&#39;_1.csv&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">destFile</span> <span class="o">&lt;-</span>  <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span> <span class="n">calendarYear</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="nf">paste0</span><span class="p">(</span><span class="n">calendarYear</span><span class="p">,</span> <span class="n">calendarMonth</span><span class="p">,</span> <span class="n">calendarDay</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                      <span class="s">&#39;_&#39;</span><span class="p">,</span><span class="n">productID</span><span class="p">,</span><span class="s">&#39;.csv&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">## -------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">while</span><span class="p">(</span><span class="o">!</span> <span class="nf">file.exists</span><span class="p">(</span><span class="n">destFile</span><span class="p">)</span> <span class="o">|</span> <span class="nf">file.size</span><span class="p">(</span><span class="n">destFile</span><span class="p">)</span> <span class="o">&lt;</span> <span class="m">1000</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">try</span><span class="p">(</span><span class="nf">download.file</span><span class="p">(</span><span class="n">tempURL</span><span class="p">,</span> <span class="n">destFile</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">&#39;wb&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## -------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## STEP 2: 开启并行计算模式，下载数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">################################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="n">cl</span> <span class="o">&lt;-</span> <span class="nf">makeCluster</span><span class="p">(</span><span class="nf">max</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="nf">detectCores</span><span class="p">()</span><span class="o">*</span><span class="m">3</span><span class="o">/</span><span class="m">4</span><span class="p">),</span><span class="m">4</span><span class="p">),</span> <span class="n">type</span><span class="o">=</span><span class="s">&#39;FORK&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">parSapply</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">productCalenar</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="n">tempDir</span> <span class="o">&lt;-</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">dataPath</span><span class="p">,</span> <span class="n">productCalenar[i</span><span class="p">,</span> <span class="n">calendarYear]</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="p">(</span><span class="o">!</span><span class="nf">dir.exists</span><span class="p">(</span><span class="n">tempDir</span><span class="p">))</span> <span class="nf">dir.create</span><span class="p">(</span><span class="n">tempDir</span><span class="p">,</span> <span class="n">recursive</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">productCalenar[i</span><span class="p">,</span> <span class="nf">cffexData</span><span class="p">(</span><span class="n">calendarYear</span><span class="p">,</span> <span class="n">calendarMonth</span><span class="p">,</span> <span class="n">calendarDay</span><span class="p">,</span> <span class="n">productID</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## ---------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nf">stopCluster</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2017-10-17-sa%E9%98%BF%E5%88%97%E5%85%8B%E8%B0%A2%E8%80%B6%E7%BB%B4%E5%A5%87/" title="S·A·阿列克谢耶维奇">S·A·阿列克谢耶维奇</a></li><li>
+          <a href="/archives/2017-10-15-chan2017-machine-trading/" title="chan2017: Machine Trading">chan2017: Machine Trading</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2017-10-24 00:00:00">更新于 2017-10-24&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" data-title="交易所数据爬虫之中金所" data-hashtags="R,数据,爬虫,交易所"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" data-hashtag="R"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" data-title="交易所数据爬虫之中金所" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" data-title="交易所数据爬虫之中金所"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2017-10-23-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%AD%E9%87%91%E6%89%80/" data-title="交易所数据爬虫之中金所"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/r/" class="post-tag" title="标签 - R">R</a><a href="/tags/%E6%95%B0%E6%8D%AE/" class="post-tag" title="标签 - 数据">数据</a><a href="/tags/%E7%88%AC%E8%99%AB/" class="post-tag" title="标签 - 爬虫">爬虫</a><a href="/tags/%E4%BA%A4%E6%98%93%E6%89%80/" class="post-tag" title="标签 - 交易所">交易所</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2017-10-17-sa%E9%98%BF%E5%88%97%E5%85%8B%E8%B0%A2%E8%80%B6%E7%BB%B4%E5%A5%87/" class="post-nav-item" rel="prev" title="S·A·阿列克谢耶维奇"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>S·A·阿列克谢耶维奇</a>
+      <a href="/archives/2017-10-25-pkd/" class="post-nav-item" rel="next" title="PKD">PKD<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

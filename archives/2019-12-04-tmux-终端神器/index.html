@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>tmux:终端神器 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。" /><meta name="keywords" content='tmux, terminal, zsh, vim' /><meta itemprop="name" content="tmux:终端神器">
+<meta itemprop="description" content="编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。"><meta itemprop="datePublished" content="2019-12-04T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-12-04T00:00:00+00:00" />
+<meta itemprop="wordCount" content="3986"><meta itemprop="image" content="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/tmux.png" />
+<meta itemprop="keywords" content="tmux,terminal,zsh,vim," /><meta property="og:title" content="tmux:终端神器" />
+<meta property="og:description" content="编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" /><meta property="og:image" content="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/tmux.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2019-12-04T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-12-04T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/tmux.png" /><meta name="twitter:title" content="tmux:终端神器"/>
+<meta name="twitter:description" content="编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" /><link rel="prev" href="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" /><link rel="next" href="https://williamlfang.github.io/archives/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "tmux:终端神器",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/archives\/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8\/tmux.png",
+              "width":  3837 ,
+              "height":  1062 
+            }],"genre": "posts","keywords": "tmux, terminal, zsh, vim","wordcount":  3986 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8\/","datePublished": "2019-12-04T00:00:00+00:00","dateModified": "2019-12-04T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="wide"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>tmux:终端神器</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2019-12-04 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2019-12-04">2019-12-04</time></span>&nbsp;<span title="3986 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 4000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 8 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/tmux.png" alt="/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/tmux.png" data-title="/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/tmux.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#编程如手艺">编程如手艺</a></li>
+    <li><a href="#tmux">tmux</a>
+      <ol>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#配置">配置</a>
+          <ol>
+            <li><a href="#设置窗口显示">设置窗口显示</a></li>
+            <li><a href="#修改绑定键">修改绑定键</a></li>
+            <li><a href="#分屏">分屏</a></li>
+            <li><a href="#状态栏显示">状态栏显示</a></li>
+            <li><a href="#设置活跃窗口">设置活跃窗口</a></li>
+            <li><a href="#屏幕右边显示命令执行时间">屏幕右边显示命令执行时间</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2019-12-04，文中内容可能已过时。</div>
+      </div>
+    </div><p>编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。</p>
+<h1 id="编程如手艺" class="heading-element">
+  <a href="#%e7%bc%96%e7%a8%8b%e5%a6%82%e6%89%8b%e8%89%ba" class="heading-mark"></a>编程如手艺</h1><p>编程是一门手艺活，仅仅是凭借思而不动、想而不做，是无法完成工作的。我常常把编程比喻成一门手艺活，既需要我们懂得如何设计框架、如何布局，又需要结合实际的材料、配置手中的资源，然后使用娴熟的手艺一点点的认真打磨，最后得到一件称心如意的产品。现在人们喜欢讨论工匠精神，其实是推崇对手艺的尊重，对于一件事情持之以恒的追求。</p>
+<p>当然，巧妇难为无米之炊，为了更好的完成工作，我们也需要配合一套得心应手的工具，这些工具犹如我们的左右手，拓展了我们可以活动的想象空间。具体的，在编程领域，我们同样需要一套优良的的开发工具，从而可以极大的提升工作效率。</p>
+<h1 id="tmux" class="heading-element">
+  <a href="#tmux" class="heading-mark"></a>tmux</h1><h2 id="安装" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Install tmux 2.8 on Centos</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># install deps</span>
+</span></span><span class="line"><span class="cl">yum install -y gcc kernel-devel make ncurses-devel
+</span></span><span class="line"><span class="cl">yum install -y automake.noarch
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># DOWNLOAD SOURCES FOR LIBEVENT AND MAKE AND INSTALL</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /tmp
+</span></span><span class="line"><span class="cl">curl -LOk https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz
+</span></span><span class="line"><span class="cl">tar -xf libevent-2.1.8-stable.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> libevent-2.1.8-stable
+</span></span><span class="line"><span class="cl">./configure --prefix<span class="o">=</span>/usr/local
+</span></span><span class="line"><span class="cl">make -j <span class="p">&amp;</span> make install
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># DOWNLOAD SOURCES FOR TMUX AND MAKE AND INSTALL</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /tmp
+</span></span><span class="line"><span class="cl">curl -LOk https://github.com/tmux/tmux/releases/download/2.8/tmux-2.8.tar.gz
+</span></span><span class="line"><span class="cl">tar -xf tmux-2.8.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> tmux-2.8
+</span></span><span class="line"><span class="cl"><span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&#34;-L/usr/local/lib -Wl,-rpath=/usr/local/lib&#34;</span> ./configure --prefix<span class="o">=</span>/usr/local
+</span></span><span class="line"><span class="cl">make -j <span class="o">&amp;&amp;</span> make install
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pkill tmux
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 编译出来的程序在 tmux 目录内，这里假设你还没离开 tmux 目录</span>
+</span></span><span class="line"><span class="cl">cp tmux /usr/bin/tmux -f
+</span></span><span class="line"><span class="cl">cp tmux /usr/local/bin/tmux -f
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># close your terminal window (flushes cached tmux executable)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># open new shell and check tmux version</span>
+</span></span><span class="line"><span class="cl">tmux -V
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 如果出现乱码</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LC_CTYPE</span><span class="o">=</span>en_US.UTF-8
+</span></span><span class="line"><span class="cl">tmux -u</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="配置" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae" class="heading-mark"></a>配置</h2><p>可以通过修改 <code>~/.tmux.conf</code> 进行设置</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># author   : Xu Xiaodong &lt;xxdlhy@gmail.com&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># modified : 2017 Apr 29</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#-- base settings --#</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## set -g default-terminal &#34;screen-256color&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g default-terminal <span class="s1">&#39;linux&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -ga terminal-overrides <span class="s2">&#34;,rxvt-unicode-256color:Tc&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -sg escape-time <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g display-time <span class="m">3000</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g history-limit <span class="m">65535</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g base-index <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-base-index <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g renumber-windows on
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#-- bindkeys --#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># prefix key (Ctrl+k)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g prefix ^k
+</span></span><span class="line"><span class="cl">unbind ^b
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> k send-prefix
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># split window</span>
+</span></span><span class="line"><span class="cl">unbind <span class="s1">&#39;&#34;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> - splitw -v <span class="c1"># vertical split (prefix -)</span>
+</span></span><span class="line"><span class="cl">unbind %
+</span></span><span class="line"><span class="cl"><span class="c1">#bind | splitw -h # horizontal split (prefix |)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> <span class="se">\ </span>splitw -h <span class="c1"># horizontal split (prefix \)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># select pane</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> k selectp -U <span class="c1"># above (prefix k)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> j selectp -D <span class="c1"># below (prefix j)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> h selectp -L <span class="c1"># left (prefix h)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> l selectp -R <span class="c1"># right (prefix l)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># resize pane</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r ^k resizep -U <span class="m">5</span> <span class="c1"># upward (prefix Ctrl+k)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r ^j resizep -D <span class="m">5</span> <span class="c1"># downward (prefix Ctrl+j)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r ^h resizep -L <span class="m">5</span> <span class="c1"># to the left (prefix Ctrl+h)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r ^l resizep -R <span class="m">5</span> <span class="c1"># to the right (prefix Ctrl+l)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># swap pane</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^u swapp -U <span class="c1"># swap with the previous pane (prefix Ctrl+u)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^d swapp -D <span class="c1"># swap with the next pane (prefix Ctrl+d)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># select layout</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> , <span class="k">select</span>-layout even-vertical
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> . <span class="k">select</span>-layout even-horizontal
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># misc</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> e lastp  <span class="c1"># select the last pane (prefix e)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^e last  <span class="c1"># select the last window (prefix Ctrl+e)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> q killp  <span class="c1"># kill pane (prefix q)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^q killw <span class="c1"># kill window (prefix Ctrl+q)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># copy mode</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> Escape copy-mode               <span class="c1"># enter copy mode (prefix Escape)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^p pasteb                      <span class="c1"># paste buffer (prefix Ctrl+p)</span>
+</span></span><span class="line"><span class="cl">unbind -T copy-mode-vi Space
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -T copy-mode-vi v send -X begin-selection   <span class="c1"># select (v)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -T copy-mode-vi y send -X copy-pipe <span class="s2">&#34;xclip&#34;</span> <span class="c1"># copy (y)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># app</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ! splitw htop                                  <span class="c1"># htop (prefix !)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> m command-prompt <span class="s2">&#34;splitw &#39;exec man %%&#39;&#34;</span>        <span class="c1"># man (prefix m)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> % command-prompt <span class="s2">&#34;splitw &#39;exec perldoc -t %%&#39;&#34;</span> <span class="c1"># perl doc (prefix %)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> / command-prompt <span class="s2">&#34;splitw &#39;exec ri %%&#39;&#34;</span>         <span class="c1"># ruby doc (prefix /)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># reload config (prefix r)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> r <span class="nb">source</span> ~/.tmux.conf <span class="se">\;</span> display <span class="s2">&#34;Configuration reloaded!&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#-- statusbar --#</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-interval <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-keys vi
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">setw -g mode-keys vi
+</span></span><span class="line"><span class="cl">setw -g automatic-rename off
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#-- colorscheme --#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># statusbar</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-justify right
+</span></span><span class="line"><span class="cl"><span class="c1"># set -g status-left &#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set -g status-right &#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#左下角</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-left <span class="s2">&#34;#[bg=black,fg=green][#[fg=cyan]#S#[fg=green]]&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-left-length <span class="m">20</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g automatic-rename on
+</span></span><span class="line"><span class="cl">set-window-option -g window-status-format <span class="s1">&#39;#[dim]#I:#[default]#W#[fg=grey,dim]&#39;</span>
+</span></span><span class="line"><span class="cl">set-window-option -g window-status-current-format <span class="s1">&#39;#[fg=cyan,bold]#I#[fg=blue]:#[fg=cyan]#W#[fg=dim]&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#右下角</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-right <span class="s1">&#39;#[fg=green][#[fg=cyan]%Y-%m-%d %H:%M:%S#[fg=green]]&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># -- display -------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g base-index <span class="m">1</span>           <span class="c1"># start windows numbering at 1</span>
+</span></span><span class="line"><span class="cl">setw -g pane-base-index <span class="m">1</span>     <span class="c1"># make pane numbering consistent with windows</span>
+</span></span><span class="line"><span class="cl">setw -g automatic-rename on   <span class="c1"># rename window to reflect current program</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g renumber-windows on    <span class="c1"># renumber windows when a window is closed</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g set-titles on          <span class="c1"># set terminal title</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g display-panes-time <span class="m">800</span> <span class="c1"># slightly longer pane indicators display time</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g display-time <span class="m">1000</span>      <span class="c1"># slightly longer status messages display time</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-interval <span class="m">1</span>     <span class="c1"># redraw status line every 10 seconds</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-style <span class="s2">&#34;fg=#504945,bg=#282828&#34;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-current-fg white
+</span></span><span class="line"><span class="cl">setw -g window-status-current-bg red
+</span></span><span class="line"><span class="cl">setw -g window-status-current-attr bright
+</span></span><span class="line"><span class="cl">setw -g window-status-fg cyan
+</span></span><span class="line"><span class="cl">setw -g window-status-bg default
+</span></span><span class="line"><span class="cl">setw -g window-status-attr dim
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># window</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-separator <span class="s2">&#34; &#34;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-format <span class="s2">&#34;-&#34;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-current-format <span class="s2">&#34;+&#34;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-current-style <span class="s2">&#34;fg=#d79921,bg=#282828&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># pane</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-border-style <span class="s2">&#34;fg=#ebdbb2&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-active-border-style <span class="s2">&#34;fg=#d79921&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#开启window事件提示</span>
+</span></span><span class="line"><span class="cl">setw -g monitor-activity on
+</span></span><span class="line"><span class="cl"><span class="c1">#set -g visual-activity on</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 鼠标设置，不要打开，不然用鼠标选择不了内容</span>
+</span></span><span class="line"><span class="cl">set-option -g mouse on</span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./panel.png?size=large" data-thumbnail="./panel.png?size=small" data-sub-html="<h2>tmux</h2><p>panel</p>"><img loading="lazy" src="./panel.png" alt="tmux" srcset="./panel.png?size=small, ./panel.png?size=medium 1.5x, ./panel.png?size=large 2x" data-title="panel" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">tmux</figcaption>
+  </figure></p>
+<p>接着，我们需要安装底部状态栏支持插件 <code>tmux-powerline</code></p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkidr -p <span class="nv">$HOME</span>/opt
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> <span class="nv">$HOME</span>/opt
+</span></span><span class="line"><span class="cl">mkdir -p .tmux
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> .tmux
+</span></span><span class="line"><span class="cl">git clone https://github.com/erikw/tmux-powerline.git
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">## =============================================================================
+</span></span></span><span class="line"><span class="cl"><span class="s1">## https://github.com/erikw/tmux-powerline
+</span></span></span><span class="line"><span class="cl"><span class="s1">set-option -g status on
+</span></span></span><span class="line"><span class="cl"><span class="s1">set-option -g status-interval 2
+</span></span></span><span class="line"><span class="cl"><span class="s1">set-option -g status-justify &#34;centre&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s1">set-option -g status-left-length 60
+</span></span></span><span class="line"><span class="cl"><span class="s1">set-option -g status-right-length 150
+</span></span></span><span class="line"><span class="cl"><span class="s1">set-option -g status-left &#34;#(~/opt/.tmux/tmux-powerline/powerline.sh left)&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s1">set-option -g status-right &#34;#(~/opt/.tmux/tmux-powerline/powerline.sh right)&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s1">set-window-option -g window-status-current-format &#34;#[fg=colour235, bg=colour27]⮀#[fg=colour255, bg=colour27] #I ⮁ #W #[fg=colour27, bg=colour235]⮀&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s1">## =============================================================================
+</span></span></span><span class="line"><span class="cl"><span class="s1">&#39;</span> &gt;&gt; <span class="nv">$HOME</span>/.tmux.conf</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后在 <code>~/.tmux.conf</code> 添加如下</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## https://github.com/erikw/tmux-powerline</span>
+</span></span><span class="line"><span class="cl">set-option -g status on
+</span></span><span class="line"><span class="cl">set-option -g status-interval <span class="m">2</span>
+</span></span><span class="line"><span class="cl">set-option -g status-justify <span class="s2">&#34;centre&#34;</span>
+</span></span><span class="line"><span class="cl">set-option -g status-left-length <span class="m">150</span>
+</span></span><span class="line"><span class="cl">set-option -g status-right-length <span class="m">120</span>
+</span></span><span class="line"><span class="cl">set-option -g status-left <span class="s2">&#34;#(~/opt/.tmux/tmux-powerline/powerline.sh left)&#34;</span>
+</span></span><span class="line"><span class="cl">set-option -g status-right <span class="s2">&#34;#(~/opt/.tmux/tmux-powerline/powerline.sh right)&#34;</span>
+</span></span><span class="line"><span class="cl">set-window-option -g window-status-current-format <span class="s2">&#34;#[fg=colour235, bg=colour27]⮀#[fg=colour255, bg=colour27] #I ⮁ #W #[fg=colour27, bg=colour235]⮀&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">setw -g window-status-style <span class="s1">&#39;fg=colour9 bg=colour18&#39;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-format <span class="s1">&#39; #I#[fg=colour237]:#[fg=colour250]#W#[fg=colour244]#F &#39;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-bell-style <span class="s1">&#39;fg=colour255 bg=colour1 bold&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># messages</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g message-style <span class="s1">&#39;fg=colour1 bg=colour16 bold&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 使用 bin++z 实现最大-最小屏</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># unbind m</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># bind m run &#34;. ~/tmux-zoom &#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r a <span class="k">select</span>-pane -t .+1 <span class="se">\;</span>  resize-pane -Z
+</span></span><span class="line"><span class="cl"><span class="c1"># bind -n C-Space resize-pane -Z</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Ref https://superuser.com/questions/238702/maximizing-a-pane-in-tmux</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># #!/bin/bash -f</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># currentwindow=`tmux list-window | tr &#39;\t&#39; &#39; &#39; | sed -n -e &#39;/(active)/s/^[^:]*: *\([^ ]*\) .*/\1/gp&#39;`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># currentpane=`tmux list-panes | sed -n -e &#39;/(active)/s/^\([^:]*\):.*/\1/gp&#39;`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># panecount=`tmux list-panes | wc | sed -e &#39;s/^ *//g&#39; -e &#39;s/ .*$//g&#39;`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># inzoom=`echo $currentwindow | sed -n -e &#39;/^zoom/p&#39;`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># if [ $panecount -ne 1 ]; then</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     inzoom=&#34;&#34;;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># fi</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># if [ $inzoom ]; then</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     lastpane=`echo $currentwindow | rev | cut -f 1 -d &#39;@&#39; | rev`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     lastwindow=`echo $currentwindow | cut -f 2- -d &#39;@&#39; | rev | cut -f 2- -d &#39;@&#39; | rev`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux select-window -t $lastwindow;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux select-pane -t $lastpane;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux swap-pane -s $currentwindow;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux kill-window -t $currentwindow;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># else</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     newwindowname=zoom@$currentwindow@$currentpane;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux new-window -d -n $newwindowname;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux swap-pane -s $newwindowname;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux select-window -t $newwindowname;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## --------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-style &#39;bg=#262626&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-active-style &#39;bg=#121212&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set-option -g pane-active-border-style &#39;bg=#3a3a3a&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set-option -ag pane-active-border-style &#39;bg=#3a3a3a&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set-option -g pane-active-border-fg colour237</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set-option -g pane-border-fg colour237</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g pane-border-status bottom</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-active-style &#39;bg=#3a3a3a,bold&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 设置活跃窗口的背景颜色</span>
+</span></span><span class="line"><span class="cl">set-option -ga terminal-overrides <span class="s2">&#34;,xterm-256color:Tc&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-style &#39;bg=#504945&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-active-style &#39;bg=#282828&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g <span class="s2">&#34;window-style&#34;</span> <span class="s2">&#34;fg=#aab2bf,bg=default&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set -g &#34;window-active-style&#34; &#34;bg=default&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-style &#39;bg=#504945&#39;</span>
+</span></span><span class="line"><span class="cl">setw -g window-active-style <span class="s1">&#39;bg=#282828,bold&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">set-window-option -g clock-mode-colour colour40 <span class="c1">#green</span>
+</span></span><span class="line"><span class="cl">set-option -g pane-border-fg colour10
+</span></span><span class="line"><span class="cl">set-option -g pane-active-border-fg colour4
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># toggle pane synchronization</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> s setw synchronize-panes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 安装 tmux plugin</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 在 Tmux 里面使用 prefix + I 安装插件</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># prefix + Ctrl-s - save</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># prefix + Ctrl-r - restore</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g @plugin <span class="s1">&#39;tmux-plugins/tmux-resurrect&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 或者手动安装</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## cd ~/Documents</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## git clone https://github.com/tmux-plugins/tmux-resurrect</span>
+</span></span><span class="line"><span class="cl">run-shell ~/Documents/tmux-resurrect/resurrect.tmux
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-border-status bottom
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-border-format <span class="s2">&#34;#P #T #{pane_current_command}&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="设置窗口显示" class="heading-element">
+  <a href="#%e8%ae%be%e7%bd%ae%e7%aa%97%e5%8f%a3%e6%98%be%e7%a4%ba" class="heading-mark"></a>设置窗口显示</h3><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#-- base settings --#</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## set -g default-terminal &#34;screen-256color&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g default-terminal <span class="s1">&#39;linux&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -ga terminal-overrides <span class="s2">&#34;,rxvt-unicode-256color:Tc&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -sg escape-time <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g display-time <span class="m">3000</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g history-limit <span class="m">65535</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g base-index <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-base-index <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g renumber-windows on</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="修改绑定键" class="heading-element">
+  <a href="#%e4%bf%ae%e6%94%b9%e7%bb%91%e5%ae%9a%e9%94%ae" class="heading-mark"></a>修改绑定键</h3><p>原来的绑定是 <code>ctrl+b</code>，总感觉这个有点逆人性，每次按下这两个键的时候整个手掌都是弯曲的，后来就干脆分开使用两只手分别按住一个键，这样就避免了使用单手产生的扭曲感</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">##-- bindkeys --#</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## prefix key (Ctrl+k)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g prefix ^k
+</span></span><span class="line"><span class="cl">unbind ^b
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> k send-prefix</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="分屏" class="heading-element">
+  <a href="#%e5%88%86%e5%b1%8f" class="heading-mark"></a>分屏</h3><p>这个是 <code>tmux</code> 的看家本领，允许我们通过快捷键进行屏幕的任意切分，相比于 <code>terminator</code> 的方式要灵活很多。这里我使用了</p>
+<ul>
+<li><code>bind-key</code>（也就是我修改后的 <code>ctrl+k</code>），然后按下 <code>|</code> 进行横向切分</li>
+<li><code>bind-key</code>，然后按下 <code>-</code> 进行纵向切分</li>
+<li><code>bind-key</code>，然后按下
+<ul>
+<li><code>j</code>：跳转下面屏幕</li>
+<li><code>k</code>：跳转上面屏幕</li>
+<li><code>h</code>：跳转左边屏幕</li>
+<li><code>l</code>：跳转右边屏幕
+其实这个方向跟 <code>vim</code> 的操作是一样的想法，避免了记忆压力。</li>
+</ul>
+</li>
+<li>同时，我还可以使用快捷键进行屏幕大小调整。
+<ol>
+<li>先按下 <code>bind-key</code> （也就是我修改后的 <code>ctrl+k</code>）</li>
+<li>然后松开 <code>k</code>，但是不要松开 <code>ctrl</code> 键（如果松开，就变成了上面的屏幕跳转了）</li>
+<li>接着使用 <code>h</code>、<code>j</code>、<code>k</code>、<code>l</code> 进行屏幕大小调整</li>
+</ol>
+</li>
+</ul>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># split window</span>
+</span></span><span class="line"><span class="cl">unbind <span class="s1">&#39;&#34;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> - splitw -v <span class="c1"># vertical split (prefix -)</span>
+</span></span><span class="line"><span class="cl">unbind %
+</span></span><span class="line"><span class="cl"><span class="c1">#bind | splitw -h # horizontal split (prefix |)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> <span class="se">\ </span>splitw -h <span class="c1"># horizontal split (prefix \)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># select pane</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> k selectp -U <span class="c1"># above (prefix k)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> j selectp -D <span class="c1"># below (prefix j)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> h selectp -L <span class="c1"># left (prefix h)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> l selectp -R <span class="c1"># right (prefix l)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># resize pane</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r ^k resizep -U <span class="m">5</span> <span class="c1"># upward (prefix Ctrl+k)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r ^j resizep -D <span class="m">5</span> <span class="c1"># downward (prefix Ctrl+j)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r ^h resizep -L <span class="m">5</span> <span class="c1"># to the left (prefix Ctrl+h)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r ^l resizep -R <span class="m">5</span> <span class="c1"># to the right (prefix Ctrl+l)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># swap pane</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^u swapp -U <span class="c1"># swap with the previous pane (prefix Ctrl+u)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^d swapp -D <span class="c1"># swap with the next pane (prefix Ctrl+d)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># select layout</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> , <span class="k">select</span>-layout even-vertical
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> . <span class="k">select</span>-layout even-horizontal
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># misc</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> e lastp  <span class="c1"># select the last pane (prefix e)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^e last  <span class="c1"># select the last window (prefix Ctrl+e)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> q killp  <span class="c1"># kill pane (prefix q)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> ^q killw <span class="c1"># kill window (prefix Ctrl+q)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="状态栏显示" class="heading-element">
+  <a href="#%e7%8a%b6%e6%80%81%e6%a0%8f%e6%98%be%e7%a4%ba" class="heading-mark"></a>状态栏显示</h3><p>作为程序员，我们每天都在与终端打交道，几乎所有的视线就是整个屏幕范围。因此，我当然希望所有的监控状态也同样可以在视野所及范围内都一一收下。<code>tmux</code> 也同样允许我们通过修改配置进行调整</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#-- colorscheme --#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># statusbar</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-justify right
+</span></span><span class="line"><span class="cl"><span class="c1"># set -g status-left &#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set -g status-right &#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#左下角</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-left <span class="s2">&#34;#[bg=black,fg=green][#[fg=cyan]#S#[fg=green]]&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-left-length <span class="m">20</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g automatic-rename on
+</span></span><span class="line"><span class="cl">set-window-option -g window-status-format <span class="s1">&#39;#[dim]#I:#[default]#W#[fg=grey,dim]&#39;</span>
+</span></span><span class="line"><span class="cl">set-window-option -g window-status-current-format <span class="s1">&#39;#[fg=cyan,bold]#I#[fg=blue]:#[fg=cyan]#W#[fg=dim]&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#右下角</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-right <span class="s1">&#39;#[fg=green][#[fg=cyan]%Y-%m-%d %H:%M:%S#[fg=green]]&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># -- display -------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g base-index <span class="m">1</span>           <span class="c1"># start windows numbering at 1</span>
+</span></span><span class="line"><span class="cl">setw -g pane-base-index <span class="m">1</span>     <span class="c1"># make pane numbering consistent with windows</span>
+</span></span><span class="line"><span class="cl">setw -g automatic-rename on   <span class="c1"># rename window to reflect current program</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g renumber-windows on    <span class="c1"># renumber windows when a window is closed</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g set-titles on          <span class="c1"># set terminal title</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g display-panes-time <span class="m">800</span> <span class="c1"># slightly longer pane indicators display time</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g display-time <span class="m">1000</span>      <span class="c1"># slightly longer status messages display time</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-interval <span class="m">1</span>     <span class="c1"># redraw status line every 10 seconds</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-style <span class="s2">&#34;fg=#504945,bg=#282828&#34;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-current-fg white
+</span></span><span class="line"><span class="cl">setw -g window-status-current-bg red
+</span></span><span class="line"><span class="cl">setw -g window-status-current-attr bright
+</span></span><span class="line"><span class="cl">setw -g window-status-fg cyan
+</span></span><span class="line"><span class="cl">setw -g window-status-bg default
+</span></span><span class="line"><span class="cl">setw -g window-status-attr dim
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># window</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-separator <span class="s2">&#34; &#34;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-format <span class="s2">&#34;-&#34;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-current-format <span class="s2">&#34;+&#34;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-current-style <span class="s2">&#34;fg=#d79921,bg=#282828&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># pane</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-border-style <span class="s2">&#34;fg=#ebdbb2&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-active-border-style <span class="s2">&#34;fg=#d79921&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#开启window事件提示</span>
+</span></span><span class="line"><span class="cl">setw -g monitor-activity on
+</span></span><span class="line"><span class="cl"><span class="c1">#set -g visual-activity on</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 鼠标设置，不要打开，不然用鼠标选择不了内容</span>
+</span></span><span class="line"><span class="cl">set-option -g mouse on
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## https://github.com/erikw/tmux-powerline</span>
+</span></span><span class="line"><span class="cl">set-option -g status on
+</span></span><span class="line"><span class="cl">set-option -g status-interval <span class="m">2</span>
+</span></span><span class="line"><span class="cl">set-option -g status-justify <span class="s2">&#34;centre&#34;</span>
+</span></span><span class="line"><span class="cl">set-option -g status-left-length <span class="m">150</span>
+</span></span><span class="line"><span class="cl">set-option -g status-right-length <span class="m">120</span>
+</span></span><span class="line"><span class="cl">set-option -g status-left <span class="s2">&#34;#(~/opt/.tmux/tmux-powerline/powerline.sh left)&#34;</span>
+</span></span><span class="line"><span class="cl">set-option -g status-right <span class="s2">&#34;#(~/opt/.tmux/tmux-powerline/powerline.sh right)&#34;</span>
+</span></span><span class="line"><span class="cl">set-window-option -g window-status-current-format <span class="s2">&#34;#[fg=colour235, bg=colour27]⮀#[fg=colour255, bg=colour27] #I ⮁ #W #[fg=colour27, bg=colour235]⮀&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">setw -g window-status-style <span class="s1">&#39;fg=colour9 bg=colour18&#39;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-format <span class="s1">&#39; #I#[fg=colour237]:#[fg=colour250]#W#[fg=colour244]#F &#39;</span>
+</span></span><span class="line"><span class="cl">setw -g window-status-bell-style <span class="s1">&#39;fg=colour255 bg=colour1 bold&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># messages</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g message-style <span class="s1">&#39;fg=colour1 bg=colour16 bold&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 使用 bin++z 实现最大-最小屏</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># unbind m</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># bind m run &#34;. ~/tmux-zoom &#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> -r a <span class="k">select</span>-pane -t .+1 <span class="se">\;</span>  resize-pane -Z
+</span></span><span class="line"><span class="cl"><span class="c1"># bind -n C-Space resize-pane -Z</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Ref https://superuser.com/questions/238702/maximizing-a-pane-in-tmux</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># #!/bin/bash -f</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># currentwindow=`tmux list-window | tr &#39;\t&#39; &#39; &#39; | sed -n -e &#39;/(active)/s/^[^:]*: *\([^ ]*\) .*/\1/gp&#39;`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># currentpane=`tmux list-panes | sed -n -e &#39;/(active)/s/^\([^:]*\):.*/\1/gp&#39;`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># panecount=`tmux list-panes | wc | sed -e &#39;s/^ *//g&#39; -e &#39;s/ .*$//g&#39;`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># inzoom=`echo $currentwindow | sed -n -e &#39;/^zoom/p&#39;`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># if [ $panecount -ne 1 ]; then</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     inzoom=&#34;&#34;;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># fi</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># if [ $inzoom ]; then</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     lastpane=`echo $currentwindow | rev | cut -f 1 -d &#39;@&#39; | rev`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     lastwindow=`echo $currentwindow | cut -f 2- -d &#39;@&#39; | rev | cut -f 2- -d &#39;@&#39; | rev`;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux select-window -t $lastwindow;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux select-pane -t $lastpane;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux swap-pane -s $currentwindow;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux kill-window -t $currentwindow;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># else</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     newwindowname=zoom@$currentwindow@$currentpane;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux new-window -d -n $newwindowname;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux swap-pane -s $newwindowname;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     tmux select-window -t $newwindowname;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## --------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-style &#39;bg=#262626&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-active-style &#39;bg=#121212&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set-option -g pane-active-border-style &#39;bg=#3a3a3a&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set-option -ag pane-active-border-style &#39;bg=#3a3a3a&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set-option -g pane-active-border-fg colour237</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set-option -g pane-border-fg colour237</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g pane-border-status bottom</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-active-style &#39;bg=#3a3a3a,bold&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="设置活跃窗口" class="heading-element">
+  <a href="#%e8%ae%be%e7%bd%ae%e6%b4%bb%e8%b7%83%e7%aa%97%e5%8f%a3" class="heading-mark"></a>设置活跃窗口</h3><div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 设置活跃窗口的背景颜色</span>
+</span></span><span class="line"><span class="cl">set-option -ga terminal-overrides <span class="s2">&#34;,xterm-256color:Tc&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-style &#39;bg=#504945&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-active-style &#39;bg=#282828&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g <span class="s2">&#34;window-style&#34;</span> <span class="s2">&#34;fg=#aab2bf,bg=default&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># set -g &#34;window-active-style&#34; &#34;bg=default&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># setw -g window-style &#39;bg=#504945&#39;</span>
+</span></span><span class="line"><span class="cl">setw -g window-active-style <span class="s1">&#39;bg=#282828,bold&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">set-window-option -g clock-mode-colour colour40 <span class="c1">#green</span>
+</span></span><span class="line"><span class="cl">set-option -g pane-border-fg colour10
+</span></span><span class="line"><span class="cl">set-option -g pane-active-border-fg colour4
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># toggle pane synchronization</span>
+</span></span><span class="line"><span class="cl"><span class="nb">bind</span> s setw synchronize-panes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 安装 tmux plugin</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 在 Tmux 里面使用 prefix + I 安装插件</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># prefix + Ctrl-s - save</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># prefix + Ctrl-r - restore</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g @plugin <span class="s1">&#39;tmux-plugins/tmux-resurrect&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 或者手动安装</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## cd ~/Documents</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## git clone https://github.com/tmux-plugins/tmux-resurrect</span>
+</span></span><span class="line"><span class="cl">run-shell ~/Documents/tmux-resurrect/resurrect.tmux
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-border-status bottom
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g pane-border-format <span class="s2">&#34;#P #T #{pane_current_command}&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="屏幕右边显示命令执行时间" class="heading-element">
+  <a href="#%e5%b1%8f%e5%b9%95%e5%8f%b3%e8%be%b9%e6%98%be%e7%a4%ba%e5%91%bd%e4%bb%a4%e6%89%a7%e8%a1%8c%e6%97%b6%e9%97%b4" class="heading-mark"></a>屏幕右边显示命令执行时间</h3><p>这个主要为了提醒我们在什么时候执行了操作。其实是通过修改 <code>~/.oh-my-zsh/themes/agnoster.zsh-theme</code>。不过我把这条放在一起</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 显示命令执行时间</span>
+</span></span><span class="line"><span class="cl">strlen <span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">FOO</span><span class="o">=</span><span class="nv">$1</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">zero</span><span class="o">=</span><span class="s1">&#39;%([BSUbfksu]|([FB]|){*})&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">LEN</span><span class="o">=</span><span class="si">${#${</span><span class="p">(S%%)FOO//</span>$<span class="p">~zero/</span><span class="si">}}</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="nv">$LEN</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># show right prompt with date ONLY when command is executed</span>
+</span></span><span class="line"><span class="cl">preexec <span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">DATE</span><span class="o">=</span><span class="k">$(</span> date +<span class="s2">&#34;[%H:%M:%S]&#34;</span> <span class="k">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">len_right</span><span class="o">=</span><span class="k">$(</span> strlen <span class="s2">&#34;</span><span class="nv">$DATE</span><span class="s2">&#34;</span> <span class="k">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">len_right</span><span class="o">=</span><span class="k">$((</span> <span class="nv">$len_right</span><span class="o">+</span><span class="m">1</span> <span class="k">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">right_start</span><span class="o">=</span><span class="k">$((</span><span class="nv">$COLUMNS</span> <span class="o">-</span> <span class="nv">$len_right</span><span class="k">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">len_cmd</span><span class="o">=</span><span class="k">$(</span> strlen <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span> <span class="k">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">len_prompt</span><span class="o">=</span><span class="k">$(</span>strlen <span class="s2">&#34;</span><span class="nv">$PROMPT</span><span class="s2">&#34;</span> <span class="k">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">len_left</span><span class="o">=</span><span class="k">$((</span><span class="nv">$len_cmd</span><span class="o">+</span><span class="nv">$len_prompt</span><span class="k">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">RDATE</span><span class="o">=</span><span class="s2">&#34;\033[</span><span class="si">${</span><span class="nv">right_start</span><span class="si">}</span><span class="s2">C </span><span class="si">${</span><span class="nv">DATE</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[</span> <span class="nv">$len_left</span> -lt <span class="nv">$right_start</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># command does not overwrite right prompt</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># ok to move up one line</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#echo -e &#34;\033[1A${RDATE}&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># Black=&#39;\033[30m&#39;        # Black</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Red=&#39;\033[31m&#39;          # Red</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Green=&#39;\033[32m&#39;        # Green</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Yellow=&#39;\033[33m&#39;       # Yellow</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Blue=&#39;\033[34m&#39;         # Blue</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Purple=&#39;\033[35m&#39;       # Purple</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Cyan=&#39;\033[36m&#39;         # Cyan</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># White=&#39;\033[37m&#39;        # White</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> -e <span class="s2">&#34;\033[1A\033[36m</span><span class="si">${</span><span class="nv">RDATE</span><span class="si">}</span><span class="s2">\033[36m&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> -e <span class="s2">&#34;</span><span class="si">${</span><span class="nv">RDATE</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" title="Emacs: 神的编辑器">Emacs: 神的编辑器</a></li><li>
+          <a href="/archives/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" title="Clion 远程调试">Clion 远程调试</a></li><li>
+          <a href="/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" title="K&amp;R 读书笔记">K&amp;R 读书笔记</a></li><li>
+          <a href="/archives/2019-01-16-2018%E5%B9%B4%E4%BC%9A%E6%80%BB%E7%BB%93%E5%A4%A7%E7%BA%B2/" title="2018年会总结大纲">2018年会总结大纲</a></li><li>
+          <a href="/archives/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/" title="Sublime 编译 运行 c/c&#43;&#43; 文件">Sublime 编译 运行 c/c&#43;&#43; 文件</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2019-12-04 00:00:00">更新于 2019-12-04&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" data-title="tmux:终端神器" data-hashtags="tmux,terminal,zsh,vim"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" data-hashtag="tmux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" data-title="tmux:终端神器" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" data-title="tmux:终端神器"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" data-title="tmux:终端神器"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/tmux/" class="post-tag" title="标签 - Tmux">Tmux</a><a href="/tags/terminal/" class="post-tag" title="标签 - Terminal">Terminal</a><a href="/tags/zsh/" class="post-tag" title="标签 - Zsh">Zsh</a><a href="/tags/vim/" class="post-tag" title="标签 - Vim">Vim</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="post-nav-item" rel="prev" title="K&amp;R 读书笔记"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>K&amp;R 读书笔记</a>
+      <a href="/archives/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" class="post-nav-item" rel="next" title="Clion 远程调试">Clion 远程调试<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

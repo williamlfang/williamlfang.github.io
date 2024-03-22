@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>frp 实现域名解析 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="使用 frp 配合 godday 实现内网服务直接解析成二级域名。" /><meta name="keywords" content='frp, godaddy, 内网, 穿透, 端口, 域名, 解析, 网站' /><meta itemprop="name" content="frp 实现域名解析">
+<meta itemprop="description" content="使用 frp 配合 godday 实现内网服务直接解析成二级域名。"><meta itemprop="datePublished" content="2020-09-11T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-09-11T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1433"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="frp,godaddy,内网,穿透,端口,域名,解析,网站," /><meta property="og:title" content="frp 实现域名解析" />
+<meta property="og:description" content="使用 frp 配合 godday 实现内网服务直接解析成二级域名。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2020-09-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-09-11T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="frp 实现域名解析"/>
+<meta name="twitter:description" content="使用 frp 配合 godday 实现内网服务直接解析成二级域名。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" /><link rel="prev" href="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" /><link rel="next" href="https://williamlfang.github.io/2021-08-11-rstudio-server-with-ldap/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "frp 实现域名解析",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90\/"
+    },"genre": "posts","keywords": "frp, godaddy, 内网, 穿透, 端口, 域名, 解析, 网站","wordcount":  1433 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90\/","datePublished": "2020-09-11T00:00:00+00:00","dateModified": "2020-09-11T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>frp 实现域名解析</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2020-09-11 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2020-09-11">2020-09-11</time></span>&nbsp;<span title="1433 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1500 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#godday-域名解析">godday 域名解析</a></li>
+    <li><a href="#vps-开启-804437500-端口">vps 开启 80,443,7500 端口</a></li>
+    <li><a href="#frps-设置">frps 设置</a></li>
+    <li><a href="#frpc-设置">frpc 设置</a></li>
+    <li><a href="#gitlab-如何-clone">gitlab 如何 clone</a></li>
+    <li><a href="#docker-访问">Docker 访问</a></li>
+    <li><a href="#参考链接">参考链接</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2020-09-11，文中内容可能已过时。</div>
+      </div>
+    </div><p>使用 frp 配合 godday 实现内网服务直接解析成二级域名。</p>
+<h1 id="godday-域名解析" class="heading-element">
+  <a href="#godday-%e5%9f%9f%e5%90%8d%e8%a7%a3%e6%9e%90" class="heading-mark"></a>godday 域名解析</h1><p><code>godaddy</code> 提供了<strong>泛域名解析</strong>，即通过二级域名即可匹配在服务器特定端口运行的后台服务，如 <code>8080</code> 对应的 <code>gitlab</code> 端口服务。</p>
+<p>使用 godaddy 的 DNS Management 面板，增加一条域名</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:left"></th>
+<th style="text-align:left"></th>
+<th style="text-align:left"></th>
+<th style="text-align:left"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">类型</td>
+<td style="text-align:left">名称</td>
+<td style="text-align:left">值</td>
+<td style="text-align:left">TTL</td>
+<td style="text-align:left">操作</td>
+</tr>
+<tr>
+<td style="text-align:left">A</td>
+<td style="text-align:left">@</td>
+<td style="text-align:left">Parked</td>
+<td style="text-align:left">600 秒</td>
+<td style="text-align:left">编辑</td>
+</tr>
+<tr>
+<td style="text-align:left">A</td>
+<td style="text-align:left">*</td>
+<td style="text-align:left">80.251.219.73</td>
+<td style="text-align:left">999999999 秒</td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+<p><figure><a class="lightgallery" href="./godaddy.png?size=large" data-thumbnail="./godaddy.png?size=small" data-sub-html="<h2>godaddy 域名解析</h2><p>godaddy 域名解析</p>"><img loading="lazy" src="./godaddy.png" alt="godaddy 域名解析" srcset="./godaddy.png?size=small, ./godaddy.png?size=medium 1.5x, ./godaddy.png?size=large 2x" data-title="godaddy 域名解析" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">godaddy 域名解析</figcaption>
+  </figure></p>
+<h1 id="vps-开启-804437500-端口" class="heading-element">
+  <a href="#vps-%e5%bc%80%e5%90%af-804437500-%e7%ab%af%e5%8f%a3" class="heading-mark"></a>vps 开启 80,443,7500 端口</h1><p>为了能够在浏览器支持直接打开网页地址，我们需要通过 vps 上运行的 frp <code>80</code> 端口去自动匹配相关的转发端口。这样，在客户端，只需要记住相应的二级域名即可。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemctl start firewalld.service
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## http</span>
+</span></span><span class="line"><span class="cl">firewall-cmd --zone<span class="o">=</span>public --add-port<span class="o">=</span>80/tcp --permanent
+</span></span><span class="line"><span class="cl"><span class="c1">## https</span>
+</span></span><span class="line"><span class="cl">firewall-cmd --zone<span class="o">=</span>public --add-port<span class="o">=</span>443/tcp --permanent
+</span></span><span class="line"><span class="cl"><span class="c1">## frp 管理端口</span>
+</span></span><span class="line"><span class="cl">firewall-cmd --zone<span class="o">=</span>public --add-port<span class="o">=</span>7500/tcp --permanent
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">systemctl stop firewalld.service</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="frps-设置" class="heading-element">
+  <a href="#frps-%e8%ae%be%e7%bd%ae" class="heading-mark"></a>frps 设置</h1><p>在服务器上面，设置 <code>frps.ini</code></p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>common<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># A literal address or host name for IPv6 must be enclosed</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># in square brackets, as in &#34;[::1]:80&#34;, &#34;[ipv6-host]:http&#34; or &#34;[ipv6-host%zone]:80&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">bind_addr</span> <span class="o">=</span> 0.0.0.0
+</span></span><span class="line"><span class="cl"><span class="nv">bind_port</span> <span class="o">=</span> <span class="m">7000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># udp port to help make udp hole to penetrate nat</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#bind_udp_port = 9001</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># udp port used for kcp protocol, it can be same with &#39;bind_port&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># if not set, kcp is disabled in frps</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#kcp_bind_port = 9000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># specify which address proxy will listen for, default value is same with bind_addr</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># proxy_bind_addr = 127.0.0.1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># if you want to support virtual host, you must set the http port for listening (optional)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Note: http port and https port can be same with bind_port</span>
+</span></span><span class="line"><span class="cl"><span class="nv">vhost_http_port</span> <span class="o">=</span> <span class="m">80</span>
+</span></span><span class="line"><span class="cl"><span class="nv">vhost_https_port</span> <span class="o">=</span> <span class="m">433</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># response header timeout(seconds) for vhost http server, default is 60s</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># vhost_http_timeout = 60</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># set dashboard_addr and dashboard_port to view dashboard of frps</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># dashboard_addr&#39;s default value is same with bind_addr</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># dashboard is available only if dashboard_port is set</span>
+</span></span><span class="line"><span class="cl"><span class="nv">dashboard_addr</span> <span class="o">=</span> 0.0.0.0
+</span></span><span class="line"><span class="cl"><span class="nv">dashboard_port</span> <span class="o">=</span> <span class="m">7500</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># dashboard user and passwd for basic auth protect, if not set, both default value is admin</span>
+</span></span><span class="line"><span class="cl"><span class="nv">dashboard_user</span> <span class="o">=</span> *********
+</span></span><span class="line"><span class="cl"><span class="nv">dashboard_pwd</span> <span class="o">=</span> *********
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># dashboard assets directory(only for debug mode)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># assets_dir = ./static</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># console or real logFile path like ./frps.log</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#log_file = ./frps.log</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># trace, debug, info, warn, error</span>
+</span></span><span class="line"><span class="cl"><span class="nv">log_level</span> <span class="o">=</span> trace
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">log_max_days</span> <span class="o">=</span> <span class="m">3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># disable log colors when log_file is console, default is false</span>
+</span></span><span class="line"><span class="cl"><span class="nv">disable_log_color</span> <span class="o">=</span> <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># auth token</span>
+</span></span><span class="line"><span class="cl"><span class="nv">token</span> <span class="o">=</span> *********
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># heartbeat configure, it&#39;s not recommended to modify the default value</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># the default value of heartbeat_timeout is 90</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># heartbeat_timeout = 90</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># only allow frpc to bind ports you list, if you set nothing, there won&#39;t be any limit</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#allow_ports = 5000-5010,8080</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># pool_count in each proxy will change to max_pool_count if they exceed the maximum value</span>
+</span></span><span class="line"><span class="cl"><span class="nv">max_pool_count</span> <span class="o">=</span> <span class="m">10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># max ports can be used for each client, default value is 0 means no limit</span>
+</span></span><span class="line"><span class="cl"><span class="nv">max_ports_per_client</span> <span class="o">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># if subdomain_host is not empty, you can set subdomain when type is http or https in frpc&#39;s configure file</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># when subdomain is test, the host used by routing is test.frps.com</span>
+</span></span><span class="line"><span class="cl"><span class="nv">subdomain_host</span> <span class="o">=</span> williamlfang.com
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># if tcp stream multiplexing is used, default is true</span>
+</span></span><span class="line"><span class="cl"><span class="nv">tcp_mux</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># custom 404 page for HTTP requests</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># custom_404_page = /path/to/404.html</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>plugin.user-manager<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#addr = 127.0.0.1:9000</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#path = /handler</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ops = Login</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>plugin.port-manager<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#addr = 127.0.0.1:9001</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#path = /handler</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ops = NewProxy</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后运行</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nohup ./frps -c frps.ini <span class="p">&amp;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>现在，我们便可以登录网址：http://frp.williamlfang.com:7500/ ，可视化的管理 frp 窗口了。</p>
+<p><figure><a class="lightgallery" href="./frp%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2.png?size=large" data-thumbnail="./frp管理界面.png?size=small" data-sub-html="<h2>frp管理界面</h2><p>frp管理界面</p>"><img loading="lazy" src="./frp%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2.png" alt="frp管理界面" srcset="./frp%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2.png?size=small, ./frp%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2.png?size=medium 1.5x, ./frp%e7%ae%a1%e7%90%86%e7%95%8c%e9%9d%a2.png?size=large 2x" data-title="frp管理界面" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">frp管理界面</figcaption>
+  </figure></p>
+<h1 id="frpc-设置" class="heading-element">
+  <a href="#frpc-%e8%ae%be%e7%bd%ae" class="heading-mark"></a>frpc 设置</h1><p>在客户端设置 <code>frpc</code></p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>common<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">server_addr</span> <span class="o">=</span> frp.williamlfang.com
+</span></span><span class="line"><span class="cl"><span class="nv">server_port</span> <span class="o">=</span> <span class="m">7000</span>
+</span></span><span class="line"><span class="cl"><span class="nv">token</span> <span class="o">=</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ssh135<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> tcp
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 192.168.1.135
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">22</span>
+</span></span><span class="line"><span class="cl"><span class="nv">remote_port</span> <span class="o">=</span> <span class="m">6135</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ssh199<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> tcp
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 192.168.1.199
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">22</span>
+</span></span><span class="line"><span class="cl"><span class="nv">remote_port</span> <span class="o">=</span> <span class="m">6199</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ssh135_gitlab<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> http
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 192.168.1.135
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">58080</span>
+</span></span><span class="line"><span class="cl"><span class="nv">subdomain</span> <span class="o">=</span> gitlab
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ssh135_docker<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> http
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 192.168.1.135
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">5000</span>
+</span></span><span class="line"><span class="cl"><span class="nv">subdomain</span> <span class="o">=</span> docker
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>ssh135_docker_web<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">type</span> <span class="o">=</span> http
+</span></span><span class="line"><span class="cl"><span class="nv">local_ip</span> <span class="o">=</span> 192.168.1.135
+</span></span><span class="line"><span class="cl"><span class="nv">local_port</span> <span class="o">=</span> <span class="m">5001</span>
+</span></span><span class="line"><span class="cl"><span class="nv">subdomain</span> <span class="o">=</span> dockerweb</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里的关键步骤是，我们需要把远程的 ``server_addr<code>设置成</code>frp.williamlfang.com<code>，这个是一级域名，然后通过底下的二级域名 </code>gitlab` 找到对应的端口服务。</p>
+<p>可以试着打开 <code>http://gitlab.williamlfang.com/</code>，发现不需要记住端口，即可访问服务器的 <code>gitlab</code> 服务项目了。</p>
+<h1 id="gitlab-如何-clone" class="heading-element">
+  <a href="#gitlab-%e5%a6%82%e4%bd%95-clone" class="heading-mark"></a>gitlab 如何 clone</h1><p>由于 <code>gitlab</code> 是处理当前内部网络，无法直接通过 <code>ssh</code> 进行 <code> git clone</code>，我们可以指定 <code>https</code> 的形式，把相应的端口转发出来。这里，<code>http://192.168.1.135:58080/fl/myctp.git</code> 对应的是 <code>http://gitlab.williamlfang.com/fl/myctp.git</code></p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone http://gitlab.williamlfang.com/fl/myctp.git</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后可以通过 <code>.git/config</code> 设置账户密码，下次就不用再输入了</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim .git/config
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>core<span class="o">]</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">repositoryformatversion</span> <span class="o">=</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">filemode</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">bare</span> <span class="o">=</span> <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">logallrefupdates</span> <span class="o">=</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>remote <span class="s2">&#34;origin&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">url</span> <span class="o">=</span> http://用户名:密码@gitlab.williamlfang.com/fl/myctp.git
+</span></span><span class="line"><span class="cl">	<span class="nv">fetch</span> <span class="o">=</span> +refs/heads/*:refs/remotes/origin/*
+</span></span><span class="line"><span class="cl"><span class="o">[</span>branch <span class="s2">&#34;master&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">	<span class="nv">remote</span> <span class="o">=</span> origin
+</span></span><span class="line"><span class="cl">	<span class="nv">merge</span> <span class="o">=</span> refs/heads/master</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="docker-访问" class="heading-element">
+  <a href="#docker-%e8%ae%bf%e9%97%ae" class="heading-mark"></a>Docker 访问</h1><p>类似的，我们也可以设置 docker 的访问</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 编辑 /etc/docker/daemon.json</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 添加 &#34;insecure-registries&#34; 里面的 &#34;docker.williamlfang.com&#34;</span>
+</span></span><span class="line"><span class="cl">sudo vim /etc/docker/daemon.json
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;registry-mirrors&#34;</span> : <span class="o">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://ovfftd6p.mirror.aliyuncs.com&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://registry.docker-cn.com&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://docker.mirrors.ustc.edu.cn&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://hub-mirror.c.163.com&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;insecure-registries&#34;</span> : <span class="o">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;registry.docker-cn.com&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;docker.mirrors.ustc.edu.cn&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;docker.williamlfang.com&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;debug&#34;</span> : true,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;experimental&#34;</span> : true,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;log-driver&#34;</span>: <span class="s2">&#34;json-file&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;log-opts&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;max-size&#34;</span>: <span class="s2">&#34;1m&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;max-file&#34;</span>: <span class="s2">&#34;10&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">sudo systemctl restart docker
+</span></span><span class="line"><span class="cl"><span class="c1">## 获取镜像</span>
+</span></span><span class="line"><span class="cl">docker pull docker.williamlfang.com/testing</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="参考链接" class="heading-element">
+  <a href="#%e5%8f%82%e8%80%83%e9%93%be%e6%8e%a5" class="heading-mark"></a>参考链接</h1><ul>
+<li><a href="http://iytc.net/wordpress/?p=3299"target="_blank" rel="external nofollow noopener noreferrer">frp内网穿透服务器搭建及免费frp服务器提供<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" title="侯捷: C&#43;&#43; 面向对象高级编程">侯捷: C&#43;&#43; 面向对象高级编程</a></li><li>
+          <a href="/archives/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/" title="C&#43;&#43;日志模块:loguru">C&#43;&#43;日志模块:loguru</a></li><li>
+          <a href="/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" title="Solarflare网卡开发：openonload 安装与调试">Solarflare网卡开发：openonload 安装与调试</a></li><li>
+          <a href="/archives/2019-12-10-ubuntu-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-wireshark/" title="Ubuntu 源代码安装 wireshark">Ubuntu 源代码安装 wireshark</a></li><li>
+          <a href="/archives/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" title="Clion 远程调试">Clion 远程调试</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2020-09-11 00:00:00">更新于 2020-09-11&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" data-title="frp 实现域名解析" data-hashtags="frp,godaddy,内网,穿透,端口,域名,解析,网站"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" data-hashtag="frp"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" data-title="frp 实现域名解析" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" data-title="frp 实现域名解析"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" data-title="frp 实现域名解析"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/frp/" class="post-tag" title="标签 - Frp">Frp</a><a href="/tags/godaddy/" class="post-tag" title="标签 - Godaddy">Godaddy</a><a href="/tags/%E5%86%85%E7%BD%91/" class="post-tag" title="标签 - 内网">内网</a><a href="/tags/%E7%A9%BF%E9%80%8F/" class="post-tag" title="标签 - 穿透">穿透</a><a href="/tags/%E7%AB%AF%E5%8F%A3/" class="post-tag" title="标签 - 端口">端口</a><a href="/tags/%E5%9F%9F%E5%90%8D/" class="post-tag" title="标签 - 域名">域名</a><a href="/tags/%E8%A7%A3%E6%9E%90/" class="post-tag" title="标签 - 解析">解析</a><a href="/tags/%E7%BD%91%E7%AB%99/" class="post-tag" title="标签 - 网站">网站</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" class="post-nav-item" rel="prev" title="侯捷: C&#43;&#43; 面向对象高级编程"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>侯捷: C&#43;&#43; 面向对象高级编程</a>
+      <a href="/2021-08-11-rstudio-server-with-ldap/" class="post-nav-item" rel="next" title="Rstudio server with ldap">Rstudio server with ldap<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

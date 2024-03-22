@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>侯捷: C&#43;&#43; 面向对象高级编程 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="侯捷老师在线教学：C&#43;&#43; 面向对象高级编程的课堂笔记。" /><meta name="keywords" content='c&#43;&#43;, 面向对象, 编程, 侯捷' /><meta itemprop="name" content="侯捷: C&#43;&#43; 面向对象高级编程">
+<meta itemprop="description" content="侯捷老师在线教学：C&#43;&#43; 面向对象高级编程的课堂笔记。"><meta itemprop="datePublished" content="2020-06-26T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-06-26T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2746"><meta itemprop="image" content="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E8%AF%BE%E7%A8%8B%E7%9B%AE%E6%A0%87.png" />
+<meta itemprop="keywords" content="c&#43;&#43;,面向对象,编程,侯捷," /><meta property="og:title" content="侯捷: C&#43;&#43; 面向对象高级编程" />
+<meta property="og:description" content="侯捷老师在线教学：C&#43;&#43; 面向对象高级编程的课堂笔记。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" /><meta property="og:image" content="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E8%AF%BE%E7%A8%8B%E7%9B%AE%E6%A0%87.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2020-06-26T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-06-26T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E8%AF%BE%E7%A8%8B%E7%9B%AE%E6%A0%87.png" /><meta name="twitter:title" content="侯捷: C&#43;&#43; 面向对象高级编程"/>
+<meta name="twitter:description" content="侯捷老师在线教学：C&#43;&#43; 面向对象高级编程的课堂笔记。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" /><link rel="prev" href="https://williamlfang.github.io/archives/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/" /><link rel="next" href="https://williamlfang.github.io/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "侯捷: C++ 面向对象高级编程",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2020-06-26-%E4%BE%AF%E6%8D%B7--c\u002b\u002b-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/archives\/2020-06-26-%E4%BE%AF%E6%8D%B7--c\u002b\u002b-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B\/%E8%AF%BE%E7%A8%8B%E7%9B%AE%E6%A0%87.png",
+              "width":  1280 ,
+              "height":  720 
+            }],"genre": "posts","keywords": "c\u002b\u002b, 面向对象, 编程, 侯捷","wordcount":  2746 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2020-06-26-%E4%BE%AF%E6%8D%B7--c\u002b\u002b-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B\/","datePublished": "2020-06-26T00:00:00+00:00","dateModified": "2020-06-26T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="wide"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>侯捷: C&#43;&#43; 面向对象高级编程</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2020-06-26 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2020-06-26">2020-06-26</time></span>&nbsp;<span title="2746 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2800 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 6 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E8%AF%BE%E7%A8%8B%E7%9B%AE%E6%A0%87.png" alt="/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E8%AF%BE%E7%A8%8B%E7%9B%AE%E6%A0%87.png" data-title="/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/%E8%AF%BE%E7%A8%8B%E7%9B%AE%E6%A0%87.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#介绍">介绍</a>
+      <ol>
+        <li><a href="#课程目标">课程目标</a></li>
+        <li><a href="#现代-c">现代 C++</a></li>
+      </ol>
+    </li>
+    <li><a href="#头文件">头文件</a></li>
+    <li><a href="#类设计的-6-大金刚">类设计的 6 大金刚</a>
+      <ol>
+        <li><a href="#composition">composition</a>
+          <ol>
+            <li><a href="#构造与析构顺序">构造与析构顺序</a></li>
+          </ol>
+        </li>
+        <li><a href="#delegationpimpl">delegation(pImpl)</a></li>
+        <li><a href="#inheritance">inheritance</a>
+          <ol>
+            <li><a href="#构造与析构顺序-1">构造与析构顺序</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#构造函数">构造函数</a>
+      <ol>
+        <li><a href="#初始化列表">初始化列表</a></li>
+        <li><a href="#构造函数放在-private">构造函数放在 <code>private</code></a></li>
+      </ol>
+    </li>
+    <li><a href="#析构函数">析构函数</a></li>
+    <li><a href="#成员函数">成员函数</a>
+      <ol>
+        <li><a href="#const-成员函数">const 成员函数</a></li>
+        <li><a href="#pass-by-value-vs-pass-by-reference">pass-by-value vs pass-by-reference</a></li>
+        <li><a href="#return-by-value-vs-return-by-reference">return-by-value vs return-by-reference</a></li>
+        <li><a href="#friend-友元函数">friend 友元函数</a></li>
+        <li><a href="#operator-overloading">operator overloading</a></li>
+        <li><a href="#virtual-函数">virtual 函数</a></li>
+        <li><a href="#converion-function">converion function</a></li>
+        <li><a href="#explicit">explicit</a></li>
+        <li><a href="#pointer-like-class">pointer-like-class</a></li>
+        <li><a href="#function-like-class">function-like-class</a></li>
+        <li><a href="#member-template">member template</a></li>
+      </ol>
+    </li>
+    <li><a href="#内存分配与管理">内存分配与管理</a>
+      <ol>
+        <li><a href="#stack">Stack</a></li>
+        <li><a href="#heap">Heap</a></li>
+        <li><a href="#变量的生命周期">变量的生命周期</a></li>
+        <li><a href="#nekw">nekw</a></li>
+        <li><a href="#delete">delete</a></li>
+        <li><a href="#array-new-delete">array: new, delete</a></li>
+      </ol>
+    </li>
+    <li><a href="#static">static</a></li>
+    <li><a href="#类模板">类模板</a></li>
+    <li><a href="#namespace">namespace</a></li>
+    <li><a href="#标准库std">标准库:std</a></li>
+    <li><a href="#stl">STL</a></li>
+    <li><a href="#c11-新特征">C++11 新特征</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2020-06-26，文中内容可能已过时。</div>
+      </div>
+    </div><p>侯捷老师在线教学：C++ 面向对象高级编程的课堂笔记。</p>
+<h1 id="介绍" class="heading-element">
+  <a href="#%e4%bb%8b%e7%bb%8d" class="heading-mark"></a>介绍</h1><h2 id="课程目标" class="heading-element">
+  <a href="#%e8%af%be%e7%a8%8b%e7%9b%ae%e6%a0%87" class="heading-mark"></a>课程目标</h2><p>侯捷老师在整个课程的讲授过程中，一直都非常强调「大气的编程习惯」，即从宏观设计、全局把握，然后再从微观编写、认真调试的编程风格。这一点非常重要，尤其对于大型的软件工程，我们往往需要在大局上进行深度的思考与设计，并且在细节上注重品质，才能编写出稳健而持续运行的程序。</p>
+<h2 id="现代-c" class="heading-element">
+  <a href="#%e7%8e%b0%e4%bb%a3-c" class="heading-mark"></a>现代 C++</h2><p><figure><a class="lightgallery" href="./%e7%8e%b0%e4%bb%a3c&#43;&#43;.png?size=large" data-thumbnail="./现代c&#43;&#43;.png?size=small" data-sub-html="<h2>现代c&#43;&#43;</h2><p>现代c&#43;&#43;</p>"><img loading="lazy" src="./%e7%8e%b0%e4%bb%a3c&#43;&#43;.png" alt="现代c&#43;&#43;" srcset="./%e7%8e%b0%e4%bb%a3c&#43;&#43;.png?size=small, ./%e7%8e%b0%e4%bb%a3c&#43;&#43;.png?size=medium 1.5x, ./%e7%8e%b0%e4%bb%a3c&#43;&#43;.png?size=large 2x" data-title="现代c&#43;&#43;" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">现代c++</figcaption>
+  </figure></p>
+<p>从 <code>C++11</code> 开始，人们开始认识到这个古老的编程语言似乎焕发出新的生命，既注重程序的运行效率（不妥协）、也开始关注程序猿的编程效率，提供了更多的、更加灵活的编程语言内容的特征，如 <code>auto</code>、<code>lambda</code>、<code>thread</code> 多线程等，旨在为程序猿提供更加友好的编程环境。因此，我们常常说，<code>C++11</code> 是现代化的 <code>C++</code> 升级版。</p>
+<p>我原来的大学本科学习的是 <code>c</code> 编程语言，后面使用的主要也是面向过程的编程语言，如 <code>R</code>、<code>Matlab</code>。从思维方式来看，这种面向过程的编程语言，思维的逻辑性更强，要求使用者能够实现把解决问题的思路想清楚，然后安装一定的逻辑流程进行编写相应的程序处理过程。相反，对于面向对象的编程语言，如 <code>C++</code>、<code>Java</code>，则是<strong>思维的抽象性更强</strong>，需要把具体的问题抽象成可处理的对象，然后再赋予对象一定的可操作的逻辑。</p>
+<p>我们无法说到底是面向过程的编程语言、还是面向对象的编程语言，哪种更好。我们只能说，不同的应用场景下，不同的编程语言各有利弊。从这几年 <code>C++</code> 语言的发展轨迹上看，我们更发现其不仅仅是作为一门编程语言工具使用，更是为程序员提供了一种理解计算机的思维方式，那就是从底层硬件映射抽象的对象、以编译器的思考方式来理解程序的运行方式，这样，我们能够更好的理解我们所写的程序是如何在计算机内部工作，是如何一步一步的执行我们设计的算法步骤。因此， <code>C++11</code> 也成为了我目前主要的开发语言。</p>
+<p><figure><a class="lightgallery" href="./c-vs-c&#43;&#43;.png?size=large" data-thumbnail="./c-vs-c&#43;&#43;.png?size=small" data-sub-html="<h2>c-vs-c&#43;&#43;</h2><p>c-vs-c&#43;&#43;</p>"><img loading="lazy" src="./c-vs-c&#43;&#43;.png" alt="c-vs-c&#43;&#43;" srcset="./c-vs-c&#43;&#43;.png?size=small, ./c-vs-c&#43;&#43;.png?size=medium 1.5x, ./c-vs-c&#43;&#43;.png?size=large 2x" data-title="c-vs-c&#43;&#43;" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">c-vs-c++</figcaption>
+  </figure></p>
+<h1 id="头文件" class="heading-element">
+  <a href="#%e5%a4%b4%e6%96%87%e4%bb%b6" class="heading-mark"></a>头文件</h1><p>需要提供「头文件保护」(header guard)</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#ifndef __CLASS_NAME__H__
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define __CLASS_NAME__H__
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#endif </span><span class="c1">// __CLASS_NAME__H__
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="类设计的-6-大金刚" class="heading-element">
+  <a href="#%e7%b1%bb%e8%ae%be%e8%ae%a1%e7%9a%84-6-%e5%a4%a7%e9%87%91%e5%88%9a" class="heading-mark"></a>类设计的 6 大金刚</h1><ul>
+<li>构造函数</li>
+<li>析构函数</li>
+<li>拷贝构造</li>
+<li>拷贝赋值</li>
+<li>移动构造</li>
+<li>移动赋值</li>
+</ul>
+<p><code>c++</code> 面向对象的编程风格指两个方面的意思：</p>
+<ul>
+<li>「object-based」：即以对象作为操作的基本单位:
+<ul>
+<li>class with pointer member</li>
+<li>Class without pointer member</li>
+</ul>
+</li>
+<li>「object-oriented」：即有不同的类构成的层次体系:
+<ul>
+<li><code>inheritance</code>：表示 「is-a」</li>
+<li><code>composition</code>：表示 「has-a」</li>
+<li><code>delegation</code>：</li>
+</ul>
+</li>
+</ul>
+<p><figure><a class="lightgallery" href="./oop.png?size=large" data-thumbnail="./oop.png?size=small" data-sub-html="<h2>oop</h2><p>oop</p>"><img loading="lazy" src="./oop.png" alt="oop" srcset="./oop.png?size=small, ./oop.png?size=medium 1.5x, ./oop.png?size=large 2x" data-title="oop" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">oop</figcaption>
+  </figure></p>
+<h2 id="composition" class="heading-element">
+  <a href="#composition" class="heading-mark"></a>composition</h2><p><code>composition</code> 模式下，<code>container</code> 与 <code>component</code> 的生命周期是一样的。</p>
+<h3 id="构造与析构顺序" class="heading-element">
+  <a href="#%e6%9e%84%e9%80%a0%e4%b8%8e%e6%9e%90%e6%9e%84%e9%a1%ba%e5%ba%8f" class="heading-mark"></a>构造与析构顺序</h3><ul>
+<li>构造由内向外</li>
+<li>析构由外向内</li>
+</ul>
+<p><figure><a class="lightgallery" href="./composition-1.png?size=large" data-thumbnail="./composition-1.png?size=small" data-sub-html="<h2>composition</h2><p>composition</p>"><img loading="lazy" src="./composition-1.png" alt="composition" srcset="./composition-1.png?size=small, ./composition-1.png?size=medium 1.5x, ./composition-1.png?size=large 2x" data-title="composition" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">composition</figcaption>
+  </figure></p>
+<h2 id="delegationpimpl" class="heading-element">
+  <a href="#delegationpimpl" class="heading-mark"></a>delegation(pImpl)</h2><ul>
+<li>
+<p>Body-handle</p>
+</li>
+<li>
+<p>pImpl：<code>pointer-to-implementation</code></p>
+</li>
+<li>
+<p>composition by reference</p>
+</li>
+</ul>
+<p>在 <code>delegation</code> 模式下，<code>body</code> 与 <code>handle</code> 的生命周期是不一样的，<code>handle</code> 是一个指针，独立于 <code>body</code> 之外。</p>
+<p><figure><a class="lightgallery" href="./delegation-1.png?size=large" data-thumbnail="./delegation-1.png?size=small" data-sub-html="<h2>delegation</h2><p>delegation</p>"><img loading="lazy" src="./delegation-1.png" alt="delegation" srcset="./delegation-1.png?size=small, ./delegation-1.png?size=medium 1.5x, ./delegation-1.png?size=large 2x" data-title="delegation" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">delegation</figcaption>
+  </figure></p>
+<h2 id="inheritance" class="heading-element">
+  <a href="#inheritance" class="heading-mark"></a>inheritance</h2><p><figure><a class="lightgallery" href="./inheritance-1.png?size=large" data-thumbnail="./inheritance-1.png?size=small" data-sub-html="<h2>inheritance</h2><p>inheritance</p>"><img loading="lazy" src="./inheritance-1.png" alt="inheritance" srcset="./inheritance-1.png?size=small, ./inheritance-1.png?size=medium 1.5x, ./inheritance-1.png?size=large 2x" data-title="inheritance" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">inheritance</figcaption>
+  </figure></p>
+<h3 id="构造与析构顺序-1" class="heading-element">
+  <a href="#%e6%9e%84%e9%80%a0%e4%b8%8e%e6%9e%90%e6%9e%84%e9%a1%ba%e5%ba%8f-1" class="heading-mark"></a>构造与析构顺序</h3><ul>
+<li>构造由内向外</li>
+<li>析构由外向内</li>
+</ul>
+<p><figure><a class="lightgallery" href="./inheritance-2.png?size=large" data-thumbnail="./inheritance-2.png?size=small" data-sub-html="<h2>inheritance</h2><p>inheritance</p>"><img loading="lazy" src="./inheritance-2.png" alt="inheritance" srcset="./inheritance-2.png?size=small, ./inheritance-2.png?size=medium 1.5x, ./inheritance-2.png?size=large 2x" data-title="inheritance" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">inheritance</figcaption>
+  </figure></p>
+<h1 id="构造函数" class="heading-element">
+  <a href="#%e6%9e%84%e9%80%a0%e5%87%bd%e6%95%b0" class="heading-mark"></a>构造函数</h1><h2 id="初始化列表" class="heading-element">
+  <a href="#%e5%88%9d%e5%a7%8b%e5%8c%96%e5%88%97%e8%a1%a8" class="heading-mark"></a>初始化列表</h2><p><code>initializer-list</code> 先于其他构造，能够保证构造函数的实现，这尤其对于类继承，可能保证基类初始化。</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Strategy</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="k">public</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Strategy</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">id</span><span class="p">)</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">  	<span class="n">strategyid</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>				<span class="c1">// 初始化列表
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="构造函数放在-private" class="heading-element">
+  <a href="#%e6%9e%84%e9%80%a0%e5%87%bd%e6%95%b0%e6%94%be%e5%9c%a8-private" class="heading-mark"></a>构造函数放在 <code>private</code></h2><p>一般来说，我们会把各种形式的构造函数(ctor)放在 <code>public</code> 声明范围内，表示外部可以调用构造函数。但是，也一种设计模式叫做 <code>Singleton</code>，只允许通过函数调用来实现构造函数，这时，要求我们把构造函数放在 <code>private</code> 范围内。</p>
+<p><figure><a class="lightgallery" href="./ctor-singleton.png?size=large" data-thumbnail="./ctor-singleton.png?size=small" data-sub-html="<h2>ctor-singleton</h2><p>ctor-singleton</p>"><img loading="lazy" src="./ctor-singleton.png" alt="ctor-singleton" srcset="./ctor-singleton.png?size=small, ./ctor-singleton.png?size=medium 1.5x, ./ctor-singleton.png?size=large 2x" data-title="ctor-singleton" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">ctor-singleton</figcaption>
+  </figure></p>
+<h1 id="析构函数" class="heading-element">
+  <a href="#%e6%9e%90%e6%9e%84%e5%87%bd%e6%95%b0" class="heading-mark"></a>析构函数</h1><p><strong>对于动态内存分配的成员变量，需要在析构函数中进行释放</strong>。</p>
+<p><figure><a class="lightgallery" href="./dtor-string.png?size=large" data-thumbnail="./dtor-string.png?size=small" data-sub-html="<h2>dtor-string</h2><p>dtor-string</p>"><img loading="lazy" src="./dtor-string.png" alt="dtor-string" srcset="./dtor-string.png?size=small, ./dtor-string.png?size=medium 1.5x, ./dtor-string.png?size=large 2x" data-title="dtor-string" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">dtor-string</figcaption>
+  </figure></p>
+<h1 id="成员函数" class="heading-element">
+  <a href="#%e6%88%90%e5%91%98%e5%87%bd%e6%95%b0" class="heading-mark"></a>成员函数</h1><h2 id="const-成员函数" class="heading-element">
+  <a href="#const-%e6%88%90%e5%91%98%e5%87%bd%e6%95%b0" class="heading-mark"></a>const 成员函数</h2><p><figure><a class="lightgallery" href="./const-member-function.png?size=large" data-thumbnail="./const-member-function.png?size=small" data-sub-html="<h2>const-member-function</h2><p>const-member-function</p>"><img loading="lazy" src="./const-member-function.png" alt="const-member-function" srcset="./const-member-function.png?size=small, ./const-member-function.png?size=medium 1.5x, ./const-member-function.png?size=large 2x" data-title="const-member-function" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">const-member-function</figcaption>
+  </figure></p>
+<p><code>const</code> 用在类的成员函数时，表示该成员函数<strong>调用时不会改变类成员变量的值</strong>。从编译器的角度来看，其实是做了一次「承诺」。因此，如果是对于 <code>const</code> 类对象的实例，其实是约定了整个类不会改变成员变量，这时去调用没有添加<code>const</code>限定的成员函数时，编译器会报错，因为我们在声明类实例的时候，明明说好了不会改变，但是调用非<code>const</code>成员函数，则有可能破坏这个约定，因此编译器不会通过。</p>
+<p>总结一下，就是：</p>
+<blockquote>
+<p>如果成员函数肯定不会修改成员变量的，尽量添加 <code>const</code> 限定。</p>
+</blockquote>
+<h2 id="pass-by-value-vs-pass-by-reference" class="heading-element">
+  <a href="#pass-by-value-vs-pass-by-reference" class="heading-mark"></a>pass-by-value vs pass-by-reference</h2><p>两种传递参数的方式：</p>
+<ul>
+<li>
+<p><code>pass-by-value</code>：需要把参数压入 <code>heap</code>，即复制后传递给函数</p>
+</li>
+<li>
+<p><code>pass-by-reference</code>：直接传入引用，不需要额外的开销。如果需要限定不会修改参数，最好增加 <code>pass-by-reference-to-const</code>，即</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="nf">func</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span> <span class="o">&amp;</span><span class="n">arg</span><span class="p">);</span> <span class="c1">// 传入常量引用
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以这样理解，「传入引用相当于传入指针」，因为在底层引用是指针。</p>
+</li>
+</ul>
+<p><figure><a class="lightgallery" href="./pass-by-value-vs-pass-by-reference.png?size=large" data-thumbnail="./pass-by-value-vs-pass-by-reference.png?size=small" data-sub-html="<h2>pass-by-value-vs-pass-by-reference</h2><p>pass-by-value-vs-pass-by-reference</p>"><img loading="lazy" src="./pass-by-value-vs-pass-by-reference.png" alt="pass-by-value-vs-pass-by-reference" srcset="./pass-by-value-vs-pass-by-reference.png?size=small, ./pass-by-value-vs-pass-by-reference.png?size=medium 1.5x, ./pass-by-value-vs-pass-by-reference.png?size=large 2x" data-title="pass-by-value-vs-pass-by-reference" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">pass-by-value-vs-pass-by-reference</figcaption>
+  </figure></p>
+<h2 id="return-by-value-vs-return-by-reference" class="heading-element">
+  <a href="#return-by-value-vs-return-by-reference" class="heading-mark"></a>return-by-value vs return-by-reference</h2><p><figure><a class="lightgallery" href="./return-by-value-vs-return-by-reference.png?size=large" data-thumbnail="./return-by-value-vs-return-by-reference.png?size=small" data-sub-html="<h2>return-by-value-vs-return-by-reference</h2><p>return-by-value-vs-return-by-reference</p>"><img loading="lazy" src="./return-by-value-vs-return-by-reference.png" alt="return-by-value-vs-return-by-reference" srcset="./return-by-value-vs-return-by-reference.png?size=small, ./return-by-value-vs-return-by-reference.png?size=medium 1.5x, ./return-by-value-vs-return-by-reference.png?size=large 2x" data-title="return-by-value-vs-return-by-reference" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">return-by-value-vs-return-by-reference</figcaption>
+  </figure></p>
+<p>需要注意的是，<code>return-by-reference</code> 要求变量在函数调用结束后，<strong>不会被销毁</strong>，是在堆栈中仍然存在的变量。</p>
+<p><figure><a class="lightgallery" href="./return-by-value-vs-return-by-reference-2.png?size=large" data-thumbnail="./return-by-value-vs-return-by-reference-2.png?size=small" data-sub-html="<h2>return-by-value-vs-return-by-reference</h2><p>return-by-value-vs-return-by-reference</p>"><img loading="lazy" src="./return-by-value-vs-return-by-reference-2.png" alt="return-by-value-vs-return-by-reference" srcset="./return-by-value-vs-return-by-reference-2.png?size=small, ./return-by-value-vs-return-by-reference-2.png?size=medium 1.5x, ./return-by-value-vs-return-by-reference-2.png?size=large 2x" data-title="return-by-value-vs-return-by-reference" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">return-by-value-vs-return-by-reference</figcaption>
+  </figure></p>
+<h2 id="friend-友元函数" class="heading-element">
+  <a href="#friend-%e5%8f%8b%e5%85%83%e5%87%bd%e6%95%b0" class="heading-mark"></a>friend 友元函数</h2><p>对于类声明的<strong>私有变量</strong>，一般规定外部函数时无法获取的，所以我们需要编写<code>getter</code>函数。但是，如果把一个函数声明为这个类的<code>friend</code>，则允许直接获取类的私有变量。这样做有一定的方便性，但也是有一定的危险，毕竟我们把类私有变量封装起来的目的，就是不想让外部函数直接伸手进来操作。</p>
+<p><figure><a class="lightgallery" href="./friend.png?size=large" data-thumbnail="./friend.png?size=small" data-sub-html="<h2>friend</h2><p>friend</p>"><img loading="lazy" src="./friend.png" alt="friend" srcset="./friend.png?size=small, ./friend.png?size=medium 1.5x, ./friend.png?size=large 2x" data-title="friend" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">friend</figcaption>
+  </figure></p>
+<blockquote>
+<p>另外，我们需要注意，相同类之间生成的实例、父类与之类之间，互为<code>friend</code>。</p>
+</blockquote>
+<p><figure><a class="lightgallery" href="./friend2.png?size=large" data-thumbnail="./friend2.png?size=small" data-sub-html="<h2>friend</h2><p>friend</p>"><img loading="lazy" src="./friend2.png" alt="friend" srcset="./friend2.png?size=small, ./friend2.png?size=medium 1.5x, ./friend2.png?size=large 2x" data-title="friend" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">friend</figcaption>
+  </figure></p>
+<h2 id="operator-overloading" class="heading-element">
+  <a href="#operator-overloading" class="heading-mark"></a>operator overloading</h2><p>在 <code>c++</code> 里，有两种 <code>overloading</code>:</p>
+<ul>
+<li><code>operator overloading</code></li>
+<li><code>function overloading</code></li>
+</ul>
+<p>所谓的 <code>overloading</code>，就是对原来语义的重新定义，使之能够作用于新的对象。</p>
+<p><figure><a class="lightgallery" href="./operator-overloading-1.png?size=large" data-thumbnail="./operator-overloading-1.png?size=small" data-sub-html="<h2>operator-overloading</h2><p>operator-overloading</p>"><img loading="lazy" src="./operator-overloading-1.png" alt="operator-overloading" srcset="./operator-overloading-1.png?size=small, ./operator-overloading-1.png?size=medium 1.5x, ./operator-overloading-1.png?size=large 2x" data-title="operator-overloading" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">operator-overloading</figcaption>
+  </figure></p>
+<p><figure><a class="lightgallery" href="./operator-overloading-2.png?size=large" data-thumbnail="./operator-overloading-2.png?size=small" data-sub-html="<h2>operator-overloading</h2><p>operator-overloading</p>"><img loading="lazy" src="./operator-overloading-2.png" alt="operator-overloading" srcset="./operator-overloading-2.png?size=small, ./operator-overloading-2.png?size=medium 1.5x, ./operator-overloading-2.png?size=large 2x" data-title="operator-overloading" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">operator-overloading</figcaption>
+  </figure></p>
+<h2 id="virtual-函数" class="heading-element">
+  <a href="#virtual-%e5%87%bd%e6%95%b0" class="heading-mark"></a>virtual 函数</h2><p>在 <code>c++</code> 中，子类继承父类的函数，实际上是<strong>继承了函数的调用权</strong>。</p>
+<p><figure><a class="lightgallery" href="./puer-1.png?size=large" data-thumbnail="./puer-1.png?size=small" data-sub-html="<h2>pure</h2><p>pure</p>"><img loading="lazy" src="./puer-1.png" alt="pure" srcset="./puer-1.png?size=small, ./puer-1.png?size=medium 1.5x, ./puer-1.png?size=large 2x" data-title="pure" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">pure</figcaption>
+  </figure>
+k</p>
+<h2 id="converion-function" class="heading-element">
+  <a href="#converion-function" class="heading-mark"></a>converion function</h2><ul>
+<li>不需要指定返回类型，因为 <code>operator</code> 已经知道了</li>
+<li>类型可以是任意的，包括 <code>build-in</code> 、<code>user-defined-type</code></li>
+</ul>
+<p><figure><a class="lightgallery" href="./conversion-function.png?size=large" data-thumbnail="./conversion-function.png?size=small" data-sub-html="<h2>conversion-function</h2><p>conversion-function</p>"><img loading="lazy" src="./conversion-function.png" alt="conversion-function" srcset="./conversion-function.png?size=small, ./conversion-function.png?size=medium 1.5x, ./conversion-function.png?size=large 2x" data-title="conversion-function" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">conversion-function</figcaption>
+  </figure></p>
+<h2 id="explicit" class="heading-element">
+  <a href="#explicit" class="heading-mark"></a>explicit</h2><h2 id="pointer-like-class" class="heading-element">
+  <a href="#pointer-like-class" class="heading-mark"></a>pointer-like-class</h2><p>类对象可以像操作指针一样进行运算符重载。</p>
+<p><figure><a class="lightgallery" href="./pointer-like-class.png?size=large" data-thumbnail="./pointer-like-class.png?size=small" data-sub-html="<h2>pointer-like-class</h2><p>pointer-like-class</p>"><img loading="lazy" src="./pointer-like-class.png" alt="pointer-like-class" srcset="./pointer-like-class.png?size=small, ./pointer-like-class.png?size=medium 1.5x, ./pointer-like-class.png?size=large 2x" data-title="pointer-like-class" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">pointer-like-class</figcaption>
+  </figure></p>
+<h2 id="function-like-class" class="heading-element">
+  <a href="#function-like-class" class="heading-mark"></a>function-like-class</h2><h2 id="member-template" class="heading-element">
+  <a href="#member-template" class="heading-mark"></a>member template</h2><p>在类模板里面，成员函数也是一个模板函数。</p>
+<p><figure><a class="lightgallery" href="./member-template.png?size=large" data-thumbnail="./member-template.png?size=small" data-sub-html="<h2>member-template</h2><p>member-template</p>"><img loading="lazy" src="./member-template.png" alt="member-template" srcset="./member-template.png?size=small, ./member-template.png?size=medium 1.5x, ./member-template.png?size=large 2x" data-title="member-template" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">member-template</figcaption>
+  </figure></p>
+<h1 id="内存分配与管理" class="heading-element">
+  <a href="#%e5%86%85%e5%ad%98%e5%88%86%e9%85%8d%e4%b8%8e%e7%ae%a1%e7%90%86" class="heading-mark"></a>内存分配与管理</h1><p><figure><a class="lightgallery" href="./stack-heap.png?size=large" data-thumbnail="./stack-heap.png?size=small" data-sub-html="<h2>stack-heap</h2><p>stack-heap</p>"><img loading="lazy" src="./stack-heap.png" alt="stack-heap" srcset="./stack-heap.png?size=small, ./stack-heap.png?size=medium 1.5x, ./stack-heap.png?size=large 2x" data-title="stack-heap" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">stack-heap</figcaption>
+  </figure></p>
+<h2 id="stack" class="heading-element">
+  <a href="#stack" class="heading-mark"></a>Stack</h2><h2 id="heap" class="heading-element">
+  <a href="#heap" class="heading-mark"></a>Heap</h2><h2 id="变量的生命周期" class="heading-element">
+  <a href="#%e5%8f%98%e9%87%8f%e7%9a%84%e7%94%9f%e5%91%bd%e5%91%a8%e6%9c%9f" class="heading-mark"></a>变量的生命周期</h2><ul>
+<li>全局变量</li>
+<li>静态变量</li>
+<li>局部变量</li>
+</ul>
+<p><figure><a class="lightgallery" href="./global-object.png?size=large" data-thumbnail="./global-object.png?size=small" data-sub-html="<h2>global-object</h2><p>global-object</p>"><img loading="lazy" src="./global-object.png" alt="global-object" srcset="./global-object.png?size=small, ./global-object.png?size=medium 1.5x, ./global-object.png?size=large 2x" data-title="global-object" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">global-object</figcaption>
+  </figure></p>
+<p><figure><a class="lightgallery" href="./static-object.png?size=large" data-thumbnail="./static-object.png?size=small" data-sub-html="<h2>static-object</h2><p>static-object</p>"><img loading="lazy" src="./static-object.png" alt="static-object" srcset="./static-object.png?size=small, ./static-object.png?size=medium 1.5x, ./static-object.png?size=large 2x" data-title="static-object" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">static-object</figcaption>
+  </figure></p>
+<p><figure><a class="lightgallery" href="./heap-object.png?size=large" data-thumbnail="./heap-object.png?size=small" data-sub-html="<h2>heap-object</h2><p>heap-object</p>"><img loading="lazy" src="./heap-object.png" alt="heap-object" srcset="./heap-object.png?size=small, ./heap-object.png?size=medium 1.5x, ./heap-object.png?size=large 2x" data-title="heap-object" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">heap-object</figcaption>
+  </figure></p>
+<h2 id="nekw" class="heading-element">
+  <a href="#nekw" class="heading-mark"></a>nekw</h2><blockquote>
+<p>先分配内存大小，然后调用构造函数</p>
+</blockquote>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="kt">void</span> <span class="o">*</span><span class="n">mem</span> <span class="o">=</span> <span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Complex</span><span class="p">)</span> <span class="p">);</span>  <span class="c1">// 分配内存
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">Complex</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Complex</span><span class="o">*&gt;</span><span class="n">mem</span><span class="p">;</span>        <span class="c1">// 类型转化
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">p</span><span class="o">-&gt;</span><span class="n">Complex</span><span class="p">();</span>                                 <span class="c1">// 调用构造函数
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>在底层实现机制上，<code>new</code> 也是调用了 <code>malloc</code>。但是与当初的 <code>malloc</code> 只分配内存、不调用构造函数不同，<code>new</code> 同时还保证了类的构造函数会被调用，以进行初始化操作。</p>
+<p><figure><a class="lightgallery" href="./new.png?size=large" data-thumbnail="./new.png?size=small" data-sub-html="<h2>new</h2><p>new</p>"><img loading="lazy" src="./new.png" alt="new" srcset="./new.png?size=small, ./new.png?size=medium 1.5x, ./new.png?size=large 2x" data-title="new" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">new</figcaption>
+  </figure></p>
+<h2 id="delete" class="heading-element">
+  <a href="#delete" class="heading-mark"></a>delete</h2><blockquote>
+<p>先调用析构函数，然后删除内存大小</p>
+</blockquote>
+<p><figure><a class="lightgallery" href="./delete.png?size=large" data-thumbnail="./delete.png?size=small" data-sub-html="<h2>delete</h2><p>delete</p>"><img loading="lazy" src="./delete.png" alt="delete" srcset="./delete.png?size=small, ./delete.png?size=medium 1.5x, ./delete.png?size=large 2x" data-title="delete" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">delete</figcaption>
+  </figure></p>
+<h2 id="array-new-delete" class="heading-element">
+  <a href="#array-new-delete" class="heading-mark"></a>array: new, delete</h2><p><code>new</code> 和 <code>delete</code> 一定要配对出现</p>
+<ul>
+<li>
+<p>单个 <code>new</code> 对应单个 <code>delete</code></p>
+</li>
+<li>
+<p><code>array new</code> 对应 <code>array-delete</code>，否则会出现只是析构了第一个类，而后面的对象没有完全析构，导致内存泄露。</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">auto</span> <span class="n">p</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Complex</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="k">delete</span><span class="p">[]</span> <span class="n">p</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p><figure><a class="lightgallery" href="./array-new-delete.png?size=large" data-thumbnail="./array-new-delete.png?size=small" data-sub-html="<h2>array-new-delete</h2><p>array-new-delete</p>"><img loading="lazy" src="./array-new-delete.png" alt="array-new-delete" srcset="./array-new-delete.png?size=small, ./array-new-delete.png?size=medium 1.5x, ./array-new-delete.png?size=large 2x" data-title="array-new-delete" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">array-new-delete</figcaption>
+  </figure></p>
+<h1 id="static" class="heading-element">
+  <a href="#static" class="heading-mark"></a>static</h1><p>静态限定只有在第一次初始化的时候进行内存分配，以后所有的类实例都可以共享这个静态变量。</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">A</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="k">public</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">  <span class="k">static</span> <span class="kt">double</span> <span class="n">m_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">static</span> <span class="kt">double</span> <span class="nf">get_data</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">m_data</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">double</span> <span class="n">A</span><span class="o">::</span><span class="n">mdata</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> <span class="c1">// 变量定义，所有实例共同使用
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>调用 <code>static</code> 函数的方式有两种：</p>
+<ul>
+<li>通过类调用：<code>A::get_data()</code>，需要指定类作用域</li>
+<li>通过实例调用：<code>a.get_data()</code></li>
+</ul>
+<p><figure><a class="lightgallery" href="./static.png?size=large" data-thumbnail="./static.png?size=small" data-sub-html="<h2>static</h2><p>static</p>"><img loading="lazy" src="./static.png" alt="static" srcset="./static.png?size=small, ./static.png?size=medium 1.5x, ./static.png?size=large 2x" data-title="static" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">static</figcaption>
+  </figure></p>
+<h1 id="类模板" class="heading-element">
+  <a href="#%e7%b1%bb%e6%a8%a1%e6%9d%bf" class="heading-mark"></a>类模板</h1><p>推荐写类模板的方法：</p>
+<ul>
+<li>先按照某个特定版本的类进行设计、编写、调试</li>
+<li>待以上特定版本的类完成后，使用 <code>template</code> 类型进行替代</li>
+</ul>
+<p><figure><a class="lightgallery" href="./class-template.png?size=large" data-thumbnail="./class-template.png?size=small" data-sub-html="<h2>class-template</h2><p>class-template</p>"><img loading="lazy" src="./class-template.png" alt="class-template" srcset="./class-template.png?size=small, ./class-template.png?size=medium 1.5x, ./class-template.png?size=large 2x" data-title="class-template" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">class-template</figcaption>
+  </figure></p>
+<h1 id="namespace" class="heading-element">
+  <a href="#namespace" class="heading-mark"></a>namespace</h1><ul>
+<li>
+<p>using directive</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>using declaration</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>using alias：</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">using</span> <span class="n">hiorder</span> <span class="o">=</span>  <span class="n">hicloud</span><span class="o">::</span><span class="n">OrderData</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p><figure><a class="lightgallery" href="./namespace.png?size=large" data-thumbnail="./namespace.png?size=small" data-sub-html="<h2>namespace</h2><p>namespace</p>"><img loading="lazy" src="./namespace.png" alt="namespace" srcset="./namespace.png?size=small, ./namespace.png?size=medium 1.5x, ./namespace.png?size=large 2x" data-title="namespace" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">namespace</figcaption>
+  </figure></p>
+<h1 id="标准库std" class="heading-element">
+  <a href="#%e6%a0%87%e5%87%86%e5%ba%93std" class="heading-mark"></a>标准库:std</h1><h1 id="stl" class="heading-element">
+  <a href="#stl" class="heading-mark"></a>STL</h1><h1 id="c11-新特征" class="heading-element">
+  <a href="#c11-%e6%96%b0%e7%89%b9%e5%be%81" class="heading-mark"></a>C++11 新特征</h1></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/" title="C&#43;&#43;日志模块:loguru">C&#43;&#43;日志模块:loguru</a></li><li>
+          <a href="/archives/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" title="Clion 远程调试">Clion 远程调试</a></li><li>
+          <a href="/archives/2019-12-11-solarflare%E7%BD%91%E5%8D%A1%E5%BC%80%E5%8F%91-openonload-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%B0%83%E8%AF%95/" title="Solarflare网卡开发：openonload 安装与调试">Solarflare网卡开发：openonload 安装与调试</a></li><li>
+          <a href="/archives/2019-12-10-ubuntu-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-wireshark/" title="Ubuntu 源代码安装 wireshark">Ubuntu 源代码安装 wireshark</a></li><li>
+          <a href="/archives/2019-12-04-tmux-%E7%BB%88%E7%AB%AF%E7%A5%9E%E5%99%A8/" title="tmux:终端神器">tmux:终端神器</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2020-06-26 00:00:00">更新于 2020-06-26&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" data-title="侯捷: C&#43;&#43; 面向对象高级编程" data-hashtags="c&#43;&#43;,面向对象,编程,侯捷"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" data-hashtag="c&#43;&#43;"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" data-title="侯捷: C&#43;&#43; 面向对象高级编程" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" data-title="侯捷: C&#43;&#43; 面向对象高级编程"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2020-06-26-%E4%BE%AF%E6%8D%B7--c&#43;&#43;-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B/" data-title="侯捷: C&#43;&#43; 面向对象高级编程"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/c&#43;&#43;/" class="post-tag" title="标签 - C&#43;&#43;">C&#43;&#43;</a><a href="/tags/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" class="post-tag" title="标签 - 面向对象">面向对象</a><a href="/tags/%E7%BC%96%E7%A8%8B/" class="post-tag" title="标签 - 编程">编程</a><a href="/tags/%E4%BE%AF%E6%8D%B7/" class="post-tag" title="标签 - 侯捷">侯捷</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/" class="post-nav-item" rel="prev" title="C&#43;&#43;日志模块:loguru"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>C&#43;&#43;日志模块:loguru</a>
+      <a href="/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" class="post-nav-item" rel="next" title="frp 实现域名解析">frp 实现域名解析<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

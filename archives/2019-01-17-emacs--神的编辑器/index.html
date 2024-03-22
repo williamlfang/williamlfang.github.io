@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Emacs: 神的编辑器 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Emacs 速来有「神的编辑器」之美誉，同另一款「编辑器之神」Vi/Vim，都是程序员编辑源文件、编写文档的重要法宝。用一种在江湖上流传许久的说法，Emacs其实不是编辑器，而是披着编辑器外衣的操作系统，具有高强度的可拓展性，堪比一款操作系统般强大。" /><meta name="keywords" content='Emacs, vim, IDE, Lisp, GNU, Stallman, Editor, 编辑器' /><meta itemprop="name" content="Emacs: 神的编辑器">
+<meta itemprop="description" content="Emacs 速来有「神的编辑器」之美誉，同另一款「编辑器之神」Vi/Vim，都是程序员编辑源文件、编写文档的重要法宝。用一种在江湖上流传许久的说法，Emacs其实不是编辑器，而是披着编辑器外衣的操作系统，具有高强度的可拓展性，堪比一款操作系统般强大。"><meta itemprop="datePublished" content="2019-01-17T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-01-17T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1917"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Emacs,vim,IDE,Lisp,GNU,Stallman,Editor,编辑器," /><meta property="og:title" content="Emacs: 神的编辑器" />
+<meta property="og:description" content="Emacs 速来有「神的编辑器」之美誉，同另一款「编辑器之神」Vi/Vim，都是程序员编辑源文件、编写文档的重要法宝。用一种在江湖上流传许久的说法，Emacs其实不是编辑器，而是披着编辑器外衣的操作系统，具有高强度的可拓展性，堪比一款操作系统般强大。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2019-01-17T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-01-17T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Emacs: 神的编辑器"/>
+<meta name="twitter:description" content="Emacs 速来有「神的编辑器」之美誉，同另一款「编辑器之神」Vi/Vim，都是程序员编辑源文件、编写文档的重要法宝。用一种在江湖上流传许久的说法，Emacs其实不是编辑器，而是披着编辑器外衣的操作系统，具有高强度的可拓展性，堪比一款操作系统般强大。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" /><link rel="prev" href="https://williamlfang.github.io/archives/2019-01-16-2018%E5%B9%B4%E4%BC%9A%E6%80%BB%E7%BB%93%E5%A4%A7%E7%BA%B2/" /><link rel="next" href="https://williamlfang.github.io/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Emacs: 神的编辑器",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8\/"
+    },"genre": "posts","keywords": "Emacs, vim, IDE, Lisp, GNU, Stallman, Editor, 编辑器","wordcount":  1917 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8\/","datePublished": "2019-01-17T00:00:00+00:00","dateModified": "2019-01-17T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Emacs: 神的编辑器</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2019-01-17 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2019-01-17">2019-01-17</time></span>&nbsp;<span title="1917 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 4 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#安装">安装</a>
+      <ol>
+        <li><a href="#linux">Linux</a>
+          <ol>
+            <li><a href="#ubuntu">Ubuntu</a>
+              <ol>
+                <li><a href="#源码编译安装最新版">源码编译安装(最新版)</a></li>
+                <li><a href="#一键安装稳定版">一键安装(稳定版)</a></li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#配置">配置</a>
+      <ol>
+        <li><a href="#配置文件">配置文件</a></li>
+        <li><a href="#中文输入问题">中文输入问题</a></li>
+        <li><a href="#插件">插件</a>
+          <ol>
+            <li><a href="#ess">ESS</a></li>
+            <li><a href="#ipython">IPython</a></li>
+          </ol>
+        </li>
+        <li><a href="#主题设置">主题设置</a>
+          <ol>
+            <li><a href="#color-theme"><code>color-theme</code></a></li>
+            <li><a href="#one-dark-theme"><code>one-dark-theme</code></a></li>
+            <li><a href="#zenburn"><code>zenburn</code></a></li>
+          </ol>
+        </li>
+        <li><a href="#快捷设置">快捷设置</a></li>
+        <li><a href="#模式设置">模式设置</a></li>
+      </ol>
+    </li>
+    <li><a href="#lisp介绍">Lisp介绍</a></li>
+    <li><a href="#使用体会与个人总结">使用体会与个人总结</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2019-01-17，文中内容可能已过时。</div>
+      </div>
+    </div><p><code>Emacs</code> 速来有「神的编辑器」之美誉，同另一款「编辑器之神」<code>Vi/Vim</code>，都是程序员编辑源文件、编写文档的重要法宝。用一种在江湖上流传许久的说法，<code>Emacs</code>其实不是<strong>编辑器</strong>，而是披着编辑器外衣的<strong>操作系统</strong>，具有高强度的可拓展性，堪比一款操作系统般强大。</p>
+<h1 id="安装" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h1><h2 id="linux" class="heading-element">
+  <a href="#linux" class="heading-mark"></a>Linux</h2><h3 id="ubuntu" class="heading-element">
+  <a href="#ubuntu" class="heading-mark"></a>Ubuntu</h3><h4 id="源码编译安装最新版" class="heading-element">
+  <a href="#%e6%ba%90%e7%a0%81%e7%bc%96%e8%af%91%e5%ae%89%e8%a3%85%e6%9c%80%e6%96%b0%e7%89%88" class="heading-mark"></a>源码编译安装(最新版)</h4><p>系统更新资源：</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get update <span class="o">&amp;&amp;</span> apt-get upgrade</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安装源码编译需要的包：</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get install build-essential libncurses-dev</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以到 <a href="https://www.gnu.org/software/emacs/download.html"target="_blank" rel="external nofollow noopener noreferrer">EMACS官方下载页面<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> 或 直接使用下面的链接:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="nb">cd</span> /tmp
+</span></span><span class="line"><span class="cl">$ wget http://mirrors.ustc.edu.cn/gnu/emacs/emacs-26.1.tar.xz
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 解压 xz 文件包</span>
+</span></span><span class="line"><span class="cl">$ tar -xJvf emacs-26.1.tar.xz
+</span></span><span class="line"><span class="cl">$ <span class="nb">cd</span> emacs-26.1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以通过 <code>configure</code> 进行配置安装：</p>
+<ul>
+<li>
+<p><code>纯命令行</code>：仅用于控制台环境，如果需要GUI界面还要安装其它开发包, <code>--without-x</code>，以及 <code>--with-gnutls=no</code></p>
+</li>
+<li>
+<p><code>交互界面</code>：默认是会配置所有的交互界面，但需要额外安装相关的软件包。</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 默认安装 GUI</span>
+</span></span><span class="line"><span class="cl">$ ./configure</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p>对于在本地操作，一般我选择配置 <code>GUI</code>。如果有报错需要安装包，可以使用 <code>apt search xxx</code> 来搜索名称，然后安装好就可以了。我安装了几个常用的包：</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo apt-get install gnutls-dev libxpm-dev libgif-dev libtiff-dev</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果继续报错</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">... ...
+</span></span><span class="line"><span class="cl">checking <span class="k">for</span> libXaw... configure: error: No X toolkit could be found.
+</span></span><span class="line"><span class="cl">... ...</span></span></code></pre></td></tr></table>
+</div>
+</div><p>则需要通过安装 <code>gtk</code> 来实现带界面运行</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt search gtk <span class="p">|</span> grep libgtk
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">libgtk2.0-dev    - development files <span class="k">for</span> the GTK+ library</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安装这个 <code>gtk</code> 包</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo apt-get install libgtk2.0-dev</span></span></code></pre></td></tr></table>
+</div>
+</div><p>剩下的就是编译安装了</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo make <span class="o">&amp;&amp;</span> make install</span></span></code></pre></td></tr></table>
+</div>
+</div><p>查看版本号</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ emacs --version
+</span></span><span class="line"><span class="cl">GNU Emacs 26.1
+</span></span><span class="line"><span class="cl">Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2018</span> Free Software Foundation, Inc.
+</span></span><span class="line"><span class="cl">GNU Emacs comes with ABSOLUTELY NO WARRANTY.
+</span></span><span class="line"><span class="cl">You may redistribute copies of GNU Emacs
+</span></span><span class="line"><span class="cl">under the terms of the GNU General Public License.
+</span></span><span class="line"><span class="cl">For more information about these matters, see the file named COPYING.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当然，也可以在终端启动无界面的操作：</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ emacs -nw</span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/nw.png?size=large" data-thumbnail="/images/2019-01-17-Emacs--神的编辑器/nw.png?size=small" data-sub-html="<h2>emacs -nw</h2><p>emacs -nw</p>"><img loading="lazy" src="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/nw.png" alt="emacs -nw" srcset="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/nw.png?size=small, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/nw.png?size=medium 1.5x, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/nw.png?size=large 2x" data-title="emacs -nw" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">emacs -nw</figcaption>
+  </figure></p>
+<h4 id="一键安装稳定版" class="heading-element">
+  <a href="#%e4%b8%80%e9%94%ae%e5%ae%89%e8%a3%85%e7%a8%b3%e5%ae%9a%e7%89%88" class="heading-mark"></a>一键安装(稳定版)</h4><p>这种方式比较适合安装在 <code>ppa</code> 里面的稳定版本，通常是较当前版本号降低一个系列：</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo apt install emacs</span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/emacs.png?size=large" data-thumbnail="/images/2019-01-17-Emacs--神的编辑器/emacs.png?size=small" data-sub-html="<h2>emacs 启动初始界面</h2><p>emacs 启动初始界面</p>"><img loading="lazy" src="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/emacs.png" alt="emacs 启动初始界面" srcset="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/emacs.png?size=small, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/emacs.png?size=medium 1.5x, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/emacs.png?size=large 2x" data-title="emacs 启动初始界面" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">emacs 启动初始界面</figcaption>
+  </figure></p>
+<h1 id="配置" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae" class="heading-mark"></a>配置</h1><h2 id="配置文件" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" class="heading-mark"></a>配置文件</h2><p>从本质上说，<code>Emacs</code> 其实只是一款 <code>Lisp</code> 的编译引擎，可以用来执行任何符合语法的 <code>Lisp</code> 脚本。由此推导出来，我们可以通过编写自定义的<strong>配置文件</strong>来设置 <code>Emacs</code> 启动后执行的程序命令。通过查看 <code>GNU Emacs</code> 的官方说明，在 <code>Init File</code> 这部分内容里，我们知道，<code>Emacs</code> 会自动去搜索以下路径的配置文件</p>
+<ul>
+<li>
+<p><code>～/.emacs</code>：这种方式是把所有的配置信息都写在一个文件里，设置相对简单，<strong>但不利于进行模块化管理，一旦设置文件增多，会导致混乱</strong>，一般不推荐这种配置方式。</p>
+</li>
+<li>
+<p><code>~/.emacs.el</code></p>
+</li>
+<li>
+<p><code>~/.emacs.d/init.el</code>：这种方式更加现代，可以把所有的配置文件都统一放在一个文件夹下面，因此更有力于管理插件与配置。<code>Emacs</code> 在启动后会先读入 <code>init.el</code> 文件设置，虽然只是一个单文件，但是可以利用 <code>feature</code> 机制，把具体的模块分类写在这里面。</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── elpa
+</span></span><span class="line"><span class="cl">├── init.el
+</span></span><span class="line"><span class="cl">├── lisp
+</span></span><span class="line"><span class="cl">└── themes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="m">3</span> directories,  files</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在配置文件 <code>init.el</code> 中，通过 <code>add-to-list</code> 将相关的配置文件路径添加到初始化读取路径中。
+<ul>
+<li>如果是在 <code>~/.eamcs.d</code> 目录下面，可以使用 <code>(add-to-list 'load-path &quot;~/.emacs.d/plugins&quot;)</code></li>
+<li>如果还有一层子目录，需要指定 <code>(add-to-list 'load-path (expand-file-name &quot;子目录/子目录&quot; &quot;~/.emacs.d&quot;))</code>。其实，上一条也可以写成 <code>(add-to-list 'load-path (expand-file-name &quot;~/.emacs.d&quot;))</code>，相当于 <code>子目录</code> 写成<strong>空目录</strong>。</li>
+</ul>
+</li>
+<li>一般来说，将配置文件名与其提供的 <code>feature</code> 函数命名相同。</li>
+</ul>
+<p>比如，我的配置文件 <code>init.el</code>:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lisp" data-lang="lisp"><span class="line"><span class="cl"><span class="c1">;; This is the main Emacs initialization file – .emacs.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;load-path</span> <span class="p">(</span><span class="nv">expand-file-name</span> <span class="s">&#34;lisp&#34;</span> <span class="s">&#34;~/.emacs.d&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">require</span> <span class="ss">&#39;feature_1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">require</span> <span class="ss">&#39;feature_2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">require</span> <span class="ss">&#39;feature_3</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后在 <code>&quot;lisp&quot;</code> 目录下面放入 <code>feature_1</code>、<code>feature_2</code>、<code>feature_3</code>。</p>
+<p>比如：<code>feature_1</code> 这个配置文件，它提供<code>feature_1</code>特性，即是 <code>～/.emacs.d/init.el</code> 中使用 <code>require</code> 命令要求的 <code>feature_1</code> 特性，那么要在<code>feature_1.el</code> 中加入 <code>provide</code>，则 <code>feature_1.el</code> 内容如下：</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lisp" data-lang="lisp"><span class="line"><span class="cl"><span class="c1">;; This is my Emacs customization file feature_1.el providing feature_1</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">provide</span> <span class="err">‘</span><span class="nv">feature_1</span><span class="p">)</span>  <span class="c1">;; 为 init.el 提供 require &#39;feature_1</span>
+</span></span><span class="line"><span class="cl"><span class="c1">;; customization code …</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h2 id="中文输入问题" class="heading-element">
+  <a href="#%e4%b8%ad%e6%96%87%e8%be%93%e5%85%a5%e9%97%ae%e9%a2%98" class="heading-mark"></a>中文输入问题</h2><p>参考:</p>
+<ul>
+<li><a href="https://www.jianshu.com/p/852f679d0e76?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation"target="_blank" rel="external nofollow noopener noreferrer">Ubuntu18.04中解决emacs无法输入中文的问题<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/31642707"target="_blank" rel="external nofollow noopener noreferrer">Ubuntu Emacs下无法使用fcitx输入中文的简单workaround<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul>
+<h2 id="插件" class="heading-element">
+  <a href="#%e6%8f%92%e4%bb%b6" class="heading-mark"></a>插件</h2><h3 id="ess" class="heading-element">
+  <a href="#ess" class="heading-mark"></a>ESS</h3><h3 id="ipython" class="heading-element">
+  <a href="#ipython" class="heading-mark"></a>IPython</h3><h2 id="主题设置" class="heading-element">
+  <a href="#%e4%b8%bb%e9%a2%98%e8%ae%be%e7%bd%ae" class="heading-mark"></a>主题设置</h2><h3 id="color-theme" class="heading-element">
+  <a href="#color-theme" class="heading-mark"></a><code>color-theme</code></h3><p>可以下载一个主题集成包，<code>color-theme</code>，里面自带了多款颜色主题。</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> ~/Downloads
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 下载 color-theme</span>
+</span></span><span class="line"><span class="cl">wget http://download.savannah.gnu.org/releases/color-theme/color-theme-6.6.0.tar.gz
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">tar xfv color-theme-6.6.0.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> color-theme-6.6.0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 复制到 ~/.emacs.d/plugins 目录</span>
+</span></span><span class="line"><span class="cl">cp -r themes color-theme.el ~/.emacs.d/plugins</span></span></code></pre></td></tr></table>
+</div>
+</div><p>打开Emacs后可以 <code>M+X color-theme-select</code> 选择你喜欢的主题，使用回车键 <code>Enter</code> 来预览效果，然后将相应的名称写入 <code>～/.emacs.d/init.el</code> 中。</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lisp" data-lang="lisp"><span class="line"><span class="cl"><span class="c1">;; 需要指定加载的路径</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">add-to-list</span> <span class="ss">&#39;load-path</span> <span class="s">&#34;~/.emacs.d/plugins&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nf">require</span> <span class="ss">&#39;color-theme</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">color-theme-initialize</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">;; 这个是你选择的主题，后面的 subtle-hacker 就是它的名字，注意使用 小写 。</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nv">color-theme-subtle-hacker</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/color-theme-subtle-hacker.png?size=large" data-thumbnail="/images/2019-01-17-Emacs--神的编辑器/color-theme-subtle-hacker.png?size=small" data-sub-html="<h2>color-theme</h2><p>color-theme</p>"><img loading="lazy" src="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/color-theme-subtle-hacker.png" alt="color-theme" srcset="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/color-theme-subtle-hacker.png?size=small, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/color-theme-subtle-hacker.png?size=medium 1.5x, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/color-theme-subtle-hacker.png?size=large 2x" data-title="color-theme" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">color-theme</figcaption>
+  </figure></p>
+<h3 id="one-dark-theme" class="heading-element">
+  <a href="#one-dark-theme" class="heading-mark"></a><code>one-dark-theme</code></h3><p>当然，我比较喜欢 <code>Atom-One-Dark-Theme</code>。这个比较适合在黑色背景下进行写代码。</p>
+<p>已经有牛人把这个颜色主题改成了 Emacs 下的配置方案，比如 <a href="https://github.com/jonathanchu/atom-one-dark-theme"target="_blank" rel="external nofollow noopener noreferrer">Introducing Atom One Dark Theme for Emacs<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>。</p>
+<p>先把这个配置下载到本地目录 <code>~/.emacs.d/themes</code></p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> ~/.emacs.d/themes
+</span></span><span class="line"><span class="cl">git clone https://github.com/jonathanchu/atom-one-dark-theme.git</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后在配置文件 <code>~/emacs.d/init.el</code> 增加</p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">;;</span> <span class="o">-----------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="n">add</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">list</span> <span class="s1">&#39;custom-theme-load-path &#34;~/.emacs.d/themes/atom-one-dark-theme&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">load</span><span class="o">-</span><span class="n">theme</span> <span class="s1">&#39;atom-one-dark t)</span>
+</span></span><span class="line"><span class="cl"><span class="p">;;</span> <span class="o">-----------------------------------------------------------------------------------</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>重启 <code>Emacs</code> 即可看到效果了。</p>
+<p><figure><a class="lightgallery" href="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/one-dark-theme.png?size=large" data-thumbnail="/images/2019-01-17-Emacs--神的编辑器/one-dark-theme.png?size=small" data-sub-html="<h2>one-dark-theme</h2><p>one-dark-theme</p>"><img loading="lazy" src="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/one-dark-theme.png" alt="one-dark-theme" srcset="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/one-dark-theme.png?size=small, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/one-dark-theme.png?size=medium 1.5x, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/one-dark-theme.png?size=large 2x" data-title="one-dark-theme" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">one-dark-theme</figcaption>
+  </figure></p>
+<h3 id="zenburn" class="heading-element">
+  <a href="#zenburn" class="heading-mark"></a><code>zenburn</code></h3><p><code>zenburn</code> 原来是 <code>Vim</code> 下面的一款<strong>低对比度</strong>颜色配置方案，后来又移植到 <code>Emacs</code>，<a href="https://github.com/bbatsov/zenburn-emacs"target="_blank" rel="external nofollow noopener noreferrer">The Zenburn colour theme ported to Emacs<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>。同样，我们也可以十分方便的安装：</p>
+<div class="highlight" id="id-20"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd ~/.emacs.d/themes
+</span></span><span class="line"><span class="cl">git clone git@github.com:bbatsov/zenburn-emacs.git</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后在配置文件 <code>~/emacs.d/init.el</code> 增加</p>
+<div class="highlight" id="id-21"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">(</span><span class="n">add</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">list</span> <span class="s1">&#39;custom-theme-load-path &#34;~/.emacs.d/themes/zenburn-emacs&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span><span class="nb">load</span><span class="o">-</span><span class="n">theme</span> <span class="s1">&#39;zenburn t)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/zenburn.png?size=large" data-thumbnail="/images/2019-01-17-Emacs--神的编辑器/zenburn.png?size=small" data-sub-html="<h2>zenburn</h2><p>zenburn</p>"><img loading="lazy" src="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/zenburn.png" alt="zenburn" srcset="/images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/zenburn.png?size=small, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/zenburn.png?size=medium 1.5x, /images/2019-01-17-Emacs--%e7%a5%9e%e7%9a%84%e7%bc%96%e8%be%91%e5%99%a8/zenburn.png?size=large 2x" data-title="zenburn" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">zenburn</figcaption>
+  </figure></p>
+<h2 id="快捷设置" class="heading-element">
+  <a href="#%e5%bf%ab%e6%8d%b7%e8%ae%be%e7%bd%ae" class="heading-mark"></a>快捷设置</h2><h2 id="模式设置" class="heading-element">
+  <a href="#%e6%a8%a1%e5%bc%8f%e8%ae%be%e7%bd%ae" class="heading-mark"></a>模式设置</h2><h1 id="lisp介绍" class="heading-element">
+  <a href="#lisp%e4%bb%8b%e7%bb%8d" class="heading-mark"></a>Lisp介绍</h1><h1 id="使用体会与个人总结" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8%e4%bd%93%e4%bc%9a%e4%b8%8e%e4%b8%aa%e4%ba%ba%e6%80%bb%e7%bb%93" class="heading-mark"></a>使用体会与个人总结</h1></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2017-12-10-clion-%E6%9C%80%E5%A5%BD%E7%94%A8%E7%9A%84-c-c&#43;&#43;-ide/" title="CLion：最好用的 C-C&#43;&#43; IDE">CLion：最好用的 C-C&#43;&#43; IDE</a></li><li>
+          <a href="/archives/2019-01-16-2018%E5%B9%B4%E4%BC%9A%E6%80%BB%E7%BB%93%E5%A4%A7%E7%BA%B2/" title="2018年会总结大纲">2018年会总结大纲</a></li><li>
+          <a href="/archives/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/" title="Sublime 编译 运行 c/c&#43;&#43; 文件">Sublime 编译 运行 c/c&#43;&#43; 文件</a></li><li>
+          <a href="/archives/2017-11-10-%E4%BA%A4%E6%98%93%E6%89%80%E6%95%B0%E6%8D%AE%E7%88%AC%E8%99%AB%E4%B9%8B%E4%B8%8A%E6%9C%9F%E6%89%80/" title="交易所数据爬虫之上期所">交易所数据爬虫之上期所</a></li><li>
+          <a href="/archives/2017-11-05-%E5%8D%87%E7%BA%A7-rstudio-server/" title="升级 Rstudio Server">升级 Rstudio Server</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2019-01-17 00:00:00">更新于 2019-01-17&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" data-title="Emacs: 神的编辑器" data-hashtags="Emacs,vim,IDE,Lisp,GNU,Stallman,Editor,编辑器"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" data-hashtag="Emacs"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" data-title="Emacs: 神的编辑器" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" data-title="Emacs: 神的编辑器"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/" data-title="Emacs: 神的编辑器"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/emacs/" class="post-tag" title="标签 - Emacs">Emacs</a><a href="/tags/vim/" class="post-tag" title="标签 - Vim">Vim</a><a href="/tags/ide/" class="post-tag" title="标签 - IDE">IDE</a><a href="/tags/lisp/" class="post-tag" title="标签 - Lisp">Lisp</a><a href="/tags/gnu/" class="post-tag" title="标签 - Gnu">Gnu</a><a href="/tags/stallman/" class="post-tag" title="标签 - Stallman">Stallman</a><a href="/tags/editor/" class="post-tag" title="标签 - Editor">Editor</a><a href="/tags/%E7%BC%96%E8%BE%91%E5%99%A8/" class="post-tag" title="标签 - 编辑器">编辑器</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2019-01-16-2018%E5%B9%B4%E4%BC%9A%E6%80%BB%E7%BB%93%E5%A4%A7%E7%BA%B2/" class="post-nav-item" rel="prev" title="2018年会总结大纲"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>2018年会总结大纲</a>
+      <a href="/archives/2019-02-24-k-r-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="post-nav-item" rel="next" title="K&amp;R 读书笔记">K&amp;R 读书笔记<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
