@@ -73,6 +73,78 @@
 
 主要是看到这篇优秀的博客，受到启发。于是我也准备在博客添加一个月历，用于查看文章发布的情况。
 
+{{&lt; link
+    href=&#34;https://blog.gimo.me/posts/adding-calendar-view-for-hugo-blog-posts/&#34;
+    content=&#34;给 Hugo 博客添加月历功能&#34;
+    title=&#34;Yuanji&#39;s Blog&#34;
+    card=true
+&gt;}}
+
+这里主要修改的地方有：
+
+- 在配置 `hugo.toml` 添加一个栏目
+
+    ```toml
+    [menu]
+      [[menu.main]]
+        identifier = &#34;calendar&#34;
+        parent = &#34;&#34;
+        pre = &#34;&#34;
+        post = &#34;&#34;
+        name = &#34;月历&#34;
+        url = &#34;/calendar/&#34;
+        title = &#34;&#34;
+        weight = 100
+        [menu.main.params]
+          icon = &#34;fa-regular fa-id-card fa-fw fa-sm&#34;
+    ```
+
+- 新建 `content/calendar/index.md`，设置其布局
+
+    ```Markdown
+    ---
+    title: &#34;月历📅&#34;
+    date: 2024-03-01T16:00:09&#43;08:00
+    layout: calendar
+    ---
+    ```
+
+- 修改 `calendar css` 格式，在根目录创建（或则复制一份 `/theme/FixIt/assets/css/_custom.css`）到 `assets/css/_custom.css`
+
+    ```css
+    // ==============================
+    // Custom style
+    // 自定义样式
+    // ==============================
+
+    #calendar {
+      a {
+        color: var(--text-bright);
+
+        &amp;:hover {
+          text-decoration: none;
+        }
+      }
+
+      tr {
+        background: var(--background-body);
+      }
+
+      .fc-daygrid-event {
+        white-space: normal;
+      }
+
+      .fc-day-sat .fc-daygrid-day-number,
+      .fc-day-sat .fc-col-header-cell-cushion,
+      .fc-day-sun .fc-daygrid-day-number,
+      .fc-day-sun .fc-col-header-cell-cushion {
+        color: #e74c3c;
+      }
+    }
+    ```
+
+![calendar 效果图](./calendar.png &#34;My Calendar for blog&#34;)
+
 
 ## 预览与发布
 
