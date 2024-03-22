@@ -84,20 +84,20 @@
 
 - 在配置 `hugo.toml` 添加一个栏目
 
-    ```toml
-    [menu]
-      [[menu.main]]
-        identifier = &#34;calendar&#34;
-        parent = &#34;&#34;
-        pre = &#34;&#34;
-        post = &#34;&#34;
-        name = &#34;月历&#34;
-        url = &#34;/calendar/&#34;
-        title = &#34;&#34;
-        weight = 100
-        [menu.main.params]
-          icon = &#34;fa-regular fa-id-card fa-fw fa-sm&#34;
-    ```
+    &lt;!-- ```toml --&gt;
+    &lt;!-- [menu] --&gt;
+    &lt;!--   [[menu.main]] --&gt;
+    &lt;!--     identifier = &#34;calendar&#34; --&gt;
+    &lt;!--     parent = &#34;&#34; --&gt;
+    &lt;!--     pre = &#34;&#34; --&gt;
+    &lt;!--     post = &#34;&#34; --&gt;
+    &lt;!--     name = &#34;月历&#34; --&gt;
+    &lt;!--     url = &#34;/calendar/&#34; --&gt;
+    &lt;!--     title = &#34;&#34; --&gt;
+    &lt;!--     weight = 100 --&gt;
+    &lt;!--     [menu.main.params] --&gt;
+    &lt;!--       icon = &#34;fa-regular fa-id-card fa-fw fa-sm&#34; --&gt;
+    &lt;!-- ``` --&gt;
 
 - 新建 `content/calendar/index.md`，设置其布局
 
