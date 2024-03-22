@@ -1,0 +1,40 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>反向代理 - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</link>
+    <description>反向代理 - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 19 Dec 2020 00:00:00 &#43;0000</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" rel="self" type="application/rss+xml" /><item>
+  <title>ssh 反向代理</title>
+  <link>https://williamlfang.github.io/archives/2020-12-19-ssh-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</link>
+  <pubDate>Sat, 19 Dec 2020 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2020-12-19-ssh-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</guid>
+  <description><![CDATA[<h1 id="服务器端" class="heading-element">
+  <a href="#%e6%9c%8d%e5%8a%a1%e5%99%a8%e7%ab%af" class="heading-mark"></a>服务器端</h1><p>假设服务器[京东云]ip是：<code>123.123.111.111</code></p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 启动 firewalld 服务，添加端口 6666</span>
+</span></span><span class="line"><span class="cl">fuser -k 6666/tcp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">systemctl restart firewalld.service
+</span></span><span class="line"><span class="cl">firewall-cmd --zone<span class="o">=</span>public --add-port<span class="o">=</span>6666/tcp --permanent
+</span></span><span class="line"><span class="cl">systemctl stop firewalld.service
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 开启代理，通过外部访问 6666 转发到 6166(即内网服务器端口)</span>
+</span></span><span class="line"><span class="cl">ssh -fNCL *:6666:localhost:6166 localhost</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+</channel>
+</rss>

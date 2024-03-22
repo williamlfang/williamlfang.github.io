@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Unix编程 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。" /><meta name="keywords" content='Unix, Shell, Programming' /><meta itemprop="name" content="Unix编程">
+<meta itemprop="description" content="以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。"><meta itemprop="datePublished" content="2017-09-29T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-10-15T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1924"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Unix,Shell,Programming," /><meta property="og:title" content="Unix编程" />
+<meta property="og:description" content="以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2017-09-29-unix%E7%BC%96%E7%A8%8B/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2017-09-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-15T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Unix编程"/>
+<meta name="twitter:description" content="以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2017-09-29-unix%E7%BC%96%E7%A8%8B/" /><link rel="prev" href="https://williamlfang.github.io/archives/2017-08-12-%E5%AE%BD%E5%AE%A2%E4%BA%BA%E7%94%9F/" /><link rel="next" href="https://williamlfang.github.io/archives/2017-10-09-%E4%BA%A6%E8%88%92-%E8%BF%B7%E8%BF%AD%E9%A6%99/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Unix编程",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2017-09-29-unix%E7%BC%96%E7%A8%8B\/"
+    },"genre": "archives","keywords": "Unix, Shell, Programming","wordcount":  1924 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2017-09-29-unix%E7%BC%96%E7%A8%8B\/","datePublished": "2017-09-29T00:00:00+00:00","dateModified": "2017-10-15T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "William"
+      },"description": "以 `Unix` 操作系统运营为出点发，介绍相关的命令行及 `shell` 脚本编程。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><article class="page single special">
+    <div class="header"><h1 class="single-title animate__animated animate__pulse animate__faster">Unix编程</h1></div><div
+      class="content"
+      id="content"
+      
+      
+    ><p><code>Unix</code>/<code>Linux</code> 编程实践，主要为实际生产过程中经常使用的<strong>命令行以及简单的执行任务的程序脚本</strong>。</p>
+<p>![Unix](/images/UNIX HD Wallpaper.png)</p>
+<h1 id="unix-常用命令行" class="heading-element">
+  <a href="#unix-%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4%e8%a1%8c" class="heading-mark"></a><code>Unix</code> 常用命令行</h1><hr>
+<h2 id="用户管理" class="heading-element">
+  <a href="#%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86" class="heading-mark"></a>用户管理</h2><h3 id="用户权限" class="heading-element">
+  <a href="#%e7%94%a8%e6%88%b7%e6%9d%83%e9%99%90" class="heading-mark"></a>用户权限</h3><ul>
+<li><code>root</code>：超级权限，是系统的管理员</li>
+<li><code>sudo su</code>：允许当前用户使用系统管理员权限，主要是修改系统相关配置、安装软件包等</li>
+<li>增加用户：<code>sudo adduser</code></li>
+</ul>
+<h3 id="修改文件权限" class="heading-element">
+  <a href="#%e4%bf%ae%e6%94%b9%e6%96%87%e4%bb%b6%e6%9d%83%e9%99%90" class="heading-mark"></a>修改文件权限</h3><ul>
+<li><code>chmod +x file.sh</code>：给予文件可执行权限</li>
+</ul>
+<hr>
+<h2 id="文件操作" class="heading-element">
+  <a href="#%e6%96%87%e4%bb%b6%e6%93%8d%e4%bd%9c" class="heading-mark"></a>文件操作</h2><h3 id="cd" class="heading-element">
+  <a href="#cd" class="heading-mark"></a><code>cd</code></h3><p>指向文件路径</p>
+<ul>
+<li><code>cd ~</code> / <code>cd </code>：这指向当前用户的主目录 <code>/home/you</code></li>
+<li><code>cd ..</code>：返回上一级父目录</li>
+</ul>
+<h3 id="pwd" class="heading-element">
+  <a href="#pwd" class="heading-mark"></a><code>pwd</code></h3><p>打印/显示<em>当前绝对路径</em></p>
+<h3 id="ls" class="heading-element">
+  <a href="#ls" class="heading-mark"></a><code>ls</code></h3><p>显示当前目录下的文件</p>
+<ul>
+<li><code>-a</code>：等同于 <code>ll</code>，显示所有的文件，包含隐藏的文件</li>
+<li><code>-h</code>：显示文件大小</li>
+</ul>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Usage: ls <span class="o">[</span>OPTION<span class="o">]</span>... <span class="o">[</span>FILE<span class="o">]</span>...
+</span></span><span class="line"><span class="cl">List information about the FILEs <span class="o">(</span>the current directory by default<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">Sort entries alphabetically <span class="k">if</span> none of -cftuvSUX nor --sort.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Mandatory arguments to long options are mandatory <span class="k">for</span> short options too.
+</span></span><span class="line"><span class="cl">  -a, --all                  <span class="k">do</span> not ignore entries starting with .
+</span></span><span class="line"><span class="cl">  -A, --almost-all           <span class="k">do</span> not list implied . and ..
+</span></span><span class="line"><span class="cl">      --author               with -l, print the author of each file
+</span></span><span class="line"><span class="cl">  -b, --escape               print octal escapes <span class="k">for</span> nongraphic characters
+</span></span><span class="line"><span class="cl">      --block-size<span class="o">=</span>SIZE      use SIZE-byte blocks.  See SIZE format below
+</span></span><span class="line"><span class="cl">  -B, --ignore-backups       <span class="k">do</span> not list implied entries ending with ~
+</span></span><span class="line"><span class="cl">  -c                         with -lt: sort by, and show, ctime <span class="o">(</span><span class="nb">time</span> of last
+</span></span><span class="line"><span class="cl">                               modification of file status information<span class="o">)</span>
+</span></span><span class="line"><span class="cl">                               with -l: show ctime and sort by name
+</span></span><span class="line"><span class="cl">                               otherwise: sort by ctime
+</span></span><span class="line"><span class="cl">  -C                         list entries by columns
+</span></span><span class="line"><span class="cl">      --color<span class="o">[=</span>WHEN<span class="o">]</span>         colorize the output.  WHEN defaults to <span class="sb">`</span>always<span class="s1">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">                               or can be `never&#39;</span> or <span class="sb">`</span>auto<span class="s1">&#39;.  More info below
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -d, --directory            list directory entries instead of contents,
+</span></span></span><span class="line"><span class="cl"><span class="s1">                               and do not dereference symbolic links
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -D, --dired                generate output designed for Emacs&#39;</span> dired mode
+</span></span><span class="line"><span class="cl">  -f                         <span class="k">do</span> not sort, <span class="nb">enable</span> -aU, disable -ls --color
+</span></span><span class="line"><span class="cl">  -F, --classify             append indicator <span class="o">(</span>one of */<span class="o">=</span>&gt;@<span class="p">|</span><span class="o">)</span> to entries
+</span></span><span class="line"><span class="cl">      --file-type            likewise, except <span class="k">do</span> not append <span class="sb">`</span>*<span class="s1">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --format=WORD          across -x, commas -m, horizontal -x, long -l,
+</span></span></span><span class="line"><span class="cl"><span class="s1">                               single-column -1, verbose -l, vertical -C
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --full-time            like -l --time-style=full-iso
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -g                         like -l, but do not list owner
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --group-directories-first
+</span></span></span><span class="line"><span class="cl"><span class="s1">                             group directories before files.
+</span></span></span><span class="line"><span class="cl"><span class="s1">                               augment with a --sort option, but any
+</span></span></span><span class="line"><span class="cl"><span class="s1">                               use of --sort=none (-U) disables grouping
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -G, --no-group             in a long listing, don&#39;</span>t print group names
+</span></span><span class="line"><span class="cl">  -h, --human-readable       with -l, print sizes in human readable format
+</span></span><span class="line"><span class="cl">                               <span class="o">(</span>e.g., 1K 234M 2G<span class="o">)</span>
+</span></span><span class="line"><span class="cl">      --si                   likewise, but use powers of <span class="m">1000</span> not <span class="m">1024</span>
+</span></span><span class="line"><span class="cl">  -H, --dereference-command-line
+</span></span><span class="line"><span class="cl">                             follow symbolic links listed on the <span class="nb">command</span> line
+</span></span><span class="line"><span class="cl">      --dereference-command-line-symlink-to-dir
+</span></span><span class="line"><span class="cl">                             follow each <span class="nb">command</span> line symbolic link
+</span></span><span class="line"><span class="cl">                             that points to a directory
+</span></span><span class="line"><span class="cl">      --hide<span class="o">=</span>PATTERN         <span class="k">do</span> not list implied entries matching shell PATTERN
+</span></span><span class="line"><span class="cl">                               <span class="o">(</span>overridden by -a or -A<span class="o">)</span>
+</span></span><span class="line"><span class="cl">      --indicator-style<span class="o">=</span>WORD  append indicator with style WORD to entry names:
+</span></span><span class="line"><span class="cl">                               none <span class="o">(</span>default<span class="o">)</span>, slash <span class="o">(</span>-p<span class="o">)</span>,
+</span></span><span class="line"><span class="cl">                               file-type <span class="o">(</span>--file-type<span class="o">)</span>, classify <span class="o">(</span>-F<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -i, --inode                print the index number of each file
+</span></span><span class="line"><span class="cl">  -I, --ignore<span class="o">=</span>PATTERN       <span class="k">do</span> not list implied entries matching shell PATTERN
+</span></span><span class="line"><span class="cl">  -k                         like --block-size<span class="o">=</span>1K
+</span></span><span class="line"><span class="cl">  -l                         use a long listing format
+</span></span><span class="line"><span class="cl">  -L, --dereference          when showing file information <span class="k">for</span> a symbolic
+</span></span><span class="line"><span class="cl">                               link, show information <span class="k">for</span> the file the link
+</span></span><span class="line"><span class="cl">                               references rather than <span class="k">for</span> the link itself
+</span></span><span class="line"><span class="cl">  -m                         fill width with a comma separated list of entries
+</span></span><span class="line"><span class="cl">  -n, --numeric-uid-gid      like -l, but list numeric user and group IDs
+</span></span><span class="line"><span class="cl">  -N, --literal              print raw entry names <span class="o">(</span>don<span class="s1">&#39;t treat e.g. control
+</span></span></span><span class="line"><span class="cl"><span class="s1">                               characters specially)
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -o                         like -l, but do not list group information
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -p, --indicator-style=slash
+</span></span></span><span class="line"><span class="cl"><span class="s1">                             append / indicator to directories
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -q, --hide-control-chars   print ? instead of non graphic characters
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --show-control-chars   show non graphic characters as-is (default
+</span></span></span><span class="line"><span class="cl"><span class="s1">                             unless program is `ls&#39;</span> and output is a terminal<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -Q, --quote-name           enclose entry names in double quotes
+</span></span><span class="line"><span class="cl">      --quoting-style<span class="o">=</span>WORD   use quoting style WORD <span class="k">for</span> entry names:
+</span></span><span class="line"><span class="cl">                               literal, locale, shell, shell-always, c, escape
+</span></span><span class="line"><span class="cl">  -r, --reverse              reverse order <span class="k">while</span> sorting
+</span></span><span class="line"><span class="cl">  -R, --recursive            list subdirectories recursively
+</span></span><span class="line"><span class="cl">  -s, --size                 print the allocated size of each file, in blocks
+</span></span><span class="line"><span class="cl">  -S                         sort by file size
+</span></span><span class="line"><span class="cl">      --sort<span class="o">=</span>WORD            sort by WORD instead of name: none -U,
+</span></span><span class="line"><span class="cl">                             extension -X, size -S, <span class="nb">time</span> -t, version -v
+</span></span><span class="line"><span class="cl">      --time<span class="o">=</span>WORD            with -l, show <span class="nb">time</span> as WORD instead of modification
+</span></span><span class="line"><span class="cl">                             time: atime -u, access -u, use -u, ctime -c,
+</span></span><span class="line"><span class="cl">                             or status -c<span class="p">;</span> use specified <span class="nb">time</span> as sort key
+</span></span><span class="line"><span class="cl">                             <span class="k">if</span> --sort<span class="o">=</span><span class="nb">time</span>
+</span></span><span class="line"><span class="cl">      --time-style<span class="o">=</span>STYLE     with -l, show <span class="nb">times</span> using style STYLE:
+</span></span><span class="line"><span class="cl">                             full-iso, long-iso, iso, locale, +FORMAT.
+</span></span><span class="line"><span class="cl">                             FORMAT is interpreted like <span class="sb">`</span>date<span class="s1">&#39;; if FORMAT is
+</span></span></span><span class="line"><span class="cl"><span class="s1">                             FORMAT1&lt;newline&gt;FORMAT2, FORMAT1 applies to
+</span></span></span><span class="line"><span class="cl"><span class="s1">                             non-recent files and FORMAT2 to recent files;
+</span></span></span><span class="line"><span class="cl"><span class="s1">                             if STYLE is prefixed with `posix-&#39;</span>, STYLE
+</span></span><span class="line"><span class="cl">                             takes effect only outside the POSIX locale
+</span></span><span class="line"><span class="cl">  -t                         sort by modification <span class="nb">time</span>
+</span></span><span class="line"><span class="cl">  -T, --tabsize<span class="o">=</span>COLS         assume tab stops at each COLS instead of <span class="m">8</span>
+</span></span><span class="line"><span class="cl">  -u                         with -lt: sort by, and show, access <span class="nb">time</span>
+</span></span><span class="line"><span class="cl">                               with -l: show access <span class="nb">time</span> and sort by name
+</span></span><span class="line"><span class="cl">                               otherwise: sort by access <span class="nb">time</span>
+</span></span><span class="line"><span class="cl">  -U                         <span class="k">do</span> not sort<span class="p">;</span> list entries in directory order
+</span></span><span class="line"><span class="cl">  -v                         natural sort of <span class="o">(</span>version<span class="o">)</span> numbers within text
+</span></span><span class="line"><span class="cl">  -w, --width<span class="o">=</span>COLS           assume screen width instead of current value
+</span></span><span class="line"><span class="cl">  -x                         list entries by lines instead of by columns
+</span></span><span class="line"><span class="cl">  -X                         sort alphabetically by entry extension
+</span></span><span class="line"><span class="cl">  -1                         list one file per line
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SELinux options:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  --lcontext                 Display security context.   Enable -l. Lines
+</span></span><span class="line"><span class="cl">                             will probably be too wide <span class="k">for</span> most displays.
+</span></span><span class="line"><span class="cl">  -Z, --context              Display security context so it fits on most
+</span></span><span class="line"><span class="cl">                             displays.  Displays only mode, user, group,
+</span></span><span class="line"><span class="cl">                             security context and file name.
+</span></span><span class="line"><span class="cl">  --scontext                 Display only security context and file name.
+</span></span><span class="line"><span class="cl">      --help     display this <span class="nb">help</span> and <span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">      --version  output version information and <span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">SIZE may be <span class="o">(</span>or may be an integer optionally followed by<span class="o">)</span> one of following:
+</span></span><span class="line"><span class="cl">KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on <span class="k">for</span> G, T, P, E, Z, Y.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Using color to distinguish file types is disabled both by default and
+</span></span><span class="line"><span class="cl">with --color<span class="o">=</span>never.  With --color<span class="o">=</span>auto, ls emits color codes only when
+</span></span><span class="line"><span class="cl">standard output is connected to a terminal.  The LS_COLORS environment
+</span></span><span class="line"><span class="cl">variable can change the settings.  Use the dircolors <span class="nb">command</span> to <span class="nb">set</span> it.</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="du" class="heading-element">
+  <a href="#du" class="heading-mark"></a><code>du</code></h3><p>显示文件夹小小：</p>
+<ul>
+<li><code>-h</code></li>
+<li><code>--max-depth=1</code>:显示当前文件夹占用的磁盘空间</li>
+<li><code>du -h ./file_path/ --max-depth=0</code>：显示当前文件夹的占用磁盘空间大小</li>
+</ul>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Usage: du <span class="o">[</span>OPTION<span class="o">]</span>... <span class="o">[</span>FILE<span class="o">]</span>...
+</span></span><span class="line"><span class="cl">  or:  du <span class="o">[</span>OPTION<span class="o">]</span>... --files0-from<span class="o">=</span>F
+</span></span><span class="line"><span class="cl">Summarize disk usage of each FILE, recursively <span class="k">for</span> directories.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Mandatory arguments to long options are mandatory <span class="k">for</span> short options too.
+</span></span><span class="line"><span class="cl">  -a, --all             write counts <span class="k">for</span> all files, not just directories
+</span></span><span class="line"><span class="cl">      --apparent-size   print apparent sizes, rather than disk usage<span class="p">;</span> although
+</span></span><span class="line"><span class="cl">                          the apparent size is usually smaller, it may be
+</span></span><span class="line"><span class="cl">                          larger due to holes in <span class="o">(</span><span class="sb">`</span>sparse<span class="s1">&#39;) files, internal
+</span></span></span><span class="line"><span class="cl"><span class="s1">                          fragmentation, indirect blocks, and the like
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -B, --block-size=SIZE  use SIZE-byte blocks
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -b, --bytes           equivalent to `--apparent-size --block-size=1&#39;</span>
+</span></span><span class="line"><span class="cl">  -c, --total           produce a grand total
+</span></span><span class="line"><span class="cl">  -D, --dereference-args  dereference only symlinks that are listed on the
+</span></span><span class="line"><span class="cl">                          <span class="nb">command</span> line
+</span></span><span class="line"><span class="cl">      --files0-from<span class="o">=</span>F   summarize disk usage of the NUL-terminated file
+</span></span><span class="line"><span class="cl">                          names specified in file F<span class="p">;</span>
+</span></span><span class="line"><span class="cl">                          If F is - <span class="k">then</span> <span class="nb">read</span> names from standard input
+</span></span><span class="line"><span class="cl">  -H                    equivalent to --dereference-args <span class="o">(</span>-D<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  -h, --human-readable  print sizes in human readable format <span class="o">(</span>e.g., 1K 234M 2G<span class="o">)</span>
+</span></span><span class="line"><span class="cl">      --si              like -h, but use powers of <span class="m">1000</span> not <span class="m">1024</span>
+</span></span><span class="line"><span class="cl">  -k                    like --block-size<span class="o">=</span>1K
+</span></span><span class="line"><span class="cl">  -l, --count-links     count sizes many <span class="nb">times</span> <span class="k">if</span> hard linked
+</span></span><span class="line"><span class="cl">  -m                    like --block-size<span class="o">=</span>1M
+</span></span><span class="line"><span class="cl">  -L, --dereference     dereference all symbolic links
+</span></span><span class="line"><span class="cl">  -P, --no-dereference  don<span class="s1">&#39;t follow any symbolic links (this is the default)
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -0, --null            end each output line with 0 byte rather than newline
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -S, --separate-dirs   do not include size of subdirectories
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -s, --summarize       display only a total for each argument
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -x, --one-file-system    skip directories on different file systems
+</span></span></span><span class="line"><span class="cl"><span class="s1">  -X, --exclude-from=FILE  exclude files that match any pattern in FILE
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --exclude=PATTERN    exclude files that match PATTERN
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --max-depth=N     print the total for a directory (or file, with --all)
+</span></span></span><span class="line"><span class="cl"><span class="s1">                          only if it is N or fewer levels below the command
+</span></span></span><span class="line"><span class="cl"><span class="s1">                          line argument;  --max-depth=0 is the same as
+</span></span></span><span class="line"><span class="cl"><span class="s1">                          --summarize
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --time            show time of the last modification of any file in the
+</span></span></span><span class="line"><span class="cl"><span class="s1">                          directory, or any of its subdirectories
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --time=WORD       show time as WORD instead of modification time:
+</span></span></span><span class="line"><span class="cl"><span class="s1">                          atime, access, use, ctime or status
+</span></span></span><span class="line"><span class="cl"><span class="s1">      --time-style=STYLE  show times using style STYLE:
+</span></span></span><span class="line"><span class="cl"><span class="s1">                          full-iso, long-iso, iso, +FORMAT
+</span></span></span><span class="line"><span class="cl"><span class="s1">                          FORMAT is interpreted like `date&#39;</span>
+</span></span><span class="line"><span class="cl">      --help     display this <span class="nb">help</span> and <span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">      --version  output version information and <span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Display values are in units of the first available SIZE from --block-size,
+</span></span><span class="line"><span class="cl">and the DU_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables.
+</span></span><span class="line"><span class="cl">Otherwise, units default to <span class="m">1024</span> bytes <span class="o">(</span>or <span class="m">512</span> <span class="k">if</span> POSIXLY_CORRECT is <span class="nb">set</span><span class="o">)</span>.</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="tree" class="heading-element">
+  <a href="#tree" class="heading-mark"></a><code>tree</code></h3><p>以树形显示当前目录下的文件结构</p>
+<ul>
+<li><code>-L 0-9</code>：需要显示的级别数量</li>
+</ul>
+<h3 id="rm" class="heading-element">
+  <a href="#rm" class="heading-mark"></a><code>rm</code></h3><p>删除文件</p>
+<ul>
+<li><code>-r</code>：以递归形式删除指定目录下的所有文件</li>
+<li><code>-f</code>：系统不会发出询问，直接删除，<strong>谨慎使用</strong></li>
+</ul>
+<hr>
+<h1 id="shell-编程" class="heading-element">
+  <a href="#shell-%e7%bc%96%e7%a8%8b" class="heading-mark"></a><code>shell</code> 编程</h1><h2 id="文件表头" class="heading-element">
+  <a href="#%e6%96%87%e4%bb%b6%e8%a1%a8%e5%a4%b4" class="heading-mark"></a>文件表头</h2><p>最好在文件表头添加：</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#!/bin/bash</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="执行文件" class="heading-element">
+  <a href="#%e6%89%a7%e8%a1%8c%e6%96%87%e4%bb%b6" class="heading-mark"></a>执行文件</h2><p>需要通过 <strong>增加执行权限</strong>：</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chmod +x file.sh
+</span></span><span class="line"><span class="cl">./file.sh</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="获取变量" class="heading-element">
+  <a href="#%e8%8e%b7%e5%8f%96%e5%8f%98%e9%87%8f" class="heading-mark"></a>获取变量</h2><p>变量赋值使用 <code>=</code> 时，不能有空格！！！</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">v</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">&#34;%Y-%m-%d %M:%H:%S&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$v</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 也可以使用 `{}` 把变量包围起来</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="si">${</span><span class="nv">v</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 使用 `-e` 增加 `echo` 转义字符</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> -e <span class="s2">&#34;\n Hello, world! \n&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="日期格式命名的文件" class="heading-element">
+  <a href="#%e6%97%a5%e6%9c%9f%e6%a0%bc%e5%bc%8f%e5%91%bd%e5%90%8d%e7%9a%84%e6%96%87%e4%bb%b6" class="heading-mark"></a>日期格式命名的文件</h2><ul>
+<li>使用 <code>+</code> 来拼接</li>
+<li>使用 <code>-d &quot;1 days&quot;</code> 来增加或者 <code>-d &quot;-1 days&quot;</code>减少日期</li>
+</ul>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">dataFile</span><span class="o">=</span><span class="k">$(</span>date -d <span class="s2">&#34;-</span><span class="nv">$i</span><span class="s2"> days&#34;</span> +<span class="s2">&#34;%Y%m%d&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$dataFile</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="for-循环" class="heading-element">
+  <a href="#for-%e5%be%aa%e7%8e%af" class="heading-mark"></a><code>for</code> 循环</h2><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> colo in XiFu YY1<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> info in ContractInfo TickData<span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">do</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> i in <span class="o">{</span>1..0<span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">do</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">dataFile</span><span class="o">=</span><span class="k">$(</span>date -d <span class="s2">&#34;-</span><span class="nv">$i</span><span class="s2"> days&#34;</span> +<span class="s2">&#34;%Y%m%d.csv&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> -e <span class="s2">&#34;\n</span><span class="nv">$colo</span><span class="s2"> :==&gt; </span><span class="nv">$info</span><span class="s2"> :==&gt; </span><span class="nv">$dataFile</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">done</span>
+</span></span><span class="line"><span class="cl">    <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

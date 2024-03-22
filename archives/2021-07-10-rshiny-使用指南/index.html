@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>RShiny 使用指南 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="使用 Rshiny 构建可视化展示的网页" /><meta name="keywords" content='R, Shiny, Rstudio, docker' /><meta itemprop="name" content="RShiny 使用指南">
+<meta itemprop="description" content="使用 Rshiny 构建可视化展示的网页"><meta itemprop="datePublished" content="2021-07-10T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2021-07-10T00:00:00+00:00" />
+<meta itemprop="wordCount" content="2386"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="R,Shiny,Rstudio,docker," /><meta property="og:title" content="RShiny 使用指南" />
+<meta property="og:description" content="使用 Rshiny 构建可视化展示的网页" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2021-07-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-07-10T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="RShiny 使用指南"/>
+<meta name="twitter:description" content="使用 Rshiny 构建可视化展示的网页"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" /><link rel="prev" href="https://williamlfang.github.io/archives/2021-07-07-clickhouse-%E8%BF%9E%E6%8E%A5%E9%94%99%E8%AF%AF%E6%AC%A1%E6%95%B0/" /><link rel="next" href="https://williamlfang.github.io/archives/2021-07-12-c&#43;&#43;-%E5%B7%A7%E7%94%A8-do...while.false/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "RShiny 使用指南",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97\/"
+    },"genre": "posts","keywords": "R, Shiny, Rstudio, docker","wordcount":  2386 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97\/","datePublished": "2021-07-10T00:00:00+00:00","dateModified": "2021-07-10T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": "使用 Rshiny 构建可视化展示的网页"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>RShiny 使用指南</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2021-07-10 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2021-07-10">2021-07-10</time></span>&nbsp;<span title="2386 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#rshiny-是什么">RShiny 是什么</a></li>
+    <li><a href="#怎么使用">怎么使用</a>
+      <ol>
+        <li><a href="#安装">安装</a>
+          <ol>
+            <li><a href="#安装-shiny-包">安装 shiny 包</a></li>
+            <li><a href="#安装-gdebi">安装 gdebi</a></li>
+            <li><a href="#开启-shiny-server-服务">开启 shiny-server 服务</a></li>
+            <li><a href="#查看安装">查看安装</a></li>
+            <li><a href="#配置">配置</a></li>
+            <li><a href="#添加用户">添加用户</a></li>
+          </ol>
+        </li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="#技术细节">技术细节</a>
+          <ol>
+            <li><a href="#ui-前端">ui 前端</a></li>
+            <li><a href="#输入">输入</a></li>
+            <li><a href="#server">server</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#一个实际的例子">一个实际的例子</a>
+      <ol>
+        <li><a href="#设计框架">设计框架</a>
+          <ol>
+            <li><a href="#前端-ui">前端 UI</a></li>
+            <li><a href="#后端-server">后端 Server</a></li>
+            <li><a href="#完工">完工</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#docker-安装-rshiny">Docker 安装 Rshiny</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2021-07-10，文中内容可能已过时。</div>
+      </div>
+    </div><h1 id="rshiny-是什么" class="heading-element">
+  <a href="#rshiny-%e6%98%af%e4%bb%80%e4%b9%88" class="heading-mark"></a>RShiny 是什么</h1><p><code>Shiny</code> 是一个 <code>R</code> 语言的软件包，提供了用于制作 <code>Web-UI/app</code> 的便捷工具。这些应用提供了交互式的数据展示、实时的统计分析与高度可定制化的操作界面，并且可以以网站或者独立的应用分享和发布。通过 <code>RShiny</code>，我们可以非常方便的与他人分享自己的数据研究成果，随时监控关心的信号指标。</p>
+<p>可以访问 <code>RShiny</code> 的官网查看<a href="https://shiny.rstudio.com/gallery/"target="_blank" rel="external nofollow noopener noreferrer">案例集<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，你会发现原来可以通过在 <code>R</code> 中调用简单的几个命令，就可以制作出如此精妙的 <code>Web-UI</code>，而不用再纠结与 <code>HTML-CSS-Javascript</code> 的细枝末节里。实在是「居家旅行、获奖无数」的必备良品。</p>
+<blockquote>
+<p>是不是很期待？来吧，接下来请接受代码的暴风雨。。。。。。</p>
+</blockquote>
+<h1 id="怎么使用" class="heading-element">
+  <a href="#%e6%80%8e%e4%b9%88%e4%bd%bf%e7%94%a8" class="heading-mark"></a>怎么使用</h1><h2 id="安装" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h2><p>由于 <code>Shiny</code> 会开启 <code>systemd</code> 网站服务，因此安装 <code>Shiny</code> 需要管理员 <code>root</code> 权限。</p>
+<blockquote>
+<p>当然，我们也可以在 <code>Docker</code> 中安装，然后把相关的 <code>3838</code> 端口转发出来，一样可以在外部访问该服务。</p>
+</blockquote>
+<h3 id="安装-shiny-包" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-shiny-%e5%8c%85" class="heading-mark"></a>安装 shiny 包</h3><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 1. Shiny 包安装，一定要使用 root 权限，才可以添加服务项</span>
+</span></span><span class="line"><span class="cl">$ sudo su -c <span class="s2">&#34;R -e \&#34;install.packages(&#39;shiny&#39;, repos=&#39;https://cran.rstudio.com/&#39;, dep=TRUE)\&#34;&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="安装-gdebi" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-gdebi" class="heading-mark"></a>安装 gdebi</h3><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 2. 安装 gdebi（用于安装 Shiny Server 及其所有依赖项）和 Shiny Server</span>
+</span></span><span class="line"><span class="cl">$ sudo apt-get install gdebi-core
+</span></span><span class="line"><span class="cl">$ wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-1.5.14.948-amd64.deb
+</span></span><span class="line"><span class="cl">$ sudo gdebi shiny-server-1.5.14.948-amd64.deb</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="开启-shiny-server-服务" class="heading-element">
+  <a href="#%e5%bc%80%e5%90%af-shiny-server-%e6%9c%8d%e5%8a%a1" class="heading-mark"></a>开启 shiny-server 服务</h3><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 3. shiny-server 命令</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#启动</span>
+</span></span><span class="line"><span class="cl">$ sudo systemctl start shiny-server
+</span></span><span class="line"><span class="cl"><span class="c1">#停止</span>
+</span></span><span class="line"><span class="cl">$ sudo systemctl stop shiny-server
+</span></span><span class="line"><span class="cl"><span class="c1">#重启</span>
+</span></span><span class="line"><span class="cl">$ sudo systemctl restart shiny-server
+</span></span><span class="line"><span class="cl"><span class="c1">#查看状态</span>
+</span></span><span class="line"><span class="cl">$ sudo systemctl status shiny-server
+</span></span><span class="line"><span class="cl"><span class="c1">#服务器重新初始化，但不会中断服务器当前进程或任何连接。</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ sudo systemctl <span class="nb">kill</span> -s HUP --kill-who<span class="o">=</span>main shiny-server
+</span></span><span class="line"><span class="cl">$ sudo reload shiny-server
+</span></span><span class="line"><span class="cl"><span class="c1">#shiny-server状态</span>
+</span></span><span class="line"><span class="cl">$ sudo systemctl status shiny-server</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="查看安装" class="heading-element">
+  <a href="#%e6%9f%a5%e7%9c%8b%e5%ae%89%e8%a3%85" class="heading-mark"></a>查看安装</h3><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 4. 查看 shiny-server: http://localhost:3838/</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 查看 demo: http://localhost:3838/sample-apps/hello/</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="配置" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae" class="heading-mark"></a>配置</h3><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 5. 配置</span>
+</span></span><span class="line"><span class="cl">/etc/shiny-server/shiny-server.conf
+</span></span><span class="line"><span class="cl">/opt/shiny-server/config/default.config
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Instruct Shiny Server to run applications as the user &#34;shiny&#34;</span>
+</span></span><span class="line"><span class="cl">run_as shiny<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Define a server that listens on port 3838</span>
+</span></span><span class="line"><span class="cl">server <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">#listen 3838;</span>
+</span></span><span class="line"><span class="cl">  listen <span class="m">3838</span> 0.0.0.0<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1"># Define a location at the base URL</span>
+</span></span><span class="line"><span class="cl">  location / <span class="o">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Host the directory of Shiny Apps stored in this directory</span>
+</span></span><span class="line"><span class="cl">    site_dir /srv/shiny-server<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Log all Shiny output to files in this directory</span>
+</span></span><span class="line"><span class="cl">    log_dir /var/log/shiny-server<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># When a user visits the base URL rather than a particular application,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># an index of the applications available in this directory will be shown.</span>
+</span></span><span class="line"><span class="cl">    directory_index on<span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="添加用户" class="heading-element">
+  <a href="#%e6%b7%bb%e5%8a%a0%e7%94%a8%e6%88%b7" class="heading-mark"></a>添加用户</h3><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 6. 创建用户</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## sudo /opt/shiny-server/bin/sspasswd /etc/shiny-server/passwd admin</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 7. Rmarkdown</span>
+</span></span><span class="line"><span class="cl">$ sudo su - -c <span class="s2">&#34;R -e \&#34;install.packages(&#39;rmarkdown&#39;,repos=&#39;http://mirror.bjtu.edu.cn/cran/&#39;)\&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 8. 所有的 app 都放在 /srv/shiny-server</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 9. 外部可以访问 192.168.1.88:3838</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="demo" class="heading-element">
+  <a href="#demo" class="heading-mark"></a>Demo</h2><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">ggthemes</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">plotly</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ui</span> <span class="o">&lt;-</span> <span class="nf">fluidPage</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">titlePanel</span><span class="p">(</span><span class="s">&#34;Plotly&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sidebarLayout</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">sidebarPanel</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">mainPanel</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">plotlyOutput</span><span class="p">(</span><span class="s">&#34;plot2&#34;</span><span class="p">))))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">server</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">output</span><span class="o">$</span><span class="n">plot2</span> <span class="o">&lt;-</span> <span class="nf">renderPlotly</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">print</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="nf">ggplotly</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">ggplot</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">mtcars</span><span class="p">,</span> <span class="nf">aes</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">disp</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">cyl</span><span class="p">))</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">                    <span class="nf">geom_smooth</span><span class="p">(</span><span class="n">method</span> <span class="o">=</span> <span class="n">lm</span><span class="p">,</span> <span class="n">formula</span> <span class="o">=</span> <span class="n">y</span><span class="o">~</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="nf">geom_point</span><span class="p">()</span> <span class="o">+</span> <span class="nf">theme_gdocs</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">shinyApp</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span> <span class="n">server</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="技术细节" class="heading-element">
+  <a href="#%e6%8a%80%e6%9c%af%e7%bb%86%e8%8a%82" class="heading-mark"></a>技术细节</h2><p>为了搭建 <code>Shiny</code> 服务，我们首先需要制作一个快加，把需要的元素放在这里</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Define UI ----</span>
+</span></span><span class="line"><span class="cl"><span class="n">ui</span> <span class="o">&lt;-</span> <span class="nf">fluidPage</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Define server logic ----</span>
+</span></span><span class="line"><span class="cl"><span class="n">server</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Run the app ----</span>
+</span></span><span class="line"><span class="cl"><span class="nf">shinyApp</span><span class="p">(</span><span class="n">ui</span> <span class="o">=</span> <span class="n">ui</span><span class="p">,</span> <span class="n">server</span> <span class="o">=</span> <span class="n">server</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="ui-前端" class="heading-element">
+  <a href="#ui-%e5%89%8d%e7%ab%af" class="heading-mark"></a>ui 前端</h3><div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="n">ui</span> <span class="o">&lt;-</span> <span class="nf">fluidPage</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">titlePanel</span><span class="p">(</span><span class="s">&#34;title panel&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nf">sidebarLayout</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">position</span> <span class="o">=</span> <span class="s">&#34;right&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sidebarPanel</span><span class="p">(</span><span class="s">&#34;sidebar panel&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">mainPanel</span><span class="p">(</span><span class="s">&#34;main panel&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>titlePanel</code> and <code>sidebarLayout</code> are the two most popular elements to add to <code>fluidPage</code>. They create a basic Shiny app with a sidebar.</p>
+<p><code>sidebarLayout</code> always takes two arguments:</p>
+<ul>
+<li><code>sidebarPanel</code> function output</li>
+<li><code>mainPanel</code> function output</li>
+</ul>
+<p>The sidebar panel will appear on the left side of your app by default. You can move it to the right side by giving <code>sidebarLayout</code> the optional argument <code>position = &quot;right&quot;</code>.</p>
+<blockquote>
+<p>布局可以参考：<a href="https://shiny.rstudio.com/articles/layout-guide.html"target="_blank" rel="external nofollow noopener noreferrer">Application layout guide<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">shiny function</th>
+<th style="text-align:left">HTML5 equivalent</th>
+<th style="text-align:left">creates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>p</code></td>
+<td style="text-align:left"><code>&lt;p&gt;</code></td>
+<td style="text-align:left">A paragraph of text</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>h1</code></td>
+<td style="text-align:left"><code>&lt;h1&gt;</code></td>
+<td style="text-align:left">A first level header</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>h2</code></td>
+<td style="text-align:left"><code>&lt;h2&gt;</code></td>
+<td style="text-align:left">A second level header</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>h3</code></td>
+<td style="text-align:left"><code>&lt;h3&gt;</code></td>
+<td style="text-align:left">A third level header</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>h4</code></td>
+<td style="text-align:left"><code>&lt;h4&gt;</code></td>
+<td style="text-align:left">A fourth level header</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>h5</code></td>
+<td style="text-align:left"><code>&lt;h5&gt;</code></td>
+<td style="text-align:left">A fifth level header</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>h6</code></td>
+<td style="text-align:left"><code>&lt;h6&gt;</code></td>
+<td style="text-align:left">A sixth level header</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>a</code></td>
+<td style="text-align:left"><code>&lt;a&gt;</code></td>
+<td style="text-align:left">A hyper link</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>br</code></td>
+<td style="text-align:left"><code>&lt;br&gt;</code></td>
+<td style="text-align:left">A line break (e.g. a blank line)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>div</code></td>
+<td style="text-align:left"><code>&lt;div&gt;</code></td>
+<td style="text-align:left">A division of text with a uniform style</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>span</code></td>
+<td style="text-align:left"><code>&lt;span&gt;</code></td>
+<td style="text-align:left">An in-line division of text with a uniform style</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pre</code></td>
+<td style="text-align:left"><code>&lt;pre&gt;</code></td>
+<td style="text-align:left">Text ‘as is’ in a fixed width font</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>code</code></td>
+<td style="text-align:left"><code>&lt;code&gt;</code></td>
+<td style="text-align:left">A formatted block of code</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>img</code></td>
+<td style="text-align:left"><code>&lt;img&gt;</code></td>
+<td style="text-align:left">An image</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>strong</code></td>
+<td style="text-align:left"><code>&lt;strong&gt;</code></td>
+<td style="text-align:left">Bold text</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>em</code></td>
+<td style="text-align:left"><code>&lt;em&gt;</code></td>
+<td style="text-align:left">Italicized text</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>HTML</code></td>
+<td style="text-align:left"></td>
+<td style="text-align:left">Directly passes a character string as HTML code</td>
+</tr>
+</tbody>
+</table>
+<h3 id="输入" class="heading-element">
+  <a href="#%e8%be%93%e5%85%a5" class="heading-mark"></a>输入</h3><p><img loading="lazy" src="https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png" alt="https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png" srcset="https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png?size=small, https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png?size=medium 1.5x, https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png?size=large 2x" data-title="https://shiny.rstudio.com/tutorial/written-tutorial/lesson3/images/basic-widgets.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>The standard Shiny widgets are:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">function</th>
+<th style="text-align:left">widget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>actionButton</code></td>
+<td style="text-align:left">Action Button</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>checkboxGroupInput</code></td>
+<td style="text-align:left">A group of check boxes</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>checkboxInput</code></td>
+<td style="text-align:left">A single check box</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>dateInput</code></td>
+<td style="text-align:left">A calendar to aid date selection</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>dateRangeInput</code></td>
+<td style="text-align:left">A pair of calendars for selecting a date range</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>fileInput</code></td>
+<td style="text-align:left">A file upload control wizard</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>helpText</code></td>
+<td style="text-align:left">Help text that can be added to an input form</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>numericInput</code></td>
+<td style="text-align:left">A field to enter numbers</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>radioButtons</code></td>
+<td style="text-align:left">A set of radio buttons</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>selectInput</code></td>
+<td style="text-align:left">A box with choices to select from</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>sliderInput</code></td>
+<td style="text-align:left">A slider bar</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>submitButton</code></td>
+<td style="text-align:left">A submit button</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>textInput</code></td>
+<td style="text-align:left">A field to enter text</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Define UI ----</span>
+</span></span><span class="line"><span class="cl"><span class="n">ui</span> <span class="o">&lt;-</span> <span class="nf">fluidPage</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">titlePanel</span><span class="p">(</span><span class="s">&#34;Basic widgets&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nf">fluidRow</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Buttons&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">actionButton</span><span class="p">(</span><span class="s">&#34;action&#34;</span><span class="p">,</span> <span class="s">&#34;Action&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">br</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">br</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">submitButton</span><span class="p">(</span><span class="s">&#34;Submit&#34;</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Single checkbox&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">checkboxInput</span><span class="p">(</span><span class="s">&#34;checkbox&#34;</span><span class="p">,</span> <span class="s">&#34;Choice A&#34;</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">checkboxGroupInput</span><span class="p">(</span><span class="s">&#34;checkGroup&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                              <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Checkbox group&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">choices</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="s">&#34;Choice 1&#34;</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                             <span class="s">&#34;Choice 2&#34;</span> <span class="o">=</span> <span class="m">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                             <span class="s">&#34;Choice 3&#34;</span> <span class="o">=</span> <span class="m">3</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                              <span class="n">selected</span> <span class="o">=</span> <span class="m">1</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">dateInput</span><span class="p">(</span><span class="s">&#34;date&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                     <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Date input&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                     <span class="n">value</span> <span class="o">=</span> <span class="s">&#34;2014-01-01&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nf">fluidRow</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">dateRangeInput</span><span class="p">(</span><span class="s">&#34;dates&#34;</span><span class="p">,</span> <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Date range&#34;</span><span class="p">))),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">fileInput</span><span class="p">(</span><span class="s">&#34;file&#34;</span><span class="p">,</span> <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;File input&#34;</span><span class="p">))),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Help text&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">helpText</span><span class="p">(</span><span class="s">&#34;Note: help text isn&#39;t a true widget,&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#34;but it provides an easy way to add text to&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#34;accompany other widgets.&#34;</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">numericInput</span><span class="p">(</span><span class="s">&#34;num&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Numeric input&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">value</span> <span class="o">=</span> <span class="m">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nf">fluidRow</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">radioButtons</span><span class="p">(</span><span class="s">&#34;radio&#34;</span><span class="p">,</span> <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Radio buttons&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">choices</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="s">&#34;Choice 1&#34;</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="s">&#34;Choice 2&#34;</span> <span class="o">=</span> <span class="m">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                       <span class="s">&#34;Choice 3&#34;</span> <span class="o">=</span> <span class="m">3</span><span class="p">),</span><span class="n">selected</span> <span class="o">=</span> <span class="m">1</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">selectInput</span><span class="p">(</span><span class="s">&#34;select&#34;</span><span class="p">,</span> <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Select box&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                       <span class="n">choices</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="s">&#34;Choice 1&#34;</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="s">&#34;Choice 2&#34;</span> <span class="o">=</span> <span class="m">2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                      <span class="s">&#34;Choice 3&#34;</span> <span class="o">=</span> <span class="m">3</span><span class="p">),</span> <span class="n">selected</span> <span class="o">=</span> <span class="m">1</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">sliderInput</span><span class="p">(</span><span class="s">&#34;slider1&#34;</span><span class="p">,</span> <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Sliders&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                       <span class="n">min</span> <span class="o">=</span> <span class="m">0</span><span class="p">,</span> <span class="n">max</span> <span class="o">=</span> <span class="m">100</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="m">50</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">sliderInput</span><span class="p">(</span><span class="s">&#34;slider2&#34;</span><span class="p">,</span> <span class="s">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                       <span class="n">min</span> <span class="o">=</span> <span class="m">0</span><span class="p">,</span> <span class="n">max</span> <span class="o">=</span> <span class="m">100</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">25</span><span class="p">,</span> <span class="m">75</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nf">column</span><span class="p">(</span><span class="m">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">           <span class="nf">textInput</span><span class="p">(</span><span class="s">&#34;text&#34;</span><span class="p">,</span> <span class="nf">h3</span><span class="p">(</span><span class="s">&#34;Text input&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                     <span class="n">value</span> <span class="o">=</span> <span class="s">&#34;Enter text...&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Define server logic ----</span>
+</span></span><span class="line"><span class="cl"><span class="n">server</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Run the app ----</span>
+</span></span><span class="line"><span class="cl"><span class="nf">shinyApp</span><span class="p">(</span><span class="n">ui</span> <span class="o">=</span> <span class="n">ui</span><span class="p">,</span> <span class="n">server</span> <span class="o">=</span> <span class="n">server</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="server" class="heading-element">
+  <a href="#server" class="heading-mark"></a>server</h3><p>Shiny provides a family of functions that turn R objects into output for your user interface. Each function creates a specific type of output.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Output function</th>
+<th style="text-align:left">Creates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>dataTableOutput</code></td>
+<td style="text-align:left">DataTable</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>htmlOutput</code></td>
+<td style="text-align:left">raw HTML</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>imageOutput</code></td>
+<td style="text-align:left">image</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>plotOutput</code></td>
+<td style="text-align:left">plot</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>tableOutput</code></td>
+<td style="text-align:left">table</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>textOutput</code></td>
+<td style="text-align:left">text</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>uiOutput</code></td>
+<td style="text-align:left">raw HTML</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>verbatimTextOutput</code></td>
+<td style="text-align:left">text</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">render function</th>
+<th style="text-align:left">creates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>renderDataTable</code></td>
+<td style="text-align:left">DataTable</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>renderImage</code></td>
+<td style="text-align:left">images (saved as a link to a source file)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>renderPlot</code></td>
+<td style="text-align:left">plots</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>renderPrint</code></td>
+<td style="text-align:left">any printed output</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>renderTable</code></td>
+<td style="text-align:left">data frame, matrix, other table like structures</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>renderText</code></td>
+<td style="text-align:left">character strings</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>renderUI</code></td>
+<td style="text-align:left">a Shiny tag object or HTML</td>
+</tr>
+</tbody>
+</table>
+<h1 id="一个实际的例子" class="heading-element">
+  <a href="#%e4%b8%80%e4%b8%aa%e5%ae%9e%e9%99%85%e7%9a%84%e4%be%8b%e5%ad%90" class="heading-mark"></a>一个实际的例子</h1><p><img loading="lazy" src="/post/RShiny-demo.gif" alt="/post/RShiny-demo.gif" srcset="/post/RShiny-demo.gif?size=small, /post/RShiny-demo.gif?size=medium 1.5x, /post/RShiny-demo.gif?size=large 2x" data-title="/post/RShiny-demo.gif" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><img loading="lazy" src="/home/william/Documents/blog/content/post/RShiny-demo.gif" alt="/home/william/Documents/blog/content/post/RShiny-demo.gif" srcset="/home/william/Documents/blog/content/post/RShiny-demo.gif?size=small, /home/william/Documents/blog/content/post/RShiny-demo.gif?size=medium 1.5x, /home/william/Documents/blog/content/post/RShiny-demo.gif?size=large 2x" data-title="/home/william/Documents/blog/content/post/RShiny-demo.gif" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h2 id="设计框架" class="heading-element">
+  <a href="#%e8%ae%be%e8%ae%a1%e6%a1%86%e6%9e%b6" class="heading-mark"></a>设计框架</h2><p><code>RShiny</code> 包含两部分内容，一个是前端的 <code>UI</code> 界面部分，另一个是后端的 <code>Server</code> 服务。</p>
+<h3 id="前端-ui" class="heading-element">
+  <a href="#%e5%89%8d%e7%ab%af-ui" class="heading-mark"></a>前端 UI</h3><p>我们首先需要定义前端，即需要先规划好想要表达的内容与方式。</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="c1">## ------------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## ui = header + sidebar + body</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## icon: https://fontawesome.com/icons?d=gallery&amp;p=1</span>
+</span></span><span class="line"><span class="cl"><span class="n">header</span> <span class="o">&lt;-</span> <span class="nf">dashboardHeader</span><span class="p">(</span><span class="n">title</span> <span class="o">=</span> <span class="s">&#34;RShiny @william&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">sidebar</span> <span class="o">&lt;-</span> <span class="nf">dashboardSidebar</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">sidebarMenu</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">menuItem</span><span class="p">(</span><span class="s">&#34;CFFEX&#34;</span><span class="p">,</span> <span class="n">tabName</span> <span class="o">=</span> <span class="s">&#34;CFFEX&#34;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="nf">icon</span><span class="p">(</span><span class="s">&#34;warehouse&#34;</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">menuItem</span><span class="p">(</span><span class="s">&#34;CFFEX_T&#34;</span><span class="p">,</span> <span class="n">tabName</span> <span class="o">=</span> <span class="s">&#34;CFFEX_T&#34;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="nf">icon</span><span class="p">(</span><span class="s">&#34;ticket-alt&#34;</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">menuItem</span><span class="p">(</span><span class="s">&#34;SHFE&#34;</span><span class="p">,</span> <span class="n">tabName</span> <span class="o">=</span> <span class="s">&#34;SHFE&#34;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="nf">icon</span><span class="p">(</span><span class="s">&#34;city&#34;</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">menuItem</span><span class="p">(</span><span class="s">&#34;DCE&#34;</span><span class="p">,</span> <span class="n">tabName</span> <span class="o">=</span> <span class="s">&#34;DCE&#34;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="nf">icon</span><span class="p">(</span><span class="s">&#34;shopping-basket&#34;</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">menuItem</span><span class="p">(</span><span class="s">&#34;STOCKS&#34;</span><span class="p">,</span> <span class="n">tabName</span> <span class="o">=</span> <span class="s">&#34;STOCKS&#34;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="nf">icon</span><span class="p">(</span><span class="s">&#34;coins&#34;</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">menuItem</span><span class="p">(</span><span class="s">&#34;ConvBond&#34;</span><span class="p">,</span> <span class="n">tabName</span> <span class="o">=</span> <span class="s">&#34;CV&#34;</span><span class="p">,</span> <span class="n">icon</span> <span class="o">=</span> <span class="nf">icon</span><span class="p">(</span><span class="s">&#34;comment-dollar&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tab_main</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">exch</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">## some R code goes here</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tab_product</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">exch</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">## some R code goes here</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">body</span> <span class="o">&lt;-</span> <span class="nf">dashboardBody</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">tabItems</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">## CFFEX ---------------------------------------------- begin</span>
+</span></span><span class="line"><span class="cl">        <span class="nf">tabItem</span><span class="p">(</span><span class="n">tabName</span> <span class="o">=</span> <span class="s">&#34;CFFEX&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="nf">navbarPage</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                           <span class="n">id</span> <span class="o">=</span> <span class="s">&#34;CFFEX_nav&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                           <span class="n">theme</span> <span class="o">=</span> <span class="nf">shinytheme</span><span class="p">(</span><span class="s">&#34;flatly&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                           <span class="nf">tab_main</span><span class="p">(</span><span class="s">&#34;CFFEX&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                           <span class="nf">tab_product</span><span class="p">(</span><span class="s">&#34;CFFEX&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                           <span class="nf">tab_data</span><span class="p">(</span><span class="s">&#34;CFFEX&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                           <span class="nf">tab_sig</span><span class="p">(</span><span class="s">&#34;CFFEX&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">## CFFEX ---------------------------------------------- end</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## gear up all</span>
+</span></span><span class="line"><span class="cl"><span class="nf">dashboardPage</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">sidebar</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ui</span> <span class="o">=</span> <span class="nf">dashboardPage</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">sidebar</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="后端-server" class="heading-element">
+  <a href="#%e5%90%8e%e7%ab%af-server" class="heading-mark"></a>后端 Server</h3><p><code>server</code> 其实是一个很大的函数，包含了三个具体的参数，这个函数有点类似 callback，允许我们在里面定义自己的操作，然后把这个函数传递给 <code>shiny</code> 进行具体的解析。</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="n">server</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">## some R code goes here</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中，</p>
+<ul>
+<li>
+<p><code>input</code> 是我们可以从 <code>UI</code> 界面交互获取的内容，比如 <code>input$CFFEX_main_select_session</code>，通过这个变量我们就可以实时的从界面获取用户想要我们执行的参数</p>
+</li>
+<li>
+<p><code>output</code> 是我们想要 <code>server</code> 计算的结果返回给 <code>UI</code>。比如，我们在上面的 <code>UI</code> 定义了一个 <code>tab_main</code> 的组件，代码里面包含了这么一个命令</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="nf">plotlyOutput</span><span class="p">(</span><span class="nf">sprintf</span><span class="p">(</span><span class="s">&#34;%s_sig&#34;</span><span class="p">,</span> <span class="n">exch</span><span class="p">),</span> <span class="n">width</span> <span class="o">=</span> <span class="s">&#34;100%&#34;</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="s">&#34;620px&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>即 <code>UI</code> 期望可以通过 <code>Server</code> 获取到这个返回，那么我们的 <code>output</code> 就可以写成这样</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="n">output</span><span class="o">$</span><span class="n">CFFEX_T_main</span> <span class="o">&lt;-</span> <span class="nf">renderPlotly</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## some R code goes here</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>细心的你，还发现我添加了一些按钮，你只需要轻松的点击按钮或者选择框，就可以得到想要的结果。这个用编程语言讲，叫做事件触发。我们通过添加观察组，针对不同的事件执行相应的策略。比如，观察到用户选择不同的信号名称，那么我们就更新相应的图片：</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="nf">observe</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span> <span class="p">(</span><span class="n">input</span><span class="o">$</span><span class="n">CFFEX_sig_reset</span> <span class="o">==</span> <span class="m">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">updateCheckboxGroupInput</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inputId</span><span class="o">=</span><span class="s">&#34;CFFEX_sig_select_signame&#34;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                               <span class="n">choices</span> <span class="o">=</span> <span class="n">all.cffex.sig.names</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                               <span class="n">selected</span> <span class="o">=</span> <span class="nf">grep</span><span class="p">(</span><span class="s">&#34;pred&#34;</span><span class="p">,</span> <span class="n">all.cffex.sig.names</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">T</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                               <span class="n">inline</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">updateCheckboxGroupInput</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">inputId</span><span class="o">=</span><span class="s">&#34;CFFEX_sig_select_signame&#34;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                               <span class="n">choices</span> <span class="o">=</span> <span class="n">all.cffex.sig.names</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                               <span class="n">selected</span> <span class="o">=</span> <span class="nf">grep</span><span class="p">(</span><span class="s">&#34;pred&#34;</span><span class="p">,</span> <span class="n">all.cffex.sig.names</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">T</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                               <span class="n">inline</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="完工" class="heading-element">
+  <a href="#%e5%ae%8c%e5%b7%a5" class="heading-mark"></a>完工</h3><p>最后，我们把 <code>UI</code> 和 <code>Server</code> 交给 <code>shiny</code>去解析并生成相应的网页信息即可</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="c1">## ------------------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="nf">shinyApp</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span> <span class="n">server</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="docker-安装-rshiny" class="heading-element">
+  <a href="#docker-%e5%ae%89%e8%a3%85-rshiny" class="heading-mark"></a>Docker 安装 Rshiny</h1><div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run --name rshiny -dit --privileged<span class="o">=</span><span class="nb">true</span> -p 58787:8787 -p 53838:3838 wuya-centos7-r4.0:v1.0 /sbin/init
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 添加用户，需要进入 docker 添加用户</span>
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -it rshiny bash
+</span></span><span class="line"><span class="cl">sudo adduser tester
+</span></span><span class="line"><span class="cl">sudo passwd tester
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 安装 R</span>
+</span></span><span class="line"><span class="cl">https://www.osradar.com/how-to-install-r-and-rstudio-on-centos-8/</span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2021-03-30-docker-%E8%BF%90%E8%A1%8C-rstudio/" title="Docker 运行 rstudio">Docker 运行 rstudio</a></li><li>
+          <a href="/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/" title="本地终端运行远程R命令，并输出图像">本地终端运行远程R命令，并输出图像</a></li><li>
+          <a href="/archives/2021-03-19-docker-%E6%90%AD%E5%BB%BA-openwrt/" title="Docker 搭建 openwrt">Docker 搭建 openwrt</a></li><li>
+          <a href="/archives/2020-09-06-centos7-%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-dockerhub/" title="CentOS7 搭建私有 DockerHub">CentOS7 搭建私有 DockerHub</a></li><li>
+          <a href="/archives/2020-05-16-r--%E5%AE%89%E8%A3%85-tensorflow/" title="R: 安装 tensorflow">R: 安装 tensorflow</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2021-07-10 00:00:00">更新于 2021-07-10&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" data-title="RShiny 使用指南" data-hashtags="R,Shiny,Rstudio,docker"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" data-hashtag="R"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" data-title="RShiny 使用指南" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" data-title="RShiny 使用指南"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" data-title="RShiny 使用指南"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/r/" class="post-tag" title="标签 - R">R</a><a href="/tags/shiny/" class="post-tag" title="标签 - Shiny">Shiny</a><a href="/tags/rstudio/" class="post-tag" title="标签 - Rstudio">Rstudio</a><a href="/tags/docker/" class="post-tag" title="标签 - Docker">Docker</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2021-07-07-clickhouse-%E8%BF%9E%E6%8E%A5%E9%94%99%E8%AF%AF%E6%AC%A1%E6%95%B0/" class="post-nav-item" rel="prev" title="Clickhouse 连接错误次数"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Clickhouse 连接错误次数</a>
+      <a href="/archives/2021-07-12-c&#43;&#43;-%E5%B7%A7%E7%94%A8-do...while.false/" class="post-nav-item" rel="next" title="c&#43;&#43; 巧用 do...while.false">c&#43;&#43; 巧用 do...while.false<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

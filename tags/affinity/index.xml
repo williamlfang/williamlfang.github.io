@@ -1,0 +1,59 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Affinity - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/affinity/</link>
+    <description>Affinity - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 24 May 2021 00:00:00 &#43;0000</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/affinity/" rel="self" type="application/rss+xml" /><item>
+  <title>Linux cpu 隔核设置</title>
+  <link>https://williamlfang.github.io/archives/2021-05-24-linux-cpu-%E9%9A%94%E6%A0%B8%E8%AE%BE%E7%BD%AE/</link>
+  <pubDate>Mon, 24 May 2021 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2021-05-24-linux-cpu-%E9%9A%94%E6%A0%B8%E8%AE%BE%E7%BD%AE/</guid>
+  <description><![CDATA[<h1 id="设置" class="heading-element">
+  <a href="#%e8%ae%be%e7%bd%ae" class="heading-mark"></a>设置</h1><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 查看多少个 cpu 核</span>
+</span></span><span class="line"><span class="cl">cat /proc/cpuinfo <span class="p">|</span>grep <span class="s2">&#34;model name&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 修改 grub</span>
+</span></span><span class="line"><span class="cl">vim /etc/default/grub
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 找到 GRUB_CMDLINE_LINUX 增加</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 隔离 1-2， 7-8</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 从 0 开始计数</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ioslcpus</span><span class="o">=</span>1-2,7-8
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 更新配置</span>
+</span></span><span class="line"><span class="cl">grub2-mkconfig -o /boot/grub2/grub.cfg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 重启生效</span>
+</span></span><span class="line"><span class="cl">reboot
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 查看是否生效</span>
+</span></span><span class="line"><span class="cl">cat /proc/cmdline</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+</channel>
+</rss>

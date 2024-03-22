@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>本地终端运行远程R命令，并输出图像 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="今天在网上看到一个 `R` 编程语言的扩展包，解决了长期以来困扰我的一个难题：如果在本地终端编辑运行位于远程服务器上的 `R` 命令脚本，并在需要的时候，能够把远程的画图同步输出到本地，使得在本地也可以浏览画图效果。" /><meta name="keywords" content='R, rmote, Rstudio, Sublime, 服务器, 画图' /><meta itemprop="name" content="本地终端运行远程R命令，并输出图像">
+<meta itemprop="description" content="今天在网上看到一个 `R` 编程语言的扩展包，解决了长期以来困扰我的一个难题：如果在本地终端编辑运行位于远程服务器上的 `R` 命令脚本，并在需要的时候，能够把远程的画图同步输出到本地，使得在本地也可以浏览画图效果。"><meta itemprop="datePublished" content="2019-11-29T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2019-11-29T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1006"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="R,rmote,Rstudio,Sublime,服务器,画图," /><meta property="og:title" content="本地终端运行远程R命令，并输出图像" />
+<meta property="og:description" content="今天在网上看到一个 `R` 编程语言的扩展包，解决了长期以来困扰我的一个难题：如果在本地终端编辑运行位于远程服务器上的 `R` 命令脚本，并在需要的时候，能够把远程的画图同步输出到本地，使得在本地也可以浏览画图效果。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2019-11-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-11-29T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="本地终端运行远程R命令，并输出图像"/>
+<meta name="twitter:description" content="今天在网上看到一个 `R` 编程语言的扩展包，解决了长期以来困扰我的一个难题：如果在本地终端编辑运行位于远程服务器上的 `R` 命令脚本，并在需要的时候，能够把远程的画图同步输出到本地，使得在本地也可以浏览画图效果。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/" /><link rel="prev" href="https://williamlfang.github.io/archives/2019-11-29-%E6%90%AD%E5%BB%BA%E9%98%BF%E9%87%8C%E4%BA%91git%E6%9C%8D%E5%8A%A1%E5%99%A8/" /><link rel="next" href="https://williamlfang.github.io/archives/2019-12-02-%E8%A7%A3%E5%86%B3ssh%E4%B8%8A%E4%BC%A0%E5%85%AC%E9%92%A5%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BB%8D%E9%9C%80%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "本地终端运行远程R命令，并输出图像",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F\/"
+    },"genre": "posts","keywords": "R, rmote, Rstudio, Sublime, 服务器, 画图","wordcount":  1006 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F\/","datePublished": "2019-11-29T00:00:00+00:00","dateModified": "2019-11-29T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": "今天在网上看到一个 `R` 编程语言的扩展包，解决了长期以来困扰我的一个难题：如果在本地终端编辑运行位于远程服务器上的 `R` 命令脚本，并在需要的时候，能够把远程的画图同步输出到本地，使得在本地也可以浏览画图效果。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>本地终端运行远程R命令，并输出图像</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2019-11-29 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2019-11-29">2019-11-29</time></span>&nbsp;<span title="1006 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#痛点">痛点</a></li>
+    <li><a href="#解决">解决</a>
+      <ol>
+        <li><a href="#ssh-登录服务器">ssh 登录服务器</a></li>
+        <li><a href="#启动-r-服务">启动 R 服务</a></li>
+        <li><a href="#运行命令">运行命令</a></li>
+        <li><a href="#本地浏览器查看">本地浏览器查看</a></li>
+      </ol>
+    </li>
+    <li><a href="#sublime-集成快捷键">Sublime 集成快捷键</a></li>
+    <li><a href="#问题">问题</a>
+      <ol>
+        <li><a href="#提示">提示:</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2019-11-29，文中内容可能已过时。</div>
+      </div>
+    </div><h1 id="痛点" class="heading-element">
+  <a href="#%e7%97%9b%e7%82%b9" class="heading-mark"></a>痛点</h1><p>今天在网上看到一个 <code>R</code> 编程语言的扩展包，解决了长期以来困扰我的一个难题：如果在本地终端编辑运行位于远程服务器上的 <code>R</code> 命令脚本，并在需要的时候，能够把远程的画图同步输出到本地，使得在本地也可以浏览画图效果。针对这个问题，其实我们可以有以下至少三种解决方案：</p>
+<ol>
+<li>Install <a href="https://www.rstudio.com/products/rstudio-server-pro/"target="_blank" rel="external nofollow noopener noreferrer">RStudio Server<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> on the remote server and use that from a web browser on your local machine. Graphics output is shown in the IDE.</li>
+<li>Use X11 forwarding (<code>ssh -X|Y</code>). Graphics output is sent back to your machine.</li>
+<li>Use VNC with a linux desktop environment like KDE or GNOME.</li>
+</ol>
+<p>当然，第一种使用 <code>Rstudio</code> 其实是非常好的方案，运行在网页打开，整个界面其实就是本地化的 <code>IDE</code>，这也是我们团队目前使用的方案。但是，对于我这样使用惯了终端命令行的开发人员，更倾向于在 <code>Sublime</code> 编辑脚本，然后通过 <code>SublimeREPL</code> 把命令发送到远程服务器的解释器进行运行。长期以来，我一直在苦苦寻找这样的方案。</p>
+<p>今天隆重介绍这个优秀的扩展包：<a href="https://github.com/cloudyr/rmote"target="_blank" rel="external nofollow noopener noreferrer"><code>rmote</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+<h1 id="解决" class="heading-element">
+  <a href="#%e8%a7%a3%e5%86%b3" class="heading-mark"></a>解决</h1><h2 id="ssh-登录服务器" class="heading-element">
+  <a href="#ssh-%e7%99%bb%e5%bd%95%e6%9c%8d%e5%8a%a1%e5%99%a8" class="heading-mark"></a>ssh 登录服务器</h2><p><code>rmote</code> 默认开启 <strong>4321</strong> 的服务端口，可以通过 <code>rmote::start_rmote()</code> 进行设置。这个命令是把远程消息同步映射到本地浏览器端</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -L 4321:localhost:4321 fl@192.168.1.166</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="启动-r-服务" class="heading-element">
+  <a href="#%e5%90%af%e5%8a%a8-r-%e6%9c%8d%e5%8a%a1" class="heading-mark"></a>启动 R 服务</h2><p>通过以上命令我们就登录了远程服务器，接下来是启动 <code>R</code> 进程开始运行</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="n">R</span>                                                                                                                                                                     <span class="n">[14</span><span class="o">:</span><span class="m">44</span><span class="o">:</span><span class="m">16</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">R</span> <span class="n">version</span> <span class="m">3.5.1</span> <span class="p">(</span><span class="m">2018-07-02</span><span class="p">)</span> <span class="o">--</span> <span class="s">&#34;Feather Spray&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nf">Copyright </span><span class="p">(</span><span class="n">C</span><span class="p">)</span> <span class="m">2018</span> <span class="n">The</span> <span class="n">R</span> <span class="n">Foundation</span> <span class="kr">for</span> <span class="n">Statistical</span> <span class="n">Computing</span>
+</span></span><span class="line"><span class="cl"><span class="n">Platform</span><span class="o">:</span> <span class="n">x86_64</span><span class="o">-</span><span class="n">redhat</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="nf">gnu </span><span class="p">(</span><span class="m">64</span><span class="o">-</span><span class="n">bit</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">R</span> <span class="n">is</span> <span class="n">free</span> <span class="n">software</span> <span class="n">and</span> <span class="n">comes</span> <span class="n">with</span> <span class="n">ABSOLUTELY</span> <span class="n">NO</span> <span class="n">WARRANTY.</span>
+</span></span><span class="line"><span class="cl"><span class="n">You</span> <span class="n">are</span> <span class="n">welcome</span> <span class="n">to</span> <span class="n">redistribute</span> <span class="n">it</span> <span class="n">under</span> <span class="n">certain</span> <span class="n">conditions.</span>
+</span></span><span class="line"><span class="cl"><span class="n">Type</span> <span class="s">&#39;license()&#39;</span> <span class="n">or</span> <span class="s">&#39;licence()&#39;</span> <span class="kr">for</span> <span class="n">distribution</span> <span class="n">details.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">Natural</span> <span class="n">language</span> <span class="n">support</span> <span class="n">but</span> <span class="n">running</span> <span class="kr">in</span> <span class="n">an</span> <span class="n">English</span> <span class="n">locale</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">R</span> <span class="n">is</span> <span class="n">a</span> <span class="n">collaborative</span> <span class="n">project</span> <span class="n">with</span> <span class="n">many</span> <span class="n">contributors.</span>
+</span></span><span class="line"><span class="cl"><span class="n">Type</span> <span class="s">&#39;contributors()&#39;</span> <span class="kr">for</span> <span class="n">more</span> <span class="n">information</span> <span class="n">and</span>
+</span></span><span class="line"><span class="cl"><span class="s">&#39;citation()&#39;</span> <span class="n">on</span> <span class="n">how</span> <span class="n">to</span> <span class="n">cite</span> <span class="n">R</span> <span class="n">or</span> <span class="n">R</span> <span class="n">packages</span> <span class="kr">in</span> <span class="n">publications.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Type</span> <span class="s">&#39;demo()&#39;</span> <span class="kr">for</span> <span class="n">some</span> <span class="n">demos</span><span class="p">,</span> <span class="s">&#39;help()&#39;</span> <span class="kr">for</span> <span class="n">on</span><span class="o">-</span><span class="n">line</span> <span class="n">help</span><span class="p">,</span> <span class="n">or</span>
+</span></span><span class="line"><span class="cl"><span class="s">&#39;help.start()&#39;</span> <span class="kr">for</span> <span class="n">an</span> <span class="n">HTML</span> <span class="n">browser</span> <span class="n">interface</span> <span class="n">to</span> <span class="n">help.</span>
+</span></span><span class="line"><span class="cl"><span class="n">Type</span> <span class="s">&#39;q()&#39;</span> <span class="n">to</span> <span class="n">quit</span> <span class="n">R.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Attaching</span> <span class="n">package</span><span class="o">:</span> ‘<span class="n">emayili</span>’
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">The</span> <span class="n">following</span> <span class="n">object</span> <span class="n">is</span> <span class="n">masked</span> <span class="n">from</span> ‘<span class="n">package</span><span class="o">:</span><span class="n">base</span>’<span class="o">:</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">body</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 可以设置不同的端口</span>
+</span></span><span class="line"><span class="cl"><span class="n">rmote</span><span class="o">::</span><span class="nf">start_rmote</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">?</span><span class="n">start_rmote</span>
+</span></span><span class="line"><span class="cl"><span class="n">start_rmote</span>               <span class="n">package</span><span class="o">:</span><span class="n">rmote</span>                <span class="n">R</span> <span class="n">Documentation</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Initialize</span> <span class="n">a</span> <span class="n">remote</span> <span class="n">servr</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Description</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">     <span class="n">Initialize</span> <span class="n">a</span> <span class="n">remote</span> <span class="n">servr</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Usage</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">     <span class="nf">start_rmote</span><span class="p">(</span><span class="n">server_dir</span> <span class="o">=</span> <span class="nf">file.path</span><span class="p">(</span><span class="nf">tempdir</span><span class="p">(),</span> <span class="s">&#34;rmote_server&#34;</span><span class="p">),</span> <span class="n">port</span> <span class="o">=</span> <span class="m">4321</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="n">daemon</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">help</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">graphics</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">basegraphics</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">       <span class="n">htmlwidgets</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">hostname</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Arguments</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">server_dir</span><span class="o">:</span> <span class="n">directory</span> <span class="n">to</span> <span class="n">launch</span> <span class="n">servr</span> <span class="n">from</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">port</span><span class="o">:</span> <span class="n">port</span> <span class="n">to</span> <span class="n">run</span> <span class="n">servr</span> <span class="n">on</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">daemon</span><span class="o">:</span> <span class="n">logical</span> <span class="o">-</span> <span class="n">should</span> <span class="n">the</span> <span class="n">server</span> <span class="n">be</span> <span class="n">started</span> <span class="n">as</span> <span class="n">a</span> <span class="n">daemon</span><span class="o">?</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">help</span><span class="o">:</span> <span class="p">(</span><span class="n">logical</span><span class="p">)</span> <span class="n">send</span> <span class="n">results</span> <span class="n">of</span> <span class="n">`?`</span> <span class="n">to</span> <span class="n">servr</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">graphics</span><span class="o">:</span> <span class="p">(</span><span class="n">logical</span><span class="p">)</span> <span class="n">send</span> <span class="n">traditional</span> <span class="n">lattice</span> <span class="o">/</span> <span class="n">ggplot2</span> <span class="n">plots</span> <span class="n">to</span> <span class="n">servr</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">basegraphics</span><span class="o">:</span> <span class="p">(</span><span class="n">logical</span><span class="p">)</span> <span class="n">send</span> <span class="n">base</span> <span class="n">graphics</span> <span class="n">to</span> <span class="n">servr</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">htmlwidgets</span><span class="o">:</span> <span class="p">(</span><span class="n">logical</span><span class="p">)</span> <span class="n">send</span> <span class="n">htmlwidgets</span> <span class="n">to</span> <span class="n">servr</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">hostname</span><span class="o">:</span> <span class="p">(</span><span class="n">logical</span><span class="p">)</span> <span class="n">try</span> <span class="n">to</span> <span class="n">get</span> <span class="n">hostname</span> <span class="n">and</span> <span class="n">use</span> <span class="n">it</span> <span class="kr">in</span> <span class="n">viewer</span> <span class="n">page</span> <span class="n">title</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> <span class="n">history</span><span class="o">:</span> <span class="p">(</span><span class="n">logical</span><span class="p">)</span> <span class="n">should</span> <span class="n">history</span> <span class="n">thumbnails</span> <span class="n">be</span> <span class="n">created</span> <span class="n">and</span> <span class="n">shown</span> <span class="kr">in</span>
+</span></span><span class="line"><span class="cl">          <span class="n">the</span> <span class="n">viewer</span><span class="o">?</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="运行命令" class="heading-element">
+  <a href="#%e8%bf%90%e8%a1%8c%e5%91%bd%e4%bb%a4" class="heading-mark"></a>运行命令</h2><p>输入命令运行</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="o">?</span><span class="n">plot</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">qplot</span><span class="p">(</span><span class="n">mpg</span><span class="p">,</span> <span class="n">wt</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">mtcars</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="n">cyl</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="本地浏览器查看" class="heading-element">
+  <a href="#%e6%9c%ac%e5%9c%b0%e6%b5%8f%e8%a7%88%e5%99%a8%e6%9f%a5%e7%9c%8b" class="heading-mark"></a>本地浏览器查看</h2><p>这样，我们可以在浏览器打开 <a href="http://localhost:4321/"target="_blank" rel="external nofollow noopener noreferrer">http://localhost:4321<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> 即可查看图片。</p>
+<h1 id="sublime-集成快捷键" class="heading-element">
+  <a href="#sublime-%e9%9b%86%e6%88%90%e5%bf%ab%e6%8d%b7%e9%94%ae" class="heading-mark"></a>Sublime 集成快捷键</h1><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">// 使用 Rmote 功能，实现远程服务器图片在本地浏览
+</span></span><span class="line"><span class="cl">  <span class="o">{</span> <span class="s2">&#34;keys&#34;</span>: <span class="o">[</span><span class="s2">&#34;f8&#34;</span><span class="o">]</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;caption&#34;</span>: <span class="s2">&#34;SublimeREPL: Rmote166&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;command&#34;</span>:<span class="s2">&#34;repl_open&#34;</span>,<span class="s2">&#34;args&#34;</span>:
+</span></span><span class="line"><span class="cl">    <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;subprocess&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;external_id&#34;</span>: <span class="s2">&#34;r&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;additional_scopes&#34;</span>: <span class="o">[</span><span class="s2">&#34;tex.latex.knitr&#34;</span><span class="o">]</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;encoding&#34;</span>:
+</span></span><span class="line"><span class="cl">        <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;windows&#34;</span>: <span class="s2">&#34;</span><span class="nv">$win_cmd_encoding</span><span class="s2">&#34;</span>,
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;linux&#34;</span>: <span class="s2">&#34;utf8&#34;</span>,
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;osx&#34;</span>: <span class="s2">&#34;utf8&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;soft_quit&#34;</span>: <span class="s2">&#34;\nquit(save=\&#34;no\&#34;)\n&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;cmd&#34;</span>: <span class="o">{</span><span class="s2">&#34;linux&#34;</span>:
+</span></span><span class="line"><span class="cl">                    <span class="o">[</span>
+</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;ssh&#34;</span>,
+</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;-L&#34;</span>, <span class="s2">&#34;4321:localhost:4321&#34;</span>, <span class="s2">&#34;fl@192.168.1.166&#34;</span>, <span class="s2">&#34;-p22&#34;</span>,
+</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;R&#34;</span>,<span class="s2">&#34;--interactive&#34;</span>, <span class="s2">&#34;--no-readline&#34;</span>
+</span></span><span class="line"><span class="cl">                    <span class="o">]</span>
+</span></span><span class="line"><span class="cl">                <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;cwd&#34;</span>: <span class="s2">&#34;</span><span class="nv">$file_path</span><span class="s2">&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;extend_env&#34;</span>:
+</span></span><span class="line"><span class="cl">        <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;osx&#34;</span>: <span class="o">{</span><span class="s2">&#34;PATH&#34;</span>: <span class="s2">&#34;{PATH}:/usr/local/bin&#34;</span><span class="o">}</span>,
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;linux&#34;</span>: <span class="o">{</span><span class="s2">&#34;PATH&#34;</span>: <span class="s2">&#34;{PATH}:/usr/local/bin&#34;</span><span class="o">}</span>,
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;windows&#34;</span>: <span class="o">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;cmd_postfix&#34;</span>: <span class="s2">&#34;\n&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;suppress_echo&#34;</span>:
+</span></span><span class="line"><span class="cl">        <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;osx&#34;</span>: true,
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;linux&#34;</span>: true,
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;windows&#34;</span>: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;syntax&#34;</span>: <span class="s2">&#34;Packages/R/R Console.tmLanguage&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="/images/rmote.png" alt="Rmote&#43;Chrome" srcset="/images/rmote.png?size=small, /images/rmote.png?size=medium 1.5x, /images/rmote.png?size=large 2x" data-title="Rmote&#43;Chrome" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h1 id="问题" class="heading-element">
+  <a href="#%e9%97%ae%e9%a2%98" class="heading-mark"></a>问题</h1><h2 id="提示" class="heading-element">
+  <a href="#%e6%8f%90%e7%a4%ba" class="heading-mark"></a>提示:</h2><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="o">-</span> <span class="n">not</span> <span class="n">sending</span> <span class="n">to</span> <span class="n">rmote</span> <span class="n">because</span> <span class="n">another</span> <span class="n">graphics</span> <span class="n">device</span> <span class="n">has</span> <span class="n">been</span> <span class="n">opened...</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="n">sending</span> <span class="n">to</span> <span class="n">the</span> <span class="n">open</span> <span class="n">graphics</span> <span class="n">device</span> <span class="n">instead...</span>
+</span></span><span class="line"><span class="cl"><span class="o">-</span> <span class="n">to</span> <span class="n">send</span> <span class="n">to</span> <span class="n">rmote</span><span class="p">,</span> <span class="n">close</span> <span class="n">all</span> <span class="n">active</span> <span class="n">graphics</span> <span class="n">devices</span> <span class="n">using</span> <span class="nf">graphics.off</span><span class="p">()</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>说明已经有图片打开，需要关闭后即可</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl"><span class="nf">graphics.off</span><span class="p">()</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2019-09-10-r-slidify/" title="R slidify">R slidify</a></li><li>
+          <a href="/archives/2019-02-20-sublimegdb--%E6%9B%B4%E5%A5%BD%E7%94%A8%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7-debugger/" title="SublimeGDB: 更好用的轻量级 Debugger">SublimeGDB: 更好用的轻量级 Debugger</a></li><li>
+          <a href="/archives/2019-02-18-sublimerepl--%E5%AE%9A%E5%88%B6%E4%B8%8E%E6%94%B9%E9%80%A0/" title="SublimeREPL: 定制与改造">SublimeREPL: 定制与改造</a></li><li>
+          <a href="/archives/2019-01-05-sublime-%E7%BC%96%E8%AF%91-%E8%BF%90%E8%A1%8C-cpp/" title="Sublime 编译 运行 c/c&#43;&#43; 文件">Sublime 编译 运行 c/c&#43;&#43; 文件</a></li><li>
+          <a href="/archives/2018-12-11-%E4%BD%BF%E7%94%A8-ssh-key-%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95/" title="使用 ssh key 免密码登录">使用 ssh key 免密码登录</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2019-11-29 00:00:00">更新于 2019-11-29&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/" data-title="本地终端运行远程R命令，并输出图像" data-hashtags="R,rmote,Rstudio,Sublime,服务器,画图"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/" data-hashtag="R"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/" data-title="本地终端运行远程R命令，并输出图像" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/" data-title="本地终端运行远程R命令，并输出图像"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2019-11-29-%E6%9C%AC%E5%9C%B0%E7%BB%88%E7%AB%AF%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8Br%E5%91%BD%E4%BB%A4%E5%B9%B6%E8%BE%93%E5%87%BA%E5%9B%BE%E5%83%8F/" data-title="本地终端运行远程R命令，并输出图像"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/r/" class="post-tag" title="标签 - R">R</a><a href="/tags/rmote/" class="post-tag" title="标签 - Rmote">Rmote</a><a href="/tags/rstudio/" class="post-tag" title="标签 - Rstudio">Rstudio</a><a href="/tags/sublime/" class="post-tag" title="标签 - Sublime">Sublime</a><a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="post-tag" title="标签 - 服务器">服务器</a><a href="/tags/%E7%94%BB%E5%9B%BE/" class="post-tag" title="标签 - 画图">画图</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2019-11-29-%E6%90%AD%E5%BB%BA%E9%98%BF%E9%87%8C%E4%BA%91git%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="post-nav-item" rel="prev" title="搭建阿里云Git服务器"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>搭建阿里云Git服务器</a>
+      <a href="/archives/2019-12-02-%E8%A7%A3%E5%86%B3ssh%E4%B8%8A%E4%BC%A0%E5%85%AC%E9%92%A5%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BB%8D%E9%9C%80%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98/" class="post-nav-item" rel="next" title="解决ssh上传公钥到服务器仍需输入密码的问题">解决ssh上传公钥到服务器仍需输入密码的问题<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

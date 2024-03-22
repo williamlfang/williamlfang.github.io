@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>xz: 高压缩打包工具 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="xz 是一款高性能、高压缩比的打包工具，相比于 gzip、bzip2 等具有更高的压缩比率。对于大容量的数据文件，可以使用 xz 进行压缩打包。" /><meta name="keywords" content='Linux, xz, 数据存储' /><meta itemprop="name" content="xz: 高压缩打包工具">
+<meta itemprop="description" content="xz 是一款高性能、高压缩比的打包工具，相比于 gzip、bzip2 等具有更高的压缩比率。对于大容量的数据文件，可以使用 xz 进行压缩打包。"><meta itemprop="datePublished" content="2017-10-11T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-10-11T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1120"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,xz,数据存储," /><meta property="og:title" content="xz: 高压缩打包工具" />
+<meta property="og:description" content="xz 是一款高性能、高压缩比的打包工具，相比于 gzip、bzip2 等具有更高的压缩比率。对于大容量的数据文件，可以使用 xz 进行压缩打包。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2017-10-11-xz%E9%AB%98%E5%8E%8B%E7%BC%A9%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2017-10-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-11T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="xz: 高压缩打包工具"/>
+<meta name="twitter:description" content="xz 是一款高性能、高压缩比的打包工具，相比于 gzip、bzip2 等具有更高的压缩比率。对于大容量的数据文件，可以使用 xz 进行压缩打包。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2017-10-11-xz%E9%AB%98%E5%8E%8B%E7%BC%A9%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7/" /><link rel="prev" href="https://williamlfang.github.io/archives/2017-10-10-r%E8%AF%BB%E5%8F%96%E4%B8%AD%E6%96%87%E5%AD%97%E6%AE%B5%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/" /><link rel="next" href="https://williamlfang.github.io/archives/2017-10-13-%E6%88%91%E7%9A%84-sublime-text-%E8%AE%BE%E7%BD%AE/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "xz: 高压缩打包工具",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2017-10-11-xz%E9%AB%98%E5%8E%8B%E7%BC%A9%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7\/"
+    },"genre": "archives","keywords": "Linux, xz, 数据存储","wordcount":  1120 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2017-10-11-xz%E9%AB%98%E5%8E%8B%E7%BC%A9%E6%89%93%E5%8C%85%E5%B7%A5%E5%85%B7\/","datePublished": "2017-10-11T00:00:00+00:00","dateModified": "2017-10-11T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "William"
+      },"description": "xz 是一款高性能、高压缩比的打包工具，相比于 gzip、bzip2 等具有更高的压缩比率。对于大容量的数据文件，可以使用 xz 进行压缩打包。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><article class="page single special">
+    <div class="header"><h1 class="single-title animate__animated animate__pulse animate__faster">xz: 高压缩打包工具</h1></div><div
+      class="content"
+      id="content"
+      
+      
+    ><p><code>xz</code> 是一款高性能、高压缩比的打包工具，相比于 <code>gzip</code>、<code>bzip2</code> 等具有更高的压缩比率。对于大容量的数据文件，可以使用 <code>xz</code> 进行压缩打包。</p>
+<p>目前我们拥有中国期货市场从2010年至今的所有合约分笔数据（Tick Data），因其文件较大，占用空间，对于这部分的数据原始文件，我们已经清洗干净并已录入 <code>MySQL</code> 数据库。因此，对于原始的数据，我们希望将其压缩后，打包存放，以减少占用的磁盘空间。</p>
+<p><img loading="lazy" src="/images/2017-10-11-xz/xz01.png" alt="/images/2017-10-11-xz/xz01.png" srcset="/images/2017-10-11-xz/xz01.png?size=small, /images/2017-10-11-xz/xz01.png?size=medium 1.5x, /images/2017-10-11-xz/xz01.png?size=large 2x" data-title="/images/2017-10-11-xz/xz01.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h1 id="安装" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h1><h2 id="centos" class="heading-element">
+  <a href="#centos" class="heading-mark"></a><code>CentOS</code></h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo yum -y install xz xz-devel</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="ubuntu" class="heading-element">
+  <a href="#ubuntu" class="heading-mark"></a><code>Ubuntu</code></h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get install xz-utils</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="基本操作" class="heading-element">
+  <a href="#%e5%9f%ba%e6%9c%ac%e6%93%8d%e4%bd%9c" class="heading-mark"></a>基本操作</h1><h2 id="压缩文件" class="heading-element">
+  <a href="#%e5%8e%8b%e7%bc%a9%e6%96%87%e4%bb%b6" class="heading-mark"></a>压缩文件</h2><p><strong><code>xz</code> 默认的会在压缩完成后，删除原始的文件</strong>。这一点需要特别注意，对于一些不愿意删除的文件，我们可以使用参数 <code>-k</code> 来保留。</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 单文件，压缩存入 file.txt.xz, 并删除原始文件 file.txt</span>
+</span></span><span class="line"><span class="cl">xz file.txt         
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 多文件，分别存入 file1.txt.xz, file2.txt.xz, 并删除文件 file1.txt, file2.txt</span>
+</span></span><span class="line"><span class="cl">xz file1.txt file2.txt 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 不删除文件，使用 -k 来限制</span>
+</span></span><span class="line"><span class="cl">xz -k file.txt</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="解压文件" class="heading-element">
+  <a href="#%e8%a7%a3%e5%8e%8b%e6%96%87%e4%bb%b6" class="heading-mark"></a>解压文件</h2><p>同样的，<strong><code>xz</code>在解压文件的时候，默认的会删除压缩包</strong>。所以我们需要增加参数 <code>-k</code> 来现在不删除原始的压缩包。</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 解压文件，并删除 file.txt.xz</span>
+</span></span><span class="line"><span class="cl">unxz file.txt.xz
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 解压文件，但不删除原始压缩包文件，file.txt.xz</span>
+</span></span><span class="line"><span class="cl">unxz -k file.txt.xz</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="显示压缩包信息" class="heading-element">
+  <a href="#%e6%98%be%e7%a4%ba%e5%8e%8b%e7%bc%a9%e5%8c%85%e4%bf%a1%e6%81%af" class="heading-mark"></a>显示压缩包信息</h2><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">xz -l file.txt.xz</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="调整压缩率" class="heading-element">
+  <a href="#%e8%b0%83%e6%95%b4%e5%8e%8b%e7%bc%a9%e7%8e%87" class="heading-mark"></a>调整压缩率</h2><p>可以使用 <code>0-9</code> 来表明想要得到的压缩率，分别<strong>从低压缩比率到高压缩比率</strong>。压缩比越高，则压缩后得到的文件占用空间越小，但同时也意味着系统需要使用更多的时间来处理压缩。</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">xz -0kv file.txt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">xz -9kv file.txt</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="启动极限模式" class="heading-element">
+  <a href="#%e5%90%af%e5%8a%a8%e6%9e%81%e9%99%90%e6%a8%a1%e5%bc%8f" class="heading-mark"></a>启动极限模式</h2><p>通过使用极限模式，<code>xz</code> 将尽可能的最大化利用当前系统空余的<code>CPU</code>资源，这将提高程序的处理能力。</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 最高压缩比，启动极限模式，保留原始文件，显示具体处理过程</span>
+</span></span><span class="line"><span class="cl">xz -9ekv file.txt</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="多线程" class="heading-element">
+  <a href="#%e5%a4%9a%e7%ba%bf%e7%a8%8b" class="heading-mark"></a>多线程</h2><p>一般来说，现在的电脑都是多核多线程的操作系统，尤其是对于我们目前在使用的服务器系统<code>CentOS</code>，最大配置了<strong>32</strong>核的<code>CPU</code>。<code>xz</code> 默认使用单核单线程，如果需要提升运算性能，我们可以设置多线程来增加压缩处理的能力。这个参数就是 <code>--threads=n</code>。<code>n</code> 为设置的数字；如果为<strong>0</strong>，则会使用系统所有的线程资源。</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 启用 8 线程</span>
+</span></span><span class="line"><span class="cl">xz -9ekv --threads<span class="o">=</span><span class="m">8</span> file.txt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 启用所有的线程资源</span>
+</span></span><span class="line"><span class="cl">xz -9ekv --threads<span class="o">=</span><span class="m">0</span> file.txt</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="文件夹压缩打包" class="heading-element">
+  <a href="#%e6%96%87%e4%bb%b6%e5%a4%b9%e5%8e%8b%e7%bc%a9%e6%89%93%e5%8c%85" class="heading-mark"></a>文件夹压缩打包</h2><p>最后，来介绍一下对整个文件夹的压缩及打包。这里有两种方法可以选择</p>
+<ul>
+<li>现在打包文件夹，然后再进行压缩处理。</li>
+<li>[推荐]直接使用集成的命令来完成打包与压缩。</li>
+</ul>
+<p>我这里使用集成命令：</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## J 代表使用 xz 来压缩文件夹</span>
+</span></span><span class="line"><span class="cl">tar -Jcvf file.tar.xz directory/</span></span></code></pre></td></tr></table>
+</div>
+</div><p>但是，我们上面提到 <code>xz</code> 还提供了多种参数，如果在使用集成命令 <code>tar</code> 的时候，我们也系统能够传入参数，则可以使用命令</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 传入参数设置</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XZ_OPT</span><span class="o">=</span><span class="s1">&#39;-9ek --threads=12&#39;</span> tar -Jcvf <span class="nv">$i</span>.tar.xz <span class="nv">$i</span>/</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="打包期货数据" class="heading-element">
+  <a href="#%e6%89%93%e5%8c%85%e6%9c%9f%e8%b4%a7%e6%95%b0%e6%8d%ae" class="heading-mark"></a>打包期货数据</h1><p>以下是我写的一个 <code>shell</code> 脚本，用于打包中国期货分笔数据的原始<code>csv</code>文件。事实证明，<code>xz</code> 确实能够极大的较少文件占用的磁盘空间。</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1"># 打包 FromDC 的数据文件</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># </span>
+</span></span><span class="line"><span class="cl"><span class="nv">LOG_FILE</span><span class="o">=</span>tar_FromDC.txt
+</span></span><span class="line"><span class="cl"><span class="nb">exec</span> 3&gt;<span class="p">&amp;</span><span class="m">1</span> 1&gt;&gt; /home/fl/myLog/<span class="si">${</span><span class="nv">LOG_FILE</span><span class="si">}</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> -e <span class="s2">&#34;\n===============================================================================&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> -e <span class="s2">&#34;&gt;&gt; </span><span class="k">$(</span>date +<span class="s1">&#39;%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2"> &lt;&lt; tar_FromDC.sh&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> -e  <span class="s2">&#34;================================================================================&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /data/ChinaFuturesTickData/TickData
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> i in <span class="o">{</span>2010..2016<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> -e  <span class="s2">&#34;--------------------------------------------------------------------------------&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="sb">`</span>date<span class="sb">`</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="nv">$i</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;&gt;&gt;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">XZ_OPT</span><span class="o">=</span><span class="s1">&#39;-9ekv --threads=12&#39;</span> tar -Jcvf <span class="nv">$i</span>.tar.xz <span class="nv">$i</span>/
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> -e  <span class="s2">&#34;--------------------------------------------------------------------------------&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

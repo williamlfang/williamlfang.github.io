@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>R:4.0 源代码安装 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="R4.0 正式发布了。本文将介绍如何通过源代码的方式进行安装。" /><meta name="keywords" content='R, 4, 源代码, source' /><meta itemprop="name" content="R:4.0 源代码安装">
+<meta itemprop="description" content="R4.0 正式发布了。本文将介绍如何通过源代码的方式进行安装。"><meta itemprop="datePublished" content="2020-05-14T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-05-14T00:00:00+00:00" />
+<meta itemprop="wordCount" content="458"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="R,4,源代码,source," /><meta property="og:title" content="R:4.0 源代码安装" />
+<meta property="og:description" content="R4.0 正式发布了。本文将介绍如何通过源代码的方式进行安装。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/r4.0-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2020-05-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-05-14T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="R:4.0 源代码安装"/>
+<meta name="twitter:description" content="R4.0 正式发布了。本文将介绍如何通过源代码的方式进行安装。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/r4.0-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85/" /><link rel="prev" href="https://williamlfang.github.io/archives/2020-05-07-%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%E8%B5%84%E6%BA%90/" /><link rel="next" href="https://williamlfang.github.io/archives/2020-05-16-r--%E5%AE%89%E8%A3%85-tensorflow/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "R:4.0 源代码安装",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/r4.0-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85\/"
+    },"genre": "archives","keywords": "R, 4, 源代码, source","wordcount":  458 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/r4.0-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85\/","datePublished": "2020-05-14T00:00:00+00:00","dateModified": "2020-05-14T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "William"
+      },"description": "R4.0 正式发布了。本文将介绍如何通过源代码的方式进行安装。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><article class="page single special">
+    <div class="header"><h1 class="single-title animate__animated animate__pulse animate__faster">R:4.0 源代码安装</h1></div><div
+      class="content"
+      id="content"
+      
+      
+    ><p><code>R4.0</code> 正式发布上线了。新版本的代码在性能和编程方面均有出色的提升。本文将介绍如何通过源代码的方式安装程序，并在 <code>Rstudio</code> 当中指定可执行路径。</p>
+<h1 id="获取最新本-r" class="heading-element">
+  <a href="#%e8%8e%b7%e5%8f%96%e6%9c%80%e6%96%b0%e6%9c%ac-r" class="heading-mark"></a>获取最新本 R</h1><p>可以通过<a href="https://cran.rstudio.com/src/base/R-4/"target="_blank" rel="external nofollow noopener noreferrer">官网<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>找到相应的源代码压缩包。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> ~/Downloads
+</span></span><span class="line"><span class="cl">wget https://cran.rstudio.com/src/base/R-4/R-4.0.0.tar.gz
+</span></span><span class="line"><span class="cl">tar -xvf R-4.0.0.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> R-4.0.0</span></span></code></pre></td></tr></table>
+</div>
+</div><p>关于 <code>BLAS</code></p>
+<blockquote>
+<p>The BLAS libraries are not part of the open source R binaries, but they speed up calculations that are common in many analytic methods. If you are going through the effort of building R from source you probably want to take advantage of the performance benefits that are enabled by the BLAS libraries.</p>
+</blockquote>
+<h1 id="安装" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h1><p>参考这篇博客来安装依赖包：<a href="https://linuxcluster.wordpress.com/2017/10/29/compiling-r-3-4-2-on-centos-6-with-gnu/"target="_blank" rel="external nofollow noopener noreferrer">Compiling R-3.4.2 on CentOS 6 with GNU<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+<h2 id="安装-zlib" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-zlib" class="heading-mark"></a>安装 zlib</h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget http://zlib.net/zlib-1.2.11.tar.gz
+</span></span><span class="line"><span class="cl">tar -zxvf zlib-1.2.11
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> zlib-1.2.11
+</span></span><span class="line"><span class="cl">configure --prefix<span class="o">=</span>/usr/local/zlib-1.2.11
+</span></span><span class="line"><span class="cl">make -j 
+</span></span><span class="line"><span class="cl">make install
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/zlib-1.2.11/lib:<span class="nv">$LD_LIBRARY_PATH</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="安装-bzip" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-bzip" class="heading-mark"></a>安装 bzip</h2><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://sourceforge.net/projects/bzip2/files/bzip2-1.0.6.tar.gz
+</span></span><span class="line"><span class="cl">tar -xvf bzip2-1.0.6.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> bzip2-1.0.6
+</span></span><span class="line"><span class="cl">make -f Makefile-libbz2_so
+</span></span><span class="line"><span class="cl">make clean
+</span></span><span class="line"><span class="cl">make -n install <span class="nv">PREFIX</span><span class="o">=</span>/usr/local/R4.0
+</span></span><span class="line"><span class="cl">make install <span class="nv">PREFIX</span><span class="o">=</span>/usr/local/R4.0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 或者直接安装</span>
+</span></span><span class="line"><span class="cl">yum -y install cmake bzip2 htop tldr pigz pbzip2</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="安装-liblzma-or-xz" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-liblzma-or-xz" class="heading-mark"></a>安装 liblzma or xz</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget http://tukaani.org/xz/xz-5.2.3.tar.gz --no-check-certificate
+</span></span><span class="line"><span class="cl">tar xzvf xz-5.2.3.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> xz-5.2.3
+</span></span><span class="line"><span class="cl">./configure --prefix<span class="o">=</span>/usr/local/xz-5.2.3
+</span></span><span class="line"><span class="cl">make -j8
+</span></span><span class="line"><span class="cl">make install
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/xz-5.2.3/lib:<span class="nv">$LD_LIBRARY_PATH</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="安装--pcre2" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85--pcre2" class="heading-mark"></a>安装  pcre2</h2><p><a href="http://blog.fpliu.com/it/software/pcre2"target="_blank" rel="external nofollow noopener noreferrer"><strong>pcre2简介</strong><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## Ubuntu</span>
+</span></span><span class="line"><span class="cl">sudo apt-get install -y pcre2-utils libpcre2-dev
+</span></span><span class="line"><span class="cl"><span class="c1">## CentOS</span>
+</span></span><span class="line"><span class="cl">sudo yum install -y pcre2-tools pcre2-devel</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="处理环境变量" class="heading-element">
+  <a href="#%e5%a4%84%e7%90%86%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" class="heading-mark"></a>处理环境变量</h2><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&#34;-I/usr/local/zlib-1.2.11/include -I/usr/local/xz-5.2.3/include&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&#34;-L/usr/local/zlib-1.2.11/lib -L/usr/local/bzip2-1.0.6/lib -L/usr/local/xz-5.2.3/lib -L/usr/local/xz-5.2.3/lib&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="安装-r" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-r" class="heading-mark"></a>安装 R</h2><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## --prefix 指定路径，如果没有，会自动创建</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Note that the –enable-R-shlib option is required in order to </span>
+</span></span><span class="line"><span class="cl"><span class="c1">## make the underlying R shared library available to RStudio Server.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## link to the system BLAS libraries rather than use the R internal versions</span>
+</span></span><span class="line"><span class="cl">sudo ./configure --prefix<span class="o">=</span>/usr/local/R4.0 --enable-R-shlib --with-blas --with-lapack --enable-utf8 <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&#34;-L/usr/local/zlib-1.2.11/lib -L/usr/local/bzip2-1.0.6/lib -L/usr/local/xz-5.2.3/lib -L/usr/local/xz-5.2.3/lib&#34;</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&#34;-I/usr/local/zlib-1.2.11/include -I/usr/local/xz-5.2.3/include&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">make -j
+</span></span><span class="line"><span class="cl"><span class="c1">## 不管以前的错误，直接安装</span>
+</span></span><span class="line"><span class="cl">make install</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="启动" class="heading-element">
+  <a href="#%e5%90%af%e5%8a%a8" class="heading-mark"></a>启动</h2><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/usr/local/R4.0/bin/R
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">install.packages<span class="o">(</span><span class="s2">&#34;https://github.com/jeroen/curl/archive/master.tar.gz&#34;</span>, <span class="nv">repos</span> <span class="o">=</span> NULL<span class="o">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="/images/2020-05-14-R-4.0-%e6%ba%90%e4%bb%a3%e7%a0%81%e5%ae%89%e8%a3%85/R4.0.png" alt="/images/2020-05-14-R-4.0-源代码安装/R4.0.png" srcset="/images/2020-05-14-R-4.0-%e6%ba%90%e4%bb%a3%e7%a0%81%e5%ae%89%e8%a3%85/R4.0.png?size=small, /images/2020-05-14-R-4.0-%e6%ba%90%e4%bb%a3%e7%a0%81%e5%ae%89%e8%a3%85/R4.0.png?size=medium 1.5x, /images/2020-05-14-R-4.0-%e6%ba%90%e4%bb%a3%e7%a0%81%e5%ae%89%e8%a3%85/R4.0.png?size=large 2x" data-title="/images/2020-05-14-R-4.0-源代码安装/R4.0.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+</div><div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

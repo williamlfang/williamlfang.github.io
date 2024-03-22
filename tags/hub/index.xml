@@ -1,0 +1,53 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Hub - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/hub/</link>
+    <description>Hub - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 06 Sep 2020 00:00:00 &#43;0000</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/hub/" rel="self" type="application/rss+xml" /><item>
+  <title>CentOS7 搭建私有 DockerHub</title>
+  <link>https://williamlfang.github.io/archives/2020-09-06-centos7-%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-dockerhub/</link>
+  <pubDate>Sun, 06 Sep 2020 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2020-09-06-centos7-%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89-dockerhub/</guid>
+  <description><![CDATA[<h1 id="安装-docker-register" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-docker-register" class="heading-mark"></a>安装 Docker Register</h1><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 使用 docker 进行 registry2 进行管理</span>
+</span></span><span class="line"><span class="cl">docker pull registry
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 建立一个目录存放 docker 镜像, 默认是存放在 /tmp/registry</span>
+</span></span><span class="line"><span class="cl">mkdir -p /data/Docker/registy
+</span></span><span class="line"><span class="cl">docker run --name docker.registry -d -p 5000:5000 -v /data/Docker/registy:/tmp/registry registry
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">docker ps -a
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 开启防火墙5000端口</span>
+</span></span><span class="line"><span class="cl">systemctl restart firewalld.service
+</span></span><span class="line"><span class="cl">firewall-cmd --zone<span class="o">=</span>public --add-port<span class="o">=</span>5000/tcp --permanent
+</span></span><span class="line"><span class="cl">firewall-cmd --reload
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 测试访问</span>
+</span></span><span class="line"><span class="cl">curl http://192.168.1.135:5000/v2/</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+</channel>
+</rss>

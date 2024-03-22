@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>中国期货交易日历 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="利用`R`编制中国期货市场交易日历表。" /><meta name="keywords" content='Futures, Calendar, R' /><meta itemprop="name" content="中国期货交易日历">
+<meta itemprop="description" content="利用`R`编制中国期货市场交易日历表。"><meta itemprop="datePublished" content="2017-10-10T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-10-13T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1829"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Futures,Calendar,R," /><meta property="og:title" content="中国期货交易日历" />
+<meta property="og:description" content="利用`R`编制中国期货市场交易日历表。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2017-10-10-%E4%B8%AD%E5%9B%BD%E6%9C%9F%E8%B4%A7%E4%BA%A4%E6%98%93%E6%97%A5%E5%8E%86/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2017-10-10T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-13T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="中国期货交易日历"/>
+<meta name="twitter:description" content="利用`R`编制中国期货市场交易日历表。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2017-10-10-%E4%B8%AD%E5%9B%BD%E6%9C%9F%E8%B4%A7%E4%BA%A4%E6%98%93%E6%97%A5%E5%8E%86/" /><link rel="prev" href="https://williamlfang.github.io/archives/2017-10-09-%E4%BA%A6%E8%88%92-%E8%BF%B7%E8%BF%AD%E9%A6%99/" /><link rel="next" href="https://williamlfang.github.io/archives/2017-10-10-r%E8%AF%BB%E5%8F%96%E4%B8%AD%E6%96%87%E5%AD%97%E6%AE%B5%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "中国期货交易日历",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2017-10-10-%E4%B8%AD%E5%9B%BD%E6%9C%9F%E8%B4%A7%E4%BA%A4%E6%98%93%E6%97%A5%E5%8E%86\/"
+    },"genre": "archives","keywords": "Futures, Calendar, R","wordcount":  1829 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2017-10-10-%E4%B8%AD%E5%9B%BD%E6%9C%9F%E8%B4%A7%E4%BA%A4%E6%98%93%E6%97%A5%E5%8E%86\/","datePublished": "2017-10-10T00:00:00+00:00","dateModified": "2017-10-13T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "William"
+      },"description": "利用`R`编制中国期货市场交易日历表。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><article class="page single special">
+    <div class="header"><h1 class="single-title animate__animated animate__pulse animate__faster">中国期货交易日历</h1></div><div
+      class="content"
+      id="content"
+      
+      
+    ><h1 id="期货交易日" class="heading-element">
+  <a href="#%e6%9c%9f%e8%b4%a7%e4%ba%a4%e6%98%93%e6%97%a5" class="heading-mark"></a>期货交易日</h1><p>利用<code>R</code>语言对日期的处理功能，我们可以借此来编制中国期货市场的交易日历表，用于策略回测（Backtesting）、自动化执行行情订阅（mdApi）、进行程序化交易（tdAip）等。</p>
+<h2 id="要点" class="heading-element">
+  <a href="#%e8%a6%81%e7%82%b9" class="heading-mark"></a>要点</h2><p>在处理中国期货市场交易日期时，主要有以下几个要点需要特别注意：</p>
+<ul>
+<li>在当年年末，期货交易所会（提前）公布来年的所有节假日安排，这个可以通过查询<a href="http://www.shfe.com.cn/news/"target="_blank" rel="external nofollow noopener noreferrer">上期所公告网站<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li>因为我们的历史数据最早可以追踪到<code>2010</code>年，所以这里的第一个起始年度为<code>2010</code>。更加具体地，第一个真正开始接收数据的日期是 <code>2010-04-16</code></li>
+<li>如果未来第二日开始放假，则当天的夜盘不交易。这个通过判断<code>days</code>与<code>nights</code>日期相差的时间超过<strong>3天</strong>来处理，因为正常的周五至下周一的相差刚好是<strong>3天</strong>，而节假日则破坏了这个规律</li>
+<li><code>2015</code>年的中秋节放假比较特别，只有放假两天，当时交易所规定了<code>2015-09-25</code>当天的夜盘不交易，所以这个需要在<code>nights</code>里面排除。请注意，这是一个大坑。</li>
+</ul>
+<h2 id="代码" class="heading-element">
+  <a href="#%e4%bb%a3%e7%a0%81" class="heading-mark"></a>代码</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span><span class="lnt">142
+</span><span class="lnt">143
+</span><span class="lnt">144
+</span><span class="lnt">145
+</span><span class="lnt">146
+</span><span class="lnt">147
+</span><span class="lnt">148
+</span><span class="lnt">149
+</span><span class="lnt">150
+</span><span class="lnt">151
+</span><span class="lnt">152
+</span><span class="lnt">153
+</span><span class="lnt">154
+</span><span class="lnt">155
+</span><span class="lnt">156
+</span><span class="lnt">157
+</span><span class="lnt">158
+</span><span class="lnt">159
+</span><span class="lnt">160
+</span><span class="lnt">161
+</span><span class="lnt">162
+</span><span class="lnt">163
+</span><span class="lnt">164
+</span><span class="lnt">165
+</span><span class="lnt">166
+</span><span class="lnt">167
+</span><span class="lnt">168
+</span><span class="lnt">169
+</span><span class="lnt">170
+</span><span class="lnt">171
+</span><span class="lnt">172
+</span><span class="lnt">173
+</span><span class="lnt">174
+</span><span class="lnt">175
+</span><span class="lnt">176
+</span><span class="lnt">177
+</span><span class="lnt">178
+</span><span class="lnt">179
+</span><span class="lnt">180
+</span><span class="lnt">181
+</span><span class="lnt">182
+</span><span class="lnt">183
+</span><span class="lnt">184
+</span><span class="lnt">185
+</span><span class="lnt">186
+</span><span class="lnt">187
+</span><span class="lnt">188
+</span><span class="lnt">189
+</span><span class="lnt">190
+</span><span class="lnt">191
+</span><span class="lnt">192
+</span><span class="lnt">193
+</span><span class="lnt">194
+</span><span class="lnt">195
+</span><span class="lnt">196
+</span><span class="lnt">197
+</span><span class="lnt">198
+</span><span class="lnt">199
+</span><span class="lnt">200
+</span><span class="lnt">201
+</span><span class="lnt">202
+</span><span class="lnt">203
+</span><span class="lnt">204
+</span><span class="lnt">205
+</span><span class="lnt">206
+</span><span class="lnt">207
+</span><span class="lnt">208
+</span><span class="lnt">209
+</span><span class="lnt">210
+</span><span class="lnt">211
+</span><span class="lnt">212
+</span><span class="lnt">213
+</span><span class="lnt">214
+</span><span class="lnt">215
+</span><span class="lnt">216
+</span><span class="lnt">217
+</span><span class="lnt">218
+</span><span class="lnt">219
+</span><span class="lnt">220
+</span><span class="lnt">221
+</span><span class="lnt">222
+</span><span class="lnt">223
+</span><span class="lnt">224
+</span><span class="lnt">225
+</span><span class="lnt">226
+</span><span class="lnt">227
+</span><span class="lnt">228
+</span><span class="lnt">229
+</span><span class="lnt">230
+</span><span class="lnt">231
+</span><span class="lnt">232
+</span><span class="lnt">233
+</span><span class="lnt">234
+</span><span class="lnt">235
+</span><span class="lnt">236
+</span><span class="lnt">237
+</span><span class="lnt">238
+</span><span class="lnt">239
+</span><span class="lnt">240
+</span><span class="lnt">241
+</span><span class="lnt">242
+</span><span class="lnt">243
+</span><span class="lnt">244
+</span><span class="lnt">245
+</span><span class="lnt">246
+</span><span class="lnt">247
+</span><span class="lnt">248
+</span><span class="lnt">249
+</span><span class="lnt">250
+</span><span class="lnt">251
+</span><span class="lnt">252
+</span><span class="lnt">253
+</span><span class="lnt">254
+</span><span class="lnt">255
+</span><span class="lnt">256
+</span><span class="lnt">257
+</span><span class="lnt">258
+</span><span class="lnt">259
+</span><span class="lnt">260
+</span><span class="lnt">261
+</span><span class="lnt">262
+</span><span class="lnt">263
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## myChinaFuturesCalendar.R</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 生成中国期货交易日</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 1. days  :日盘时间</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 2. nights:夜盘时间</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="nf">rm</span><span class="p">(</span><span class="n">list</span> <span class="o">=</span> <span class="nf">ls</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="nf">setwd</span><span class="p">(</span><span class="s">&#39;/home/fl/myData&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 需要安装的 package: bizdays</span>
+</span></span><span class="line"><span class="cl"><span class="n">pkgs</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;data.table&#34;</span><span class="p">,</span><span class="s">&#39;magrittr&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="p">(</span><span class="nf">length</span><span class="p">(</span><span class="n">pkgs[</span><span class="o">!</span><span class="n">pkgs</span> <span class="o">%in%</span> <span class="nf">installed.packages</span><span class="p">()</span><span class="n">]</span><span class="p">)</span> <span class="o">!=</span> <span class="m">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">sapply</span><span class="p">(</span><span class="n">pkgs[</span><span class="o">!</span><span class="n">pkgs</span> <span class="o">%in%</span> <span class="nf">installed.packages</span><span class="p">()</span><span class="n">]</span><span class="p">,</span> <span class="n">install.packages</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">sapply</span><span class="p">(</span><span class="n">pkgs</span><span class="p">,</span> <span class="n">require</span><span class="p">,</span> <span class="n">character.only</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 这里需要做选择</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 对于周末的时间，日盘和夜盘的间隔不应该超过 3 天</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 但是，如果是节假日，有可能超过 3 天，那么夜盘就是 NA 了。</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 这个应该很好理解。</span>
+</span></span><span class="line"><span class="cl"><span class="n">setNights</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">for</span> <span class="p">(</span><span class="n">i</span> <span class="kr">in</span> <span class="m">1</span><span class="o">:</span><span class="nf">nrow</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">x</span><span class="o">$</span><span class="n">nights[i]</span><span class="p">))</span> <span class="kr">next</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span><span class="o">$</span><span class="n">days[i]</span> <span class="o">-</span> <span class="n">x</span><span class="o">$</span><span class="n">nights[i]</span><span class="p">)</span> <span class="o">&gt;</span> <span class="m">3</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">          <span class="c1">#-- 如果有休假，则日盘与夜盘差超过 3 天</span>
+</span></span><span class="line"><span class="cl">          <span class="n">x</span><span class="o">$</span><span class="n">nights[i]</span> <span class="o">&lt;-</span> <span class="kc">NA</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x[</span><span class="p">,</span> <span class="s">&#34;:=&#34;</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">nights</span> <span class="o">=</span> <span class="nf">gsub</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">nights</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">days</span>   <span class="o">=</span> <span class="nf">gsub</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">days</span><span class="p">))</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 查询交易所对节假日的安排</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/911232224.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2010</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2010-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2010-01-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2010-02-13&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2010-02-19&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2010-04-03&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2010-04-05&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2010-05-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2010-05-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2010-06-14&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2010-06-16&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2010-09-22&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2010-09-24&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2010-10-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2010-10-07&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">          <span class="nf">.[which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#39;2010-04-16&#39;</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="kc">NA</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2010</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/11272678.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2011</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2011-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2011-01-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2011-02-02&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2011-02-08&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2011-04-03&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2011-04-05&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2011-04-30&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2011-05-02&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2011-06-04&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2011-06-06&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2011-09-10&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2011-09-12&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2011-10-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2011-10-07&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="kc">NA</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2011</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/111211125.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2012</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2012-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2012-01-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2012-01-22&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2012-01-28&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2012-04-02&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2012-04-04&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2012-04-29&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2012-05-01&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2012-06-22&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2012-06-24&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2012-09-30&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2012-10-07&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="kc">NA</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2012</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/211216642.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2013</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2013-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2013-01-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2013-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2013-01-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2013-02-09&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2013-02-15&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2013-04-04&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2013-04-06&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2013-04-29&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2013-05-01&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2013-06-10&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2013-06-12&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2013-09-19&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2013-09-21&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2013-10-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2013-10-07&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span> <span class="n">days[</span><span class="o">-</span><span class="nf">length</span><span class="p">(</span><span class="n">days</span><span class="p">)</span><span class="n">]</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.Date</span><span class="p">(</span><span class="n">.,</span> <span class="n">origin</span> <span class="o">=</span> <span class="s">&#34;1970-01-01&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span><span class="nf">[which</span><span class="p">(</span><span class="n">nights</span> <span class="o">&lt;</span> <span class="s">&#34;2013-07-05&#34;</span><span class="p">)</span><span class="n">]</span> <span class="o">&lt;-</span> <span class="kc">NA</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2013</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/211216642.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2014</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-01-01&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-01-31&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-02-06&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-04-05&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-04-07&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-05-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-05-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-05-31&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-06-02&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-09-06&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-09-08&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-10-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-10-07&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span> <span class="n">days[</span><span class="o">-</span><span class="nf">length</span><span class="p">(</span><span class="n">days</span><span class="p">)</span><span class="n">]</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.Date</span><span class="p">(</span><span class="n">.,</span> <span class="n">origin</span> <span class="o">=</span> <span class="s">&#34;1970-01-01&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2014</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/211216642.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2014</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-01-01&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-01-31&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-02-06&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-04-05&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-04-07&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-05-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-05-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-05-31&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-06-02&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-09-06&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-09-08&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2014-10-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2014-10-07&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span> <span class="n">days[</span><span class="o">-</span><span class="nf">length</span><span class="p">(</span><span class="n">days</span><span class="p">)</span><span class="n">]</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.Date</span><span class="p">(</span><span class="n">.,</span> <span class="n">origin</span> <span class="o">=</span> <span class="s">&#34;1970-01-01&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2014</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/911321768.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2015</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2015-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2015-01-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2015-02-18&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2015-02-24&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2015-04-05&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2015-04-06&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2015-05-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2015-05-01&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2015-06-20&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2015-06-22&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2015-09-03&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2015-09-05&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">days</span><span class="o">&gt;=</span><span class="s">&#34;2015-09-27&#34;</span><span class="o">&amp;</span><span class="n">days</span><span class="o">&lt;=</span><span class="s">&#34;2015-09-27&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2015-10-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2015-10-07&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span> <span class="n">days[</span><span class="o">-</span><span class="nf">length</span><span class="p">(</span><span class="n">days</span><span class="p">)</span><span class="n">]</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.Date</span><span class="p">(</span><span class="n">.,</span> <span class="n">origin</span> <span class="o">=</span> <span class="s">&#34;1970-01-01&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span><span class="nf">[which</span><span class="p">(</span><span class="n">nights</span> <span class="o">==</span> <span class="s">&#39;2015-09-25&#39;</span><span class="p">)</span><span class="n">]</span> <span class="o">&lt;-</span> <span class="kc">NA</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2015</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/911323994.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2016</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2016-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2016-01-03&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2016-02-07&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2016-02-13&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2016-04-02&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2016-04-04&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2016-04-30&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2016-05-02&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2016-06-09&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2016-06-11&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2016-09-15&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2016-09-17&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2016-10-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2016-10-07&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span> <span class="n">days[</span><span class="o">-</span><span class="nf">length</span><span class="p">(</span><span class="n">days</span><span class="p">)</span><span class="n">]</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.Date</span><span class="p">(</span><span class="n">.,</span> <span class="n">origin</span> <span class="o">=</span> <span class="s">&#34;1970-01-01&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2016</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## http://www.shfe.com.cn/news/notice/911326468.html</span>
+</span></span><span class="line"><span class="cl"><span class="n">yearID</span> <span class="o">&lt;-</span> <span class="m">2017</span>
+</span></span><span class="line"><span class="cl"><span class="n">daysInYear</span> <span class="o">&lt;-</span> <span class="nf">as.numeric</span><span class="p">(</span><span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-12-31&#39;</span><span class="p">))</span> <span class="o">-</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">as.Date</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl"><span class="n">days</span> <span class="o">&lt;-</span> <span class="nf">as.Date</span><span class="p">(</span><span class="m">0</span><span class="o">:</span><span class="n">daysInYear</span><span class="p">,</span> <span class="n">origin</span> <span class="o">=</span> <span class="nf">paste0</span><span class="p">(</span><span class="n">yearID</span><span class="p">,</span> <span class="s">&#39;-01-01&#39;</span><span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">which</span><span class="p">(</span><span class="nf">weekdays</span><span class="p">(</span><span class="n">.)</span> <span class="o">%in%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Saturday&#34;</span><span class="p">,</span> <span class="s">&#34;Sunday&#34;</span><span class="p">))</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">        <span class="n">.[</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2017-01-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2017-01-02&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2017-01-27&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2017-02-02&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2017-04-02&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2017-04-04&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2017-04-29&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2017-05-01&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2017-05-28&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2017-05-30&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">&gt;=</span> <span class="s">&#34;2017-10-01&#34;</span> <span class="o">&amp;</span> <span class="n">. </span><span class="o">&lt;=</span> <span class="s">&#34;2017-10-08&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="nf">which</span><span class="p">(</span><span class="n">. </span><span class="o">==</span> <span class="s">&#34;2017-12-31&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">          <span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">nights</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span> <span class="n">days[</span><span class="o">-</span><span class="nf">length</span><span class="p">(</span><span class="n">days</span><span class="p">)</span><span class="n">]</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.Date</span><span class="p">(</span><span class="n">.,</span> <span class="n">origin</span> <span class="o">=</span> <span class="s">&#34;1970-01-01&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar2017</span> <span class="o">&lt;-</span> <span class="nf">data.table</span><span class="p">(</span><span class="n">nights</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">setNights</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calendar</span> <span class="o">&lt;-</span> <span class="nf">rbind</span><span class="p">(</span><span class="n">calendar2010</span><span class="p">,</span> <span class="n">calendar2011</span><span class="p">,</span> <span class="n">calendar2012</span><span class="p">,</span> <span class="n">calendar2013</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">calendar2014</span><span class="p">,</span> <span class="n">calendar2015</span><span class="p">,</span> <span class="n">calendar2016</span><span class="p">,</span> <span class="n">calendar2017</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">fwrite</span><span class="p">(</span><span class="n">calendar</span><span class="p">,</span> <span class="s">&#39;./data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 录入 MySQL 数据库</span>
+</span></span><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">RMySQL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">mysql</span> <span class="o">&lt;-</span>   <span class="nf">dbConnect</span><span class="p">(</span><span class="nf">MySQL</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                     <span class="n">dbname</span>   <span class="o">=</span> <span class="s">&#39;dev&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                     <span class="n">host</span>     <span class="o">=</span> <span class="s">&#39;192.168.1.166&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                     <span class="n">port</span>     <span class="o">=</span> <span class="m">3306</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                     <span class="n">user</span>     <span class="o">=</span> <span class="s">&#39;fl&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                     <span class="n">password</span> <span class="o">=</span> <span class="s">&#39;******&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">dbSendQuery</span><span class="p">(</span><span class="n">mysql</span><span class="p">,</span> <span class="s">&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">            CREATE TABLE IF NOT EXISTS dev.ChinaFuturesCalendar(
+</span></span></span><span class="line"><span class="cl"><span class="s">              nights Date,
+</span></span></span><span class="line"><span class="cl"><span class="s">              days Date NOT NULL
+</span></span></span><span class="line"><span class="cl"><span class="s">            )
+</span></span></span><span class="line"><span class="cl"><span class="s">            &#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">dbSendQuery</span><span class="p">(</span><span class="n">mysql</span><span class="p">,</span><span class="s">&#34;truncate table ChinaFuturesCalendar&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">dbWriteTable</span><span class="p">(</span><span class="n">mysql</span><span class="p">,</span> <span class="s">&#34;ChinaFuturesCalendar&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">calendar</span><span class="p">,</span> <span class="n">row.names</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## =============================================================================</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="数据下载" class="heading-element">
+  <a href="#%e6%95%b0%e6%8d%ae%e4%b8%8b%e8%bd%bd" class="heading-mark"></a>数据下载</h1><p>从<code>2010</code>年至<code>2017</code>年的交易日期已经存放在我的<code>github</code>网站，<a href="https://github.com/williamlfang/myData/blob/master/data/ChinaFuturesCalendar/ChinaFuturesCalendar.csv"target="_blank" rel="external nofollow noopener noreferrer">点击查看<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>。</p>
+</div><div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

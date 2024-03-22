@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>期货数据：R读取数据文件 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。" /><meta name="keywords" content='Futures, 期货, 数据, R' /><meta itemprop="name" content="期货数据：R读取数据文件">
+<meta itemprop="description" content="介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。"><meta itemprop="datePublished" content="2017-10-19T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-10-19T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1076"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Futures,期货,数据,R," /><meta property="og:title" content="期货数据：R读取数据文件" />
+<meta property="og:description" content="介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2017-10-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-19T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="期货数据：R读取数据文件"/>
+<meta name="twitter:description" content="介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6/" /><link rel="prev" href="https://williamlfang.github.io/archives/2017-10-17-sa%E9%98%BF%E5%88%97%E5%85%8B%E8%B0%A2%E8%80%B6%E7%BB%B4%E5%A5%87/" /><link rel="next" href="https://williamlfang.github.io/archives/2017-10-20-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-tick-%E8%BD%AC-bar/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "期货数据：R读取数据文件",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6\/"
+    },"genre": "archives","keywords": "Futures, 期货, 数据, R","wordcount":  1076 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6\/","datePublished": "2017-10-19T00:00:00+00:00","dateModified": "2017-10-19T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "William"
+      },"description": "介绍使用 `R` 编程语言读取期货数据文件，为后续数据清理、数据汇总做准备。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><article class="page single special">
+    <div class="header"><h1 class="single-title animate__animated animate__pulse animate__faster">期货数据：R读取数据文件</h1></div><div
+      class="content"
+      id="content"
+      
+      
+    ><p>在上一期的 <strong>「期货数据」</strong> 系列，我介绍了 <a href="https://williamlfang.github.io/post/2017-10-18-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-%E6%95%B0%E6%8D%AE%E6%B8%85%E7%90%86%E8%A6%81%E7%82%B9/"target="_blank" rel="external nofollow noopener noreferrer">数据清理要点<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>。这一期，我将介绍如何使用统计编程语言 <code>R</code> 来读取从交易所接收下来的数据文件。</p>
+<hr>
+<h1 id="r-读取数据" class="heading-element">
+  <a href="#r-%e8%af%bb%e5%8f%96%e6%95%b0%e6%8d%ae" class="heading-mark"></a><code>R</code> 读取数据</h1><h2 id="萝卜与青菜" class="heading-element">
+  <a href="#%e8%90%9d%e5%8d%9c%e4%b8%8e%e9%9d%92%e8%8f%9c" class="heading-mark"></a>萝卜与青菜</h2><p>我在之前的一篇博客谈到了如何使用 <code>readr</code> 包<a href="https://williamlfang.github.io/post/2017-10-10-r%E8%AF%BB%E5%8F%96%E4%B8%AD%E6%96%87%E5%AD%97%E6%AE%B5%E7%9A%84%E6%AD%A3%E7%A1%AE%E5%A7%BF%E5%8A%BF/"target="_blank" rel="external nofollow noopener noreferrer">读取包含中文字段的数据文件<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>。同时，文件也提到，<code>readr</code> 对于读取大文件存在性能上的不足。因此，我日常仍然以另外一个软件包为主要工具。</p>
+<p>这个神奇的软件包，就是大名鼎鼎的 <code>data.table</code>，提高了从读取数据、数据清洗、数据汇总到数据写入的全方位功能函数，而且难能可贵的是，它的处理效率惊人得强大。我估计会在以后单独写一篇博客来介绍这个扩展包。不过这里作为引子，请允许我隆重介绍今天的主角：<code>fread</code>。</p>
+<h2 id="read_csv" class="heading-element">
+  <a href="#read_csv" class="heading-mark"></a><code>read_csv</code></h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">readr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">help</span><span class="p">(</span><span class="n">read_csv</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="fread" class="heading-element">
+  <a href="#fread" class="heading-mark"></a><code>fread</code></h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="nf">library</span><span class="p">(</span><span class="n">data.table</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">help</span><span class="p">(</span><span class="n">fread</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h1 id="myfreadr" class="heading-element">
+  <a href="#myfreadr" class="heading-mark"></a><code>myFread.R</code></h1><p><code>myFraed.R</code> 是我编写的一个函数脚本，集成了以上两个函数的功能，并在此基础上对数据文件进行初步的判断：</p>
+<ul>
+<li>如果数据文件支持使用 <code>fread</code> 进行读取，则优先使用这个函数，因为这个读取速度极快，对于一个 <code>1Gb 大小的文件，大概只需要 </code>10 ~ 15 秒`</li>
+<li>如果对于部分数据文件，有可能由于里面包含中文字段、数据格式异常等问题，这时候就需要借助 <code>read_csv</code> 更加强大的底层支撑来处理，不过读取的速度稍微有所降低</li>
+</ul>
+<h2 id="fromdc" class="heading-element">
+  <a href="#fromdc" class="heading-mark"></a>FromDC</h2><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## FUN: myFreadBar</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 从　DC 那份数据文件读取数据，用于制作　Bar</span>
+</span></span><span class="line"><span class="cl"><span class="n">myFreadFromDC</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## -- 如果使用　fread 可以正常读取数据文件</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span><span class="p">(</span><span class="nf">class</span><span class="p">(</span><span class="nf">try</span><span class="p">(</span><span class="nf">fread</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">showProgress</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">=</span> <span class="m">1000</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">               <span class="n">silent</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">))</span><span class="n">[1]</span> <span class="o">!=</span> <span class="s">&#34;try-error&#34;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dt</span> <span class="o">&lt;-</span> <span class="nf">fread</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">showProgress</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">select</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;TradingDay&#39;</span><span class="p">,</span><span class="s">&#39;UpdateTime&#39;</span><span class="p">,</span><span class="s">&#39;UpdateMillisec&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;InstrumentID&#39;</span><span class="p">,</span><span class="s">&#39;LastPrice&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#34;OpenPrice&#34;</span><span class="p">,</span> <span class="s">&#34;HighestPrice&#34;</span><span class="p">,</span> <span class="s">&#34;LowestPrice&#34;</span><span class="p">,</span><span class="s">&#34;ClosePrice&#34;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;Volume&#39;</span><span class="p">,</span><span class="s">&#39;Turnover&#39;</span><span class="p">,</span><span class="s">&#39;OpenInterest&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;SettlementPrice&#39;</span><span class="p">,</span><span class="s">&#39;UpperLimitPrice&#39;</span><span class="p">,</span><span class="s">&#39;LowerLimitPrice&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;BidPrice1&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume1&#39;</span><span class="p">,</span><span class="s">&#39;BidPrice2&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume2&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;BidPrice3&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume3&#39;</span><span class="p">,</span><span class="s">&#39;BidPrice4&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume4&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;BidPrice5&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume5&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;AskPrice1&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume1&#39;</span><span class="p">,</span><span class="s">&#39;AskPrice2&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume2&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;AskPrice3&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume3&#39;</span><span class="p">,</span><span class="s">&#39;AskPrice4&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume4&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;AskPrice5&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume5&#39;</span><span class="p">,</span><span class="s">&#39;AveragePrice&#39;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">),</span>
+</span></span><span class="line"><span class="cl">                <span class="n">colClasses</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">character</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;TradingDay&#34;</span><span class="p">,</span><span class="s">&#34;InstrumentID&#34;</span><span class="p">,</span><span class="s">&#34;UpdateTime&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                  <span class="n">numeric</span>   <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Volume&#34;</span><span class="p">,</span><span class="s">&#34;Turnover&#34;</span><span class="p">)</span> <span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="kr">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## -- 如果使用　fread 读取失败，则使用　read_csv</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dt</span> <span class="o">&lt;-</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">col_types</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">TradingDay</span>   <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">InstrumentID</span> <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">UpdateTime</span>   <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">Volume</span>       <span class="o">=</span> <span class="nf">col_number</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">Turnover</span>     <span class="o">=</span> <span class="nf">col_number</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.data.table</span><span class="p">()</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="n">.[</span><span class="p">,</span><span class="n">.(TradingDay</span><span class="p">,</span> <span class="n">UpdateTime</span><span class="p">,</span> <span class="n">UpdateMillisec</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">InstrumentID</span><span class="p">,</span><span class="n">LastPrice</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">OpenPrice</span><span class="p">,</span> <span class="n">HighestPrice</span><span class="p">,</span> <span class="n">LowestPrice</span><span class="p">,</span><span class="n">ClosePrice</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">Volume</span><span class="p">,</span><span class="n">Turnover</span><span class="p">,</span><span class="n">OpenInterest</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">SettlementPrice</span><span class="p">,</span><span class="n">UpperLimitPrice</span><span class="p">,</span><span class="n">LowerLimitPrice</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">BidPrice1</span><span class="p">,</span><span class="n">BidVolume1</span><span class="p">,</span><span class="n">BidPrice2</span><span class="p">,</span><span class="n">BidVolume2</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">BidPrice3</span><span class="p">,</span><span class="n">BidVolume3</span><span class="p">,</span><span class="n">BidPrice4</span><span class="p">,</span><span class="n">BidVolume4</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">BidPrice5</span><span class="p">,</span><span class="n">BidVolume5</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">AskPrice1</span><span class="p">,</span><span class="n">AskVolume1</span><span class="p">,</span><span class="n">AskPrice2</span><span class="p">,</span><span class="n">AskVolume2</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">AskPrice3</span><span class="p">,</span><span class="n">AskVolume3</span><span class="p">,</span><span class="n">AskPrice4</span><span class="p">,</span><span class="n">AskVolume4</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">AskPrice5</span><span class="p">,</span><span class="n">AskVolume5</span><span class="p">,</span><span class="n">AveragePrice</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">##----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">return</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="ctpmd" class="heading-element">
+  <a href="#ctpmd" class="heading-mark"></a>CTPMD</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## FUN: myFreadBarCTP</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 用于制作 bar</span>
+</span></span><span class="line"><span class="cl"><span class="n">myFreadBarCTP</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## -- 如果使用　fread 可以正常读取数据文件</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span><span class="p">(</span><span class="nf">class</span><span class="p">(</span><span class="nf">try</span><span class="p">(</span><span class="nf">fread</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">showProgress</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">=</span> <span class="m">1000</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">               <span class="n">silent</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">))</span><span class="n">[1]</span> <span class="o">!=</span> <span class="s">&#34;try-error&#34;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dt</span> <span class="o">&lt;-</span> <span class="nf">fread</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">showProgress</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">select</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;TimeStamp&#39;</span><span class="p">,</span><span class="s">&#39;TradingDay&#39;</span><span class="p">,</span><span class="s">&#39;UpdateTime&#39;</span><span class="p">,</span><span class="s">&#39;UpdateMillisec&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;InstrumentID&#39;</span><span class="p">,</span><span class="s">&#39;LastPrice&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#34;OpenPrice&#34;</span><span class="p">,</span> <span class="s">&#34;HighestPrice&#34;</span><span class="p">,</span> <span class="s">&#34;LowestPrice&#34;</span><span class="p">,</span><span class="s">&#34;ClosePrice&#34;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;Volume&#39;</span><span class="p">,</span><span class="s">&#39;Turnover&#39;</span><span class="p">,</span><span class="s">&#39;OpenInterest&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;SettlementPrice&#39;</span><span class="p">,</span><span class="s">&#39;UpperLimitPrice&#39;</span><span class="p">,</span><span class="s">&#39;LowerLimitPrice&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;BidPrice1&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume1&#39;</span><span class="p">,</span><span class="s">&#39;BidPrice2&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume2&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;BidPrice3&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume3&#39;</span><span class="p">,</span><span class="s">&#39;BidPrice4&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume4&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;BidPrice5&#39;</span><span class="p">,</span><span class="s">&#39;BidVolume5&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;AskPrice1&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume1&#39;</span><span class="p">,</span><span class="s">&#39;AskPrice2&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume2&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;AskPrice3&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume3&#39;</span><span class="p">,</span><span class="s">&#39;AskPrice4&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume4&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;AskPrice5&#39;</span><span class="p">,</span><span class="s">&#39;AskVolume5&#39;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">),</span>
+</span></span><span class="line"><span class="cl">                <span class="n">colClasses</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">character</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;TradingDay&#34;</span><span class="p">,</span><span class="s">&#34;InstrumentID&#34;</span><span class="p">,</span><span class="s">&#34;UpdateTime&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                  <span class="n">numeric</span>   <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;Volume&#34;</span><span class="p">,</span><span class="s">&#34;Turnover&#34;</span><span class="p">)</span> <span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">.[grep</span><span class="p">(</span><span class="s">&#34;^[0-9]{8}:[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{4,6}$&#34;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="kr">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## -- 如果使用　fread 读取失败，则使用　read_csv</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dt</span> <span class="o">&lt;-</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">col_types</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">TradingDay</span>   <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">InstrumentID</span> <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">UpdateTime</span>   <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">Volume</span>       <span class="o">=</span> <span class="nf">col_number</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">Turnover</span>     <span class="o">=</span> <span class="nf">col_number</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.data.table</span><span class="p">()</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">.[grep</span><span class="p">(</span><span class="s">&#34;^[0-9]{8}:[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{4,6}$&#34;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">)</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="n">.[</span><span class="p">,</span><span class="n">.(TimeStamp</span><span class="p">,</span> <span class="n">TradingDay</span><span class="p">,</span> <span class="n">UpdateTime</span><span class="p">,</span> <span class="n">UpdateMillisec</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">InstrumentID</span><span class="p">,</span><span class="n">LastPrice</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">OpenPrice</span><span class="p">,</span> <span class="n">HighestPrice</span><span class="p">,</span> <span class="n">LowestPrice</span><span class="p">,</span><span class="n">ClosePrice</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">Volume</span><span class="p">,</span><span class="n">Turnover</span><span class="p">,</span><span class="n">OpenInterest</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">SettlementPrice</span><span class="p">,</span><span class="n">UpperLimitPrice</span><span class="p">,</span><span class="n">LowerLimitPrice</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">BidPrice1</span><span class="p">,</span><span class="n">BidVolume1</span><span class="p">,</span><span class="n">BidPrice2</span><span class="p">,</span><span class="n">BidVolume2</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">BidPrice3</span><span class="p">,</span><span class="n">BidVolume3</span><span class="p">,</span><span class="n">BidPrice4</span><span class="p">,</span><span class="n">BidVolume4</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">BidPrice5</span><span class="p">,</span><span class="n">BidVolume5</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">AskPrice1</span><span class="p">,</span><span class="n">AskVolume1</span><span class="p">,</span><span class="n">AskPrice2</span><span class="p">,</span><span class="n">AskVolume2</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">AskPrice3</span><span class="p">,</span><span class="n">AskVolume3</span><span class="p">,</span><span class="n">AskPrice4</span><span class="p">,</span><span class="n">AskVolume4</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">AskPrice5</span><span class="p">,</span><span class="n">AskVolume5</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">##----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">return</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="vnpydata" class="heading-element">
+  <a href="#vnpydata" class="heading-mark"></a>vnpyData</h2><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">## =============================================================================</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## FUN: myFreadvnpy</span>
+</span></span><span class="line"><span class="cl"><span class="n">myFreadvnpy</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## -- 如果使用　fread 可以正常读取数据文件</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span><span class="p">(</span><span class="nf">class</span><span class="p">(</span><span class="nf">try</span><span class="p">(</span><span class="nf">fread</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">showProgress</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">=</span> <span class="m">100000</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">               <span class="n">silent</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">))</span><span class="n">[1]</span> <span class="o">!=</span> <span class="s">&#34;try-error&#34;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dt</span> <span class="o">&lt;-</span> <span class="nf">fread</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">showProgress</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span> <span class="n">fill</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">select</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;timeStamp&#39;</span><span class="p">,</span><span class="s">&#39;date&#39;</span><span class="p">,</span><span class="s">&#39;time&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;symbol&#39;</span><span class="p">,</span><span class="s">&#39;lastPrice&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#34;openPrice&#34;</span><span class="p">,</span> <span class="s">&#34;highestPrice&#34;</span><span class="p">,</span> <span class="s">&#34;lowestPrice&#34;</span><span class="p">,</span><span class="s">&#34;closePrice&#34;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;volume&#39;</span><span class="p">,</span><span class="s">&#39;turnover&#39;</span><span class="p">,</span><span class="s">&#39;openInterest&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;settlementPrice&#39;</span><span class="p">,</span><span class="s">&#39;upperLimit&#39;</span><span class="p">,</span><span class="s">&#39;lowerLimit&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;bidPrice1&#39;</span><span class="p">,</span><span class="s">&#39;bidVolume1&#39;</span><span class="p">,</span><span class="s">&#39;bidPrice2&#39;</span><span class="p">,</span><span class="s">&#39;bidVolume2&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;bidPrice3&#39;</span><span class="p">,</span><span class="s">&#39;bidVolume3&#39;</span><span class="p">,</span><span class="s">&#39;bidPrice4&#39;</span><span class="p">,</span><span class="s">&#39;bidVolume4&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;bidPrice5&#39;</span><span class="p">,</span><span class="s">&#39;bidVolume5&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;askPrice1&#39;</span><span class="p">,</span><span class="s">&#39;askVolume1&#39;</span><span class="p">,</span><span class="s">&#39;askPrice2&#39;</span><span class="p">,</span><span class="s">&#39;askVolume2&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;askPrice3&#39;</span><span class="p">,</span><span class="s">&#39;askVolume3&#39;</span><span class="p">,</span><span class="s">&#39;askPrice4&#39;</span><span class="p">,</span><span class="s">&#39;askVolume4&#39;</span>
+</span></span><span class="line"><span class="cl">                           <span class="p">,</span><span class="s">&#39;askPrice5&#39;</span><span class="p">,</span><span class="s">&#39;askVolume5&#39;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">),</span>
+</span></span><span class="line"><span class="cl">                <span class="n">colClasses</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">character</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;date&#34;</span><span class="p">,</span><span class="s">&#34;symbol&#34;</span><span class="p">,</span><span class="s">&#34;time&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                                  <span class="n">numeric</span>   <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;volume&#34;</span><span class="p">,</span><span class="s">&#34;turnover&#34;</span><span class="p">)</span> <span class="p">))</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">.[grep</span><span class="p">(</span><span class="s">&#34;^[0-9]{8} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{4,6}$&#34;</span><span class="p">,</span> <span class="n">timeStamp</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">## 考虑到部分文件可能使用的　Timestamp 是乱码</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="kr">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">## -- 如果使用　fread 读取失败，则使用　read_csv</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dt</span> <span class="o">&lt;-</span> <span class="nf">read_csv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                   <span class="n">col_types</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">timeStamp</span> <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">date</span>      <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">symbol</span>    <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">time</span>      <span class="o">=</span> <span class="nf">col_character</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">volume</span>    <span class="o">=</span> <span class="nf">col_number</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">                                    <span class="n">turnover</span>  <span class="o">=</span> <span class="nf">col_number</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">                   <span class="p">)</span> <span class="o">%&gt;%</span> <span class="nf">as.data.table</span><span class="p">()</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="nf">.[grep</span><span class="p">(</span><span class="s">&#34;^[0-9]{8} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{4,6}$&#34;</span><span class="p">,</span> <span class="n">timeStamp</span><span class="p">)</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="n">.[</span><span class="p">,</span><span class="n">.(timeStamp</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">time</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">symbol</span><span class="p">,</span><span class="n">lastPrice</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">openPrice</span><span class="p">,</span><span class="n">highestPrice</span><span class="p">,</span><span class="n">lowestPrice</span><span class="p">,</span><span class="n">closePrice</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">volume</span><span class="p">,</span><span class="n">turnover</span><span class="p">,</span><span class="n">openInterest</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">settlementPrice</span><span class="p">,</span><span class="n">upperLimit</span><span class="p">,</span><span class="n">lowerLimit</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">bidPrice1</span><span class="p">,</span><span class="n">bidVolume1</span><span class="p">,</span><span class="n">bidPrice2</span><span class="p">,</span><span class="n">bidVolume2</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">bidPrice3</span><span class="p">,</span><span class="n">bidVolume3</span><span class="p">,</span><span class="n">bidPrice4</span><span class="p">,</span><span class="n">bidVolume4</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">bidPrice5</span><span class="p">,</span><span class="n">bidVolume5</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">askPrice1</span><span class="p">,</span><span class="n">askVolume1</span><span class="p">,</span><span class="n">askPrice2</span><span class="p">,</span><span class="n">askVolume2</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">askPrice3</span><span class="p">,</span><span class="n">askVolume3</span><span class="p">,</span><span class="n">askPrice4</span><span class="p">,</span><span class="n">askVolume4</span>
+</span></span><span class="line"><span class="cl">           <span class="p">,</span><span class="n">askPrice5</span><span class="p">,</span><span class="n">askVolume5</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">##----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">return</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

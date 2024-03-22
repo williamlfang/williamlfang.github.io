@@ -11,5 +11,65 @@
   <guid>https://williamlfang.github.io/2023-06-18-linux-%E8%AE%BE%E7%BD%AE-cpu-%E9%AB%98%E6%80%A7%E8%83%BDperformance%E6%A8%A1%E5%BC%8F/</guid>
   <description><![CDATA[<p>通过设置 <code>cpu</code> 的运行模式，可以调整机器性能。</p>]]></description>
 </item>
+<item>
+  <title>Linux cpu 隔核设置</title>
+  <link>https://williamlfang.github.io/archives/2021-05-24-linux-cpu-%E9%9A%94%E6%A0%B8%E8%AE%BE%E7%BD%AE/</link>
+  <pubDate>Mon, 24 May 2021 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2021-05-24-linux-cpu-%E9%9A%94%E6%A0%B8%E8%AE%BE%E7%BD%AE/</guid>
+  <description><![CDATA[<h1 id="设置" class="heading-element">
+  <a href="#%e8%ae%be%e7%bd%ae" class="heading-mark"></a>设置</h1><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 查看多少个 cpu 核</span>
+</span></span><span class="line"><span class="cl">cat /proc/cpuinfo <span class="p">|</span>grep <span class="s2">&#34;model name&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 修改 grub</span>
+</span></span><span class="line"><span class="cl">vim /etc/default/grub
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 找到 GRUB_CMDLINE_LINUX 增加</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 隔离 1-2， 7-8</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 从 0 开始计数</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ioslcpus</span><span class="o">=</span>1-2,7-8
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 更新配置</span>
+</span></span><span class="line"><span class="cl">grub2-mkconfig -o /boot/grub2/grub.cfg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 重启生效</span>
+</span></span><span class="line"><span class="cl">reboot
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 查看是否生效</span>
+</span></span><span class="line"><span class="cl">cat /proc/cmdline</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
+  <title>Linux 调整 cstate 实现cpu超频</title>
+  <link>https://williamlfang.github.io/archives/2019-12-11-linux-%E8%B0%83%E6%95%B4-cstate-%E5%AE%9E%E7%8E%B0cpu%E8%B6%85%E9%A2%91/</link>
+  <pubDate>Wed, 11 Dec 2019 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2019-12-11-linux-%E8%B0%83%E6%95%B4-cstate-%E5%AE%9E%E7%8E%B0cpu%E8%B6%85%E9%A2%91/</guid>
+  <description><![CDATA[随着技术的发展，现在主流的 Intel CPU 的主频都能达到 3GHz 以上，而且还支持超频技术。为了最大的获取 CPU 的性能，我们可以对 cstate 进行调整。 Ubuntu 设置与开机项有关的参]]></description>
+</item>
 </channel>
 </rss>

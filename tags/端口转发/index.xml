@@ -27,5 +27,87 @@
   <guid>https://williamlfang.github.io/2022-04-16-systemd-%E5%AE%9E%E7%8E%B0%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</guid>
   <description><![CDATA[<p>基于 <code>Linux</code> 守护进程服务 <code>systemd</code> 实现了端口转发功能，这里有一个小坑，为了保证系统监控到 <code>ssh</code>，需要程序驻留在主进程，也就是不能添加 <code>-f</code> 这个参数选项。</p>]]></description>
 </item>
+<item>
+  <title>autossh 的几个小技巧</title>
+  <link>https://williamlfang.github.io/archives/2021-05-07-autossh-%E7%9A%84%E5%87%A0%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+  <pubDate>Fri, 07 May 2021 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2021-05-07-autossh-%E7%9A%84%E5%87%A0%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+  <description><![CDATA[<h2 id="查看帮助设置环境变量" class="heading-element">
+  <a href="#%e6%9f%a5%e7%9c%8b%e5%b8%ae%e5%8a%a9%e8%ae%be%e7%bd%ae%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" class="heading-mark"></a>查看帮助，设置环境变量</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">autossh --help
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">usage: autossh <span class="o">[</span>-V<span class="o">]</span> <span class="o">[</span>-M monitor_port<span class="o">[</span>:echo_port<span class="o">]]</span> <span class="o">[</span>-f<span class="o">]</span> <span class="o">[</span>SSH_OPTIONS<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    -M specifies monitor port. May be overridden by environment
+</span></span><span class="line"><span class="cl">       variable AUTOSSH_PORT. <span class="m">0</span> turns monitoring loop off.
+</span></span><span class="line"><span class="cl">       Alternatively, a port <span class="k">for</span> an <span class="nb">echo</span> service on the remote
+</span></span><span class="line"><span class="cl">       machine may be specified. <span class="o">(</span>Normally port 7.<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    -f run in background <span class="o">(</span>autossh handles this, and does not
+</span></span><span class="line"><span class="cl">       pass it to ssh.<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    -V print autossh version and exit.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Environment variables are:
+</span></span><span class="line"><span class="cl">    AUTOSSH_GATETIME    - how long must an ssh session be established
+</span></span><span class="line"><span class="cl">                          before we decide it really was established
+</span></span><span class="line"><span class="cl">                          <span class="o">(</span>in seconds<span class="o">)</span>. Default is <span class="m">30</span> seconds<span class="p">;</span> use of -f
+</span></span><span class="line"><span class="cl">                          flag sets this to 0.
+</span></span><span class="line"><span class="cl">    AUTOSSH_LOGFILE     - file to log to <span class="o">(</span>default is to use the syslog
+</span></span><span class="line"><span class="cl">                          facility<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    AUTOSSH_LOGLEVEL    - level of log verbosity
+</span></span><span class="line"><span class="cl">    AUTOSSH_MAXLIFETIME - <span class="nb">set</span> the maximum <span class="nb">time</span> to live <span class="o">(</span>seconds<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    AUTOSSH_MAXSTART    - max <span class="nb">times</span> to restart <span class="o">(</span>default is no limit<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    AUTOSSH_MESSAGE     - message to append to <span class="nb">echo</span> string <span class="o">(</span>max <span class="m">64</span> bytes<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    AUTOSSH_PATH        - path to ssh <span class="k">if</span> not default
+</span></span><span class="line"><span class="cl">    AUTOSSH_PIDFILE     - write pid to this file
+</span></span><span class="line"><span class="cl">    AUTOSSH_POLL        - how often to check the connection <span class="o">(</span>seconds<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    AUTOSSH_FIRST_POLL  - <span class="nb">time</span> before first connection check <span class="o">(</span>seconds<span class="o">)</span>
+</span></span><span class="line"><span class="cl">    AUTOSSH_PORT        - port to use <span class="k">for</span> monitor connection
+</span></span><span class="line"><span class="cl">    AUTOSSH_DEBUG       - turn logging to maximum verbosity and log to
+</span></span><span class="line"><span class="cl">                          stderr</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
+  <title>Gitlab 安装全过程</title>
+  <link>https://williamlfang.github.io/archives/2020-09-05-gitlab-%E5%AE%89%E8%A3%85%E5%85%A8%E8%BF%87%E7%A8%8B/</link>
+  <pubDate>Sat, 05 Sep 2020 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2020-09-05-gitlab-%E5%AE%89%E8%A3%85%E5%85%A8%E8%BF%87%E7%A8%8B/</guid>
+  <description><![CDATA[<p>记录在公司内部安装 Gitlab 全过程。</p>]]></description>
+</item>
 </channel>
 </rss>

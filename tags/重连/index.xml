@@ -1,0 +1,66 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>重连 - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/%E9%87%8D%E8%BF%9E/</link>
+    <description>重连 - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 04 Jun 2021 00:00:00 &#43;0000</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/%E9%87%8D%E8%BF%9E/" rel="self" type="application/rss+xml" /><item>
+  <title>rsync 自动重连</title>
+  <link>https://williamlfang.github.io/archives/2021-06-04-rsync-%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</link>
+  <pubDate>Fri, 04 Jun 2021 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2021-06-04-rsync-%E8%87%AA%E5%8A%A8%E9%87%8D%E8%BF%9E/</guid>
+  <description><![CDATA[<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">while</span> <span class="nb">true</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">    sleep <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">#rsync --progress -avPz -r -e &#34;ssh -p60001&#34; tbt.colo101.$(date +&#34;%Y%m&#34;)*.tar.bz2 ops@58.33.72.179:/data/Xtp/FromZZ.SH</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">exitCode</span><span class="o">=</span><span class="nv">$?</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">## -------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nv">$exitCode</span> in
+</span></span><span class="line"><span class="cl">    <span class="m">10</span> <span class="p">|</span> <span class="m">23</span> <span class="p">|</span> <span class="m">30</span> <span class="p">|</span> 35<span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">echo</span> <span class="s2">&#34;</span><span class="k">$(</span>date<span class="k">)</span><span class="s2">: rsync finished with a network related error: </span><span class="nv">$exitCode</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">;;</span>
+</span></span><span class="line"><span class="cl">    0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">echo</span> <span class="s2">&#34;</span><span class="k">$(</span>date<span class="k">)</span><span class="s2">: rsync finished without error&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">break</span>  <span class="c1"># leave the while loop</span>
+</span></span><span class="line"><span class="cl">      <span class="p">;;</span>
+</span></span><span class="line"><span class="cl">    *<span class="o">)</span>  <span class="c1"># all other cases</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">echo</span> <span class="s2">&#34;</span><span class="k">$(</span>date<span class="k">)</span><span class="s2">: rsync finished with an unexpected error: </span><span class="nv">$exitCode</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">## break  # we don&#39;t know whether repeating it makes sense</span>
+</span></span><span class="line"><span class="cl">      <span class="p">;;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">esac</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## -------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+</channel>
+</rss>

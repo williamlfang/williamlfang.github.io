@@ -12,6 +12,72 @@
   <description><![CDATA[<p>关于使用 <code>bash/shell</code> 编程的总结。</p>]]></description>
 </item>
 <item>
+  <title>GLIBCXX: not found</title>
+  <link>https://williamlfang.github.io/archives/2020-05-26-glibcxx--not-found/</link>
+  <pubDate>Tue, 26 May 2020 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2020-05-26-glibcxx--not-found/</guid>
+  <description><![CDATA[<p>无法找到 GLIBCXX 的解决方法。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## Ubuntu</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /usr/lib/x86_64-linux-gnu/
+</span></span><span class="line"><span class="cl"><span class="c1">## CentOS</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /usr/lib64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ll <span class="p">|</span>grep libstd
+</span></span><span class="line"><span class="cl">strings libstdc++.so.6 <span class="p">|</span> grep GLIBCXX
+</span></span><span class="line"><span class="cl"><span class="c1">## 有可能找不到 GLIBCXX_3.2.26</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">locate libstdc++.so.6
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">strings /usr/local/gcc/lib64/libstdc++.so.6 <span class="p">|</span> grep GLIBCXX
+</span></span><span class="line"><span class="cl">cp /usr/local/gcc/lib64/libstdc++.so.6 /usr/lib/x86_64-linux-gnu
+</span></span><span class="line"><span class="cl">strings /usr/lib/x86_64-linux-gnu/libstdc++.so.6 <span class="p">|</span> grep GLIBCXX</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
+  <title>centos 升级 gdb8.1</title>
+  <link>https://williamlfang.github.io/archives/2019-03-28-centos-%E5%8D%87%E7%BA%A7-gdb8.1/</link>
+  <pubDate>Thu, 28 Mar 2019 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2019-03-28-centos-%E5%8D%87%E7%BA%A7-gdb8.1/</guid>
+  <description><![CDATA[<p><code>gdb</code> 是一款通用的程序调试器，可以用于测试 <code>c</code>、<code>c++</code>、<code>java</code>、<code>python</code> 等多种程序语言。借用官方的解释，<code>gdb</code> 可以为我们提供至少以下强大的功能：</p>
+<ul>
+<li>Start your program, specifying anything that might affect its behavior.</li>
+<li>Make your program stop on specified conditions.</li>
+<li>Examine what has happened, when your program has stopped.</li>
+<li>Change things in your program, so you can experiment with correcting the effects of one bug and go on to learn about another.</li>
+</ul>
+<p>但是，如果其他的 <code>GNU</code> 项目，<code>gdb</code> 本身也是一款终端命令工具(CLI)，只能通过命令交互的方式进行代码调试。如果我们想要实时的看到断点(break point) 运行到何处，则需要配合使用 <code>tui</code>(text user interface) 功能。目前， <code>gdb8.1</code> 及以上版本，均已实现了该功能。</p>
+<p>接下来，我将介绍如何在 <code>CentOS</code> 操作系统下升级 <code>gdb8.1</code>。</p>]]></description>
+</item>
+<item>
+  <title>SublimeGDB: 更好用的轻量级 Debugger</title>
+  <link>https://williamlfang.github.io/archives/2019-02-20-sublimegdb--%E6%9B%B4%E5%A5%BD%E7%94%A8%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7-debugger/</link>
+  <pubDate>Wed, 20 Feb 2019 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/archives/2019-02-20-sublimegdb--%E6%9B%B4%E5%A5%BD%E7%94%A8%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7-debugger/</guid>
+  <description><![CDATA[<p><code>SublimeGDB</code> 是一款可以在 <code>Sublime</code> 编辑器内运行的代码调试器，即调用系统的 <code>GNU Debugger</code> 套件。通过一定的设置，我们便可以把 <code>Sublime</code> 改造成一款轻量级的 <code>IDE</code>，从而可以直接在编辑器对源文件^[source code]进行调试，并且提供了了多个代码调试状态，比直接在终端进行调试要强大的多，也十分方便。</p>]]></description>
+</item>
+<item>
   <title>Emacs: 神的编辑器</title>
   <link>https://williamlfang.github.io/archives/2019-01-17-emacs--%E7%A5%9E%E7%9A%84%E7%BC%96%E8%BE%91%E5%99%A8/</link>
   <pubDate>Thu, 17 Jan 2019 00:00:00 &#43;0000</pubDate>

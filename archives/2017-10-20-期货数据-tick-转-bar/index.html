@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>期货数据：Tick 转 Bar - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="介绍如何把 `Tick Data` 转化为 `Bar Data`。" /><meta name="keywords" content='Futures, 期货, 数据, R' /><meta itemprop="name" content="期货数据：Tick 转 Bar">
+<meta itemprop="description" content="介绍如何把 `Tick Data` 转化为 `Bar Data`。"><meta itemprop="datePublished" content="2017-10-20T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2017-10-20T00:00:00+00:00" />
+<meta itemprop="wordCount" content="964"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Futures,期货,数据,R," /><meta property="og:title" content="期货数据：Tick 转 Bar" />
+<meta property="og:description" content="介绍如何把 `Tick Data` 转化为 `Bar Data`。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2017-10-20-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-tick-%E8%BD%AC-bar/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2017-10-20T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-20T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="期货数据：Tick 转 Bar"/>
+<meta name="twitter:description" content="介绍如何把 `Tick Data` 转化为 `Bar Data`。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2017-10-20-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-tick-%E8%BD%AC-bar/" /><link rel="prev" href="https://williamlfang.github.io/archives/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6/" /><link rel="next" href="https://williamlfang.github.io/archives/2017-10-21-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-mysql-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%A1%E7%90%86/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "期货数据：Tick 转 Bar",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2017-10-20-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-tick-%E8%BD%AC-bar\/"
+    },"genre": "archives","keywords": "Futures, 期货, 数据, R","wordcount":  964 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2017-10-20-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-tick-%E8%BD%AC-bar\/","datePublished": "2017-10-20T00:00:00+00:00","dateModified": "2017-10-20T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "William"
+      },"description": "介绍如何把 `Tick Data` 转化为 `Bar Data`。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><article class="page single special">
+    <div class="header"><h1 class="single-title animate__animated animate__pulse animate__faster">期货数据：Tick 转 Bar</h1></div><div
+      class="content"
+      id="content"
+      
+      
+    ><p>继续 <strong>期货数据</strong> 系列。上一期我们已经<a href="https://williamlfang.github.io/post/2017-10-19-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE-r%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE%E6%96%87%E4%BB%B6/"target="_blank" rel="external nofollow noopener noreferrer">从数据文件读取<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>相关的数据，今天来介绍如何把 <code>Tick Data</code> 转化为 <code>Bar Data</code>。</p>
+<ul>
+<li>
+<p>通过清洗数据，获得真实、可靠、符合逻辑的<a href="https://williamlfang.github.io/post/2017-10-18-%E6%9C%9F%E8%B4%A7%E6%95%B0%E6%8D%AE%E6%95%B0%E6%8D%AE%E6%B8%85%E7%90%86%E8%A6%81%E7%82%B9/"target="_blank" rel="external nofollow noopener noreferrer">干净数据<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+</li>
+<li>
+<p>通过分笔数据来计算汇总日间（daily）的<code>OHLC</code>、<code>Volume</code>、<code>Turnover</code>、<code>OI</code>、<code>SettlementPrice</code></p>
+</li>
+<li>
+<p>通过计算分笔数据的 <code>Delta</code> 来汇总分钟之内的 <code>OHLC</code>、<code>Volume</code>、<code>Turnover</code></p>
+</li>
+<li>
+<p>对于每一笔交易的数据，我们要去其是<strong>真实成交的记录</strong>，因此需要提取的是 <code>\(DeltaX \neq 0\)</code> 的数据行</p>
+</li>
+<li>
+<p>由于需要计算的分钟数据比较大，函数里面运用到了并行计算，默认开启 <code>parallel</code>:</p>
+<ul>
+<li>
+<p>我们采用的是 <code>CentOS</code> 服务器，默认开始的模式是 <code>FORK</code></p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="n">cl</span> <span class="o">&lt;-</span> <span class="nf">makeCluster</span><span class="p">(</span><span class="n">no.cores</span><span class="p">,</span> <span class="n">type</span><span class="o">=</span><span class="s">&#34;FORK&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>如果在 <code>Windows</code> 操作系统，则需要开启 <code>PSOCK</code> 模式</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="daily" class="heading-element">
+  <a href="#daily" class="heading-mark"></a>Daily</h1><h2 id="文件" class="heading-element">
+  <a href="#%e6%96%87%e4%bb%b6" class="heading-mark"></a>文件</h2><p>文件在 <code>/Rconfig/dt2DailyBar.R</code></p>
+<h2 id="代码" class="heading-element">
+  <a href="#%e4%bb%a3%e7%a0%81" class="heading-mark"></a>代码</h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">##! dt2DailyBar.R</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 功能：</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 用于把 tick data 的数据转化为 daily 的数据，</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 1. dt2DailyBar(dt,&#34;allday&#34;)：全天的数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 2. dt2DailyBar(dt,&#34;day&#34;)：日盘的数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 3. dt2DailyBar(dt,&#34;night&#34;)：夜盘的数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##############################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 全天</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## dt_1d    &lt;- dt2DailyBar(dt,&#34;allday&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 日盘</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## dt_day   &lt;- dt2DailyBar(dt,&#34;day&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 夜盘</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## dt_night &lt;- dt2DailyBar(dt,&#34;night&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="n">dt2DailyBar</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">daySector</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">#-----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">if</span><span class="p">(</span><span class="n">daySector</span> <span class="o">==</span> <span class="s">&#34;allday&#34;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temp</span> <span class="o">&lt;-</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span><span class="kr">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span><span class="p">(</span><span class="n">daySector</span> <span class="o">==</span> <span class="s">&#34;day&#34;</span><span class="p">){</span><span class="c1">##-------------- dn == &#34;night&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">temp</span> <span class="o">&lt;-</span> <span class="n">x[UpdateTime</span> <span class="o">%between%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;08:30:00&#34;</span><span class="p">,</span> <span class="s">&#34;15:30:00&#34;</span><span class="p">)</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span><span class="kr">else</span><span class="p">{</span><span class="c1">##-------------- dn == &#34;night&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="n">temp</span> <span class="o">&lt;-</span> <span class="n">x[</span><span class="o">!</span><span class="p">(</span><span class="n">UpdateTime</span> <span class="o">%between%</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#34;08:30:00&#34;</span><span class="p">,</span> <span class="s">&#34;15:30:00&#34;</span><span class="p">))</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">#-----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">#-----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="n">tempRes</span> <span class="o">&lt;-</span> <span class="n">temp</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="n">.[</span><span class="p">,</span><span class="n">.SD[</span><span class="p">,</span><span class="n">.(</span>
+</span></span><span class="line"><span class="cl">      <span class="n">OpenPrice</span> <span class="o">=</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">nrow</span><span class="p">(</span><span class="n">.SD[DeltaVolume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span><span class="p">)</span> <span class="o">!=</span> <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">.SD[DeltaVolume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">][1</span><span class="p">,</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">OpenPrice</span><span class="p">)</span> <span class="o">|</span> <span class="n">OpenPrice</span> <span class="o">==</span> <span class="m">0</span> <span class="o">|</span> <span class="n">daySector</span> <span class="o">==</span> <span class="s">&#39;day&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">LastPrice</span><span class="p">,</span> <span class="n">OpenPrice</span><span class="p">)</span><span class="n">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">.SD[Volume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">][1</span><span class="p">,</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">OpenPrice</span><span class="p">)</span> <span class="o">|</span> <span class="n">OpenPrice</span> <span class="o">==</span> <span class="m">0</span> <span class="o">|</span> <span class="n">daySector</span> <span class="o">==</span> <span class="s">&#39;day&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">LastPrice</span><span class="p">,</span> <span class="n">OpenPrice</span><span class="p">)</span><span class="n">]</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="n">HighPrice</span> <span class="o">=</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">all</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">HighestPrice</span><span class="p">))</span> <span class="o">|</span> <span class="nf">sum</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">HighestPrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span> <span class="o">==</span> <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">max</span><span class="p">(</span><span class="n">.SD[Volume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span><span class="o">$</span><span class="n">LastPrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">max</span><span class="p">(</span><span class="n">.SD[Volume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span><span class="o">$</span><span class="n">HighestPrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">      <span class="n">LowPrice</span>  <span class="o">=</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">all</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">LowestPrice</span><span class="p">))</span> <span class="o">|</span> <span class="nf">sum</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">LowestPrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span> <span class="o">==</span> <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">min</span><span class="p">(</span><span class="n">.SD[Volume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">][LastPrice</span> <span class="o">!=</span><span class="m">0</span><span class="n">]</span><span class="o">$</span><span class="n">LastPrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">                         <span class="nf">min</span><span class="p">(</span><span class="n">.SD[Volume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span><span class="o">$</span><span class="n">LowestPrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">## CZCE 郑商所的 ClosePrice 是有问题的，需要用到 LastPrice</span>
+</span></span><span class="line"><span class="cl">      <span class="n">ClosePrice</span> <span class="o">=</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">all</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">ClosePrice</span><span class="p">))</span> <span class="o">|</span> <span class="nf">sum</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">ClosePrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span> <span class="o">==</span> <span class="m">0</span> <span class="o">|</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">.SD[</span><span class="p">,</span><span class="nf">nchar</span><span class="p">(</span><span class="nf">unique</span><span class="p">(</span><span class="nf">gsub</span><span class="p">(</span><span class="s">&#39;[a-zA-Z]&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="n">InstrumentID</span><span class="p">)))</span> <span class="o">==</span> <span class="m">3</span><span class="n">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                          <span class="n">.SD[Volume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">][.N</span><span class="p">,</span><span class="n">LastPrice]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                          <span class="n">.SD[Volume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">][.N</span><span class="p">,</span><span class="n">ClosePrice]</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">#-----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Volume</span>            <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">DeltaVolume</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="n">Turnover</span>          <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">DeltaTurnover</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">#                 -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">      <span class="n">OpenOpenInterest</span>  <span class="o">=</span> <span class="n">.SD[1</span><span class="p">,</span><span class="n">OpenInterest]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">HighOpenInterest</span>  <span class="o">=</span> <span class="n">.SD[</span><span class="p">,</span><span class="nf">max</span><span class="p">(</span><span class="n">OpenInterest</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="n">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">LowOpenInterest</span>   <span class="o">=</span> <span class="n">.SD[</span><span class="p">,</span><span class="nf">min</span><span class="p">(</span><span class="n">OpenInterest</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="n">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="n">CloseOpenInterest</span> <span class="o">=</span> <span class="n">.SD[.N</span><span class="p">,</span><span class="n">OpenInterest]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">#                 -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">      <span class="n">UpperLimitPrice</span>   <span class="o">=</span> <span class="nf">unique</span><span class="p">(</span><span class="nf">na.omit</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">UpperLimitPrice</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">      <span class="n">LowerLimitPrice</span>   <span class="o">=</span> <span class="nf">unique</span><span class="p">(</span><span class="nf">na.omit</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">LowerLimitPrice</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">      <span class="n">SettlementPrice</span>   <span class="o">=</span> <span class="n">.SD[.N</span><span class="p">,</span> <span class="n">SettlementPrice]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span><span class="n">]</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="n">.(TradingDay</span><span class="p">,</span> <span class="n">InstrumentID</span><span class="p">)</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="n">.[Volume</span> <span class="o">!=</span> <span class="m">0</span> <span class="o">&amp;</span> <span class="n">Turnover</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">    <span class="n">.[</span><span class="p">,</span> <span class="n">Sector</span> <span class="o">:=</span> <span class="n">daySector]</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">#-----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">#&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">setcolorder</span><span class="p">(</span><span class="n">tempRes</span><span class="p">,</span> <span class="nf">c</span><span class="p">(</span><span class="s">&#39;TradingDay&#39;</span><span class="p">,</span> <span class="s">&#39;Sector&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                          <span class="nf">colnames</span><span class="p">(</span><span class="n">tempRes</span><span class="p">)</span><span class="n">[2</span><span class="o">:</span><span class="p">(</span><span class="nf">ncol</span><span class="p">(</span><span class="n">tempRes</span><span class="p">)</span><span class="m">-1</span><span class="p">)</span><span class="n">]</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">return</span><span class="p">(</span><span class="n">tempRes</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">#&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##############################################################################</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="minute" class="heading-element">
+  <a href="#minute" class="heading-mark"></a>Minute</h1><h2 id="文件-1" class="heading-element">
+  <a href="#%e6%96%87%e4%bb%b6-1" class="heading-mark"></a>文件</h2><p>文件位于 <code>/Rconfig/dt2MinuteBar.R</code></p>
+<h2 id="代码-1" class="heading-element">
+  <a href="#%e4%bb%a3%e7%a0%81-1" class="heading-mark"></a>代码</h2><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-r" data-lang="r"><span class="line"><span class="cl"><span class="c1">##! dt2MinuteBar.R</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 功能：</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 用于把 tick data 的数据转化为 分钟 的数据，</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 1. dt2MinuteBar(dt)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##############################################################################</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl"><span class="n">dt2MinuteBar</span> <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span><span class="n">dt</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">setkey</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="n">InstrumentID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">temp</span> <span class="o">&lt;-</span> <span class="nf">lapply</span><span class="p">(</span><span class="nf">unique</span><span class="p">(</span><span class="n">dt</span><span class="o">$</span><span class="n">InstrumentID</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span><span class="n">ii</span><span class="p">){</span> <span class="n">dt[ii]</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">no.cores</span> <span class="o">&lt;-</span> <span class="nf">max</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="nf">detectCores</span><span class="p">()</span><span class="o">/</span><span class="m">3</span><span class="p">),</span> <span class="m">4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># no.cores &lt;- max(round(detectCores()/4), 4)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">cl</span> <span class="o">&lt;-</span> <span class="nf">makeCluster</span><span class="p">(</span><span class="n">no.cores</span><span class="p">,</span> <span class="n">type</span><span class="o">=</span><span class="s">&#34;FORK&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># clusterExport(cl, c(&#34;dt&#34;,&#34;temp&#34;))</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># clusterEvalQ(cl,{library(data.table);library(magrittr)})</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dtMinute</span> <span class="o">&lt;-</span> <span class="nf">parLapply</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">temp</span><span class="p">),</span> <span class="kr">function</span><span class="p">(</span><span class="n">ii</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## -------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temp[[ii]]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="n">.[</span><span class="p">,</span> <span class="n">.SD[</span><span class="p">,</span><span class="n">.(</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#-----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">        <span class="n">NumericExchTime</span> <span class="o">=</span> <span class="n">.SD[1</span><span class="p">,</span><span class="n">NumericExchTime]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#-----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">        <span class="n">OpenPrice</span> <span class="o">=</span> <span class="n">.SD[DeltaVolume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">][1</span><span class="p">,</span><span class="n">LastPrice]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">HighPrice</span> <span class="o">=</span> <span class="n">.SD[DeltaVolume</span> <span class="o">!=</span> <span class="m">0</span><span class="p">,</span> <span class="nf">max</span><span class="p">(</span><span class="n">LastPrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="n">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LowPrice</span>  <span class="o">=</span> <span class="n">.SD[DeltaVolume</span> <span class="o">!=</span> <span class="m">0</span><span class="p">,</span> <span class="nf">min</span><span class="p">(</span><span class="n">LastPrice</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="n">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ClosePrice</span> <span class="o">=</span> <span class="nf">ifelse</span><span class="p">(</span><span class="nf">nrow</span><span class="p">(</span><span class="n">.SD[DeltaVolume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span><span class="p">)</span> <span class="o">!=</span> <span class="m">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="n">.SD[DeltaVolume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span><span class="nf">[nrow</span><span class="p">(</span><span class="n">.SD[DeltaVolume</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span><span class="p">),</span> <span class="n">LastPrice]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                      <span class="n">.SD[.N</span><span class="p">,</span><span class="n">LastPrice]</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#-----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Volume</span>            <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">DeltaVolume</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Turnover</span>          <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">DeltaTurnover</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#                 -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">        <span class="n">OpenOpenInterest</span>  <span class="o">=</span> <span class="n">.SD[1</span><span class="p">,</span><span class="n">OpenInterest]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">HighOpenInterest</span>  <span class="o">=</span><span class="n">.SD[</span><span class="p">,</span><span class="nf">max</span><span class="p">(</span><span class="n">OpenInterest</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="n">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LowOpenInterest</span>   <span class="o">=</span> <span class="n">.SD[</span><span class="p">,</span><span class="nf">min</span><span class="p">(</span><span class="n">OpenInterest</span><span class="p">,</span> <span class="n">na.rm</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="n">]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">CloseOpenInterest</span> <span class="o">=</span> <span class="n">.SD[.N</span><span class="p">,</span><span class="n">OpenInterest]</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#                 -----------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">        <span class="n">UpperLimitPrice</span>   <span class="o">=</span> <span class="nf">unique</span><span class="p">(</span><span class="nf">na.omit</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">UpperLimitPrice</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">LowerLimitPrice</span>   <span class="o">=</span> <span class="nf">unique</span><span class="p">(</span><span class="nf">na.omit</span><span class="p">(</span><span class="n">.SD</span><span class="o">$</span><span class="n">LowerLimitPrice</span><span class="p">)),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">SettlementPrice</span>   <span class="o">=</span> <span class="n">.SD[.N</span><span class="p">,</span> <span class="n">SettlementPrice]</span>
+</span></span><span class="line"><span class="cl">      <span class="p">)</span><span class="n">]</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="n">.(TradingDay</span><span class="p">,</span> <span class="n">InstrumentID</span><span class="p">,</span> <span class="n">Minute</span><span class="p">)</span><span class="n">]</span> <span class="o">%&gt;%</span>
+</span></span><span class="line"><span class="cl">      <span class="n">.[Volume</span> <span class="o">!=</span> <span class="m">0</span> <span class="o">&amp;</span> <span class="n">Turnover</span> <span class="o">!=</span> <span class="m">0</span><span class="n">]</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## -------------------------------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span> <span class="o">%&gt;%</span> <span class="nf">rbindlist</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">stopCluster</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">return</span><span class="p">(</span><span class="n">dtMinute</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">##############################################################################</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

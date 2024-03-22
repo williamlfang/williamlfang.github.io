@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>R: package 开发指南 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="通过 hicloudR 演示如何开发一个　Ｒ 软件包。" /><meta name="keywords" content='R, packages, devtools, 开发, 软件包, hicloud, hicloudR' /><meta itemprop="name" content="R: package 开发指南">
+<meta itemprop="description" content="通过 hicloudR 演示如何开发一个　Ｒ 软件包。"><meta itemprop="datePublished" content="2020-04-21T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-04-21T00:00:00+00:00" />
+<meta itemprop="wordCount" content="1418"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="R,packages,devtools,开发,软件包,hicloud,hicloudR," /><meta property="og:title" content="R: package 开发指南" />
+<meta property="og:description" content="通过 hicloudR 演示如何开发一个　Ｒ 软件包。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
+<meta property="article:published_time" content="2020-04-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-04-21T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="R: package 开发指南"/>
+<meta name="twitter:description" content="通过 hicloudR 演示如何开发一个　Ｒ 软件包。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" /><link rel="prev" href="https://williamlfang.github.io/archives/2020-04-20-jupyterlab--%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97/" /><link rel="next" href="https://williamlfang.github.io/archives/2020-04-22-sublime--brackethighlighter-%E9%AB%98%E4%BA%AE%E6%8B%AC%E5%8F%B7/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "R: package 开发指南",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/archives\/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97\/"
+    },"genre": "posts","keywords": "R, packages, devtools, 开发, 软件包, hicloud, hicloudR","wordcount":  1418 ,
+    "url": "https:\/\/williamlfang.github.io\/archives\/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97\/","datePublished": "2020-04-21T00:00:00+00:00","dateModified": "2020-04-21T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": "通过 hicloudR 演示如何开发一个　Ｒ 软件包。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>R: package 开发指南</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2020-04-21 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2020-04-21">2020-04-21</time></span>&nbsp;<span title="1418 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1500 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#hicloudr">hicloudR</a>
+      <ol>
+        <li><a href="#开发指南">开发指南</a>
+          <ol>
+            <li><a href="#目录结构">目录结构</a></li>
+          </ol>
+        </li>
+        <li><a href="#使用-rcpp">使用 Rcpp</a>
+          <ol>
+            <li><a href="#打包">打包</a></li>
+            <li><a href="#安装">安装</a></li>
+            <li><a href="#使用-devtools">使用 <code>devtools</code></a></li>
+          </ol>
+        </li>
+        <li><a href="#托管到-github">托管到 <code>github</code></a>
+          <ol>
+            <li><a href="#添加-repo">添加 <code>repo</code></a></li>
+            <li><a href="#安装-1">安装</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><div class="details admonition warning open">
+      <div class="details-summary admonition-title">
+        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
+      </div>
+      <div class="details-content">
+        <div class="admonition-content">本文最后更新于 2020-04-21，文中内容可能已过时。</div>
+      </div>
+    </div><h1 id="hicloudr" class="heading-element">
+  <a href="#hicloudr" class="heading-mark"></a>hicloudR</h1><p>R package for hicloud</p>
+<h2 id="开发指南" class="heading-element">
+  <a href="#%e5%bc%80%e5%8f%91%e6%8c%87%e5%8d%97" class="heading-mark"></a>开发指南</h2><p>假设这个包的名称叫 <code>hicloudR</code></p>
+<h3 id="目录结构" class="heading-element">
+  <a href="#%e7%9b%ae%e5%bd%95%e7%bb%93%e6%9e%84" class="heading-mark"></a>目录结构</h3><ul>
+<li>需要建立一个 <code>R</code> 目录</li>
+<li>添加 <code>DESCRIPTION</code> 用来说明开发包</li>
+<li>添加 <code>NAMESPACE</code> 提供函数</li>
+</ul>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 建立一个 R 目录</span>
+</span></span><span class="line"><span class="cl">mkdir R
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 建立一个描述文档</span>
+</span></span><span class="line"><span class="cl">touch DESCRIPTION
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 提供函数</span>
+</span></span><span class="line"><span class="cl">touch NAMESPACE</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 <code>DESCRIPTION</code> 添加</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Package: hicloudR
+</span></span><span class="line"><span class="cl">Version: 0.1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 ``NAMESPACE` 添加</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">## 暴露所有函数</span>
+</span></span><span class="line"><span class="cl"><span class="n">exportPattern</span><span class="p">(</span><span class="s2">&#34;^[[:alpha:]]+&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="使用-rcpp" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8-rcpp" class="heading-mark"></a>使用 Rcpp</h2><ul>
+<li>
+<p>在 <code>DESCRIPTION</code> 添加</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Package: hicloudR
+</span></span><span class="line"><span class="cl">Version: 0.1
+</span></span><span class="line"><span class="cl">LinkingTo: Rcpp
+</span></span><span class="line"><span class="cl">Imports: Rcpp</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在 <code>NAMESPACE</code> 添加</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">exportPattern</span><span class="p">(</span><span class="s2">&#34;^[[:alpha:]]+&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">useDynLib</span><span class="p">(</span><span class="n">hicloudR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">importFrom</span><span class="p">(</span><span class="n">Rcpp</span><span class="p">,</span> <span class="n">sourceCpp</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>把 <code>myRcpp.cpp</code> 放在 <code>src</code> 目录下面</p>
+</li>
+<li>
+<p>然后在这个包目录 （与 <code>R</code>、<code>src</code> 并行的）运行</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tree -L <span class="m">2</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">.
+</span></span><span class="line"><span class="cl">├── data
+</span></span><span class="line"><span class="cl">├── DESCRIPTION
+</span></span><span class="line"><span class="cl">├── man
+</span></span><span class="line"><span class="cl">├── NAMESPACE
+</span></span><span class="line"><span class="cl">├── R
+</span></span><span class="line"><span class="cl">│   ├── about.R
+</span></span><span class="line"><span class="cl">│   └── RcppExports.R
+</span></span><span class="line"><span class="cl">├── README.md
+</span></span><span class="line"><span class="cl">├── src
+</span></span><span class="line"><span class="cl">│   ├── myRcpp.cpp
+</span></span><span class="line"><span class="cl">│   └── RcppExports.cpp
+</span></span><span class="line"><span class="cl">└── tests
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Rscript -e <span class="s2">&#34;Rcpp::compileAttributes()&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样会生成两个文件</p>
+<ul>
+<li><code>R/RcppExports.R</code></li>
+<li><code>src/RcppExports.cpp</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="打包" class="heading-element">
+  <a href="#%e6%89%93%e5%8c%85" class="heading-mark"></a>打包</h3><p>打开终端执行</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 需要跳转到上面一层</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ..
+</span></span><span class="line"><span class="cl">R CMD build hicloudR
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">* checking <span class="k">for</span> file ‘hicloudR/DESCRIPTION’ ... OK
+</span></span><span class="line"><span class="cl">* preparing ‘hicloudR’:
+</span></span><span class="line"><span class="cl">* checking DESCRIPTION meta-information ... OK
+</span></span><span class="line"><span class="cl">* checking <span class="k">for</span> LF line-endings in <span class="nb">source</span> and make files and shell scripts
+</span></span><span class="line"><span class="cl">* checking <span class="k">for</span> empty or unneeded directories
+</span></span><span class="line"><span class="cl">* building ‘hicloudR_0.1.tar.gz’</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="安装" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h3><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">R CMD INSTALL hicloudR_0.1.tar.gz
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">* installing to library ‘/home/william/R/x86_64-pc-linux-gnu-library/3.6’
+</span></span><span class="line"><span class="cl">* installing *source* package ‘hicloudR’ ...
+</span></span><span class="line"><span class="cl">** using staged installation
+</span></span><span class="line"><span class="cl">** R
+</span></span><span class="line"><span class="cl">** byte-compile and prepare package <span class="k">for</span> lazy loading
+</span></span><span class="line"><span class="cl">这是一个 hicloudR 的软件包，目前基于开源协议 MIT 进行创作。
+</span></span><span class="line"><span class="cl">所有版权归属汉云投资。
+</span></span><span class="line"><span class="cl">@williamlfang
+</span></span><span class="line"><span class="cl">** <span class="nb">help</span>
+</span></span><span class="line"><span class="cl">No man pages found in package  ‘hicloudR’
+</span></span><span class="line"><span class="cl">*** installing <span class="nb">help</span> indices
+</span></span><span class="line"><span class="cl">** building package indices
+</span></span><span class="line"><span class="cl">** testing <span class="k">if</span> installed package can be loaded from temporary location
+</span></span><span class="line"><span class="cl">** testing <span class="k">if</span> installed package can be loaded from final location
+</span></span><span class="line"><span class="cl">** testing <span class="k">if</span> installed package keeps a record of temporary installation path
+</span></span><span class="line"><span class="cl">* DONE <span class="o">(</span>hicloudR<span class="o">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="使用-devtools" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8-devtools" class="heading-mark"></a>使用 <code>devtools</code></h3><p><code>devtools</code> 提供了更加优雅的方式，可以直接在 <code>R</code> 运行环境中进行构建</p>
+<ul>
+<li><code>devtools::build()</code></li>
+<li><code>devtools::install()</code></li>
+</ul>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-R" data-lang="R"><span class="line"><span class="cl">❯ <span class="nf">setwd</span><span class="p">(</span><span class="s">&#39;/home/william/Documents/hicloudR&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">✔ <span class="m">95.6</span> <span class="n">MiB</span> <span class="n">master</span><span class="o">*</span>
+</span></span><span class="line"><span class="cl">❯ <span class="n">devtools</span><span class="o">::</span><span class="nf">build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">✔  <span class="n">checking</span> <span class="kr">for</span> <span class="n">file</span> ‘<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">william</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">hicloudR</span><span class="o">/</span><span class="n">DESCRIPTION</span>’ <span class="kc">...</span>
+</span></span><span class="line"><span class="cl">─  <span class="n">preparing</span> ‘<span class="n">hicloudR</span>’<span class="o">:</span>
+</span></span><span class="line"><span class="cl">✔  <span class="n">checking</span> <span class="n">DESCRIPTION</span> <span class="n">meta</span><span class="o">-</span><span class="n">information</span>
+</span></span><span class="line"><span class="cl">─  <span class="n">checking</span> <span class="kr">for</span> <span class="n">LF</span> <span class="n">line</span><span class="o">-</span><span class="n">endings</span> <span class="kr">in</span> <span class="n">source</span> <span class="n">and</span> <span class="n">make</span> <span class="n">files</span> <span class="n">and</span> <span class="n">shell</span> <span class="n">scripts</span>
+</span></span><span class="line"><span class="cl">─  <span class="n">checking</span> <span class="kr">for</span> <span class="n">empty</span> <span class="n">or</span> <span class="n">unneeded</span> <span class="n">directories</span>
+</span></span><span class="line"><span class="cl">─  <span class="n">building</span> ‘<span class="n">hicloudR_0.1.tar.gz</span>’
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">[1]</span> <span class="s">&#34;/home/william/Documents/hicloudR_0.1.tar.gz&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">❯ <span class="n">devtools</span><span class="o">::</span><span class="nf">install</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">✔  <span class="n">checking</span> <span class="kr">for</span> <span class="n">file</span> ‘<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">william</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">hicloudR</span><span class="o">/</span><span class="n">DESCRIPTION</span>’ <span class="kc">...</span>
+</span></span><span class="line"><span class="cl">─  <span class="n">preparing</span> ‘<span class="n">hicloudR</span>’<span class="o">:</span>
+</span></span><span class="line"><span class="cl">✔  <span class="n">checking</span> <span class="n">DESCRIPTION</span> <span class="n">meta</span><span class="o">-</span><span class="n">information</span>
+</span></span><span class="line"><span class="cl">─  <span class="n">checking</span> <span class="kr">for</span> <span class="n">LF</span> <span class="n">line</span><span class="o">-</span><span class="n">endings</span> <span class="kr">in</span> <span class="n">source</span> <span class="n">and</span> <span class="n">make</span> <span class="n">files</span> <span class="n">and</span> <span class="n">shell</span> <span class="n">scripts</span>
+</span></span><span class="line"><span class="cl">─  <span class="n">checking</span> <span class="kr">for</span> <span class="n">empty</span> <span class="n">or</span> <span class="n">unneeded</span> <span class="n">directories</span>
+</span></span><span class="line"><span class="cl">─  <span class="n">building</span> ‘<span class="n">hicloudR_0.1.tar.gz</span>’
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Running</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">R</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">R</span> <span class="n">CMD</span> <span class="n">INSTALL</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">RtmpDbpRnz</span><span class="o">/</span><span class="n">hicloudR_0.1.tar.gz</span> <span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">tests</span>
+</span></span><span class="line"><span class="cl"><span class="o">*</span> <span class="n">installing</span> <span class="n">to</span> <span class="n">library</span> ‘<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">william</span><span class="o">/</span><span class="n">R</span><span class="o">/</span><span class="n">x86_64</span><span class="o">-</span><span class="n">pc</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">gnu</span><span class="o">-</span><span class="n">library</span><span class="o">/</span><span class="m">3.6</span>’
+</span></span><span class="line"><span class="cl"><span class="o">*</span> <span class="n">installing</span> <span class="o">*</span><span class="n">source</span><span class="o">*</span> <span class="n">package</span> ‘<span class="n">hicloudR</span>’ <span class="kc">...</span>
+</span></span><span class="line"><span class="cl"><span class="o">**</span> <span class="n">using</span> <span class="n">staged</span> <span class="n">installation</span>
+</span></span><span class="line"><span class="cl"><span class="o">**</span> <span class="n">R</span>
+</span></span><span class="line"><span class="cl"><span class="o">**</span> <span class="n">byte</span><span class="o">-</span><span class="n">compile</span> <span class="n">and</span> <span class="n">prepare</span> <span class="n">package</span> <span class="kr">for</span> <span class="n">lazy</span> <span class="n">loading</span>
+</span></span><span class="line"><span class="cl">这是一个 <span class="n">hicloudR</span> 的软件包，目前基于开源协议 <span class="n">MIT</span> 进行创作。
+</span></span><span class="line"><span class="cl">所有版权归属汉云投资。
+</span></span><span class="line"><span class="cl"><span class="o">@</span><span class="n">williamlfang</span>
+</span></span><span class="line"><span class="cl"><span class="o">**</span> <span class="n">help</span>
+</span></span><span class="line"><span class="cl"><span class="n">No</span> <span class="n">man</span> <span class="n">pages</span> <span class="n">found</span> <span class="kr">in</span> <span class="n">package</span>  ‘<span class="n">hicloudR</span>’
+</span></span><span class="line"><span class="cl"><span class="o">***</span> <span class="n">installing</span> <span class="n">help</span> <span class="n">indices</span>
+</span></span><span class="line"><span class="cl"><span class="o">**</span> <span class="n">building</span> <span class="n">package</span> <span class="n">indices</span>
+</span></span><span class="line"><span class="cl"><span class="o">**</span> <span class="n">testing</span> <span class="kr">if</span> <span class="n">installed</span> <span class="n">package</span> <span class="n">can</span> <span class="n">be</span> <span class="n">loaded</span> <span class="n">from</span> <span class="n">temporary</span> <span class="n">location</span>
+</span></span><span class="line"><span class="cl"><span class="o">**</span> <span class="n">testing</span> <span class="kr">if</span> <span class="n">installed</span> <span class="n">package</span> <span class="n">can</span> <span class="n">be</span> <span class="n">loaded</span> <span class="n">from</span> <span class="n">final</span> <span class="n">location</span>
+</span></span><span class="line"><span class="cl"><span class="o">**</span> <span class="n">testing</span> <span class="kr">if</span> <span class="n">installed</span> <span class="n">package</span> <span class="n">keeps</span> <span class="n">a</span> <span class="n">record</span> <span class="n">of</span> <span class="n">temporary</span> <span class="n">installation</span> <span class="n">path</span>
+</span></span><span class="line"><span class="cl"><span class="o">*</span> <span class="nf">DONE </span><span class="p">(</span><span class="n">hicloudR</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="托管到-github" class="heading-element">
+  <a href="#%e6%89%98%e7%ae%a1%e5%88%b0-github" class="heading-mark"></a>托管到 <code>github</code></h2><h3 id="添加-repo" class="heading-element">
+  <a href="#%e6%b7%bb%e5%8a%a0-repo" class="heading-mark"></a>添加 <code>repo</code></h3><div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git add ./*
+</span></span><span class="line"><span class="cl">git commit -m <span class="s1">&#39;init&#39;</span>
+</span></span><span class="line"><span class="cl">git push</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="安装-1" class="heading-element">
+  <a href="#%e5%ae%89%e8%a3%85-1" class="heading-mark"></a>安装</h3><p>然后就可以直接安装了</p>
+<ul>
+<li><code>devtools::install_github(&quot;williamlfang/hicloudR&quot;)</code></li>
+</ul>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">❯ devtools::install_github<span class="o">(</span><span class="s2">&#34;williamlfang/hicloudR&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">Downloading GitHub repo williamlfang/hicloudR@master
+</span></span><span class="line"><span class="cl">✔  checking <span class="k">for</span> file ‘/tmp/RtmpDbpRnz/remotes41d42dcbca76/williamlfang-hicloudR-20b2dbf/DESCRIPTION’ ...
+</span></span><span class="line"><span class="cl">─  preparing ‘hicloudR’:
+</span></span><span class="line"><span class="cl">✔  checking DESCRIPTION meta-information
+</span></span><span class="line"><span class="cl">─  checking <span class="k">for</span> LF line-endings in <span class="nb">source</span> and make files and shell scripts
+</span></span><span class="line"><span class="cl">─  checking <span class="k">for</span> empty or unneeded directories
+</span></span><span class="line"><span class="cl">─  building ‘hicloudR_0.1.tar.gz’
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Installing package into <span class="s1">&#39;/home/william/R/x86_64-pc-linux-gnu-library/3.6&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="o">(</span>as <span class="s1">&#39;lib&#39;</span> is unspecified<span class="o">)</span>
+</span></span><span class="line"><span class="cl">* installing *source* package ‘hicloudR’ ...
+</span></span><span class="line"><span class="cl">** using staged installation
+</span></span><span class="line"><span class="cl">** R
+</span></span><span class="line"><span class="cl">** byte-compile and prepare package <span class="k">for</span> lazy loading
+</span></span><span class="line"><span class="cl">这是一个 hicloudR 的软件包，目前基于开源协议 MIT 进行创作。
+</span></span><span class="line"><span class="cl">所有版权归属汉云投资。
+</span></span><span class="line"><span class="cl">@williamlfang
+</span></span><span class="line"><span class="cl">** <span class="nb">help</span>
+</span></span><span class="line"><span class="cl">No man pages found in package  ‘hicloudR’
+</span></span><span class="line"><span class="cl">*** installing <span class="nb">help</span> indices
+</span></span><span class="line"><span class="cl">** building package indices
+</span></span><span class="line"><span class="cl">** testing <span class="k">if</span> installed package can be loaded from temporary location
+</span></span><span class="line"><span class="cl">** testing <span class="k">if</span> installed package can be loaded from final location
+</span></span><span class="line"><span class="cl">** testing <span class="k">if</span> installed package keeps a record of temporary installation path
+</span></span><span class="line"><span class="cl">* DONE <span class="o">(</span>hicloudR<span class="o">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2020-04-20-rcpp--%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" title="Rcpp: 开发指南">Rcpp: 开发指南</a></li><li>
+          <a href="/archives/2020-04-16-r-colorout-%E8%AE%BE%E7%BD%AE%E7%BB%88%E7%AB%AF%E8%BE%93%E5%87%BA%E7%9A%84%E4%B8%BB%E9%A2%98%E9%A2%9C%E8%89%B2/" title="R:colorout 设置终端输出的主题颜色">R:colorout 设置终端输出的主题颜色</a></li><li>
+          <a href="/archives/2020-04-15-feather-%E5%9C%A8r%E4%B8%8Epython%E4%B9%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/" title="feather:在R与python之间共享数据存储格式">feather:在R与python之间共享数据存储格式</a></li><li>
+          <a href="/archives/2020-02-04-windows--%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE-sublime-text-3/" title="Windows: 安装与配置 Sublime Text 3">Windows: 安装与配置 Sublime Text 3</a></li><li>
+          <a href="/archives/2019-12-29-%E6%84%9F%E8%A7%89%E4%BB%8A%E5%A4%A9%E8%87%AA%E5%B7%B1%E8%A2%AB%E7%A2%BE%E5%8E%8B%E4%BA%86/" title="感觉今天自己被碾压了">感觉今天自己被碾压了</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2020-04-21 00:00:00">更新于 2020-04-21&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" data-title="R: package 开发指南" data-hashtags="R,packages,devtools,开发,软件包,hicloud,hicloudR"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" data-hashtag="R"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" data-title="R: package 开发指南" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" data-title="R: package 开发指南"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2020-04-21-r--package-%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/" data-title="R: package 开发指南"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/r/" class="post-tag" title="标签 - R">R</a><a href="/tags/packages/" class="post-tag" title="标签 - Packages">Packages</a><a href="/tags/devtools/" class="post-tag" title="标签 - Devtools">Devtools</a><a href="/tags/%E5%BC%80%E5%8F%91/" class="post-tag" title="标签 - 开发">开发</a><a href="/tags/%E8%BD%AF%E4%BB%B6%E5%8C%85/" class="post-tag" title="标签 - 软件包">软件包</a><a href="/tags/hicloud/" class="post-tag" title="标签 - Hicloud">Hicloud</a><a href="/tags/hicloudr/" class="post-tag" title="标签 - HicloudR">HicloudR</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/archives/2020-04-20-jupyterlab--%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97/" class="post-nav-item" rel="prev" title="JupyterLab: 配置指南"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>JupyterLab: 配置指南</a>
+      <a href="/archives/2020-04-22-sublime--brackethighlighter-%E9%AB%98%E4%BA%AE%E6%8B%AC%E5%8F%B7/" class="post-nav-item" rel="next" title="Sublime: BracketHighlighter 高亮括号">Sublime: BracketHighlighter 高亮括号<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
