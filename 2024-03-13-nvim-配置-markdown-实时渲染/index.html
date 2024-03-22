@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>nvim 配置 markdown 实时渲染 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="我现在基本上都是使用nvim做笔记，大部分的时间都是写 markdown 格式的文档。因此，需要一款能够在终端实时渲染的插件。" /><meta name="keywords" content='nvim, markdown, glow' /><meta itemprop="name" content="nvim 配置 markdown 实时渲染">
+<meta itemprop="description" content="我现在基本上都是使用nvim做笔记，大部分的时间都是写 markdown 格式的文档。因此，需要一款能够在终端实时渲染的插件。"><meta itemprop="datePublished" content="2024-03-13T17:55:03+00:00" />
+<meta itemprop="dateModified" content="2024-03-13T17:55:03+00:00" />
+<meta itemprop="wordCount" content="395"><meta itemprop="image" content="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/nvim-markdown.png" />
+<meta itemprop="keywords" content="nvim,markdown,glow," /><meta property="og:title" content="nvim 配置 markdown 实时渲染" />
+<meta property="og:description" content="我现在基本上都是使用nvim做笔记，大部分的时间都是写 markdown 格式的文档。因此，需要一款能够在终端实时渲染的插件。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" /><meta property="og:image" content="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/nvim-markdown.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-03-13T17:55:03+00:00" />
+<meta property="article:modified_time" content="2024-03-13T17:55:03+00:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/nvim-markdown.png" /><meta name="twitter:title" content="nvim 配置 markdown 实时渲染"/>
+<meta name="twitter:description" content="我现在基本上都是使用nvim做笔记，大部分的时间都是写 markdown 格式的文档。因此，需要一款能够在终端实时渲染的插件。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" /><link rel="prev" href="https://williamlfang.github.io/2024-03-07-docker-%E5%AE%89%E8%A3%85-gitbook/" /><link rel="next" href="https://williamlfang.github.io/2024-03-16-c-hackers-guide/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "nvim 配置 markdown 实时渲染",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93\/nvim-markdown.png",
+              "width":  1878 ,
+              "height":  813 
+            }],"genre": "posts","keywords": "nvim, markdown, glow","wordcount":  395 ,
+    "url": "https:\/\/williamlfang.github.io\/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93\/","datePublished": "2024-03-13T17:55:03+00:00","dateModified": "2024-03-13T17:55:03+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>nvim 配置 markdown 实时渲染</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2024-03-13 17:55:03"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-03-13">2024-03-13</time></span>&nbsp;<span title="395 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/nvim-markdown.png" alt="/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/nvim-markdown.png" data-title="/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/nvim-markdown.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#glow">glow</a></li>
+        <li><a href="#markdown-previewnvim">markdown-preview.nvim</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>我现在基本上都是使用nvim做笔记，大部分的时间都是写 markdown 格式的文档。因此，需要一款能够在终端实时渲染的插件。</p>
+<h2 id="glow" class="heading-element">
+  <a href="#glow" class="heading-mark"></a>glow</h2><p><code>glow</code> 是一款可以在终端渲染 markdown 文档的命令</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Debian/Ubuntu</span>
+</span></span><span class="line"><span class="cl">sudo mkdir -p /etc/apt/keyrings
+</span></span><span class="line"><span class="cl">curl -fsSL https://repo.charm.sh/apt/gpg.key <span class="p">|</span> sudo gpg --dearmor -o /etc/apt/keyrings/charm.gpg
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *&#34;</span> <span class="p">|</span> sudo tee /etc/apt/sources.list.d/charm.list
+</span></span><span class="line"><span class="cl">sudo apt update <span class="o">&amp;&amp;</span> sudo apt install glow
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Fedora/RHEL</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s1">&#39;[charm]
+</span></span></span><span class="line"><span class="cl"><span class="s1">name=Charm
+</span></span></span><span class="line"><span class="cl"><span class="s1">baseurl=https://repo.charm.sh/yum/
+</span></span></span><span class="line"><span class="cl"><span class="s1">enabled=1
+</span></span></span><span class="line"><span class="cl"><span class="s1">gpgcheck=1
+</span></span></span><span class="line"><span class="cl"><span class="s1">gpgkey=https://repo.charm.sh/yum/gpg.key&#39;</span> <span class="p">|</span> sudo tee /etc/yum.repos.d/charm.repo
+</span></span><span class="line"><span class="cl">sudo yum install glow</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="markdown-previewnvim" class="heading-element">
+  <a href="#markdown-previewnvim" class="heading-mark"></a>markdown-preview.nvim</h2><p>这款插件支持在 nvim 的终端即可渲染 markdown，底层调用的是 <code>glow</code> 的渲染功能。</p>
+<p>我这里配置了快捷键：<code>mp</code></p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- :MPToggle: toggle markdown preview open or close.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- :MPOpen: open markdown preview window.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- :MPClose: close markdown preview window.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- :MPRefresh: refresh markdown preview window.</span>
+</span></span><span class="line"><span class="cl"><span class="kr">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;0x00-ketsu/markdown-preview.nvim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ft</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;md&#39;</span><span class="p">,</span> <span class="s1">&#39;markdown&#39;</span><span class="p">,</span> <span class="s1">&#39;mkd&#39;</span><span class="p">,</span> <span class="s1">&#39;mkdn&#39;</span><span class="p">,</span> <span class="s1">&#39;mdwn&#39;</span><span class="p">,</span> <span class="s1">&#39;mdown&#39;</span><span class="p">,</span> <span class="s1">&#39;mdtxt&#39;</span><span class="p">,</span> <span class="s1">&#39;mdtext&#39;</span><span class="p">,</span> <span class="s1">&#39;rmd&#39;</span><span class="p">,</span> <span class="s1">&#39;wiki&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&#34;MPToggle&#34;</span><span class="p">,</span> <span class="s2">&#34;MPOpen&#34;</span><span class="p">,</span> <span class="s2">&#34;MPClose&#34;</span><span class="p">,</span> <span class="s2">&#34;MPRefresh&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="n">config</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">require</span><span class="p">(</span><span class="s1">&#39;markdown-preview&#39;</span><span class="p">).</span><span class="n">setup</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- 配置快捷键:mp</span>
+</span></span><span class="line"><span class="cl">            <span class="n">vim.keymap</span><span class="p">.</span><span class="n">set</span><span class="p">(</span> <span class="s2">&#34;n&#34;</span><span class="p">,</span> <span class="s2">&#34;mp&#34;</span><span class="p">,</span> <span class="s2">&#34;:MPToggle&lt;CR&gt;&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">glow</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">-- When find executable path of `glow` failed (from PATH), use this value instead</span>
+</span></span><span class="line"><span class="cl">                <span class="n">exec_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="c1">-- Path to glamour JSON style file</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- Markdown preview term</span>
+</span></span><span class="line"><span class="cl">            <span class="n">term</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">-- reload term when rendered markdown file changed</span>
+</span></span><span class="line"><span class="cl">                <span class="n">reload</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">events</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                        <span class="s1">&#39;InsertLeave&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="s1">&#39;TextChanged&#39;</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">                <span class="p">},</span>
+</span></span><span class="line"><span class="cl">                <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="c1">-- choices: vertical / horizontal</span>
+</span></span><span class="line"><span class="cl">                <span class="n">keys</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">close</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;Esc&gt;&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">refresh</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-10-30-nvim-%E6%89%93%E5%BC%80%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" title="nvim 打开中文乱码">nvim 打开中文乱码</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2024-03-13 17:55:03">更新于 2024-03-13&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" data-title="nvim 配置 markdown 实时渲染" data-hashtags="nvim,markdown,glow"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" data-hashtag="nvim"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" data-title="nvim 配置 markdown 实时渲染" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" data-title="nvim 配置 markdown 实时渲染"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/" data-title="nvim 配置 markdown 实时渲染"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/nvim/" class="post-tag" title="标签 - Nvim">Nvim</a><a href="/tags/markdown/" class="post-tag" title="标签 - Markdown">Markdown</a><a href="/tags/glow/" class="post-tag" title="标签 - Glow">Glow</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2024-03-07-docker-%E5%AE%89%E8%A3%85-gitbook/" class="post-nav-item" rel="prev" title="docker 安装 gitbook"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>docker 安装 gitbook</a>
+      <a href="/2024-03-16-c-hackers-guide/" class="post-nav-item" rel="next" title="C&#43;&#43; Hacker&#39;s Guide">C&#43;&#43; Hacker&#39;s Guide<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

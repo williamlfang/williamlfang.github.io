@@ -1,0 +1,31 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Struct - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/struct/</link>
+    <description>Struct - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 22 Oct 2023 00:00:00 &#43;0000</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/struct/" rel="self" type="application/rss+xml" /><item>
+  <title>c&#43;&#43; 内存对齐</title>
+  <link>https://williamlfang.github.io/2023-10-22-c-%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/</link>
+  <pubDate>Sun, 22 Oct 2023 00:00:00 &#43;0000</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2023-10-22-c-%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/</guid>
+  <description><![CDATA[<p>我们在设计结构体时，需要慎重考虑<strong>内存对齐</strong>的问题，因为不同的内存对齐方式对程序的性能有极大的影响。</p>
+<h2 id="cpu-读取内存的最小有效值" class="heading-element">
+  <a href="#cpu-%e8%af%bb%e5%8f%96%e5%86%85%e5%ad%98%e7%9a%84%e6%9c%80%e5%b0%8f%e6%9c%89%e6%95%88%e5%80%bc" class="heading-mark"></a>CPU 读取内存的最小有效值</h2><p>计算机的内存是按照 <code>byte(8 bits)</code> 进行有序排序，理论上，我们可以在最小有效值为 <code>1 byte</code> 进行随机内存读取。然而，如果每次都是按照这个节奏，每取一个 <code>int（假设为 4byte）</code> 变量，<code>CPU</code> 都需要进行 4 次操作，毫无疑问效率极低。</p>
+<p>我们知道 <code>CPU</code> 架构有 <code>32bit</code> 与 <code>64bit</code> 两种，其含义是在 <code>CPU</code> 每次从内存地址取值时，是以对应<strong>最小有效内存地址</strong>进行快速操作的。简单讲</p>
+<ul>
+<li>对于 <code>32bit</code>，最优操作为每次取 <code>4 byte</code> 的内存空间进行识别</li>
+<li>对于 <code>64bit</code>，最优操作为每次取 <code>8 byte</code> 的内存空间进行识别</li>
+</ul>
+<p>现在的操作系统一般都是 <code>64bit</code> 了，所以每次的最佳取内存地址为 <code>8byte</code>，这也是我们经常说的，内存对齐按照 <code>8byte</code>，也是编译器 <code>gcc</code> 默认采用的大小。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#pragama pack(8)</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+</channel>
+</rss>

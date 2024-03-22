@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>pybind11: passing named arguments - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="pybind11 allow us to expose c&#43;&#43; class/function to higher abstraction level of python programming language, bringing high performance and flexibility into python.
+To pass named arguments in python, it&rsquo;s required to specify argument names in pybind11&rsquo;s interface. In this post, I will illustrate how to do that." /><meta name="keywords" content='pybind11, c&#43;&#43;, python, class, interface, function' /><meta itemprop="name" content="pybind11: passing named arguments">
+<meta itemprop="description" content="pybind11 allow us to expose c&#43;&#43; class/function to higher abstraction level of python programming language, bringing high performance and flexibility into python.
+To pass named arguments in python, it&rsquo;s required to specify argument names in pybind11&rsquo;s interface. In this post, I will illustrate how to do that."><meta itemprop="datePublished" content="2024-03-18T11:37:02+08:00" />
+<meta itemprop="dateModified" content="2024-03-18T11:37:02+08:00" />
+<meta itemprop="wordCount" content="723"><meta itemprop="image" content="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/python-calling.png" />
+<meta itemprop="keywords" content="pybind11,c&#43;&#43;,python,class,interface,function," /><meta property="og:title" content="pybind11: passing named arguments" />
+<meta property="og:description" content="pybind11 allow us to expose c&#43;&#43; class/function to higher abstraction level of python programming language, bringing high performance and flexibility into python.
+To pass named arguments in python, it&rsquo;s required to specify argument names in pybind11&rsquo;s interface. In this post, I will illustrate how to do that." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/" /><meta property="og:image" content="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/python-calling.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-03-18T11:37:02+08:00" />
+<meta property="article:modified_time" content="2024-03-18T11:37:02+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/python-calling.png" /><meta name="twitter:title" content="pybind11: passing named arguments"/>
+<meta name="twitter:description" content="pybind11 allow us to expose c&#43;&#43; class/function to higher abstraction level of python programming language, bringing high performance and flexibility into python.
+To pass named arguments in python, it&rsquo;s required to specify argument names in pybind11&rsquo;s interface. In this post, I will illustrate how to do that."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/" /><link rel="prev" href="https://williamlfang.github.io/2024-03-18-nvim-%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/" /><link rel="next" href="https://williamlfang.github.io/2024-03-18-linux-%E9%85%8D%E5%AF%B9%E7%BD%97%E6%8A%80%E8%93%9D%E7%89%99%E9%BC%A0%E6%A0%87/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "pybind11: passing named arguments",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2024-03-18-pybind11--passing-named-arguments\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2024-03-18-pybind11--passing-named-arguments\/python-calling.png",
+              "width":  718 ,
+              "height":  649 
+            }],"genre": "posts","keywords": "pybind11, c\u002b\u002b, python, class, interface, function","wordcount":  723 ,
+    "url": "https:\/\/williamlfang.github.io\/2024-03-18-pybind11--passing-named-arguments\/","datePublished": "2024-03-18T11:37:02+08:00","dateModified": "2024-03-18T11:37:02+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>pybind11: passing named arguments</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2024-03-18 11:37:02"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-03-18">2024-03-18</time></span>&nbsp;<span title="723 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 800 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 4 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#c-class">c++ class</a>
+      <ol>
+        <li><a href="#header">header</a></li>
+        <li><a href="#function">function</a></li>
+        <li><a href="#class">class</a></li>
+      </ol>
+    </li>
+    <li><a href="#pybind11-interface">pybind11 interface</a></li>
+    <li><a href="#python-calling">python calling</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p><code>pybind11</code> allow us <strong>to expose c++ class/function to higher abstraction level of python programming language</strong>, bringing high performance and flexibility into <code>python</code>.</p>
+<p>To pass <strong>named arguments</strong> in <code>python</code>, it&rsquo;s required to specify argument names in <code>pybind11</code>&rsquo;s interface. In this post, I will illustrate how to do that.</p>
+<h1 id="c-class" class="heading-element">
+  <a href="#c-class" class="heading-mark"></a>c++ class</h1><h2 id="header" class="heading-element">
+  <a href="#header" class="heading-mark"></a>header</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;pybind11/pybind11.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;pybind11/embed.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;pybind11/stl.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;cstdlib&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;cstdio&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1">// from SnailCore
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;util/acct_info.hpp&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;util/shm.hpp&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;util/shm_tool.hpp&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;util/shm_status.hpp&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;util/shm_struct.hpp&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;util/shmv.hpp&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;util/time_util.hpp&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;util/index_type.hpp&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;util/str_util.hpp&gt;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="function" class="heading-element">
+  <a href="#function" class="heading-mark"></a>function</h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">py</span><span class="o">::</span><span class="n">dict</span> <span class="n">pybind11_read_shm_acc</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">shm_tag</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">snail</span><span class="o">::</span><span class="n">acct_info_t</span><span class="o">::</span><span class="n">shm_reader_t</span><span class="o">&gt;</span> <span class="n">reader</span> <span class="p">{</span><span class="k">new</span> <span class="n">snail</span><span class="o">::</span><span class="n">acct_info_t</span><span class="o">::</span><span class="n">shm_reader_t</span><span class="p">(</span><span class="n">shm_tag</span><span class="p">)};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">auto</span> <span class="n">total</span> <span class="o">=</span> <span class="n">reader</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;total:&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">total</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">client_id</span><span class="p">,</span> <span class="n">us</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">beg_balance</span><span class="p">,</span> <span class="n">curr_balance</span><span class="p">,</span> <span class="n">enabled_balance</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">frozen_balance</span><span class="p">,</span> <span class="n">deposit</span><span class="p">,</span> <span class="n">margin</span><span class="p">,</span> <span class="n">frozen_margin</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">fee</span><span class="p">,</span> <span class="n">frozen_fee</span><span class="p">,</span> <span class="n">pos_profit</span><span class="p">,</span> <span class="n">close_profit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="n">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">auto</span> <span class="n">e</span> <span class="o">=</span> <span class="n">reader</span><span class="o">-&gt;</span><span class="n">safe_get</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">client_id</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">client_id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">us</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">microtime</span><span class="o">::</span><span class="n">from_count</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">us</span><span class="p">).</span><span class="n">to_zgc_str</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">beg_balance</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">beg_balance</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">curr_balance</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">curr_balance</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">enabled_balance</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">enabled_balance</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">frozen_balance</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">frozen_balance</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">deposit</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">deposit</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">margin</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">margin</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">frozen_margin</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">frozen_margin</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fee</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">fee</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">frozen_fee</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">frozen_fee</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pos_profit</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">pos_profit</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">close_profit</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">close_profit</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">py</span><span class="o">::</span><span class="n">dict</span> <span class="n">d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;US&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">us</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;ClientID&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">client_id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;BegBalance&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">beg_balance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;CurrBalance&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">curr_balance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;EnabledBalance&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">enabled_balance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;FrozenBalance&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">frozen_balance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;Deposit&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deposit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;Margin&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">margin</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;FrozenMargin&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">frozen_margin</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;Fee&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fee</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;FrozenFee&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">frozen_fee</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;PosProfit&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pos_profit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">d</span><span class="p">[</span><span class="s">&#34;CloseProfit&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="n">close_profit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="class" class="heading-element">
+  <a href="#class" class="heading-mark"></a>class</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Account</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="k">public</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Account</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">shm_tag</span><span class="p">,</span> <span class="kt">int</span> <span class="n">shm_size</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">continued</span> <span class="o">=</span> <span class="nb">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="o">:</span> <span class="n">_shm_tag</span><span class="p">{</span><span class="n">shm_tag</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">,</span> <span class="n">_shm_size</span><span class="p">{</span><span class="n">shm_size</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">,</span> <span class="n">_continued</span><span class="p">{</span><span class="nb">false</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_shm_acc</span><span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="k">new</span> <span class="n">acct_info_t</span><span class="o">::</span><span class="n">shm_writer_t</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">_shm_tag</span><span class="p">,</span> <span class="n">_shm_size</span><span class="p">,</span> <span class="n">_continued</span>
+</span></span><span class="line"><span class="cl">            <span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="o">~</span><span class="n">Account</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kt">void</span> <span class="nf">write</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">client_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">beg_balance</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">curr_balance</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">enabled_balance</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">frozen_balance</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">deposit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">margin</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">frozen_margin</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">fee</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">frozen_fee</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">pos_profit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">double</span> <span class="n">close_profit</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">               <span class="kt">uint64_t</span> <span class="n">us</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">               <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">auto</span> <span class="n">e</span> <span class="o">=</span> <span class="n">_shm_acc</span><span class="o">-&gt;</span><span class="n">get_slot</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;failed to get_slot, shm is full&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">us</span> <span class="o">=</span> <span class="n">us</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="n">microtime</span><span class="o">::</span><span class="n">now</span><span class="p">().</span><span class="n">count</span><span class="p">()</span><span class="o">:</span> <span class="n">us</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">copy_str</span><span class="p">(</span><span class="n">e</span><span class="o">-&gt;</span><span class="n">client_id</span><span class="p">,</span> <span class="n">client_id</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">beg_balance</span> <span class="o">=</span> <span class="n">beg_balance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">curr_balance</span> <span class="o">=</span> <span class="n">curr_balance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">enabled_balance</span> <span class="o">=</span> <span class="n">enabled_balance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">frozen_balance</span> <span class="o">=</span> <span class="n">frozen_balance</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">deposit</span> <span class="o">=</span> <span class="n">deposit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">margin</span> <span class="o">=</span> <span class="n">margin</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">frozen_margin</span> <span class="o">=</span> <span class="n">frozen_margin</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">fee</span> <span class="o">=</span> <span class="n">fee</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">frozen_fee</span> <span class="o">=</span> <span class="n">frozen_fee</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">pos_profit</span> <span class="o">=</span> <span class="n">pos_profit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">e</span><span class="o">-&gt;</span><span class="n">close_profit</span> <span class="o">=</span> <span class="n">close_profit</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">_shm_acc</span><span class="o">-&gt;</span><span class="n">commit</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">py</span><span class="o">::</span><span class="n">dict</span> <span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nf">pybind11_read_shm_acc</span><span class="p">(</span><span class="n">_shm_tag</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">private</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_shm_tag</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">_shm_size</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">bool</span> <span class="n">_continued</span> <span class="p">{</span><span class="nb">false</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">acct_info_t</span><span class="o">::</span><span class="n">shm_writer_t</span><span class="o">&gt;</span> <span class="n">_shm_acc</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="pybind11-interface" class="heading-element">
+  <a href="#pybind11-interface" class="heading-mark"></a>pybind11 interface</h1><p><code>pybind11</code> provides by <strong>MACRO</strong> interfaces of <code>c++</code>. By defining <code>py::arg(&quot;shm_tag&quot;)</code>, it&rsquo;s possible to pass <strong>named arguments</strong> from <code>python</code> into <code>c++</code>&rsquo;s functions/classes, with default values setting.</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">snail</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Function Interface
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&#34;pybind11_read_shm_acc&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">pybind11_read_shm_acc</span><span class="p">,</span> <span class="n">R</span><span class="s">&#34;pbdoc(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">read</span> <span class="n">snail</span><span class="o">::</span><span class="n">acct_info_t</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span><span class="n">pbdoc</span><span class="s">&#34;);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// Class Interface
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// define Account class
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">py</span><span class="o">::</span><span class="n">class_</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="s">&#34;Account&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// ctor
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="n">py</span><span class="o">::</span><span class="n">init</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">bool</span><span class="o">&gt;</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;shm_tag&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;shm_size&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;continued&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">             <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&#34;write&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">Account</span><span class="o">::</span><span class="n">write</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;client_id&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;beg_balance&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;curr_balance&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;enabled_balance&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;frozen_balance&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;deposit&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;margin&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;frozen_margin&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;fee&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;frozen_fee&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;pos_profit&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;close_profit&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&#34;us&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">             <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&#34;read&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">Account</span><span class="o">::</span><span class="n">read</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#ifdef VERSION_INFO
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="n">m</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&#34;__version__&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="n">MACRO_STRINGIFY</span><span class="p">(</span><span class="n">VERSION_INFO</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#else
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>    <span class="n">m</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&#34;__version__&#34;</span><span class="p">)</span> <span class="o">=</span> <span class="s">&#34;dev&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="python-calling" class="heading-element">
+  <a href="#python-calling" class="heading-mark"></a>python calling</h1><p>Now we can call <code>c++</code> functions/class interfaces in <code>python</code>.</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">wepy.cpp.snail</span> <span class="kn">import</span> <span class="n">pybind11_read_shm_acc</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">wepy.cpp.snail</span> <span class="kn">import</span> <span class="n">Account</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## Function Interface</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">read_shm_acc</span><span class="p">(</span><span class="n">shm_tag</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="n">pybind11_read_shm_acc</span><span class="p">(</span><span class="n">shm_tag</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## Class Interface</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">wepy.cpp.snail</span> <span class="kn">import</span> <span class="n">Account</span>
+</span></span><span class="line"><span class="cl"><span class="n">acct</span> <span class="o">=</span> <span class="n">Account</span><span class="p">(</span><span class="n">shm_tag</span> <span class="o">=</span> <span class="s2">&#34;lfang_acc&#34;</span><span class="p">,</span> <span class="n">shm_size</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">acct</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">client_id</span> <span class="o">=</span> <span class="s2">&#34;lfang&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">beg_balance</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">curr_balance</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">enabled_balance</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">deposit</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">acct</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span> <span class="o">=</span> <span class="n">read_shm_acc</span><span class="p">(</span><span class="s2">&#34;lfang_acc&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="./python-calling.png?size=large" data-thumbnail="./python-calling.png?size=small" data-sub-html="<h2>python-calling</h2><p>python-calling</p>"><img loading="lazy" src="./python-calling.png" alt="python-calling" srcset="./python-calling.png?size=small, ./python-calling.png?size=medium 1.5x, ./python-calling.png?size=large 2x" data-title="python-calling" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">python-calling</figcaption>
+  </figure></p></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2024-03-16-c-hackers-guide/" title="C&#43;&#43; Hacker&#39;s Guide">C&#43;&#43; Hacker&#39;s Guide</a></li><li>
+          <a href="/2023-10-22-c-%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/" title="c&#43;&#43; 内存对齐">c&#43;&#43; 内存对齐</a></li><li>
+          <a href="/2023-10-20-c-array-of-zero-length/" title="c&#43;&#43; array of ZERO length">c&#43;&#43; array of ZERO length</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2024-03-18 11:37:02">更新于 2024-03-18&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2024-03-18-pybind11--passing-named-arguments/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/" data-title="pybind11: passing named arguments" data-hashtags="pybind11,c&#43;&#43;,python,class,interface,function"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/" data-hashtag="pybind11"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/" data-title="pybind11: passing named arguments" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/" data-title="pybind11: passing named arguments"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-03-18-pybind11--passing-named-arguments/" data-title="pybind11: passing named arguments"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/pybind11/" class="post-tag" title="标签 - Pybind11">Pybind11</a><a href="/tags/c&#43;&#43;/" class="post-tag" title="标签 - C&#43;&#43;">C&#43;&#43;</a><a href="/tags/python/" class="post-tag" title="标签 - Python">Python</a><a href="/tags/class/" class="post-tag" title="标签 - Class">Class</a><a href="/tags/interface/" class="post-tag" title="标签 - Interface">Interface</a><a href="/tags/function/" class="post-tag" title="标签 - Function">Function</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2024-03-18-nvim-%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/" class="post-nav-item" rel="prev" title="nvim 直接打开当前光标下的文件"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>nvim 直接打开当前光标下的文件</a>
+      <a href="/2024-03-18-linux-%E9%85%8D%E5%AF%B9%E7%BD%97%E6%8A%80%E8%93%9D%E7%89%99%E9%BC%A0%E6%A0%87/" class="post-nav-item" rel="next" title="Linux 配对罗技蓝牙鼠标">Linux 配对罗技蓝牙鼠标<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOHFHgDA"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOHFHgDM4CeCG-"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
