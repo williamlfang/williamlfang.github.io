@@ -163,9 +163,24 @@
     hugo
     ```
 
-- 发布静态生成的网站页面
+- 发布静态生成的网站页面。我原来的做法是把 `github page` 单独放在一个目录，然后通过拷贝的方式进行同步。现在回想起来，这个方法似乎有点多此一举，为何不直接在 `public` 目录添加一个 `submodule` 呢，然后把内容推送到 `github page` 即可？
 
-## deploy.sh 一键发布脚本
+    ```bash
+    ## 先生成一个 public 目录
+    hugo
+
+    ## 然后添加 submodule
+    git submodule add git@github.com:williamlfang/williamlfang.github.io.git public
+    cd public
+
+    ## 后面有新的文章更新，只需要添加 public 即可
+    git add -A
+    git commit -m &#34;add submodule&#34;
+    git push origin main
+    ```
+
+
+## ~~deploy.sh 一键发布脚本~~
 
 可以在项目建立一个脚本，用于一键发布最新变动。
 &lt;!--more--&gt;
@@ -205,6 +220,7 @@ git pull
 
 ## ------------------------------------------------
 # Rscript -e &#34;blogdown::build_site(build_rmd = TRUE)&#34;
+hugo
 ## ------------------------------------------------
 
 msg &#34;Pushing new info to Github&#34;
@@ -218,6 +234,56 @@ cd ../${SITE}
 git add -A
 git commit -m &#34;$MESSAGE&#34;
 git push origin master
+
+msg &#34;We&#39;ve happily done.&#34;
+```
+
+## deploy.sh 一键发布脚本
+
+```bash
+#!/usr/bin/env bash
+# Set the English locale for the `date` command.
+export LC_TIME=en_US.UTF-8
+## -------------------------------------------
+msg() {
+    printf &#34;\033[1;32m :: %s\n\033[0m&#34; &#34;$1&#34;
+}
+## -------------------------------------------
+
+## -------------------------------------------
+# Name of the branch containing the Hugo source files.
+SOURCE=myblog
+# Github Page for public website
+SITE=williamlfang.github.io
+# The commit message.
+MESSAGE=&#34;Site rebuild $(date)&#34;
+## -------------------------------------------
+
+## into github-page
+pushd public
+    msg &#34;Pulling down from ${SITE}&#34;
+    git pull
+popd
+
+##
+msg &#34;Pulling down from ${SOURCE}&#34;
+git pull
+
+## ------------------------------------------------
+# Rscript -e &#34;blogdown::build_site(build_rmd = TRUE)&#34;
+hugo
+## ------------------------------------------------
+
+msg &#34;Pushing new info to Github&#34;
+git add -A
+git commit -m &#34;$MESSAGE&#34;
+git push
+
+pushd public
+git add -A
+    git commit -m &#34;$MESSAGE&#34;
+    git push origin main
+popd
 
 msg &#34;We&#39;ve happily done.&#34;
 ```
