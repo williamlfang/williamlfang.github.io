@@ -379,6 +379,44 @@ msg &#34;We&#39;ve happily done.&#34;
 
 ## 数学公式
 
+## admonition
+
+The `admonition` shortcode has the following named parameters:
+
+- **type** _[optional]_ (**first** positional parameter)
+
+    Type of the `admonition` banner, default value is `note`.
+
+    - **abstract**
+    - **info**
+    - **tip**
+    - **success**
+    - **question**
+    - **warning**
+    - **failure**
+    - **danger**
+    - **bug**
+    - **example**
+    - **quote**
+
+- **title** _[optional]_ (**second** positional parameter)
+
+    Title of the `admonition` banner, default value is the value of **type** parameter. (markdown support)
+
+- **open** _[optional]_ (**third** positional parameter)
+
+    Whether the content will be expandable by default, default value is `true`.
+
+```go-html-template
+{{&lt;/* admonition type=tip title=&#34;This is a tip&#34; open=false */&gt;}}
+A **tip** banner
+{{&lt;/* /admonition */&gt;}}
+Or
+{{&lt;/* admonition tip &#34;This is a tip&#34; false */&gt;}}
+A **tip** banner
+{{&lt;/* /admonition */&gt;}}
+```
+
 # hugo.toml
 
 ```toml
@@ -1450,6 +1488,7 @@ theme = &#34;FixIt&#34;
 - [FixIt Configuration](https://fixit-1vj5p4qii-lruihao.vercel.app/theme-documentation-basics/#site-configuration)
 - [配置 Hugo-FixIt 主题：调整美化](https://www.newverse.wiki/knows/fixitmodify/)
 - [DoIt 主题文档 - 扩展 Shortcodes](https://hugodoit.pages.dev/zh-cn/theme-documentation-extended-shortcodes/#showcase)
+- 扩展 Markdown 功能：[Extended Shortcodes Overview](https://fixit.lruihao.cn/documentation/content-management/shortcodes/extended/introduction/)
 
 
 ---

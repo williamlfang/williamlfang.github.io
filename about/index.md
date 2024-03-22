@@ -16,10 +16,10 @@ g&#43;&#43; main.cpp &amp;&amp; ./a.out
 {{&lt; /style &gt;}}
 
 
-## 關於我
+## 自画像
 
 {{&lt; center-quote &gt;}}
-    keep Calm and Markdown;
+    keep Calm and Markdown.
 {{&lt; /center-quote &gt;}}
 
 - 👨🏻‍💻 一名自营 `HFT` 的开发工程师
