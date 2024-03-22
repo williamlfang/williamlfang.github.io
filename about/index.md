@@ -22,18 +22,10 @@ g&#43;&#43; main.cpp &amp;&amp; ./a.out
     keep Calm and Markdown;
 {{&lt; /center-quote &gt;}}
 
-To follow the path: look to the master, follow the master, walk with the master, see through the master, become the master.
-- [X] The world is full of fascinating problems waiting to be solved
-- [X] No problem should ever have to be solved twice
-- [X] Boredom and drudgery are evil
-- [X] Freedom is good
-- [X] Attitude is no substitute for competence
-
-&lt;!-- - 👨‍💻 一名前端開發工程師 --&gt;
-&lt;!-- - 👨‍💼 [@hugo-fixit][hugo-fixit] 的創建者 --&gt;
-&lt;!-- - 📝 我經常在 菠菜眾長[^1] 和 FixIt[^2] 上撰寫文章和文檔 --&gt;
-
-&lt;!-- &gt; **自我期許：** 用我所學，學我所用。保持謙遜，保持探索欲，砥礪前行。 --&gt;
+- 👨🏻‍💻 一名自营 `HFT` 的开发工程师
+- ⌨  经常在 `Linux` 捣鼓好玩的东西
+- 📖喜欢读书
+- 🎧五音不全但是喜欢听歌
 
 
 
