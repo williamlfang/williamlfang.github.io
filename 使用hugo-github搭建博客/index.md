@@ -108,6 +108,82 @@
     layout: calendar
     ---
     ```
+- 由于上面设置了 `layout: calendar`，因此，我们需要添加相关的页面模板。在根目录创建 `layouts/page/calendar.html`，具体布局可以参考 `404.html`
+
+    ```bash
+    {{- define &#34;title&#34; -}}
+      {{- .Title -}}
+      {{- if .Site.Params.withSiteTitle }} {{ .Site.Params.titleDelimiter }} {{ .Site.Title }}{{- end -}}
+    {{- end -}}
+
+    {{- define &#34;content&#34; -}}
+      {{ $lang := .Language.Lang }}
+      {{- $postEvents := slice }}
+      {{- $draftEvents := slice }}
+      {{- $holidayEvents := slice }}
+
+      {{ range .Site.RegularPages }}
+        {{ if eq .Draft false }}
+          {{- $postEvents = $postEvents | append (dict &#34;title&#34; .Title &#34;start&#34; (time.Format &#34;2006-01-02&#34; .Date) &#34;url&#34; .RelPermalink &#34;allDay&#34; true &#34;color&#34; &#34;royalblue&#34;) }}
+        {{ else }}
+          {{- $draftEvents = $draftEvents | append (dict &#34;title&#34; .Title &#34;start&#34; (time.Format &#34;2006-01-02&#34; .Date) &#34;allDay&#34; true &#34;color&#34; &#34;var(--text-muted)&#34; ) }}
+        {{ end }}
+      {{ end }}
+
+      &lt;!--holidays: ./data/calendar/holidays--&gt;
+      {{- range $.Site.Data.calendar.holidays -}}
+        {{ range . }}
+          {{- $holidayEvents = $holidayEvents | append (dict &#34;title&#34; .name &#34;start&#34; (time.Format &#34;2006-01-02&#34; .date) &#34;allDay&#34; true &#34;color&#34; &#34;crimson&#34; &#34;kind&#34; &#34;holidays&#34; ) }}
+        {{ end }}
+      {{- end -}}
+
+      &lt;script src=&#34;/fullcalendar@6.1.10/dist/index.global.min.js&#34;&gt;&lt;/script&gt;
+      {{- if ne $lang &#34;en&#34; }}
+        &lt;script src=&#34;/fullcalendar@6.1.10/dist/locales-all.global.min.js&#34;&gt;&lt;/script&gt;
+      {{- end }}
+      &lt;script&gt;
+        document.addEventListener(&#34;DOMContentLoaded&#34;, function () {
+          var calendarEl = document.getElementById(&#34;calendar&#34;);
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: &#34;dayGridMonth&#34;,
+            locale: {{ $lang }},
+            contentHeight: &#34;65vh&#34;,
+            headerToolbar: {
+              left: &#34;today&#34;,
+              center: &#34;title&#34;,
+              right: &#34;prev,next&#34;,
+            },
+            eventSources: [{{ $postEvents }}, {{ $draftEvents }}, {{ $holidayEvents }}],
+            eventClick: function(info) {
+              info.jsEvent.preventDefault();
+              if (info.event.url) {
+                window.open(info.event.url);
+              } else if (info.event.extendedProps.kind === &#34;holidays&#34;) {
+                window.open(`https://zh.wikipedia.org/wiki/${info.event.title}`);
+              } else {
+                alert(&#34;本文尚未发布，敬请期待。&#34;);
+              }
+            },
+          });
+          calendar.render();
+        });
+      &lt;/script&gt;
+      &lt;noscript&gt;
+        &lt;p&gt;使用此功能需要启用 JavaScript。&lt;/p&gt;
+      &lt;/noscript&gt;
+
+      &lt;article class=&#34;page&#34; id=&#34;calendar&#34;&gt;
+      &lt;/article&gt;
+
+      &lt;script&gt;
+        (function() {
+          const emojiArray = [&#39;\\(o_o)/&#39;, &#39;(˚Δ˚)b&#39;, &#39;(^-^*)&#39;, &#39;(≥o≤)&#39;, &#39;(^_^)b&#39;, &#39;(·_·)&#39;,&#39;(=\&#39;X\&#39;=)&#39;, &#39;(&gt;_&lt;)&#39;, &#39;(;-;)&#39;];
+          document.getElementById(&#39;error-emoji&#39;).appendChild(document.createTextNode(emojiArray[Math.floor(Math.random() * emojiArray.length)]));
+        })();
+      &lt;/script&gt;
+
+    {{- end -}}
+    ```
 
 - 修改 `calendar css` 格式，在根目录创建（或则复制一份 `/theme/FixIt/assets/css/_custom.css`）到 `assets/css/_custom.css`
 
