@@ -22,7 +22,7 @@ g&#43;&#43; main.cpp &amp;&amp; ./a.out
     keep Calm and Markdown.
 {{&lt; /center-quote &gt;}}
 
-- 👨🏻‍💻 一名自营 `HFT` 的开发工程师
+- 👨🏻‍💻 一名自营 `HFT` 的开发工程师 @[WuyaCapital](https://www.wuyacapital.com/)
 - ⌨  经常在 `Linux` 捣鼓好玩的东西
 - 📖喜欢读书
 - 🎧五音不全但是喜欢听歌
