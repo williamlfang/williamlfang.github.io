@@ -116,6 +116,8 @@
         internal: true
     ```
 
+![mercury](./mercury.png &#34;mercury 用于获取RSS全文&#34;)
+
 ## 数据备份
 
 ```bash
