@@ -558,7 +558,7 @@ def adjust_weight_on_daily(self, df):
 
 ```python
 def run(self):
-    ## FAKE
+    ## FAKE 
     df = pd.DataFrame()
 
     if self.index_symbol.endswith(&#39;SH&#39;):
@@ -566,46 +566,9 @@ def run(self):
         if self.trading_day &lt; info[&#39;data&#39;].get(&#39;publishDate&#39;):
             log.wrn(f&#34;not yet published&#34;)
             return
-    ## check for trading_day -----------------------------------------------
-    if False:
-        df = ch_idc.read(f&#34;&#34;&#34;
-            select * from stock.ib_weight
-            where IndexSymbol = &#39;{self.index_symbol}&#39;
-            and TradingDay = &#39;{self.trading_day}&#39;
-            &#34;&#34;&#34;)
-        if len(df) != 0:
-            log.wrn(f&#34;&#34;&#34;
-                already done
-                symbol: {self.index_symbol}
-                trading_day: {self.trading_day}
-                &#34;&#34;&#34;)
-            return df
-    else:
-        csvfile = f&#34;{self.output_path}/{self.trading_day}.{self.index_symbol}.ib_weight.csv&#34;
-        # if os.path.isfile(csvfile):
-        #     log.inf(f&#34;already done, using {csvfile = }&#34;)
-        #     df = pd.read_csv(csvfile)
 
     ## check for base_day --------------------------------------------------
-    if False:
-        df = ch_idc.read(f&#34;&#34;&#34;
-            select * from stock.ib_weight
-            where IndexSymbol = &#39;{self.index_symbol}&#39;
-            and BenchmarkDay = &#39;{self.base_day}&#39;
-            &#34;&#34;&#34;)
-    else:
-        csvfile = f&#34;{self.output_path}/{self.index_symbol}.base_day.{self.base_day}.csv&#34;
-        # if os.path.isfile(csvfile):
-        #     log.inf(f&#34;already done, using {csvfile = }&#34;)
-        #     df = pd.read_csv(csvfile)
-
-    if len(df) == 0:
-        df = self.gen_index_weight()
-    else:
-        df[&#39;TradingDay&#39;] = self.trading_day
-        # df[&#39;IndexName&#39;] = &#39;&#39;
-        # df[&#39;IndexAlias&#39;] = &#39;&#39;
-
+    df = self.gen_index_weight()
     ## ====================
     self.df = self.adjust_weight_on_daily(df)
     if self.check():
