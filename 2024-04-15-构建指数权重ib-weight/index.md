@@ -125,9 +125,9 @@ $$
 def gen_csi_index_change_days():
     &#34;&#34;&#34;计算中证指数在每年6、12月第二个周五调整对应的交易日期
     &#34;&#34;&#34;
-    ## 
-    start_date = datetime(2000, 1, 1) 
-    end_date = datetime(2099, 1, 1) 
+    ##
+    start_date = datetime(2000, 1, 1)
+    end_date = datetime(2099, 1, 1)
     delta = end_date - start_date
     days = []
     for i in range(delta.days &#43; 1):
@@ -143,8 +143,8 @@ def gen_csi_index_change_days():
         df[k] = df[k].astype(str)
 
     ## 样本调整实施时间原则上分别为每年 6 月和 12 月的第二个星期五的下一交易日。
-    df = df[(df[&#39;natural_mon&#39;].str.contains(&#39;-06$|-12$&#39;)) &amp; 
-            (df[&#39;day_of_week&#39;] == &#39;5&#39;) &amp; 
+    df = df[(df[&#39;natural_mon&#39;].str.contains(&#39;-06$|-12$&#39;)) &amp;
+            (df[&#39;day_of_week&#39;] == &#39;5&#39;) &amp;
             (df[&#39;nth_of_week&#39;] == &#39;2&#39;)]
     return df
 ```
@@ -172,8 +172,8 @@ def gen_csi_index_change_days():
 
 ```python
 res = windx(&#39;wset&#39;, [
-    &#34;indexhistory&#34;, 
-    f&#34;startdate={start_day};enddate={cal.today()};windcode={self.index_symbol}&#34;], 
+    &#34;indexhistory&#34;,
+    f&#34;startdate={start_day};enddate={cal.today()};windcode={self.index_symbol}&#34;],
     src = self.wind_src)
 ```
 
@@ -244,8 +244,8 @@ def fetch_index_weight_from_wind(self):
     res[&#39;Weight&#39;] = res[&#39;index_weight&#39;] / res[&#39;index_weight&#39;].sum()
     res[&#39;WeightAdjust&#39;] = res[&#39;Weight&#39;]
 
-    if (len(res[&#39;BenchmarkDay&#39;].unique()) != 1 or 
-        (res[&#39;BenchmarkDay&#39;].unique()[0] not in [self.base_day, wind_trading_day] and 
+    if (len(res[&#39;BenchmarkDay&#39;].unique()) != 1 or
+        (res[&#39;BenchmarkDay&#39;].unique()[0] not in [self.base_day, wind_trading_day] and
          self.trading_day &gt; &#39;2020-01-01&#39;)
         ):
         raise Exception(f&#34;&#34;&#34;
@@ -375,7 +375,7 @@ while True:
         if not os.path.isfile(csvfile):
             symbol_list = list(set(df.Symbol.to_list()))
             res = wind._fetch_stock_daily_by_symbol_freeshares(
-                trading_day = self.base_day, 
+                trading_day = self.base_day,
                 symbol = symbol_list
                 )
             res.to_csv(csvfile, index=False)
@@ -394,7 +394,7 @@ while True:
         symbol_list = df[~df.Symbol.isin(df_freeshares.Symbol.values)].Symbol.to_list() &#43; \
                       df_freeshares[pd.isna(df_freeshares.FreeShare)].Symbol.to_list()
         res = wind._fetch_stock_daily_by_symbol_freeshares(
-            trading_day = self.base_day, 
+            trading_day = self.base_day,
             symbol = list(set(symbol_list)))
         res = pd.concat([df_freeshares, res])
         res.drop_duplicates(inplace=True)
@@ -410,7 +410,7 @@ df_totalshares = ch_idc.read(f&#34;&#34;&#34;
     and TotalShare &gt; 0
     &#34;&#34;&#34;)
 df_freeshares = pd.merge(
-    df_freeshares, df_totalshares, 
+    df_freeshares, df_totalshares,
     on = &#39;Symbol&#39;, how = &#39;left&#39;,
     suffixes = [&#39;&#39;, &#39;_total&#39;])
 ## 中证指数：分级靠档： http://www.sse.com.cn/market/sseindex/calculation/c/5726306.pdf
@@ -434,7 +434,7 @@ def handle_shares(symbol, free_shares, total_shares):
             select * from stock.daily
             where TradingDay &gt; &#39;{self.base_day}&#39;
             and Symbol = &#39;{symbol}&#39;
-            and TotalShare &gt; 0 
+            and TotalShare &gt; 0
             order by TradingDay ASC
             limit 1
             &#34;&#34;&#34;)
@@ -462,7 +462,7 @@ df_freeshares.loc[cond, &#39;FreeShare&#39;] = df_freeshares.loc[cond, &#39;Free
 
 if len(df_freeshares[df_freeshares[&#39;FreeShareAdjust&#39;] &gt; df_freeshares[&#39;TotalShare&#39;]]) &gt; 0:
     raise Exception(f&#34;&#34;&#34;
-        Error shares for 
+        Error shares for
         {df_freeshares = }
         &#34;&#34;&#34;)
 ```
@@ -472,12 +472,12 @@ if len(df_freeshares[df_freeshares[&#39;FreeShareAdjust&#39;] &gt; df_freeshares
 ```python
 ## cal weight
 daily_base_day = ch.read(f&#34;&#34;&#34;
-    select TradingDay, Symbol, Close, 
+    select TradingDay, Symbol, Close,
            TotalShare, FloatAShare
     from stock.daily
     where TradingDay = &#39;{self.base_day}&#39;
     &#34;&#34;&#34;)
-df = pd.merge(daily_base_day, df_freeshares, on = &#39;Symbol&#39;, how = &#39;right&#39;, 
+df = pd.merge(daily_base_day, df_freeshares, on = &#39;Symbol&#39;, how = &#39;right&#39;,
               suffixes = [&#39;&#39;, &#39;_wind_freeshares&#39;])
 ## 防止 Wind 复权导致的股本异常
 df[&#39;FreeShare&#39;] = df[[&#39;TotalShare&#39;, &#39;FreeShare&#39;]].apply(lambda x: min(x[0], x[1]), axis = 1)
@@ -559,7 +559,7 @@ def adjust_weight_on_daily(self, df):
 
 ```python
 def run(self):
-    ## FAKE 
+    ## FAKE
     df = pd.DataFrame()
 
     if self.index_symbol.endswith(&#39;SH&#39;):
@@ -571,7 +571,7 @@ def run(self):
     if False:
         df = ch_idc.read(f&#34;&#34;&#34;
             select * from stock.ib_weight
-            where IndexSymbol = &#39;{self.index_symbol}&#39; 
+            where IndexSymbol = &#39;{self.index_symbol}&#39;
             and TradingDay = &#39;{self.trading_day}&#39;
             &#34;&#34;&#34;)
         if len(df) != 0:
@@ -591,7 +591,7 @@ def run(self):
     if False:
         df = ch_idc.read(f&#34;&#34;&#34;
             select * from stock.ib_weight
-            where IndexSymbol = &#39;{self.index_symbol}&#39; 
+            where IndexSymbol = &#39;{self.index_symbol}&#39;
             and BenchmarkDay = &#39;{self.base_day}&#39;
             &#34;&#34;&#34;)
     else:
@@ -619,6 +619,7 @@ def run(self):
 
 ## 结果验证
 
+![ib指数更加平滑](./ib3.jpg &#34;ib指数更加平滑&#34;)
 
 
 ---
