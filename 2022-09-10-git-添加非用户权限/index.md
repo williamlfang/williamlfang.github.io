@@ -5,7 +5,7 @@
 
 &lt;!--more--&gt;
 
-![](/post/2022-09-10-git-添加非用户权限/git-deploy-ssh.png)
+![Deploy Keys](./git-deploy-ssh.png &#34;Deploy Keys&#34;)
 
 
 ---

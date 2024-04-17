@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>构建指数权重ib weight - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="中金所推出了多个股指期货合约，这些合约以相应的股票指数为基础标的。为了更好的预测股指期货波动，我们需要更准确的指数信息。而构建指数的基础数据包括：
+
+成份股
+成份权重
+基准日期的自由流通市值（中证指数）
+
+无论对于历史数据的复原，还是实盘数据的更新，一份合理、准确的指数构建都至关重要。上述三个项目当中，尤其以指数的成份权重尤为关键。
+中证指数官网有偿提供每日权重的更新数据，不过收费巨贵。为此，我们可以通过模拟中证指数的构建方法和计算规则，生成一份准确的指数数据。具体的规则，可以参考《中证指数有限公司股票指数计算与维护细则V13.1》
+我们的工作主要有部分：
+
+复原历史指数权重数据
+实现每日权重数据更新
+根据样本权重，利用逐笔成交数据(last_px)、快照数据(vwap)计算得到每一个点位上的指数价格
+" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="构建指数权重ib weight">
+<meta itemprop="description" content="中金所推出了多个股指期货合约，这些合约以相应的股票指数为基础标的。为了更好的预测股指期货波动，我们需要更准确的指数信息。而构建指数的基础数据包括：
+
+成份股
+成份权重
+基准日期的自由流通市值（中证指数）
+
+无论对于历史数据的复原，还是实盘数据的更新，一份合理、准确的指数构建都至关重要。上述三个项目当中，尤其以指数的成份权重尤为关键。
+中证指数官网有偿提供每日权重的更新数据，不过收费巨贵。为此，我们可以通过模拟中证指数的构建方法和计算规则，生成一份准确的指数数据。具体的规则，可以参考《中证指数有限公司股票指数计算与维护细则V13.1》
+我们的工作主要有部分：
+
+复原历史指数权重数据
+实现每日权重数据更新
+根据样本权重，利用逐笔成交数据(last_px)、快照数据(vwap)计算得到每一个点位上的指数价格
+"><meta itemprop="datePublished" content="2024-04-15T14:43:52+08:00" />
+<meta itemprop="dateModified" content="2024-04-15T14:43:52+08:00" />
+<meta itemprop="wordCount" content="5251"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="构建指数权重ib weight" />
+<meta property="og:description" content="中金所推出了多个股指期货合约，这些合约以相应的股票指数为基础标的。为了更好的预测股指期货波动，我们需要更准确的指数信息。而构建指数的基础数据包括：
+
+成份股
+成份权重
+基准日期的自由流通市值（中证指数）
+
+无论对于历史数据的复原，还是实盘数据的更新，一份合理、准确的指数构建都至关重要。上述三个项目当中，尤其以指数的成份权重尤为关键。
+中证指数官网有偿提供每日权重的更新数据，不过收费巨贵。为此，我们可以通过模拟中证指数的构建方法和计算规则，生成一份准确的指数数据。具体的规则，可以参考《中证指数有限公司股票指数计算与维护细则V13.1》
+我们的工作主要有部分：
+
+复原历史指数权重数据
+实现每日权重数据更新
+根据样本权重，利用逐笔成交数据(last_px)、快照数据(vwap)计算得到每一个点位上的指数价格
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-04-15T14:43:52+08:00" />
+<meta property="article:modified_time" content="2024-04-15T14:43:52+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="构建指数权重ib weight"/>
+<meta name="twitter:description" content="中金所推出了多个股指期货合约，这些合约以相应的股票指数为基础标的。为了更好的预测股指期货波动，我们需要更准确的指数信息。而构建指数的基础数据包括：
+
+成份股
+成份权重
+基准日期的自由流通市值（中证指数）
+
+无论对于历史数据的复原，还是实盘数据的更新，一份合理、准确的指数构建都至关重要。上述三个项目当中，尤其以指数的成份权重尤为关键。
+中证指数官网有偿提供每日权重的更新数据，不过收费巨贵。为此，我们可以通过模拟中证指数的构建方法和计算规则，生成一份准确的指数数据。具体的规则，可以参考《中证指数有限公司股票指数计算与维护细则V13.1》
+我们的工作主要有部分：
+
+复原历史指数权重数据
+实现每日权重数据更新
+根据样本权重，利用逐笔成交数据(last_px)、快照数据(vwap)计算得到每一个点位上的指数价格
+"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/" /><link rel="prev" href="https://williamlfang.github.io/2024-04-12-dlopen-c-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "构建指数权重ib weight",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight\/"
+    },"genre": "posts","wordcount":  5251 ,
+    "url": "https:\/\/williamlfang.github.io\/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight\/","datePublished": "2024-04-15T14:43:52+08:00","dateModified": "2024-04-15T14:43:52+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>构建指数权重ib weight</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-04-15 14:43:52"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-04-15">2024-04-15</time></span>&nbsp;<span title="5251 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 5300 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 11 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#关于中证指数规则">关于中证指数规则</a>
+      <ol>
+        <li><a href="#编制规则">编制规则</a></li>
+        <li><a href="#更新维护">更新维护</a>
+          <ol>
+            <li><a href="#指数修正">指数修正</a></li>
+            <li><a href="#除权除息价格计算">除权除息价格计算</a></li>
+          </ol>
+        </li>
+        <li><a href="#数据说明">数据说明</a></li>
+      </ol>
+    </li>
+    <li><a href="#代码实现">代码实现</a>
+      <ol>
+        <li><a href="#流程">流程</a></li>
+        <li><a href="#代码解析">代码解析</a>
+          <ol>
+            <li><a href="#计算中证指数每年612月第二个周五的交易日">计算中证指数每年6、12月第二个周五的交易日</a></li>
+            <li><a href="#获取-windindexhistory">获取 wind.indexhistory</a></li>
+            <li><a href="#计算每个月的基准日期">计算每个月的基准日期</a></li>
+            <li><a href="#获取万得历史的权重数据">获取万得历史的权重数据</a>
+              <ol>
+                <li><a href="#使用流通市值计算权重">使用流通市值计算权重</a>
+                  <ol>
+                    <li><a href="#合成新的成份">合成新的成份</a></li>
+                    <li><a href="#获取流通市值">获取流通市值</a></li>
+                    <li><a href="#计算权重">计算权重</a></li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+            <li><a href="#每日根据股票涨跌幅更新权重">每日根据股票涨跌幅更新权重</a></li>
+            <li><a href="#run">run</a></li>
+          </ol>
+        </li>
+        <li><a href="#结果验证">结果验证</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>中金所推出了多个股指期货合约，这些合约以相应的股票指数为基础标的。为了更好的预测股指期货波动，我们需要更准确的指数信息。而构建指数的基础数据包括：</p>
+<ul>
+<li>成份股</li>
+<li>成份权重</li>
+<li>基准日期的自由流通市值（中证指数）</li>
+</ul>
+<p>无论对于历史数据的复原，还是实盘数据的更新，一份合理、准确的指数构建都至关重要。上述三个项目当中，尤其以指数的成份权重尤为关键。</p>
+<p>中证指数官网<strong>有偿</strong>提供每日权重的更新数据，不过收费巨贵。为此，我们可以通过模拟中证指数的构建方法和计算规则，生成一份准确的指数数据。具体的规则，可以参考<a href="http://www.sse.com.cn/market/sseindex/calculation/c/5726306.pdf"target="_blank" rel="external nofollow noopener noreferrer">《中证指数有限公司股票指数计算与维护细则V13.1》<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+<p>我们的工作主要有部分：</p>
+<ol>
+<li>复原历史指数权重数据</li>
+<li>实现每日权重数据更新</li>
+<li>根据样本权重，利用逐笔成交数据(<code>last_px</code>)、快照数据(<code>vwap</code>)计算得到每一个点位上的指数价格</li>
+</ol>
+<h1 id="关于中证指数规则" class="heading-element">
+  <a href="#%e5%85%b3%e4%ba%8e%e4%b8%ad%e8%af%81%e6%8c%87%e6%95%b0%e8%a7%84%e5%88%99" class="heading-mark"></a>关于中证指数规则</h1><h2 id="编制规则" class="heading-element">
+  <a href="#%e7%bc%96%e5%88%b6%e8%a7%84%e5%88%99" class="heading-mark"></a>编制规则</h2><ul>
+<li>中证指数公司负责编制指数，并在每个月月底公布下个月的权重数据（官网可下载）</li>
+<li>每年的6、12月第二个周五定期调整权重（此时不再对外公布权重信息，这也是我们自编制的指数在每年6、12月下旬出现较大偏移的原因）</li>
+<li>样本临时调整：
+<ul>
+<li>退市：直接从样本剔除，然后从备选池纳入新成分</li>
+<li>收购合并：中证指数会发布公告，万得指数成分变动数据有记录</li>
+<li>停牌（目前无法处理）</li>
+</ul>
+</li>
+</ul>
+<h2 id="更新维护" class="heading-element">
+  <a href="#%e6%9b%b4%e6%96%b0%e7%bb%b4%e6%8a%a4" class="heading-mark"></a>更新维护</h2><h3 id="指数修正" class="heading-element">
+  <a href="#%e6%8c%87%e6%95%b0%e4%bf%ae%e6%ad%a3" class="heading-mark"></a>指数修正</h3><ul>
+<li>除息（现金分红）不予修正：</li>
+<li>除权（送股、转股、配股、拆股、缩股）：需要计算除权价格</li>
+<li>其他公司事件（由于我们无法获取跟中证指数统计口径一致的数据，暂时无法处理）：
+<ul>
+<li>当样本股本发生由其他公司事件（如增发、债转股、期权行权等）引起的总股本变动累计达到或超过5%时，对其进行临时调整，在样本的股本变动生效日前修正指数。</li>
+<li>当样本股本发生由其他公司事件引起的总股本变动累计不及5%时，对其进行定期调整，在定期调整生效日前修正指数</li>
+</ul>
+</li>
+<li>样本发生退市情况，需要删除原有样本，然后从备选池录入新样本（万得提供了历史指数成分的纳入、剔除数据）</li>
+</ul>
+<h3 id="除权除息价格计算" class="heading-element">
+  <a href="#%e9%99%a4%e6%9d%83%e9%99%a4%e6%81%af%e4%bb%b7%e6%a0%bc%e8%ae%a1%e7%ae%97" class="heading-mark"></a>除权除息价格计算</h3><p>可以根据恒等式推算
+$$
+\begin{align}
+公司总资产          &amp;: \
+&amp; \equiv N<em>P_0 - N</em>D_{现金分红} \
+&amp; \equiv  N*(1+R_{送股比例} + R_{转股比例}) * P_t + N*R_{配股比例}*P_{配股价格} \
+\longrightarrow P_t &amp;= \frac{P_0 - D_{现金分红} - R_{配股比例}*P_{配股价格}}{1+R_{送股比例} + R_{转股比例}}
+\end{align}
+$$
+其中，</p>
+<ul>
+<li>
+<p>N 表示原始股本数量</p>
+</li>
+<li>
+<p>$P_0$ 表示前一日价格</p>
+</li>
+<li>
+<p>$P_t$ 表示除权除息当日价格</p>
+</li>
+<li>
+<p>中证指数不处理现金分红，所以 $D_{现金分红} = 0$。</p>
+</li>
+</ul>
+<h2 id="数据说明" class="heading-element">
+  <a href="#%e6%95%b0%e6%8d%ae%e8%af%b4%e6%98%8e" class="heading-mark"></a>数据说明</h2><ul>
+<li>
+<p>中证指数使用<strong>自由流通市值</strong>，根据官方文档</p>
+<blockquote>
+<p>为反映市场中实际流通股份的变动情况，指数剔除了样本总股本中的限售股份，以及由于战略持股或其他原因导致的基本不流通股份，剩下的股本称为自由流通股本，也即自由流通量。上市公司公告明确的限售股份和属于下述四类股份，且股东持有股份量达到或超过 5%或具有一致行动人关系的股东合计持有股份量达到或超过 5%，被视为非自由流通股本。四类股份具体如下：</p>
+<p>（1）公司创建者、家族、高级管理者等长期持有的股份</p>
+<p>（2）国有股份</p>
+<p>（3）战略投资者持有的股份</p>
+<p>（4）员工持股计划</p>
+<p>计算公式为：
+$$
+自由流通量 = 样本总股本- 非自由流通股本
+$$
+中证指数有限公司根据多种客观的信息来源估算自由流通量，包括但不限于：</p>
+<ul>
+<li>招股说明书、上市公告书：实际控制人，发起人，战略投资者，高管持股，员工持股等；</li>
+<li>定期报告：实际控制人，发起人，战略投资者，高管持股，员工持股等；</li>
+<li>临时公告：股东持股变化公告、收购报告书、权益变动报告书等。</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+<p>从以上表述看，<strong>自由流通市值</strong>这个概念其实没有一个非常清晰的界定，毕竟以上所涉及的各类公告信息，目前市面上几乎没有数据供应商具备收集与整理的能力。即使强如万得，也是没有这方面精确的、与中证指数官网完全一致的数据。<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></p>
+<h1 id="代码实现" class="heading-element">
+  <a href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0" class="heading-mark"></a>代码实现</h1><p>代码实现难度不高，不过需要注意历史的部分数据有异常情况（如临时退市、纳入与剔除数量不一致等）。</p>
+<h2 id="流程" class="heading-element">
+  <a href="#%e6%b5%81%e7%a8%8b" class="heading-mark"></a>流程</h2><ol>
+<li>
+<p>从万得获取一份指数的历史成份记录（<code>wind.indexhistory</code>），用于更新成份列表。由于从每年6、12月第二个周五开始，中证指数没有公布成份权重数据，对于在此时剔除、纳入的样本股票，万得提供的成份权重数据是 <code>NAN</code>，<strong>这个一定不能用</strong>（罪恶！）。</p>
+</li>
+<li>
+<p>在每个月<strong>最后一个交易日</strong>从万得获取指数成份权重数据，这个将被用于当作接下来一整个月的数据基础。同时，我们最好在每个月第一个交易日，再更新一份万得的权重数据，然后跟月末的数据进行对比，看看是否有发生变化，以便做数据核对。</p>
+</li>
+<li>
+<p>接下来的<strong>每一天直至月末</strong>，我们根据基准日期（即上个月月末）的权重数据，计算成份股的涨跌幅度<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。然后判断当天盘后是否有最新的权重更新(比如wind数据源月末最后一天, 或者6月/12月指数调整披露的日期)</p>
+<ul>
+<li>
+<p>如果有，则直接同步更新至最新的指数权重。</p>
+</li>
+<li>
+<p>如果没有，则用当天盘后 <code>stock.daily</code> 中 <code>stock_symbols</code> 的 <code>close/preclose</code> 当做权重，来调整前一日的权重。</p>
+</li>
+</ul>
+<p>以上处理，实现了每日根据个股涨跌幅计算市值的波动，并以此更新权重数据。</p>
+</li>
+<li>
+<p>在每年的6、12月第二个周五，由于没有成份权重数据，我们可以利用万得api提供的<code>流通市值</code>，用来<em>近似代表</em>中证指数使用的<code>自由流通市值</code>，并逐日进行更新，这样可以尽量减少在6、12月下旬的差异。</p>
+</li>
+</ol>
+<h2 id="代码解析" class="heading-element">
+  <a href="#%e4%bb%a3%e7%a0%81%e8%a7%a3%e6%9e%90" class="heading-mark"></a>代码解析</h2><h3 id="计算中证指数每年612月第二个周五的交易日" class="heading-element">
+  <a href="#%e8%ae%a1%e7%ae%97%e4%b8%ad%e8%af%81%e6%8c%87%e6%95%b0%e6%af%8f%e5%b9%b4612%e6%9c%88%e7%ac%ac%e4%ba%8c%e4%b8%aa%e5%91%a8%e4%ba%94%e7%9a%84%e4%ba%a4%e6%98%93%e6%97%a5" class="heading-mark"></a>计算中证指数每年6、12月第二个周五的交易日</h3><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@staticmethod</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">gen_csi_index_change_days</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;计算中证指数在每年6、12月第二个周五调整对应的交易日期
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## </span>
+</span></span><span class="line"><span class="cl">    <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2099</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">delta</span> <span class="o">=</span> <span class="n">end_date</span> <span class="o">-</span> <span class="n">start_date</span>
+</span></span><span class="line"><span class="cl">    <span class="n">days</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">delta</span><span class="o">.</span><span class="n">days</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">day</span> <span class="o">=</span> <span class="n">start_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">days</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">day</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&#34;%Y-%m-</span><span class="si">%d</span><span class="s2">&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;natural_day&#39;</span><span class="p">:</span> <span class="n">days</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;natural_mon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;natural_day&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[:</span><span class="mi">7</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;day_of_week&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;natural_day&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">%u</span><span class="s2">&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;nth_of_week&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;natural_mon&#39;</span><span class="p">,</span> <span class="s2">&#34;day_of_week&#34;</span><span class="p">])[</span><span class="s2">&#34;day_of_week&#34;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;day_of_week&#39;</span><span class="p">,</span> <span class="s1">&#39;nth_of_week&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">## 样本调整实施时间原则上分别为每年 6 月和 12 月的第二个星期五的下一交易日。</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;natural_mon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;-06$|-12$&#39;</span><span class="p">))</span> <span class="o">&amp;</span> 
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;day_of_week&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;5&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;nth_of_week&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;2&#39;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">df</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">      natural_day natural_mon day_of_week nth_of_week
+</span></span><span class="line"><span class="cl">160    2000-06-09     2000-06           5           2
+</span></span><span class="line"><span class="cl">342    2000-12-08     2000-12           5           2
+</span></span><span class="line"><span class="cl">524    2001-06-08     2001-06           5           2
+</span></span><span class="line"><span class="cl">713    2001-12-14     2001-12           5           2
+</span></span><span class="line"><span class="cl">895    2002-06-14     2002-06           5           2
+</span></span><span class="line"><span class="cl">...           ...         ...         ...         ...
+</span></span><span class="line"><span class="cl">35412  2096-12-14     2096-12           5           2
+</span></span><span class="line"><span class="cl">35594  2097-06-14     2097-06           5           2
+</span></span><span class="line"><span class="cl">35776  2097-12-13     2097-12           5           2
+</span></span><span class="line"><span class="cl">35958  2098-06-13     2098-06           5           2
+</span></span><span class="line"><span class="cl">36140  2098-12-12     2098-12           5           2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[198 rows x 4 columns]</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="获取-windindexhistory" class="heading-element">
+  <a href="#%e8%8e%b7%e5%8f%96-windindexhistory" class="heading-mark"></a>获取 wind.indexhistory</h3><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">res</span> <span class="o">=</span> <span class="n">windx</span><span class="p">(</span><span class="s1">&#39;wset&#39;</span><span class="p">,</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;indexhistory&#34;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="sa">f</span><span class="s2">&#34;startdate=</span><span class="si">{</span><span class="n">start_day</span><span class="si">}</span><span class="s2">;enddate=</span><span class="si">{</span><span class="n">cal</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="si">}</span><span class="s2">;windcode=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">],</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind_src</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">                          tradedate  tradecode tradename         mv   weight tradestatus  TradingDay     Symbol
+</span></span><span class="line"><span class="cl">0     Mon, 11 Dec 2023 00:00:00 GMT  300308.SZ      中际旭创 964.595725 0.972000          剔除  2023-12-11  300308.SZ
+</span></span><span class="line"><span class="cl">1     Mon, 11 Dec 2023 00:00:00 GMT  688256.SH     寒武纪-U 708.168907 0.497000          剔除  2023-12-11  688256.SH
+</span></span><span class="line"><span class="cl">2     Mon, 11 Dec 2023 00:00:00 GMT  600372.SH      中航机载 629.056562 0.398000          剔除  2023-12-11  600372.SH
+</span></span><span class="line"><span class="cl">3     Mon, 11 Dec 2023 00:00:00 GMT  601136.SH      首创证券 599.966769 0.103000          剔除  2023-12-11  601136.SH
+</span></span><span class="line"><span class="cl">4     Mon, 11 Dec 2023 00:00:00 GMT  300832.SZ       新产业 599.896292 0.352000          剔除  2023-12-11  300832.SZ
+</span></span><span class="line"><span class="cl">...                             ...        ...       ...        ...      ...         ...         ...        ...
+</span></span><span class="line"><span class="cl">2925  Mon, 04 Jan 2010 00:00:00 GMT  601008.SH       连云港  41.879040      NaN          纳入  2010-01-04  601008.SH
+</span></span><span class="line"><span class="cl">2926  Mon, 04 Jan 2010 00:00:00 GMT  002212.SZ       天融信  40.611450      NaN          纳入  2010-01-04  002212.SZ
+</span></span><span class="line"><span class="cl">2927  Mon, 04 Jan 2010 00:00:00 GMT  002107.SZ      沃华医药  40.322682      NaN          纳入  2010-01-04  002107.SZ
+</span></span><span class="line"><span class="cl">2928  Mon, 04 Jan 2010 00:00:00 GMT  002109.SZ      兴化股份  39.459840      NaN          纳入  2010-01-04  002109.SZ
+</span></span><span class="line"><span class="cl">2929  Mon, 04 Jan 2010 00:00:00 GMT  600644.SH      乐山电力  34.280414      NaN          纳入  2010-01-04  600644.SH</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="计算每个月的基准日期" class="heading-element">
+  <a href="#%e8%ae%a1%e7%ae%97%e6%af%8f%e4%b8%aa%e6%9c%88%e7%9a%84%e5%9f%ba%e5%87%86%e6%97%a5%e6%9c%9f" class="heading-mark"></a>计算每个月的基准日期</h3><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">self.index_symbol = &#39;000905.SH&#39;
+</span></span><span class="line"><span class="cl">self.output_path  = &#39;/home/william/Desktop/ib&#39;
+</span></span><span class="line"><span class="cl">self.trading_day  = &#39;2023-06-09&#39;
+</span></span><span class="line"><span class="cl">self.wind_src     = &#39;wuya&#39;
+</span></span><span class="line"><span class="cl">self.base_day     = &#39;2023-06-08&#39;
+</span></span><span class="line"><span class="cl">self.this_mon     = &#39;2023-06&#39;
+</span></span><span class="line"><span class="cl">self.last_mon     = &#39;2023-05&#39;
+</span></span><span class="line"><span class="cl">self.this_mon_first_day = &#39;2023-06-01&#39;
+</span></span><span class="line"><span class="cl">self.this_mon_last_day  = &#39;2023-06-30&#39;
+</span></span><span class="line"><span class="cl">self.last_mon_last_day  = &#39;2023-05-31&#39;</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="获取万得历史的权重数据" class="heading-element">
+  <a href="#%e8%8e%b7%e5%8f%96%e4%b8%87%e5%be%97%e5%8e%86%e5%8f%b2%e7%9a%84%e6%9d%83%e9%87%8d%e6%95%b0%e6%8d%ae" class="heading-mark"></a>获取万得历史的权重数据</h3><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">fetch_index_weight_from_wind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;用这个月第一天的数据来填充剩下的日期
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## 1. 如果是月末，使用月末的日期，获取权重</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## 2. 如果是非月末，则使用第一天的，这个应该跟月末数据是一致的</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wind_trading_day</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">this_mon_last_day</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">this_mon_last_day</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">this_mon_first_day</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">csvfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="si">}</span><span class="s2">/wind.fetch_index_weight.</span><span class="si">{</span><span class="n">wind_trading_day</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">.csv&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">csvfile</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># res = wind.fetch_index_weight(self.index_symbol, self.trading_day)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">## 万得的 000300.SH 是每个月变动两次，需要修改 base day</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">## 我们终端中证指数权重不是每日更新的，是月度更新，沪深300就月初和月末这2次变动。</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">## 如果需要每日的数据，要购买中证指数的服务，成为会员，然后在万得做数据订制才行。</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">## 是的，目前只有沪深300的权重是月初和月末变动更新的。</span>
+</span></span><span class="line"><span class="cl">            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wind</span><span class="o">.</span><span class="n">fetch_index_weight</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="p">,</span> <span class="n">wind_trading_day</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">res</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="n">inf</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;wind.fetch_index_weight: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">wind_trading_day</span><span class="si">}</span><span class="s2"> ==&gt; </span><span class="si">{</span><span class="n">csvfile</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">msg</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="n">err</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;BenchmarkDay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;BaseDay&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="mi">16</span><span class="p">],</span> <span class="s2">&#34;</span><span class="si">%a</span><span class="s2">, </span><span class="si">%d</span><span class="s2"> %b %Y&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;TradingDay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;IndexName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;IndexAlias&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;IndexSymbol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;Symbol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;w_code&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## 标准化</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="o">~</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;index_weight&#39;</span><span class="p">])]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;Weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;index_weight&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;index_weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;WeightAdjust&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;Weight&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;BenchmarkDay&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> 
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;BenchmarkDay&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="p">,</span> <span class="n">wind_trading_day</span><span class="p">]</span> <span class="ow">and</span> 
+</span></span><span class="line"><span class="cl">         <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="o">&gt;</span> <span class="s1">&#39;2020-01-01&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            WindApi Error fetch_index_weight
+</span></span></span><span class="line"><span class="cl"><span class="s2">            </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            </span><span class="si">{</span><span class="n">res</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">COLUMNS</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">df</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">     TradingDay BenchmarkDay IndexName IndexAlias IndexSymbol     Symbol   Weight  WeightAdjust
+</span></span><span class="line"><span class="cl">0    2023-06-09   2023-05-31                        000905.SH  000009.SZ 0.003790      0.003790
+</span></span><span class="line"><span class="cl">1    2023-06-09   2023-05-31                        000905.SH  000012.SZ 0.001270      0.001270
+</span></span><span class="line"><span class="cl">2    2023-06-09   2023-05-31                        000905.SH  000021.SZ 0.003250      0.003250
+</span></span><span class="line"><span class="cl">3    2023-06-09   2023-05-31                        000905.SH  000027.SZ 0.002000      0.002000
+</span></span><span class="line"><span class="cl">4    2023-06-09   2023-05-31                        000905.SH  000031.SZ 0.000710      0.000710
+</span></span><span class="line"><span class="cl">..          ...          ...       ...        ...         ...        ...      ...           ...
+</span></span><span class="line"><span class="cl">495  2023-06-09   2023-05-31                        000905.SH  688772.SH 0.000320      0.000320
+</span></span><span class="line"><span class="cl">496  2023-06-09   2023-05-31                        000905.SH  688777.SH 0.005100      0.005100
+</span></span><span class="line"><span class="cl">497  2023-06-09   2023-05-31                        000905.SH  688779.SH 0.001340      0.001340
+</span></span><span class="line"><span class="cl">498  2023-06-09   2023-05-31                        000905.SH  688819.SH 0.000730      0.000730
+</span></span><span class="line"><span class="cl">499  2023-06-09   2023-05-31                        000905.SH  689009.SH 0.002120      0.002120
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[500 rows x 8 columns]</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="使用流通市值计算权重" class="heading-element">
+  <a href="#%e4%bd%bf%e7%94%a8%e6%b5%81%e9%80%9a%e5%b8%82%e5%80%bc%e8%ae%a1%e7%ae%97%e6%9d%83%e9%87%8d" class="heading-mark"></a>使用流通市值计算权重</h4><p>在每年的6、12月第二个周五（盘后更新），需要使用万得提供的<code>流通市值</code>计算成份股的权重。</p>
+<p>具体步骤为：</p>
+<ol>
+<li>读取上一个月的权重成份</li>
+<li>获取 <code>indexhistory</code>，区分纳入、剔除的成份（最好对比一下数量是否一样）</li>
+<li>生成新的成份样本</li>
+<li>根据前一天的收盘价计算当天的权重</li>
+<li>此后每日更新至月底</li>
+</ol>
+<h5 id="合成新的成份" class="heading-element">
+  <a href="#%e5%90%88%e6%88%90%e6%96%b0%e7%9a%84%e6%88%90%e4%bb%bd" class="heading-mark"></a>合成新的成份</h5><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1">## 1. 先读取上一个的成份</span>
+</span></span><span class="line"><span class="cl"><span class="n">last_mon_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALL_DAYS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ALL_DAYS</span><span class="o">.</span><span class="n">mon</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_mon</span><span class="p">]</span><span class="o">.</span><span class="n">days</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">csvfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">.base_day.</span><span class="si">{</span><span class="n">last_mon_day</span><span class="si">}</span><span class="s2">.csv&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">csvfile</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&#34;SH&#34;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="o">&gt;</span> <span class="s1">&#39;2019-06-01&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df_last_mon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_index_weight_from_wind</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;failed to find last mon base_day: </span><span class="si">{</span><span class="n">csvfile</span> <span class="si">= }</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">log</span><span class="o">.</span><span class="n">inf</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;already done, using </span><span class="si">{</span><span class="n">csvfile</span> <span class="si">= }</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df_last_mon</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 2. 然后根据出入 history 情况进行剔除、添加</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 注意 TradingDay 是生效日期，需要在 base_day 加上一天</span>
+</span></span><span class="line"><span class="cl"><span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_history</span><span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_history</span><span class="o">.</span><span class="n">TradingDay</span> <span class="o">==</span> <span class="n">cal</span><span class="o">.</span><span class="n">cal_trading_day</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">base_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPECIAL_DAYS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">SPECIAL_DAYS</span><span class="o">.</span><span class="n">mon</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">this_mon</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="n">base_day</span><span class="o">.</span><span class="n">days</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_history</span><span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_history</span><span class="o">.</span><span class="n">TradingDay</span> <span class="o">==</span> <span class="n">cal</span><span class="o">.</span><span class="n">cal_trading_day</span><span class="p">(</span><span class="n">day</span><span class="p">,</span> <span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">tradestatus</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;剔除&#39;</span><span class="p">,</span> <span class="s1">&#39;纳入&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="o">&gt;</span> <span class="s1">&#39;2020-01-01&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">        Wind has Changed it&#39;s tradestatus,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        should be ...... </span><span class="si">{</span><span class="nb">set</span><span class="p">([</span><span class="s1">&#39;剔除&#39;</span><span class="p">,</span> <span class="s1">&#39;纳入&#39;</span><span class="p">])</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        but got </span><span class="si">{</span><span class="nb">set</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">tradestatus</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">removed</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">tradestatus</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&#34;剔除&#34;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl"><span class="n">added</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">tradestatus</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&#34;纳入&#34;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 2017-06-01: 000804.CSI, removed:30, added:29</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">removed</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">added</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_last_mon</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">        Wind has different symbol length
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">removed</span><span class="p">)</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">added</span><span class="p">)</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">log</span><span class="o">.</span><span class="n">wrn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">removed</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">added</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 剔除</span>
+</span></span><span class="line"><span class="cl"><span class="n">x</span> <span class="o">=</span> <span class="n">df_last_mon</span><span class="p">[</span><span class="o">~</span><span class="p">(</span><span class="n">df_last_mon</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">removed</span><span class="o">.</span><span class="n">Symbol</span><span class="p">))]</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_last_mon</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">removed</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_last_mon</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">        Wind has different symbol length
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_last_mon</span><span class="p">)</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">removed</span><span class="p">)</span>     <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>           <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">df_last_mon</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">removed</span><span class="p">)))</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[[</span><span class="s1">&#39;TradingDay&#39;</span><span class="p">,</span> <span class="s1">&#39;Symbol&#39;</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="n">y</span> <span class="o">=</span> <span class="n">added</span><span class="p">[[</span><span class="s1">&#39;TradingDay&#39;</span><span class="p">,</span> <span class="s1">&#39;Symbol&#39;</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_last_mon</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_last_mon</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">= }</span><span class="s2"> has different symbol length
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span>    <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_last_mon</span><span class="p">)</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>          <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="获取流通市值" class="heading-element">
+  <a href="#%e8%8e%b7%e5%8f%96%e6%b5%81%e9%80%9a%e5%b8%82%e5%80%bc" class="heading-mark"></a>获取流通市值</h5><p>这里需要注意基准日期是前一天，需要每日滚动更新。</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span><span class="lnt">94
+</span><span class="lnt">95
+</span><span class="lnt">96
+</span><span class="lnt">97
+</span><span class="lnt">98
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1">## 3. 根据 FreeShared 计算市值权重</span>
+</span></span><span class="line"><span class="cl"><span class="n">df_freeshares</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">csvfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="si">}</span><span class="s2">/wind._fetch_stock_daily_by_symbol_freeshares.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="si">}</span><span class="s2">.csv&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_freeshares</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">csvfile</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">symbol_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">to_list</span><span class="p">()))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">res</span> <span class="o">=</span> <span class="n">wind</span><span class="o">.</span><span class="n">_fetch_stock_daily_by_symbol_freeshares</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="n">trading_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">                <span class="n">symbol</span> <span class="o">=</span> <span class="n">symbol_list</span>
+</span></span><span class="line"><span class="cl">                <span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">res</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="n">inf</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;already done, using </span><span class="si">{</span><span class="n">csvfile</span> <span class="si">= }</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df_freeshares</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># exchange_listing = get_exchange_listing()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># exchange_listing = pd.merge(exchange_listing, df_freeshares, on = &#39;Symbol&#39;, how = &#39;right&#39;, suffixes = [&#39;_exchange&#39;, &#39;&#39;])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">missing_symbols_list</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df_freeshares</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">values</span><span class="p">))]</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span> <span class="o">+</span> \
+</span></span><span class="line"><span class="cl">                               <span class="n">df_freeshares</span><span class="p">[(</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df_freeshares</span><span class="o">.</span><span class="n">FreeShare</span><span class="p">))]</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">missing_symbols_list</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="n">wrn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;less symbol, do qry WindAPI again&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">symbol_list</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df_freeshares</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">values</span><span class="p">)]</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span> <span class="o">+</span> \
+</span></span><span class="line"><span class="cl">                      <span class="n">df_freeshares</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df_freeshares</span><span class="o">.</span><span class="n">FreeShare</span><span class="p">)]</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">=</span> <span class="n">wind</span><span class="o">.</span><span class="n">_fetch_stock_daily_by_symbol_freeshares</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">trading_day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">symbol</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">symbol_list</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_freeshares</span><span class="p">,</span> <span class="n">res</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">res</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df_freeshares</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span>
+</span></span><span class="line"><span class="cl"><span class="n">df_freeshares</span> <span class="o">=</span> <span class="n">df_freeshares</span><span class="p">[</span><span class="n">df_freeshares</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Symbol</span><span class="o">.</span><span class="n">values</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl"><span class="n">df_freeshares</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">([</span><span class="s1">&#39;Symbol&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df_totalshares</span> <span class="o">=</span> <span class="n">ch_idc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    select TradingDay, Symbol, TotalShare, FloatAShare
+</span></span></span><span class="line"><span class="cl"><span class="s2">    from stock.daily
+</span></span></span><span class="line"><span class="cl"><span class="s2">    where TradingDay = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="si">}</span><span class="s2">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    and TotalShare &gt; 0
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df_freeshares</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df_freeshares</span><span class="p">,</span> <span class="n">df_totalshares</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;Symbol&#39;</span><span class="p">,</span> <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">suffixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;_total&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 中证指数：分级靠档： http://www.sse.com.cn/market/sseindex/calculation/c/5726306.pdf</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 除非特别说明，中证指数有限公司在计算指数时，采用分级靠档的方法，即根据自由流通量所占样本总股本的比例（即自由流通比例）赋予样本总股本一定的加权比例，</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 以确计算指数的股本保持相对稳定。</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 自由流通比例=自由流通量/A股总股本</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 调整股本数=A股总股本×加权比例</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">handle_shares</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">free_shares</span><span class="p">,</span> <span class="n">total_shares</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">free_shares</span><span class="p">)</span> <span class="ow">or</span> <span class="n">free_shares</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="n">inf</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            </span><span class="si">{</span><span class="n">symbol</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            </span><span class="si">{</span><span class="n">free_shares</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            </span><span class="si">{</span><span class="n">total_shares</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">total_shares</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total_shares</span> <span class="o">=</span> <span class="n">free_shares</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">free_shares</span><span class="p">)</span> <span class="ow">and</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">total_shares</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 2015-01-26: 000166.SZ 申万宏源新上市，需要用下一天的数据</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tmp</span> <span class="o">=</span> <span class="n">ch_idc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            select * from stock.daily
+</span></span></span><span class="line"><span class="cl"><span class="s2">            where TradingDay &gt; &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="si">}</span><span class="s2">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            and Symbol = &#39;</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            and TotalShare &gt; 0 
+</span></span></span><span class="line"><span class="cl"><span class="s2">            order by TradingDay ASC
+</span></span></span><span class="line"><span class="cl"><span class="s2">            limit 1
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">#      TradingDay Exchange     Symbol  FreeShare TradingDay_total  TotalShare  FloatAShare</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 324  2019-03-08     szse  000043.SZ        NaN              NaN         NaN          NaN</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">tmp</span><span class="o">.</span><span class="n">FloatAShare</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## &#39;2015-06-15&#39;: 万得会修改历史分红数据，导致 shares 不太对</span>
+</span></span><span class="line"><span class="cl">    <span class="n">r</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">free_shares</span> <span class="o">/</span> <span class="n">total_shares</span> <span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mf">100.01</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&#34;error shares amount: </span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">r</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="mi">80</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">r</span> <span class="o">=</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span><span class="mi">1</span> <span class="p">)</span> <span class="o">*</span><span class="mi">10</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">r</span><span class="o">/</span><span class="mf">100.0</span> <span class="o">*</span> <span class="n">total_shares</span>
+</span></span><span class="line"><span class="cl"><span class="n">df_freeshares</span><span class="p">[</span><span class="s1">&#39;FreeShareAdjust&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_freeshares</span><span class="p">[[</span><span class="s1">&#39;Symbol&#39;</span><span class="p">,</span> <span class="s1">&#39;FreeShare&#39;</span><span class="p">,</span> <span class="s1">&#39;TotalShare&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">handle_shares</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df_freeshares</span><span class="p">[</span><span class="s1">&#39;TotalShare&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df_freeshares</span><span class="p">[</span><span class="s1">&#39;FreeShare&#39;</span><span class="p">]))</span>
+</span></span><span class="line"><span class="cl"><span class="n">df_freeshares</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cond</span><span class="p">,</span> <span class="s1">&#39;TotalShare&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_freeshares</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cond</span><span class="p">,</span> <span class="s1">&#39;FreeShareAdjust&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">df_freeshares</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cond</span><span class="p">,</span> <span class="s1">&#39;FreeShare&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_freeshares</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cond</span><span class="p">,</span> <span class="s1">&#39;FreeShareAdjust&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_freeshares</span><span class="p">[</span><span class="n">df_freeshares</span><span class="p">[</span><span class="s1">&#39;FreeShareAdjust&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">df_freeshares</span><span class="p">[</span><span class="s1">&#39;TotalShare&#39;</span><span class="p">]])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">        Error shares for 
+</span></span></span><span class="line"><span class="cl"><span class="s2">        </span><span class="si">{</span><span class="n">df_freeshares</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        &#34;&#34;&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="计算权重" class="heading-element">
+  <a href="#%e8%ae%a1%e7%ae%97%e6%9d%83%e9%87%8d" class="heading-mark"></a>计算权重</h5><div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1">## cal weight</span>
+</span></span><span class="line"><span class="cl"><span class="n">daily_base_day</span> <span class="o">=</span> <span class="n">ch</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    select TradingDay, Symbol, Close, 
+</span></span></span><span class="line"><span class="cl"><span class="s2">           TotalShare, FloatAShare
+</span></span></span><span class="line"><span class="cl"><span class="s2">    from stock.daily
+</span></span></span><span class="line"><span class="cl"><span class="s2">    where TradingDay = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="si">}</span><span class="s2">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">daily_base_day</span><span class="p">,</span> <span class="n">df_freeshares</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;Symbol&#39;</span><span class="p">,</span> <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">              <span class="n">suffixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;_wind_freeshares&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 防止 Wind 复权导致的股本异常</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeShare&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;TotalShare&#39;</span><span class="p">,</span> <span class="s1">&#39;FreeShare&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeShare&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeValueAdjust&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeShareAdjust&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeValue&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeValue&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;WeightAdjust&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeValueAdjust&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;FreeValueAdjust&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">added</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">removed</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Weight&#39;</span><span class="p">,</span> <span class="s1">&#39;WeightAdjust&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">removed</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">100.0</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Weight&#39;</span><span class="p">,</span> <span class="s1">&#39;WeightAdjust&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EPSILON</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EPSILON</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;BenchmarkDay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_day</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;TradingDay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;IndexName&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;IndexAlias&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">df</span><span class="p">[</span><span class="s1">&#39;IndexSymbol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="每日根据股票涨跌幅更新权重" class="heading-element">
+  <a href="#%e6%af%8f%e6%97%a5%e6%a0%b9%e6%8d%ae%e8%82%a1%e7%a5%a8%e6%b6%a8%e8%b7%8c%e5%b9%85%e6%9b%b4%e6%96%b0%e6%9d%83%e9%87%8d" class="heading-mark"></a>每日根据股票涨跌幅更新权重</h3><div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">adjust_weight_on_daily</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    http://192.168.1.191:20080/wiki/#/team/M9rVLNSS/share/LdejewHw/page/9DNzQcim
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    判断当天盘后是否有最新的权重更新(比如wind数据源月末最后一天, 或者6月/12月指数调整披露的日期)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    * 如果有，则直接同步更新至最新的指数权重。
+</span></span></span><span class="line"><span class="cl"><span class="s2">    * 如果没有，则用当天盘后stock.daily中stock_symbols的close/preclose当做权重，来调整前一日的权重。
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">special</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SPECIAL_DAYS</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;mon&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="s2">&#34;first&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="ow">in</span> <span class="n">special</span><span class="o">.</span><span class="n">days</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">BenchmarkDay</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="n">csvfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">cal</span><span class="o">.</span><span class="n">cal_trading_day</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">.ib_weight.csv&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">csvfile</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">             <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log</span><span class="o">.</span><span class="n">inf</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;now try to update ib_weight by pre_close: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df_pre</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">daily</span> <span class="o">=</span> <span class="n">get_stock_daily_from_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">daily</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">daily</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">daily</span> <span class="o">=</span> <span class="n">ch_idc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">                select * from stock.daily
+</span></span></span><span class="line"><span class="cl"><span class="s2">                where TradingDay = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span><span class="si">}</span><span class="s2">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">                &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">daily</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">daily</span><span class="p">,</span> <span class="n">df_pre</span><span class="p">,</span> <span class="n">on</span> <span class="o">=</span> <span class="s1">&#39;Symbol&#39;</span><span class="p">,</span> <span class="n">how</span> <span class="o">=</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">suffixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;_ib&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">daily</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="o">&gt;</span> <span class="s1">&#39;2020-01-01&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">                </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">daily</span><span class="p">)</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">                </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>    <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">                &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">daily</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">daily</span><span class="p">[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">daily</span><span class="p">[</span><span class="s1">&#39;PreClose&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Weight&#39;</span><span class="p">,</span> <span class="s1">&#39;WeightAdjust&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">Origin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">Update&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">Origin&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">daily</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">daily</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">            <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">Update&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">Update&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">Update&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">daily</span> <span class="o">=</span> <span class="n">daily</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">COLUMNS</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;WeightOrigin&#39;</span><span class="p">,</span> <span class="s1">&#39;WeightUpdate&#39;</span><span class="p">,</span> <span class="s1">&#39;WeightAdjustOrigin&#39;</span><span class="p">,</span> <span class="s1">&#39;WeightAdjustUpdate&#39;</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">daily</span><span class="p">[</span><span class="s1">&#39;BenchmarkDay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">## 2015-05-20: 000016.SH</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">daily</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">daily</span><span class="p">[</span><span class="s1">&#39;WeightUpdate&#39;</span><span class="p">])])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">## ---------------------------------------</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">## use update version</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Weight&#39;</span><span class="p">,</span> <span class="s1">&#39;WeightAdjust&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">daily</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">Update&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df</span> <span class="o">=</span> <span class="n">daily</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">COLUMNS</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">## ---------------------------------------</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">df</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="run" class="heading-element">
+  <a href="#run" class="heading-mark"></a>run</h3><div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## FAKE </span>
+</span></span><span class="line"><span class="cl">    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;SH&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">info</span> <span class="o">=</span> <span class="n">csi_index_symbol_basic_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span> <span class="o">&lt;</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;publishDate&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="n">wrn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;not yet published&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## check for trading_day -----------------------------------------------</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df</span> <span class="o">=</span> <span class="n">ch_idc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            select * from stock.ib_weight
+</span></span></span><span class="line"><span class="cl"><span class="s2">            where IndexSymbol = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">&#39; 
+</span></span></span><span class="line"><span class="cl"><span class="s2">            and TradingDay = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span><span class="si">}</span><span class="s2">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">log</span><span class="o">.</span><span class="n">wrn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">                already done
+</span></span></span><span class="line"><span class="cl"><span class="s2">                symbol: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">                trading_day: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span><span class="si">}</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">                &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">df</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">csvfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">.ib_weight.csv&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># if os.path.isfile(csvfile):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#     log.inf(f&#34;already done, using {csvfile = }&#34;)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#     df = pd.read_csv(csvfile)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">## check for base_day --------------------------------------------------</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df</span> <span class="o">=</span> <span class="n">ch_idc</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            select * from stock.ib_weight
+</span></span></span><span class="line"><span class="cl"><span class="s2">            where IndexSymbol = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">&#39; 
+</span></span></span><span class="line"><span class="cl"><span class="s2">            and BenchmarkDay = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="si">}</span><span class="s2">&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">            &#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">csvfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index_symbol</span><span class="si">}</span><span class="s2">.base_day.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_day</span><span class="si">}</span><span class="s2">.csv&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># if os.path.isfile(csvfile):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#     log.inf(f&#34;already done, using {csvfile = }&#34;)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#     df = pd.read_csv(csvfile)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gen_index_weight</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;TradingDay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trading_day</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># df[&#39;IndexName&#39;] = &#39;&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># df[&#39;IndexAlias&#39;] = &#39;&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">## ====================</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjust_weight_on_daily</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">## ====================</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="结果验证" class="heading-element">
+  <a href="#%e7%bb%93%e6%9e%9c%e9%aa%8c%e8%af%81" class="heading-mark"></a>结果验证</h2><div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p>万得提供了数据 <code>float_a_shares</code>， 这个可以近似当作自由流通市值，但不敢保证数据精确。&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p>需要处理除权除息，可以根据以上除权公式；或者交易所提供的  <code>PreClose</code> 数据，这个数据已经过除权处理&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div></div><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2024-04-15 14:43:52">更新于 2024-04-15&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/" data-title="构建指数权重ib weight"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/" data-title="构建指数权重ib weight" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/" data-title="构建指数权重ib weight"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-04-15-%E6%9E%84%E5%BB%BA%E6%8C%87%E6%95%B0%E6%9D%83%E9%87%8Dib-weight/" data-title="构建指数权重ib weight"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2024-04-12-dlopen-c-%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/" class="post-nav-item" rel="prev" title="dlopen c&#43;&#43; 使用总结"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>dlopen c&#43;&#43; 使用总结</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
