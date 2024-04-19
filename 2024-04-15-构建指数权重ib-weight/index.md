@@ -546,8 +546,7 @@ def adjust_weight_on_daily(self, df):
         ## ---------------------------------------
         ## use update version
         for k in [&#39;Weight&#39;, &#39;WeightAdjust&#39;]:
-            daily[f&#39;{k}&#39;] = daily[f&#39;{k}Update&#39;]
-        df = daily[self.COLUMNS]
+            daily[f&#39;{k}&#39;] = daily[f&#39;{k}Update&#39;] df = daily[self.COLUMNS]
         break
         ## ---------------------------------------
 
@@ -558,18 +557,15 @@ def adjust_weight_on_daily(self, df):
 
 ```python
 def run(self):
-    ## FAKE 
-    df = pd.DataFrame()
-
+    df = pd.DataFrame([], columns = self.COLUMNS)
     if self.index_symbol.endswith(&#39;SH&#39;):
         info = csi_index_symbol_basic_info(self.index_symbol)
         if self.trading_day &lt; info[&#39;data&#39;].get(&#39;publishDate&#39;):
             log.wrn(f&#34;not yet published&#34;)
-            return
+            return df
 
-    ## check for base_day --------------------------------------------------
-    df = self.gen_index_weight()
     ## ====================
+    df = self.gen_index_weight()
     self.df = self.adjust_weight_on_daily(df)
     if self.check():
         self.save()
@@ -588,6 +584,15 @@ def run(self):
 
 ![ib指数更加平滑](./ib3.jpg &#34;ib指数更加平滑&#34;)
 
+另外，我们在对比权重数据的时候，需要区分**价格指数**与**全收益指数的区别**。可以参考这篇文章: [全收益指数概念详解](https://xueqiu.com/3871533038/243177199)
+
+{{&lt;/* admonition type=tip title=&#34;This is a tip&#34; open=false */&gt;}}
+&gt; 价格指数是单纯反应一篮子股票的价格变化情况。每一个价格指数背后都有一个对应的全收益指数（Total Return Index），这类指数除了反映股价波动外，还假定篮子内所有股票的现金分红用于再投资产生收益。　　
+&gt;
+&gt; 沪深300指数它对应“沪深300全收益指数”。当有样本股除息（分红派息），沪深300指数不予修正，任其自然回落；沪深300全收益指数考虑到分红的部分，在样本股除息日前按照除息参考价予以修正。　　
+{{&lt;/* /admonition */&gt;}}
+
+比如这些指数以及对应的全收益指数：[wind.规模指数_全收益.csv](./wind.规模指数_全收益.csv)
 
 
 ---
