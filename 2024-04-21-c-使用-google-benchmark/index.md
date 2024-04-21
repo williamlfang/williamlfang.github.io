@@ -48,6 +48,15 @@ void now_ns(benchmark::State&amp; state)
 }
 BENCHMARK(now_ns);
 
+void now_sysns(benchmark::State&amp; state)
+{
+    for (auto _: state)
+    {
+        nanotime_t::sysns();
+    }
+}
+BENCHMARK(now_sysns);
+
 void now_ntime(benchmark::State&amp; state)
 {
     for (auto _: state)
@@ -118,7 +127,7 @@ BENCHMARK_MAIN();
 ## 结果
 
 ```
-2024-04-21T13:18:25&#43;08:00
+2024-04-21T13:52:30&#43;08:00
 Running ./test_benchmark
 Run on (20 X 4800 MHz CPU s)
 CPU Caches:
@@ -126,21 +135,22 @@ CPU Caches:
   L1 Instruction 32 KiB (x10)
   L2 Unified 1280 KiB (x10)
   L3 Unified 25600 KiB (x1)
-Load Average: 1.43, 2.08, 2.10
+Load Average: 1.13, 1.27, 1.62
 ***WARNING*** CPU scaling is enabled, the benchmark real time measurements may be noisy and will incur extra overhead.
 ---------------------------------------------------------
 Benchmark               Time             CPU   Iterations
 ---------------------------------------------------------
-now_ns               5.51 ns         5.50 ns    123085394
-now_ntime            5.41 ns         5.41 ns    129788813
-ns2ntime             5.55 ns         5.55 ns    124451290
-ns2str               14.7 ns         14.7 ns     47902595
-ns2str_slow          58.4 ns         58.4 ns     11602260
-ns2datetimestr        464 ns          464 ns      1567822
-strftime            15940 ns        15939 ns        44554
+now_ns               5.49 ns         5.49 ns    107478294
+now_sysns            11.3 ns         11.3 ns     62195134
+now_ntime            5.43 ns         5.43 ns    130701288
+ns2ntime             5.47 ns         5.47 ns    123446131
+ns2str               15.0 ns         15.0 ns     47280993
+ns2str_slow          60.9 ns         60.9 ns     11144495
+ns2datetimestr        460 ns          460 ns      1577622
+strftime            15785 ns        15785 ns        44630
 ```
 
-从上述结果可以比较清楚的知道，我们的函数调用 `ns` 的开销是非常小的，但在转化成字符串的时候，不同的设计是有明显的差异。其中 `ns2str` 是最快的，这主要是因为我们使用来一个针对小对象设计的 `Str&lt;N&gt;` 类。
+从上述结果可以比较清楚的知道，我们的函数调用 `ns` 的开销对比系统调用 `sysns` 是非常小的，但在转化成字符串的时候，不同的设计是有明显的差异。其中 `ns2str` 是最快的，这主要是因为我们使用来一个针对小对象设计的 `Str&lt;N&gt;` 类。
 
 
 ---
