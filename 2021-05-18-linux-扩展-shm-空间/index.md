@@ -15,10 +15,10 @@ df -h /dev/shm
 sudo vim /etc/fstab
 
 ## 使用 MB
-tmpfs	/dev/shm	tmpfs	defaults,size=4096M	0	0
+tmpfs   /dev/shm    tmpfs   defaults,size=4096M 0   0
 
 ## 使用 GB
-tmpfs	/dev/shm	tmpfs	defaults,size=4G	0	0
+tmpfs   /dev/shm    tmpfs   defaults,size=4G 0   0
 
 ## 重新挂载，需要确保没有被占用
 sudo umount -l /dev/shm
