@@ -1,7 +1,7 @@
 # 使用 ninja 加速 c&#43;&#43; build
 
 
-
+`ninja` 和 `make` 是一样属于 **build system**，不过提供了更好的编译速度，尤其对于大型开发项目，可以节省大量的编译时间。
 
 &lt;!--more--&gt;
 
