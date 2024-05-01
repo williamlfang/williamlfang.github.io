@@ -54,6 +54,13 @@ struct D2: public B&lt;D2&gt;
     void foo_impl() noexcept { cout &lt;&lt; &#34;D2:foo_impl&#34; &lt;&lt; endl; }
 };
 
+
+template&lt;typename T&gt;
+void execute(B&lt;T&gt;* e)
+{
+    e-&gt;foo();
+}
+
 int main()
 {
     B&lt;D1&gt;* d1 = new D1;
@@ -72,18 +79,22 @@ int main()
     m[&#34;d1&#34;] = d1;
     m[&#34;d2&#34;] = d2;
 
-    //sse
+    //use variant
     {
         auto d = std::get&lt;B&lt;D1&gt;*&gt;(m[&#34;d1&#34;]);
         d-&gt;foo();
     }
 
-    //szse
+    //use variant
     {
         auto d = std::get&lt;B&lt;D2&gt;*&gt;(m[&#34;d2&#34;]);
         d-&gt;foo();
-
     }
+
+    //policy-based ctx
+    execute(d1);
+    execute(d2);
+
     delete d1;
     delete d2;
 
