@@ -24,7 +24,7 @@ Client 1 quit with exit code 1 and signal 0
 ```bash
 /home/lfang/.config/nvim/lazy/mason/bin/clangd
 
-/home/lfang/.config/nvim/lazy/mason/bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18&#39; not found (required by /home/lfang/.config/nvim/lazy/mason/bin/clangd)
+/home/lfang/.confkzig/nvim/lazy/mason/bin/clangd: /lib64/libc.so.6: version `GLIBC_2.18&#39; not found (required by /home/lfang/.config/nvim/lazy/mason/bin/clangd)
 ```
 
 尴尬的是，这家公司实在拉跨，程序常年不更新，所以找不到 `GLIBC_2.18` 的版本号。
@@ -49,6 +49,8 @@ cd /tmp &amp;&amp; wget --no-check-certificate http://mirrors.ustc.edu.cn/gnu/li
     make &amp;&amp; make install &amp;&amp; \
     rm -rf /tmp/glibc*
 ```
+
+![glibc](./glibc.png &#34;GLIBC_2.18&#34;)
 
 
 
