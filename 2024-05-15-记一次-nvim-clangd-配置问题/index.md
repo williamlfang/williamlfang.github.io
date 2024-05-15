@@ -17,6 +17,8 @@ Client 1 quit with exit code 1 and signal 0
 
 ### node 版本过低
 
+`node` 版本在 `10.0` 以下不支持 `lua`，因此需要升级一下。
+
 ### clangd 无法启动
 
 可以先试着在终端执行 `clangd` 命令，看看环境是否支持
@@ -51,7 +53,6 @@ cd /tmp &amp;&amp; wget --no-check-certificate http://mirrors.ustc.edu.cn/gnu/li
 ```
 
 ![glibc](./glibc.png &#34;GLIBC_2.18&#34;)
-
 
 
 ---
