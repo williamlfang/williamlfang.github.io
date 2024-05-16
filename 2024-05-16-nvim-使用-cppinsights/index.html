@@ -12,7 +12,7 @@
 <meta itemprop="description" content="cppinsights 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。
 我们可以在 nvim 安装一个插件，通过快捷键即可看到转换后的代码了，尤其对于现代 c&#43;&#43; 提供的语法糖，可以更进一步的理解背后的语法。"><meta itemprop="datePublished" content="2024-05-16T17:42:25+08:00" />
 <meta itemprop="dateModified" content="2024-05-16T17:42:25+08:00" />
-<meta itemprop="wordCount" content="299"><meta itemprop="image" content="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" />
+<meta itemprop="wordCount" content="365"><meta itemprop="image" content="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" />
 <meta itemprop="keywords" content="" /><meta property="og:title" content="nvim 使用 cppinsights" />
 <meta property="og:description" content="cppinsights 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。
 我们可以在 nvim 安装一个插件，通过快捷键即可看到转换后的代码了，尤其对于现代 c&#43;&#43; 提供的语法糖，可以更进一步的理解背后的语法。" />
@@ -44,7 +44,7 @@
               "url": "https:\/\/williamlfang.github.io\/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights\/insights.png",
               "width":  1233 ,
               "height":  435 
-            }],"genre": "posts","wordcount":  299 ,
+            }],"genre": "posts","wordcount":  365 ,
     "url": "https:\/\/williamlfang.github.io\/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights\/","datePublished": "2024-05-16T17:42:25+08:00","dateModified": "2024-05-16T17:42:25+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
@@ -206,7 +206,7 @@
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>nvim 使用 cppinsights</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-05-16 17:42:25"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-05-16">2024-05-16</time></span>&nbsp;<span title="299 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 300 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-05-16 17:42:25"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-05-16">2024-05-16</time></span>&nbsp;<span title="365 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
     </div><div class="featured-image"><img loading="lazy" src="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" alt="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" data-title="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="content" id="content"><p><code>cppinsights</code> 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。</p>
 <p>我们可以在 <code>nvim</code> 安装一个插件，通过快捷键即可看到转换后的代码了，尤其对于现代 <code>c++</code> 提供的语法糖，可以更进一步的理解背后的语法。</p>
 <div class="highlight" id="id-1"><div class="chroma">
@@ -270,7 +270,11 @@
 </span></span><span class="line"><span class="cl"><span class="c1">-- use_libc = true,</span>
 </span></span><span class="line"><span class="cl"><span class="c1">-- use_vsplit = true,</span></span></span></code></pre></td></tr></table>
 </div>
-</div></div><div class="post-reward">
+</div><p>有两点需要说明一下：</p>
+<ul>
+<li>如果没有在本地找到 <code>cppinsights</code>，则插件会向<a href="https://cppinsights.io/"target="_blank" rel="external nofollow noopener noreferrer">网站<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>请求，并把结果传送到本地</li>
+<li>如果本地有安装二进制，需要 <code>llvm</code> 支持</li>
+</ul></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>

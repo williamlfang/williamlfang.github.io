@@ -38,6 +38,9 @@ return {
 -- use_vsplit = true,
 ```
 
+有两点需要说明一下：
+- 如果没有在本地找到 `cppinsights`，则插件会向[网站](https://cppinsights.io/)请求，并把结果传送到本地
+- 如果本地有安装二进制，需要 `llvm` 支持
 
 
 ---
