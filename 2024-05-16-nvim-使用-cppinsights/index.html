@@ -5,51 +5,47 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>记一次 nvim clangd 配置问题 - William</title><meta name="author" content="william">
+    <title>nvim 使用 cppinsights - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="
-最近在迁移开发环境（本质上是这家公司太抠门了，舍不得给开发狗购买机器），需要重新配置我的 nvim。由于我使用 clangd 进行c&#43;&#43; 代码的实时编译、检测以及语法高度，所以要求机器能够支持 clangd 的编译环境。
-" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="记一次 nvim clangd 配置问题">
-<meta itemprop="description" content="
-最近在迁移开发环境（本质上是这家公司太抠门了，舍不得给开发狗购买机器），需要重新配置我的 nvim。由于我使用 clangd 进行c&#43;&#43; 代码的实时编译、检测以及语法高度，所以要求机器能够支持 clangd 的编译环境。
-"><meta itemprop="datePublished" content="2024-05-15T16:42:09+08:00" />
-<meta itemprop="dateModified" content="2024-05-15T16:42:09+08:00" />
-<meta itemprop="wordCount" content="326"><meta itemprop="image" content="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/clangd.png" />
-<meta itemprop="keywords" content="" /><meta property="og:title" content="记一次 nvim clangd 配置问题" />
-<meta property="og:description" content="
-最近在迁移开发环境（本质上是这家公司太抠门了，舍不得给开发狗购买机器），需要重新配置我的 nvim。由于我使用 clangd 进行c&#43;&#43; 代码的实时编译、检测以及语法高度，所以要求机器能够支持 clangd 的编译环境。
-" />
+<meta name="description" content="cppinsights 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。
+我们可以在 nvim 安装一个插件，通过快捷键即可看到转换后的代码了。" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="nvim 使用 cppinsights">
+<meta itemprop="description" content="cppinsights 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。
+我们可以在 nvim 安装一个插件，通过快捷键即可看到转换后的代码了。"><meta itemprop="datePublished" content="2024-05-16T17:42:25+08:00" />
+<meta itemprop="dateModified" content="2024-05-16T17:42:25+08:00" />
+<meta itemprop="wordCount" content="270"><meta itemprop="image" content="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="nvim 使用 cppinsights" />
+<meta property="og:description" content="cppinsights 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。
+我们可以在 nvim 安装一个插件，通过快捷键即可看到转换后的代码了。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" /><meta property="og:image" content="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/clangd.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-05-15T16:42:09+08:00" />
-<meta property="article:modified_time" content="2024-05-15T16:42:09+08:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" /><meta property="og:image" content="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-05-16T17:42:25+08:00" />
+<meta property="article:modified_time" content="2024-05-16T17:42:25+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/clangd.png" /><meta name="twitter:title" content="记一次 nvim clangd 配置问题"/>
-<meta name="twitter:description" content="
-最近在迁移开发环境（本质上是这家公司太抠门了，舍不得给开发狗购买机器），需要重新配置我的 nvim。由于我使用 clangd 进行c&#43;&#43; 代码的实时编译、检测以及语法高度，所以要求机器能够支持 clangd 的编译环境。
-"/>
+<meta name="twitter:image" content="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" /><meta name="twitter:title" content="nvim 使用 cppinsights"/>
+<meta name="twitter:description" content="cppinsights 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。
+我们可以在 nvim 安装一个插件，通过快捷键即可看到转换后的代码了。"/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" /><link rel="prev" href="https://williamlfang.github.io/2024-05-15-fzf-%E6%98%BE%E7%A4%BA%E9%A2%84%E8%A7%88%E7%AA%97%E5%8F%A3/" /><link rel="next" href="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" /><link rel="prev" href="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "记一次 nvim clangd 配置问题",
+    "headline": "nvim 使用 cppinsights",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98\/"
+      "@id": "https:\/\/williamlfang.github.io\/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights\/"
     },"image": [{
               "@type": "ImageObject",
-              "url": "https:\/\/williamlfang.github.io\/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98\/clangd.png",
-              "width":  1744 ,
-              "height":  1213 
-            }],"genre": "posts","wordcount":  326 ,
-    "url": "https:\/\/williamlfang.github.io\/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98\/","datePublished": "2024-05-15T16:42:09+08:00","dateModified": "2024-05-15T16:42:09+08:00","publisher": {
+              "url": "https:\/\/williamlfang.github.io\/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights\/insights.png",
+              "width":  1233 ,
+              "height":  435 
+            }],"genre": "posts","wordcount":  270 ,
+    "url": "https:\/\/williamlfang.github.io\/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights\/","datePublished": "2024-05-16T17:42:25+08:00","dateModified": "2024-05-16T17:42:25+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -208,67 +204,12 @@
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>记一次 nvim clangd 配置问题</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>nvim 使用 cppinsights</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-05-15 16:42:09"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-05-15">2024-05-15</time></span>&nbsp;<span title="326 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="featured-image"><img loading="lazy" src="/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/clangd.png" alt="/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/clangd.png" data-title="/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/clangd.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
-        <div class="details-summary toc-title">
-          <span>目录</span>
-          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
-        </div>
-        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ol>
-    <li>
-      <ol>
-        <li><a href="#遇到的问题">遇到的问题</a>
-          <ol>
-            <li><a href="#node-版本过低">node 版本过低</a></li>
-            <li><a href="#clangd-无法启动">clangd 无法启动</a></li>
-          </ol>
-        </li>
-        <li><a href="#解决方案">解决方案</a>
-          <ol>
-            <li><a href="#升级-node">升级 node</a></li>
-            <li><a href="#升级-glibc_218">升级 glibc_2.18</a></li>
-          </ol>
-        </li>
-      </ol>
-    </li>
-  </ol>
-</nav></div>
-      </div><div class="content" id="content"><blockquote>
-<p>最近在迁移开发环境（本质上是这家公司太抠门了，舍不得给开发狗购买机器），需要重新配置我的 <code>nvim</code>。由于我使用 <code>clangd</code> 进行<code>c++</code> 代码的实时编译、检测以及语法高度，所以要求机器能够支持 <code>clangd</code> 的编译环境。</p>
-</blockquote>
-<h2 id="遇到的问题" class="heading-element">
-  <a href="#%e9%81%87%e5%88%b0%e7%9a%84%e9%97%ae%e9%a2%98" class="heading-mark"></a>遇到的问题</h2><p>打开 <code>nvim</code> 编辑 <code>c++</code> 代码文件，会出现报错</p>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-05-16 17:42:25"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-05-16">2024-05-16</time></span>&nbsp;<span title="270 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 300 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" alt="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" data-title="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="content" id="content"><p><code>cppinsights</code> 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。</p>
+<p>我们可以在 <code>nvim</code> 安装一个插件，通过快捷键即可看到转换后的代码了。</p>
 <div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">Client</span> <span class="mi">1</span> <span class="n">quit</span> <span class="n">with</span> <span class="n">exit</span> <span class="n">code</span> <span class="mi">1</span> <span class="ow">and</span> <span class="k">signal</span> <span class="mi">0</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>无法在代码之间进行跳转。因此大概可以猜测 <code>lsp</code> 出问题了。</p>
-<h3 id="node-版本过低" class="heading-element">
-  <a href="#node-%e7%89%88%e6%9c%ac%e8%bf%87%e4%bd%8e" class="heading-mark"></a>node 版本过低</h3><p><code>node</code> 版本在 <code>10.0</code> 以下不支持 <code>lua</code>，因此需要升级一下。</p>
-<h3 id="clangd-无法启动" class="heading-element">
-  <a href="#clangd-%e6%97%a0%e6%b3%95%e5%90%af%e5%8a%a8" class="heading-mark"></a>clangd 无法启动</h3><p>可以先试着在终端执行 <code>clangd</code> 命令，看看环境是否支持</p>
-<div class="highlight" id="id-2"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/home/lfang/.config/nvim/lazy/mason/bin/clangd
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">/home/lfang/.confkzig/nvim/lazy/mason/bin/clangd: /lib64/libc.so.6: version <span class="sb">`</span>GLIBC_2.18<span class="err">&#39;</span> not found <span class="o">(</span>required by /home/lfang/.config/nvim/lazy/mason/bin/clangd<span class="o">)</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>尴尬的是，这家公司实在拉跨，程序常年不更新，所以找不到 <code>GLIBC_2.18</code> 的版本号。</p>
-<h2 id="解决方案" class="heading-element">
-  <a href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" class="heading-mark"></a>解决方案</h2><h3 id="升级-node" class="heading-element">
-  <a href="#%e5%8d%87%e7%ba%a7-node" class="heading-mark"></a>升级 node</h3><h3 id="升级-glibc_218" class="heading-element">
-  <a href="#%e5%8d%87%e7%ba%a7-glibc_218" class="heading-mark"></a>升级 glibc_2.18</h3><div class="highlight" id="id-3"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -282,23 +223,54 @@
 </span><span class="lnt">10
 </span><span class="lnt">11
 </span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">GLIBC_VERSION</span><span class="o">=</span>2.18
-</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /tmp <span class="o">&amp;&amp;</span> wget --no-check-certificate http://mirrors.ustc.edu.cn/gnu/libc/glibc-<span class="si">${</span><span class="nv">GLIBC_VERSION</span><span class="si">}</span>.tar.gz <span class="o">&amp;&amp;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    tar -xvf glibc-<span class="si">${</span><span class="nv">GLIBC_VERSION</span><span class="si">}</span>.tar.gz <span class="o">&amp;&amp;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nb">cd</span> glibc-<span class="si">${</span><span class="nv">GLIBC_VERSION</span><span class="si">}</span> <span class="o">&amp;&amp;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    mkdir build <span class="o">&amp;&amp;</span> <span class="nb">cd</span> build <span class="o">&amp;&amp;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    ../configure --prefix<span class="o">=</span>/usr <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --disable-profile <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --enable-add-ons <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --with-headers<span class="o">=</span>/usr/include <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --with-binutils<span class="o">=</span>/usr/bin <span class="o">&amp;&amp;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    make <span class="o">&amp;&amp;</span> make install <span class="o">&amp;&amp;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    rm -rf /tmp/glibc*</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kr">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="s2">&#34;rossjaywill/insights.nvim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="n">dependencies</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="s2">&#34;nvim-lua/plenary.nvim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">		<span class="s2">&#34;nvim-telescope/telescope.nvim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span>
+</span></span><span class="line"><span class="cl">	<span class="n">config</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="n">require</span><span class="p">(</span><span class="s2">&#34;insights&#34;</span><span class="p">).</span><span class="n">setup</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">insights_bin</span> <span class="o">=</span> <span class="s1">&#39;insights&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="n">async</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">			<span class="n">use_default_keymaps</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">-- disable default keymaps, to be user defined</span>
+</span></span><span class="line"><span class="cl">			<span class="n">use_libc</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">-- do not use libc++ headers</span>
+</span></span><span class="line"><span class="cl">            <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_set_keymap</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;ci&#39;</span><span class="p">,</span> <span class="s1">&#39;:lua require(&#34;insights&#34;).run_current_buf()&lt;CR&gt;&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="n">noremap</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="kr">end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- local_only = false, -- only allow insights.nvim to invoke a local cppinsights binary</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- http_only = false,  -- only allow insights.nvim to make HTTP requests to cppinsights.io</span>
+</span></span><span class="line"><span class="cl"><span class="c1">--                     -- If both of these are not set (i.e. the default), then insights.nvim</span>
+</span></span><span class="line"><span class="cl"><span class="c1">--                     -- will use a local binary, if available, otherwise it will fallback to HTTP</span>
+</span></span><span class="line"><span class="cl"><span class="c1">--                     -- WARNING: You should think carefully about sending source code over HTTP -</span>
+</span></span><span class="line"><span class="cl"><span class="c1">--                     -- especially if you are working on a proprietary system.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- async = true,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- insights_bin = &#39;insights&#39;,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- use_default_keymaps = true,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- use_libc = true,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- use_vsplit = true,</span></span></span></code></pre></td></tr></table>
 </div>
-</div><p><figure><a class="lightgallery" href="./glibc.png?size=large" data-thumbnail="./glibc.png?size=small" data-sub-html="<h2>glibc</h2><p>GLIBC_2.18</p>"><img loading="lazy" src="./glibc.png" alt="glibc" srcset="./glibc.png?size=small, ./glibc.png?size=medium 1.5x, ./glibc.png?size=large 2x" data-title="GLIBC_2.18" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">glibc</figcaption>
-  </figure></p></div><div class="post-reward">
+</div></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>
@@ -309,16 +281,16 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2024-05-15 16:42:09">更新于 2024-05-15&nbsp;</span>
+        <span title="更新于 2024-05-16 17:42:25">更新于 2024-05-16&nbsp;</span>
       </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-md"><span><a href="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" data-title="记一次 nvim clangd 配置问题"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" data-title="记一次 nvim clangd 配置问题" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" data-title="记一次 nvim clangd 配置问题"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" data-title="记一次 nvim clangd 配置问题"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" data-title="nvim 使用 cppinsights"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" data-title="nvim 使用 cppinsights" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" data-title="nvim 使用 cppinsights"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" data-title="nvim 使用 cppinsights"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
@@ -330,8 +302,7 @@
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2024-05-15-fzf-%E6%98%BE%E7%A4%BA%E9%A2%84%E8%A7%88%E7%AA%97%E5%8F%A3/" class="post-nav-item" rel="prev" title="fzf 显示预览窗口"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>fzf 显示预览窗口</a>
-      <a href="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" class="post-nav-item" rel="next" title="nvim 使用 cppinsights">nvim 使用 cppinsights<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" class="post-nav-item" rel="prev" title="记一次 nvim clangd 配置问题"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>记一次 nvim clangd 配置问题</a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script
@@ -358,8 +329,7 @@
           Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
         </noscript></div></article>
 
-  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
-      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+  <aside class="toc" id="toc-auto" aria-label="目录"></aside></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
         </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
             <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
