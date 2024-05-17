@@ -59,7 +59,22 @@ return {
 ## 安装 llvm
 
 ```bash
-
+# 下载源码
+wget https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.1/llvm-project-13.0.1.src.tar.xz
+# 解压源码
+tar xvf llvm-project-13.0.1.src.tar.xz
+# 新建安装目录
+sudo mkdir -p /usr/local/llvm
+# 新建编译目录
+sudo mkdir -p llvm-project-13.0.1.src/build
+# 进入编译目录
+cd llvm-project-13.0.1.src/build
+# cmake生成编译信息
+cmake -G &#34;Unix Makefiles&#34; -DLLVM_ENABLE_PROJECTS=&#34;clang&#34; -DLLVM_TARGETS_TO_BUILD=X86 -DCMAKE_BUILD_TYPE=&#34;Release&#34; -DLLVM_INCLUDE_TESTS=OFF -DCMAKE_INSTALL_PREFIX=&#34;/usr/local/llvm&#34; ../llvm
+# 编译
+cmake --build .
+# 安装到安装目录
+cmake --build . --target install
 ```
 
 ## 安装 cppinsights

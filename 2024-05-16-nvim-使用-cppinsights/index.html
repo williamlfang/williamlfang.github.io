@@ -12,7 +12,7 @@
 <meta itemprop="description" content="cppinsights 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。
 我们可以在 nvim 安装一个插件，通过快捷键即可看到转换后的代码了，尤其对于现代 c&#43;&#43; 提供的语法糖，可以更进一步的理解背后的语法。"><meta itemprop="datePublished" content="2024-05-16T17:42:25+08:00" />
 <meta itemprop="dateModified" content="2024-05-16T17:42:25+08:00" />
-<meta itemprop="wordCount" content="994"><meta itemprop="image" content="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" />
+<meta itemprop="wordCount" content="1097"><meta itemprop="image" content="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" />
 <meta itemprop="keywords" content="" /><meta property="og:title" content="nvim 使用 cppinsights" />
 <meta property="og:description" content="cppinsights 通过展示编译器眼里的源代码，可以让我们更直观地看到编译器做了哪些预处理，从而更好的理解代码生成过程（非汇编）。
 我们可以在 nvim 安装一个插件，通过快捷键即可看到转换后的代码了，尤其对于现代 c&#43;&#43; 提供的语法糖，可以更进一步的理解背后的语法。" />
@@ -28,7 +28,7 @@
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" /><link rel="prev" href="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/" /><link rel="prev" href="https://williamlfang.github.io/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" /><link rel="next" href="https://williamlfang.github.io/2024-05-17-nvim-%E6%8A%A5%E9%94%99--lua-language-server/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
@@ -44,7 +44,7 @@
               "url": "https:\/\/williamlfang.github.io\/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights\/insights.png",
               "width":  1233 ,
               "height":  435 
-            }],"genre": "posts","wordcount":  994 ,
+            }],"genre": "posts","wordcount":  1097 ,
     "url": "https:\/\/williamlfang.github.io\/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights\/","datePublished": "2024-05-16T17:42:25+08:00","dateModified": "2024-05-16T17:42:25+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
@@ -206,7 +206,7 @@
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>nvim 使用 cppinsights</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-05-16 17:42:25"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-05-16">2024-05-16</time></span>&nbsp;<span title="994 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-05-16 17:42:25"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-05-16">2024-05-16</time></span>&nbsp;<span title="1097 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
     </div><div class="featured-image"><img loading="lazy" src="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" alt="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" data-title="/2024-05-16-nvim-%E4%BD%BF%E7%94%A8-cppinsights/insights.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
@@ -304,9 +304,40 @@
 <h2 id="安装-llvm" class="heading-element">
   <a href="#%e5%ae%89%e8%a3%85-llvm" class="heading-mark"></a>安装 llvm</h2><div class="highlight" id="id-2"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code></code></pre></td>
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 下载源码</span>
+</span></span><span class="line"><span class="cl">wget https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.1/llvm-project-13.0.1.src.tar.xz
+</span></span><span class="line"><span class="cl"><span class="c1"># 解压源码</span>
+</span></span><span class="line"><span class="cl">tar xvf llvm-project-13.0.1.src.tar.xz
+</span></span><span class="line"><span class="cl"><span class="c1"># 新建安装目录</span>
+</span></span><span class="line"><span class="cl">sudo mkdir -p /usr/local/llvm
+</span></span><span class="line"><span class="cl"><span class="c1"># 新建编译目录</span>
+</span></span><span class="line"><span class="cl">sudo mkdir -p llvm-project-13.0.1.src/build
+</span></span><span class="line"><span class="cl"><span class="c1"># 进入编译目录</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> llvm-project-13.0.1.src/build
+</span></span><span class="line"><span class="cl"><span class="c1"># cmake生成编译信息</span>
+</span></span><span class="line"><span class="cl">cmake -G <span class="s2">&#34;Unix Makefiles&#34;</span> -DLLVM_ENABLE_PROJECTS<span class="o">=</span><span class="s2">&#34;clang&#34;</span> -DLLVM_TARGETS_TO_BUILD<span class="o">=</span>X86 -DCMAKE_BUILD_TYPE<span class="o">=</span><span class="s2">&#34;Release&#34;</span> -DLLVM_INCLUDE_TESTS<span class="o">=</span>OFF -DCMAKE_INSTALL_PREFIX<span class="o">=</span><span class="s2">&#34;/usr/local/llvm&#34;</span> ../llvm
+</span></span><span class="line"><span class="cl"><span class="c1"># 编译</span>
+</span></span><span class="line"><span class="cl">cmake --build .
+</span></span><span class="line"><span class="cl"><span class="c1"># 安装到安装目录</span>
+</span></span><span class="line"><span class="cl">cmake --build . --target install</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="安装-cppinsights" class="heading-element">
   <a href="#%e5%ae%89%e8%a3%85-cppinsights" class="heading-mark"></a>安装 cppinsights</h2><div class="highlight" id="id-3"><div class="chroma">
@@ -347,7 +378,8 @@
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" class="post-nav-item" rel="prev" title="记一次 nvim clangd 配置问题"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>记一次 nvim clangd 配置问题</a></div>
+  <div class="post-nav"><a href="/2024-05-15-%E8%AE%B0%E4%B8%80%E6%AC%A1-nvim-clangd-%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98/" class="post-nav-item" rel="prev" title="记一次 nvim clangd 配置问题"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>记一次 nvim clangd 配置问题</a>
+      <a href="/2024-05-17-nvim-%E6%8A%A5%E9%94%99--lua-language-server/" class="post-nav-item" rel="next" title="nvim 报错: lua language server">nvim 报错: lua language server<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script
