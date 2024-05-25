@@ -124,6 +124,11 @@ cat /proc/cpuinfo |ag constant_tsc
 
 ![const tsc](./const_tsc.png &#34;const tsc&#34;)
 
+## Ref
+
+- [几种取时间的方法（附代码）](http://www.wangkaixuan.tech/?p=840)
+- [simplx](https://github.com/Tredzone/simplx)
+
 
 ---
 
