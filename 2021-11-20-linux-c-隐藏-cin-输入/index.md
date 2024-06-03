@@ -67,8 +67,7 @@ int main(void)
     tcsetattr(STDIN_FILENO, TCSANOW, &amp;oldt);
     // -------------------------------------------------------------------
 
-	std::string cmd;
-
+	std::string cmd = &#34;sshpass -p &#34; &#43; passwd &#43; &#34; -P22 ssh william@127.0.0.1&#34;;
     // std::cout &lt;&lt; cmd &lt;&lt; std::endl;
     system(cmd.c_str());
 }

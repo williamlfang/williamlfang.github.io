@@ -20,15 +20,22 @@
 ## 安装软件
 
 ```bash
+## centos
+sudo yum install cpufreq-utils
+
+## ubuntu
 sudo apt-get install cpufrequtils
 sudo apt-get install sysfsutils
 
-## 查看 CPU 状态
-cpufreq-info
-## 查看频率信息
+## centos 查看频率信息
 cpupower frequency-info
+## ubuntu 查看 CPU 状态
+cpufreq-info
 
 ## 把 cpu 调整到性能模式
+## centos
+sudo cpupower -c all frequency-set -g performance
+## ubuntu
 sudo cpufreq-set -g performance
 
 ## 通过设置默认模式，防止重启后恢复
