@@ -5,38 +5,90 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>nvim tokyonight 修改高亮颜色 - William</title><meta name="author" content="william">
+    <title>c&#43;&#43; inline浅析 - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="如果遇到在终端显示问题，可以修改高亮颜色: ~/.config/nvim/lua/plugins/tokyonight.lua 1 2 3 4 5 6 7 8 on_highlights = function(hl, colors) hl.LineNr = { fg = &#34;#fffb7b&#34;, } hl.CursorLineNr = { fg = &#34;#709db2&#34;, } end," /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="nvim tokyonight 修改高亮颜色">
-<meta itemprop="description" content="如果遇到在终端显示问题，可以修改高亮颜色: ~/.config/nvim/lua/plugins/tokyonight.lua 1 2 3 4 5 6 7 8 on_highlights = function(hl, colors) hl.LineNr = { fg = &#34;#fffb7b&#34;, } hl.CursorLineNr = { fg = &#34;#709db2&#34;, } end,"><meta itemprop="datePublished" content="2024-06-06T22:49:17+08:00" />
-<meta itemprop="dateModified" content="2024-06-06T22:49:17+08:00" />
-<meta itemprop="wordCount" content="49"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
-<meta itemprop="keywords" content="" /><meta property="og:title" content="nvim tokyonight 修改高亮颜色" />
-<meta property="og:description" content="如果遇到在终端显示问题，可以修改高亮颜色: ~/.config/nvim/lua/plugins/tokyonight.lua 1 2 3 4 5 6 7 8 on_highlights = function(hl, colors) hl.LineNr = { fg = &#34;#fffb7b&#34;, } hl.CursorLineNr = { fg = &#34;#709db2&#34;, } end," />
+<meta name="description" content="gcc 提供关键词 inline，允许我们标注函数需要在编译时展开，这样可以避免函数调用，减低函数栈开销，从而达到优化程序的目地。然而，天下并没有免费的午餐，在引入 inline 的同时，我们也需要注意其带来的程序体积变大、cache locality 减少的风险。
+
+Pros of inlining:
+
+Removes function call overhead (yay!)
+May reveal additional optimization opportunities (sometimes yay!)
+
+Cons of inlining:
+
+Increases program size (boo!)
+May reduce cache locality (sometimes boo!)
+May increase build times (boo!)
+
+" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="c&#43;&#43; inline浅析">
+<meta itemprop="description" content="gcc 提供关键词 inline，允许我们标注函数需要在编译时展开，这样可以避免函数调用，减低函数栈开销，从而达到优化程序的目地。然而，天下并没有免费的午餐，在引入 inline 的同时，我们也需要注意其带来的程序体积变大、cache locality 减少的风险。
+
+Pros of inlining:
+
+Removes function call overhead (yay!)
+May reveal additional optimization opportunities (sometimes yay!)
+
+Cons of inlining:
+
+Increases program size (boo!)
+May reduce cache locality (sometimes boo!)
+May increase build times (boo!)
+
+"><meta itemprop="datePublished" content="2024-06-10T11:17:39+08:00" />
+<meta itemprop="dateModified" content="2024-06-10T11:17:39+08:00" />
+<meta itemprop="wordCount" content="157"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="c&#43;&#43; inline浅析" />
+<meta property="og:description" content="gcc 提供关键词 inline，允许我们标注函数需要在编译时展开，这样可以避免函数调用，减低函数栈开销，从而达到优化程序的目地。然而，天下并没有免费的午餐，在引入 inline 的同时，我们也需要注意其带来的程序体积变大、cache locality 减少的风险。
+
+Pros of inlining:
+
+Removes function call overhead (yay!)
+May reveal additional optimization opportunities (sometimes yay!)
+
+Cons of inlining:
+
+Increases program size (boo!)
+May reduce cache locality (sometimes boo!)
+May increase build times (boo!)
+
+" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-06-06T22:49:17+08:00" />
-<meta property="article:modified_time" content="2024-06-06T22:49:17+08:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-06-10T11:17:39+08:00" />
+<meta property="article:modified_time" content="2024-06-10T11:17:39+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="nvim tokyonight 修改高亮颜色"/>
-<meta name="twitter:description" content="如果遇到在终端显示问题，可以修改高亮颜色: ~/.config/nvim/lua/plugins/tokyonight.lua 1 2 3 4 5 6 7 8 on_highlights = function(hl, colors) hl.LineNr = { fg = &#34;#fffb7b&#34;, } hl.CursorLineNr = { fg = &#34;#709db2&#34;, } end,"/>
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="c&#43;&#43; inline浅析"/>
+<meta name="twitter:description" content="gcc 提供关键词 inline，允许我们标注函数需要在编译时展开，这样可以避免函数调用，减低函数栈开销，从而达到优化程序的目地。然而，天下并没有免费的午餐，在引入 inline 的同时，我们也需要注意其带来的程序体积变大、cache locality 减少的风险。
+
+Pros of inlining:
+
+Removes function call overhead (yay!)
+May reveal additional optimization opportunities (sometimes yay!)
+
+Cons of inlining:
+
+Increases program size (boo!)
+May reduce cache locality (sometimes boo!)
+May increase build times (boo!)
+
+"/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/" /><link rel="prev" href="https://williamlfang.github.io/2024-05-25-docker-registry-%E5%BF%98%E8%AE%B0%E8%B4%A6%E6%88%B7%E5%AF%86%E7%A0%81/" /><link rel="next" href="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/" /><link rel="prev" href="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/" /><link rel="next" href="https://williamlfang.github.io/2024-06-10-g-%E8%8E%B7%E5%8F%96%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "nvim tokyonight 修改高亮颜色",
+    "headline": "c++ inline浅析",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2\/"
-    },"genre": "posts","wordcount":  49 ,
-    "url": "https:\/\/williamlfang.github.io\/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2\/","datePublished": "2024-06-06T22:49:17+08:00","dateModified": "2024-06-06T22:49:17+08:00","publisher": {
+      "@id": "https:\/\/williamlfang.github.io\/2024-06-10-c-inline%E6%B5%85%E6%9E%90\/"
+    },"genre": "posts","wordcount":  157 ,
+    "url": "https:\/\/williamlfang.github.io\/2024-06-10-c-inline%E6%B5%85%E6%9E%90\/","datePublished": "2024-06-10T11:17:39+08:00","dateModified": "2024-06-10T11:17:39+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -195,32 +247,45 @@
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>nvim tokyonight 修改高亮颜色</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>c&#43;&#43; inline浅析</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-06-06 22:49:17"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-06-06">2024-06-06</time></span>&nbsp;<span title="49 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="content" id="content"><p>如果遇到在终端显示问题，可以修改高亮颜色: <code>~/.config/nvim/lua/plugins/tokyonight.lua</code></p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="n">on_highlights</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">hl</span><span class="p">,</span> <span class="n">colors</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">hl.LineNr</span> <span class="o">=</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">fg</span> <span class="o">=</span> <span class="s2">&#34;#fffb7b&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="n">hl.CursorLineNr</span> <span class="o">=</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="n">fg</span> <span class="o">=</span> <span class="s2">&#34;#709db2&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="kr">end</span><span class="p">,</span></span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-reward">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-06-10 11:17:39"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-06-10">2024-06-10</time></span>&nbsp;<span title="157 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#inline-使用">inline 使用</a></li>
+        <li><a href="#避免">避免</a></li>
+        <li><a href="#ref">Ref</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p><code>gcc</code> 提供关键词 <code>inline</code>，允许我们标注函数需要在编译时展开，这样可以避免函数调用，减低函数栈开销，从而达到优化程序的目地。然而，天下并没有免费的午餐，在引入 <code>inline</code> 的同时，我们也需要注意其带来的程序体积变大、<code>cache locality</code> 减少的风险。</p>
+<blockquote>
+<p>Pros of inlining:</p>
+<ul>
+<li>Removes function call overhead (yay!)</li>
+<li>May reveal additional optimization opportunities (sometimes yay!)</li>
+</ul>
+<p>Cons of inlining:</p>
+<ul>
+<li>Increases program size (boo!)</li>
+<li>May reduce cache locality (sometimes boo!)</li>
+<li>May increase build times (boo!)</li>
+</ul>
+</blockquote>
+<h2 id="inline-使用" class="heading-element">
+  <a href="#inline-%e4%bd%bf%e7%94%a8" class="heading-mark"></a>inline 使用</h2><h2 id="避免" class="heading-element">
+  <a href="#%e9%81%bf%e5%85%8d" class="heading-mark"></a>避免</h2><h2 id="ref" class="heading-element">
+  <a href="#ref" class="heading-mark"></a>Ref</h2><ul>
+<li><a href="https://awesomekling.github.io/Smarter-C&#43;&#43;-inlining-with-attribute-flatten/"target="_blank" rel="external nofollow noopener noreferrer">Smarter C/C++ inlining with <strong>attribute</strong>((flatten))<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>
@@ -231,16 +296,16 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2024-06-06 22:49:17">更新于 2024-06-06&nbsp;</span>
+        <span title="更新于 2024-06-10 11:17:39">更新于 2024-06-10&nbsp;</span>
       </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-md"><span><a href="/2024-06-10-c-inline%E6%B5%85%E6%9E%90/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/" data-title="nvim tokyonight 修改高亮颜色"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/" data-title="nvim tokyonight 修改高亮颜色" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/" data-title="nvim tokyonight 修改高亮颜色"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/" data-title="nvim tokyonight 修改高亮颜色"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/" data-title="c&#43;&#43; inline浅析"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/" data-title="c&#43;&#43; inline浅析" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/" data-title="c&#43;&#43; inline浅析"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-06-10-c-inline%E6%B5%85%E6%9E%90/" data-title="c&#43;&#43; inline浅析"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
@@ -252,8 +317,8 @@
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2024-05-25-docker-registry-%E5%BF%98%E8%AE%B0%E8%B4%A6%E6%88%B7%E5%AF%86%E7%A0%81/" class="post-nav-item" rel="prev" title="docker registry 忘记账户密码"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>docker registry 忘记账户密码</a>
-      <a href="/2024-06-10-c-inline%E6%B5%85%E6%9E%90/" class="post-nav-item" rel="next" title="c&#43;&#43; inline浅析">c&#43;&#43; inline浅析<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/" class="post-nav-item" rel="prev" title="nvim tokyonight 修改高亮颜色"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>nvim tokyonight 修改高亮颜色</a>
+      <a href="/2024-06-10-g-%E8%8E%B7%E5%8F%96%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4/" class="post-nav-item" rel="next" title="g&#43;&#43; 获取编译时间">g&#43;&#43; 获取编译时间<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script
@@ -280,7 +345,8 @@
           Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
         </noscript></div></article>
 
-  <aside class="toc" id="toc-auto" aria-label="目录"></aside></main><footer class="footer">
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
         </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
             <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
