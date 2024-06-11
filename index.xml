@@ -3,9 +3,109 @@
     <title>William</title>
     <link>https://williamlfang.github.io/</link>
     <description>William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 10 Jun 2024 16:57:49 &#43;0800</lastBuildDate>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 11 Jun 2024 16:16:21 &#43;0800</lastBuildDate>
       <atom:link href="https://williamlfang.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+  <title>glibc2.18 安装</title>
+  <link>https://williamlfang.github.io/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/</link>
+  <pubDate>Tue, 11 Jun 2024 16:16:21 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/</guid>
+  <description><![CDATA[<p>先查看当前系统的 <code>glibc</code> 版本</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">locate libc.so                                                                                                                                                                               <span class="o">[</span>16:20:29<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/usr/lib64/libc.so
+</span></span><span class="line"><span class="cl">/usr/lib64/libc.so.6
+</span></span><span class="line"><span class="cl">/usr/local/glibc-2.34/lib/libc.so
+</span></span><span class="line"><span class="cl">/usr/local/glibc-2.34/lib/libc.so.6</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当前系统使用的 <code>glibc</code> 动态库在 <code>/usr/lib64/libc.so.6</code>。我们可以使用命令 <code>strings</code> 查看动态库的版本信息</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">strings /usr/lib64/libc.so.6 <span class="p">|</span>egrep <span class="s1">&#39;^GLIBC_2.&#39;</span> <span class="p">|</span>sort                                                                                                                                        <span class="o">[</span>16:19:55<span class="o">]</span>
+</span></span><span class="line"><span class="cl">GLIBC_2.10
+</span></span><span class="line"><span class="cl">GLIBC_2.10
+</span></span><span class="line"><span class="cl">GLIBC_2.11
+</span></span><span class="line"><span class="cl">GLIBC_2.11
+</span></span><span class="line"><span class="cl">GLIBC_2.12
+</span></span><span class="line"><span class="cl">GLIBC_2.13
+</span></span><span class="line"><span class="cl">GLIBC_2.13
+</span></span><span class="line"><span class="cl">GLIBC_2.14
+</span></span><span class="line"><span class="cl">GLIBC_2.15
+</span></span><span class="line"><span class="cl">GLIBC_2.16
+</span></span><span class="line"><span class="cl">GLIBC_2.16
+</span></span><span class="line"><span class="cl">GLIBC_2.17
+</span></span><span class="line"><span class="cl">GLIBC_2.17
+</span></span><span class="line"><span class="cl">GLIBC_2.18
+</span></span><span class="line"><span class="cl">GLIBC_2.18
+</span></span><span class="line"><span class="cl">GLIBC_2.2.5
+</span></span><span class="line"><span class="cl">GLIBC_2.2.6
+</span></span><span class="line"><span class="cl">GLIBC_2.2.6
+</span></span><span class="line"><span class="cl">GLIBC_2.3
+</span></span><span class="line"><span class="cl">GLIBC_2.3.2
+</span></span><span class="line"><span class="cl">GLIBC_2.3.3
+</span></span><span class="line"><span class="cl">GLIBC_2.3.4
+</span></span><span class="line"><span class="cl">GLIBC_2.4
+</span></span><span class="line"><span class="cl">GLIBC_2.5
+</span></span><span class="line"><span class="cl">GLIBC_2.5
+</span></span><span class="line"><span class="cl">GLIBC_2.6
+</span></span><span class="line"><span class="cl">GLIBC_2.6
+</span></span><span class="line"><span class="cl">GLIBC_2.7
+</span></span><span class="line"><span class="cl">GLIBC_2.7
+</span></span><span class="line"><span class="cl">GLIBC_2.8
+</span></span><span class="line"><span class="cl">GLIBC_2.8
+</span></span><span class="line"><span class="cl">GLIBC_2.9
+</span></span><span class="line"><span class="cl">GLIBC_2.9</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
   <title>g&#43;&#43; 获取编译时间</title>
   <link>https://williamlfang.github.io/2024-06-10-g-%E8%8E%B7%E5%8F%96%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4/</link>
   <pubDate>Mon, 10 Jun 2024 16:57:49 &#43;0800</pubDate>
@@ -110,14 +210,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2024-05-15-fzf-%E6%98%BE%E7%A4%BA%E9%A2%84%E8%A7%88%E7%AA%97%E5%8F%A3/</guid>
   <description><![CDATA[<p>可以让 <code>fzf</code> 显示预览窗口功能，使用快捷键 <code>ctrl-f</code></p>]]></description>
-</item>
-<item>
-  <title>rinetd 实现端口转发</title>
-  <link>https://williamlfang.github.io/2024-05-15-rinetd-%E5%AE%9E%E7%8E%B0%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</link>
-  <pubDate>Wed, 15 May 2024 14:25:29 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2024-05-15-rinetd-%E5%AE%9E%E7%8E%B0%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</guid>
-  <description><![CDATA[<p>通过 <code>rinetd</code> 部署简易的端口转发功能，方便集中管理。</p>]]></description>
 </item>
 </channel>
 </rss>

@@ -3,7 +3,107 @@
     <title>Linux - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/linux/</link>
     <description>Linux - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 18 Mar 2024 21:10:17 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 11 Jun 2024 16:16:21 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+  <title>glibc2.18 安装</title>
+  <link>https://williamlfang.github.io/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/</link>
+  <pubDate>Tue, 11 Jun 2024 16:16:21 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/</guid>
+  <description><![CDATA[<p>先查看当前系统的 <code>glibc</code> 版本</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">locate libc.so                                                                                                                                                                               <span class="o">[</span>16:20:29<span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/usr/lib64/libc.so
+</span></span><span class="line"><span class="cl">/usr/lib64/libc.so.6
+</span></span><span class="line"><span class="cl">/usr/local/glibc-2.34/lib/libc.so
+</span></span><span class="line"><span class="cl">/usr/local/glibc-2.34/lib/libc.so.6</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当前系统使用的 <code>glibc</code> 动态库在 <code>/usr/lib64/libc.so.6</code>。我们可以使用命令 <code>strings</code> 查看动态库的版本信息</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">strings /usr/lib64/libc.so.6 <span class="p">|</span>egrep <span class="s1">&#39;^GLIBC_2.&#39;</span> <span class="p">|</span>sort                                                                                                                                        <span class="o">[</span>16:19:55<span class="o">]</span>
+</span></span><span class="line"><span class="cl">GLIBC_2.10
+</span></span><span class="line"><span class="cl">GLIBC_2.10
+</span></span><span class="line"><span class="cl">GLIBC_2.11
+</span></span><span class="line"><span class="cl">GLIBC_2.11
+</span></span><span class="line"><span class="cl">GLIBC_2.12
+</span></span><span class="line"><span class="cl">GLIBC_2.13
+</span></span><span class="line"><span class="cl">GLIBC_2.13
+</span></span><span class="line"><span class="cl">GLIBC_2.14
+</span></span><span class="line"><span class="cl">GLIBC_2.15
+</span></span><span class="line"><span class="cl">GLIBC_2.16
+</span></span><span class="line"><span class="cl">GLIBC_2.16
+</span></span><span class="line"><span class="cl">GLIBC_2.17
+</span></span><span class="line"><span class="cl">GLIBC_2.17
+</span></span><span class="line"><span class="cl">GLIBC_2.18
+</span></span><span class="line"><span class="cl">GLIBC_2.18
+</span></span><span class="line"><span class="cl">GLIBC_2.2.5
+</span></span><span class="line"><span class="cl">GLIBC_2.2.6
+</span></span><span class="line"><span class="cl">GLIBC_2.2.6
+</span></span><span class="line"><span class="cl">GLIBC_2.3
+</span></span><span class="line"><span class="cl">GLIBC_2.3.2
+</span></span><span class="line"><span class="cl">GLIBC_2.3.3
+</span></span><span class="line"><span class="cl">GLIBC_2.3.4
+</span></span><span class="line"><span class="cl">GLIBC_2.4
+</span></span><span class="line"><span class="cl">GLIBC_2.5
+</span></span><span class="line"><span class="cl">GLIBC_2.5
+</span></span><span class="line"><span class="cl">GLIBC_2.6
+</span></span><span class="line"><span class="cl">GLIBC_2.6
+</span></span><span class="line"><span class="cl">GLIBC_2.7
+</span></span><span class="line"><span class="cl">GLIBC_2.7
+</span></span><span class="line"><span class="cl">GLIBC_2.8
+</span></span><span class="line"><span class="cl">GLIBC_2.8
+</span></span><span class="line"><span class="cl">GLIBC_2.9
+</span></span><span class="line"><span class="cl">GLIBC_2.9</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
   <title>Linux 配对罗技蓝牙鼠标</title>
   <link>https://williamlfang.github.io/2024-03-18-linux-%E9%85%8D%E5%AF%B9%E7%BD%97%E6%8A%80%E8%93%9D%E7%89%99%E9%BC%A0%E6%A0%87/</link>
   <pubDate>Mon, 18 Mar 2024 21:10:17 &#43;0800</pubDate>
@@ -179,31 +279,6 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#pragama pack(8)</span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>c&#43;&#43; array of ZERO length</title>
-  <link>https://williamlfang.github.io/2023-10-20-c-array-of-zero-length/</link>
-  <pubDate>Fri, 20 Oct 2023 10:44:48 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-10-20-c-array-of-zero-length/</guid>
-  <description><![CDATA[<h2 id="old-style0" class="heading-element">
-  <a href="#old-style0" class="heading-mark"></a>old-style:[0]</h2><p>我在查看代码的时候，发现有一个 <code>struct</code> 有 <strong>长度为0</strong> 的数组。</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">struct</span> <span class="nc">data_t</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">size_t</span> <span class="n">size</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span></span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description>
 </item>
