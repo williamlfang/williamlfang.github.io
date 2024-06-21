@@ -5,38 +5,66 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>data cache 的妙用 - William</title><meta name="author" content="william">
+    <title>vim 支持中文解码 - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="data cache 在用户调用资源开辟一块缓存区域，保存了中间的计算结果，可以避免重复计算。" /><meta name="keywords" content='data, cache, python, lru' /><meta itemprop="name" content="data cache 的妙用">
-<meta itemprop="description" content="data cache 在用户调用资源开辟一块缓存区域，保存了中间的计算结果，可以避免重复计算。"><meta itemprop="datePublished" content="2024-03-22T16:56:20+08:00" />
-<meta itemprop="dateModified" content="2024-03-22T16:56:20+08:00" />
-<meta itemprop="wordCount" content="38"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
-<meta itemprop="keywords" content="data,cache,python,lru," /><meta property="og:title" content="data cache 的妙用" />
-<meta property="og:description" content="data cache 在用户调用资源开辟一块缓存区域，保存了中间的计算结果，可以避免重复计算。" />
+<meta name="description" content="
+
+1
+
+
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr
+
+" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="vim 支持中文解码">
+<meta itemprop="description" content="
+
+1
+
+
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr
+
+"><meta itemprop="datePublished" content="2024-06-21T17:40:04+08:00" />
+<meta itemprop="dateModified" content="2024-06-21T17:40:04+08:00" />
+<meta itemprop="wordCount" content="3"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="vim 支持中文解码" />
+<meta property="og:description" content="
+
+1
+
+
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr
+
+" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-03-22T16:56:20+08:00" />
-<meta property="article:modified_time" content="2024-03-22T16:56:20+08:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-06-21T17:40:04+08:00" />
+<meta property="article:modified_time" content="2024-06-21T17:40:04+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="data cache 的妙用"/>
-<meta name="twitter:description" content="data cache 在用户调用资源开辟一块缓存区域，保存了中间的计算结果，可以避免重复计算。"/>
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="vim 支持中文解码"/>
+<meta name="twitter:description" content="
+
+1
+
+
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr
+
+"/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/" /><link rel="prev" href="https://williamlfang.github.io/2024-03-19-att-%E6%B1%87%E7%BC%96%E8%AF%AD%E6%B3%95/" /><link rel="next" href="https://williamlfang.github.io/2024-03-24-docker-%E6%90%AD%E5%BB%BA-ttrss/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/" /><link rel="prev" href="https://williamlfang.github.io/2024-06-21-nvim-%E5%9F%BA%E4%BA%8Ebuffer%E7%9A%84%E6%96%87%E6%9C%AC%E8%A1%A5%E5%85%A8/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "data cache 的妙用",
+    "headline": "vim 支持中文解码",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8\/"
-    },"genre": "posts","keywords": "data, cache, python, lru","wordcount":  38 ,
-    "url": "https:\/\/williamlfang.github.io\/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8\/","datePublished": "2024-03-22T16:56:20+08:00","dateModified": "2024-03-22T16:56:20+08:00","publisher": {
+      "@id": "https:\/\/williamlfang.github.io\/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81\/"
+    },"genre": "posts","wordcount":  3 ,
+    "url": "https:\/\/williamlfang.github.io\/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81\/","datePublished": "2024-06-21T17:40:04+08:00","dateModified": "2024-06-21T17:40:04+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -195,23 +223,17 @@
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>data cache 的妙用</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>vim 支持中文解码</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2024-03-22 16:56:20"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-03-22">2024-03-22</time></span>&nbsp;<span title="38 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="content" id="content"><div class="details admonition note open">
-      <div class="details-summary admonition-title">
-        <i class="icon fa-solid fa-pencil-alt fa-fw" aria-hidden="true"></i>注意<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
-      </div>
-      <div class="details-content">
-        <div class="admonition-content">本文最后更新于 2024-03-22，文中内容可能已过时。</div>
-      </div>
-    </div><p><code>data cache</code> 在用户调用资源开辟一块缓存区域，保存了中间的计算结果，可以避免重复计算。</p></div><h2 id="see-also">相关内容</h2>
-    <ul><li>
-          <a href="/2024-03-18-pybind11--passing-named-arguments/" title="pybind11: passing named arguments">pybind11: passing named arguments</a></li><li>
-          <a href="/2023-09-22-crontab-vim-%E6%89%BE%E4%B8%8D%E5%88%B0-so-%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" title="crontab vim 找不到 so 的解决方法">crontab vim 找不到 so 的解决方法</a></li><li>
-          <a href="/2023-09-16-vim-repl/" title="vim repl">vim repl</a></li><li>
-          <a href="/2023-05-28-vim-markdown-%E9%85%8D%E7%BD%AE/" title="vim markdown 配置">vim markdown 配置</a></li><li>
-          <a href="/2023-05-26-vim9-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AEcoc.vim/" title="vim9 安装与配置coc.vim">vim9 安装与配置coc.vim</a></li></ul><div class="post-reward">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-06-21 17:40:04"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-06-21">2024-06-21</time></span>&nbsp;<span title="3 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="content" id="content"><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>
@@ -222,29 +244,28 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2024-03-22 16:56:20">更新于 2024-03-22&nbsp;</span>
+        <span title="更新于 2024-06-21 17:40:04">更新于 2024-06-21&nbsp;</span>
       </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-md"><span><a href="/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/" data-title="data cache 的妙用" data-hashtags="data,cache,python,lru"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/" data-hashtag="data"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/" data-title="data cache 的妙用" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/" data-title="data cache 的妙用"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-03-22-data-cache-%E7%9A%84%E5%A6%99%E7%94%A8/" data-title="data cache 的妙用"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/" data-title="vim 支持中文解码"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/" data-title="vim 支持中文解码" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/" data-title="vim 支持中文解码"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/" data-title="vim 支持中文解码"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
 
   <div class="post-info-more">
-    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/data/" class="post-tag" title="标签 - Data">Data</a><a href="/tags/cache/" class="post-tag" title="标签 - Cache">Cache</a><a href="/tags/python/" class="post-tag" title="标签 - Python">Python</a><a href="/tags/lru/" class="post-tag" title="标签 - Lru">Lru</a></section>
+    <section class="post-tags"></section>
     <section>
       <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2024-03-19-att-%E6%B1%87%E7%BC%96%E8%AF%AD%E6%B3%95/" class="post-nav-item" rel="prev" title="ATT 汇编语法"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>ATT 汇编语法</a>
-      <a href="/2024-03-24-docker-%E6%90%AD%E5%BB%BA-ttrss/" class="post-nav-item" rel="next" title="docker 搭建 TTRSS">docker 搭建 TTRSS<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2024-06-21-nvim-%E5%9F%BA%E4%BA%8Ebuffer%E7%9A%84%E6%96%87%E6%9C%AC%E8%A1%A5%E5%85%A8/" class="post-nav-item" rel="prev" title="nvim 基于buffer的文本补全"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>nvim 基于buffer的文本补全</a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script
