@@ -1,7 +1,7 @@
 # zsh 只显示当前路径
 
 
-```zsh
+```
 prompt_dir() {
     ##prompt_segment blue $CURRENT_FG &#39;%~&#39;
     prompt_segment blue $CURRENT_FG &#39;%c&#39;
