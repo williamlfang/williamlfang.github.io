@@ -3,9 +3,124 @@
     <title>William</title>
     <link>https://williamlfang.github.io/</link>
     <description>William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 22 Jun 2024 17:01:52 &#43;0800</lastBuildDate>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 26 Jun 2024 20:09:05 &#43;0800</lastBuildDate>
       <atom:link href="https://williamlfang.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+  <title>nvim 打开当前光标下文件</title>
+  <link>https://williamlfang.github.io/2024-06-26-nvim-%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E6%96%87%E4%BB%B6/</link>
+  <pubDate>Wed, 26 Jun 2024 20:09:05 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2024-06-26-nvim-%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E6%96%87%E4%BB%B6/</guid>
+  <description><![CDATA[<p>有时我们需要临时配置或者修改文件，一般的做法是进入 <code>visual</code> 模式然后使用命令 <code>gf</code> 打开当前文件。这样的做法其实有点冗余，特别是当我们在线上排查问题时，希望能快速打开光标下的文件。</p>
+<p>为此，我们可以定义一个函数，然后绑定快捷键即可迅速打开文件了</p>
+<ul>
+<li>
+<p>定义一个函数 <code>JumpOrCreateFile</code></p>
+<ul>
+<li>可以自动识别文件路径</li>
+<li>如果文件不存在，则提醒我们是否需要创建</li>
+</ul>
+</li>
+<li>
+<p>绑定快捷键 <code>gf</code> 方便操作</p>
+</li>
+</ul>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="n">vim.cmd</span><span class="p">(</span><span class="s">[[
+</span></span></span><span class="line"><span class="cl"><span class="s">nnoremap &lt;silent&gt; gf :call JumpOrCreateFile()&lt;CR&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s">function! JumpOrCreateFile()
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34; Get the filename under the cursor
+</span></span></span><span class="line"><span class="cl"><span class="s">    let filename = expand(&#34;&lt;cfile&gt;&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;--------------------------------------------------------------------------
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34; split to get filename path
+</span></span></span><span class="line"><span class="cl"><span class="s">    if filename =~# &#39;:&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s">        let expanded_filename = expand(split(filename, &#34;:&#34;)[1])
+</span></span></span><span class="line"><span class="cl"><span class="s">    elseif filename =~# &#39;,&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s">        let expanded_filename = expand(split(filename, &#34;,&#34;)[1])
+</span></span></span><span class="line"><span class="cl"><span class="s">    else
+</span></span></span><span class="line"><span class="cl"><span class="s">        let expanded_filename = expand(filename)
+</span></span></span><span class="line"><span class="cl"><span class="s">    endif
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34;--------------------------------------------------------------------------
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34; Check if the file path starts with &#34;./&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s">    if expanded_filename =~# &#39;^\.\/&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34; Get the current directory of the editing file
+</span></span></span><span class="line"><span class="cl"><span class="s">        let current_directory = expand(&#39;%:p:h&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34; Create the full path by appending the relative file path
+</span></span></span><span class="line"><span class="cl"><span class="s">        let expanded_filename = current_directory . &#39;/&#39; . expanded_filename
+</span></span></span><span class="line"><span class="cl"><span class="s">    endif
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">    &#34; Check if the file exists
+</span></span></span><span class="line"><span class="cl"><span class="s">    if !filereadable(expanded_filename)
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34; Prompt the user for file creation with the full path
+</span></span></span><span class="line"><span class="cl"><span class="s">        let choice = confirm(&#39;File does not exist. Create &#34;&#39; . expanded_filename . &#39;&#34;?&#39;, &#34;&amp;Yes\n&amp;No&#34;, 1)
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34; Handle the user&#39;s choice
+</span></span></span><span class="line"><span class="cl"><span class="s">        if choice == 1
+</span></span></span><span class="line"><span class="cl"><span class="s">            &#34; Create the file and open it
+</span></span></span><span class="line"><span class="cl"><span class="s">            echohl WarningMsg | echo &#39;Created New File: &#39; . expanded_filename | echohl None
+</span></span></span><span class="line"><span class="cl"><span class="s">            execute &#39;edit &#39; . expanded_filename
+</span></span></span><span class="line"><span class="cl"><span class="s">        endif
+</span></span></span><span class="line"><span class="cl"><span class="s">    else
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34; File exists, perform normal gf behavior
+</span></span></span><span class="line"><span class="cl"><span class="s">        echohl ModeMsg | echo &#39;Open File: &#39; . expanded_filename | echohl None
+</span></span></span><span class="line"><span class="cl"><span class="s">        &#34; execute &#39;normal! gf&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s">        execute &#39;edit &#39; . expanded_filename
+</span></span></span><span class="line"><span class="cl"><span class="s">    endif
+</span></span></span><span class="line"><span class="cl"><span class="s">endfunction
+</span></span></span><span class="line"><span class="cl"><span class="s">]]</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
   <title>c&#43;&#43; hash map</title>
   <link>https://williamlfang.github.io/2024-06-22-c-hash-map/</link>
   <pubDate>Sat, 22 Jun 2024 17:01:52 &#43;0800</pubDate>
@@ -260,14 +375,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/</guid>
   <description><![CDATA[如果遇到在终端显示问题，可以修改高亮颜色: ~/.config/nvim/lua/plugins/tokyonight.lua 1 2 3 4 5 6 7 8 on_highlights = function(hl, colors) hl.LineNr = { fg = &#34;#fffb7b&#34;, } hl.CursorLineNr = { fg = &#34;#709db2&#34;, } end,]]></description>
-</item>
-<item>
-  <title>docker registry 忘记账户密码</title>
-  <link>https://williamlfang.github.io/2024-05-25-docker-registry-%E5%BF%98%E8%AE%B0%E8%B4%A6%E6%88%B7%E5%AF%86%E7%A0%81/</link>
-  <pubDate>Sat, 25 May 2024 16:37:57 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2024-05-25-docker-registry-%E5%BF%98%E8%AE%B0%E8%B4%A6%E6%88%B7%E5%AF%86%E7%A0%81/</guid>
-  <description><![CDATA[<p>如果忘记 <code>docker-registry</code> 账户密码，可以通过复原加密密码查看。</p>]]></description>
 </item>
 </channel>
 </rss>
