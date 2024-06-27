@@ -26,6 +26,8 @@ function! JumpOrCreateFile()
         let expanded_filename = expand(split(filename, &#34;:&#34;)[1])
     elseif filename =~# &#39;,&#39;
         let expanded_filename = expand(split(filename, &#34;,&#34;)[1])
+    elseif filename =~# &#39;=&#39;
+        let expanded_filename = expand(split(filename, &#34;=&#34;)[1])
     else
         let expanded_filename = expand(filename)
     endif
