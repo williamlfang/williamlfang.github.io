@@ -2,6 +2,7 @@
 
 
 
+使用 `nvim-cmp` 进行补全。
 
 &lt;!--more--&gt;
 
