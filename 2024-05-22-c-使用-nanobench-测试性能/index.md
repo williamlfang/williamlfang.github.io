@@ -62,6 +62,91 @@ Recommendations
 |              237.14 |        4,216,912.81 |    4.2% |      0.04 | `random fluctuations`
 ```
 
+## 对比 nanotime
+
+```c&#43;&#43;
+#include &#34;util/time_util.hpp&#34;
+#include &lt;ctime&gt;
+#include &lt;ratio&gt;
+#define ANKERL_NANOBENCH_IMPLEMENT
+#include &lt;nanobench.h&gt;
+
+#include &lt;utils/nanotime.hpp&gt;
+#include &lt;util/microtime.hpp&gt;
+
+using namespace snail;
+
+int main(int, char**)
+{
+    ankerl::nanobench::Bench().run(&#34;ns&#34;, [&amp;]()
+    {
+        int64_t ns {0};
+        ankerl::nanobench::doNotOptimizeAway(ns = nanotime_t::ns());
+    });
+
+    ankerl::nanobench::Bench().run(&#34;microtime::us&#34;, [&amp;]()
+    {
+        int64_t us {0};
+        ankerl::nanobench::doNotOptimizeAway(us = microtime::now().count());
+    });
+
+    ankerl::nanobench::Bench().run(&#34;ns2us&#34;, [&amp;]()
+    {
+        int64_t us {0};
+        ankerl::nanobench::doNotOptimizeAway(us = nanotime_t::ns()/1000);
+    });
+
+    ankerl::nanobench::Bench().run(&#34;nanotime_t::us&#34;, [&amp;]()
+    {
+        int64_t us {0};
+        ankerl::nanobench::doNotOptimizeAway(us = nanotime_t::us());
+    });
+
+    ankerl::nanobench::Bench().run(&#34;microtime::ntime&#34;, [&amp;]()
+    {
+        double ntime {.0};
+        ankerl::nanobench::doNotOptimizeAway(ntime = to_ntime(microtime::now().count()));
+    });
+
+    ankerl::nanobench::Bench().run(&#34;nanotime_t::ntime&#34;, [&amp;]()
+    {
+        double ntime {.0};
+        ankerl::nanobench::doNotOptimizeAway(ntime = nanotime_t::ntime());
+    });
+
+    ankerl::nanobench::Bench().run(&#34;nanotime_t::to_str&#34;, [&amp;]()
+    {
+        ankerl::nanobench::doNotOptimizeAway(nanotime_t::to_str(nanotime_t::ns()));
+    });
+
+    ankerl::nanobench::Bench().run(&#34;to_zgc_str&#34;, [&amp;]()
+    {
+        ankerl::nanobench::doNotOptimizeAway(microtime::now().to_zgc_str());
+    });
+}
+```
+
+```bash
+Warning, results might be unstable:
+* CPU frequency scaling enabled: CPU 0 between 800.0 and 4,500.0 MHz
+* CPU governor is &#39;powersave&#39; but should be &#39;performance&#39;
+* Turbo is enabled, CPU frequency will fluctuate
+
+Recommendations
+* Use &#39;pyperf system tune&#39; before benchmarking. See https://github.com/psf/pyperf
+
+|               ns/op |                op/s |    err% |     total | benchmark
+|--------------------:|--------------------:|--------:|----------:|:----------
+|                6.67 |      149,864,077.86 |    2.1% |      0.01 | `ns`
+|               15.90 |       62,902,027.27 |    1.9% |      0.01 | `microtime::us`
+|                7.24 |      138,174,331.20 |    0.5% |      0.01 | `ns2us`
+|                7.29 |      137,255,469.22 |    1.6% |      0.01 | `nanotime_t::us`
+|               23.39 |       42,750,704.21 |    0.3% |      0.01 | `microtime::ntime`
+|               12.31 |       81,232,849.21 |    0.2% |      0.01 | `nanotime_t::ntime`
+|               46.80 |       21,366,089.17 |    2.6% |      0.01 | `nanotime_t::to_str`
+|              393.31 |        2,542,506.82 |    2.0% |      0.01 | `to_zgc_str`
+```
+
 ## 关于系统 cpu 性能
 
 可以开启高性能模式。参考[Linux 设置 cpu 高性能performance模式](https://williamlfang.github.io/2023-06-18-linux-%E8%AE%BE%E7%BD%AE-cpu-%E9%AB%98%E6%80%A7%E8%83%BDperformance%E6%A8%A1%E5%BC%8F/)
