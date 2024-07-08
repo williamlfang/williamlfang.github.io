@@ -187,6 +187,10 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-07-08-nvim-%E4%BD%BF%E7%94%A8-sshfs-%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%BA%E5%99%A8/">nvim 使用 sshfs 连接远程机器</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-07-08 18:44:47'>发布于 <time datetime="2024-07-08">2024-07-08</time></span></div><div class="content"><p><code>nvim</code> 可以通过调用 <code>sshfs</code>，把远程机器上面的文件映射到本地，进而使用本地的 <code>nvim</code> 进行查看与编辑。如此一来，即使远程机器没有安装 <code>nvim</code> 或者相关插件，我们一样也能丝滑地使用 <code>nvim</code> 了。</p></div><div class="post-footer">
+    <a href="/2024-07-08-nvim-%E4%BD%BF%E7%94%A8-sshfs-%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%BA%E5%99%A8/">阅读全文</a></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
       <a href="/2024-07-06-ctp-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E8%A7%A3%E6%9E%90/" aria-label="CTP 中文乱码解析"><img loading="lazy" src="/2024-07-06-ctp-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E8%A7%A3%E6%9E%90/tora.png" alt="CTP 中文乱码解析" data-title="CTP 中文乱码解析" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
     </div><h2 class="single-title" itemprop="name headline"><a href="/2024-07-06-ctp-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E8%A7%A3%E6%9E%90/">CTP 中文乱码解析</a>
@@ -338,23 +342,6 @@
 </div>
 </div></div><div class="post-footer">
     <a href="/2024-06-26-nvim-%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E6%96%87%E4%BB%B6/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-22-c-hash-map/">c&#43;&#43; hash map</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-22 17:01:52'>发布于 <time datetime="2024-06-22">2024-06-22</time></span></div><div class="content"><p>我们在组织不同信号、不同策略时，往往需要一个容器存放对应合约标识的容器。这个容器要求具有一定的扩展性（即事先无法知晓容器大小），具有良好的插入效率、以及较高性能的查找性能。对于一般的算法，我们直接使用标准库里的哈希容器即可，这包括 <code>std::unordered_map</code>。</p>
-<p>然后，对于一个低延迟的交易系统，我们总是对性能有着极致的渴望，尽力开发性的数据容器，提升查找性能。</p>
-<ul>
-<li>
-<ol>
-<li>对于特化容器，如 <code>&lt;int, typename T&gt;</code>，可以更加快速的实现查找</li>
-</ol>
-</li>
-<li>
-<ol start="2">
-<li>对于较大对象，如 <code>&lt;std::string, typename T&gt;</code>, 则尽量避免运行期的构造开销，例如在确认不同的合约标识肯定的唯一情况下，可以大胆使用类型转化，直接 <code>cast</code> 为 <code>int</code> 类型。</li>
-</ol>
-</li>
-</ul></div><div class="post-footer">
-    <a href="/2024-06-22-c-hash-map/">阅读全文</a></div>
 </article>
 <ul class="pagination"><li class="page-item active">
           <span class="page-link">
