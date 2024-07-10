@@ -5,43 +5,43 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>frp.service - William</title><meta name="author" content="william">
+    <title>init_shm 与 config 里面的 shm_size 大小需要保持一致 - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="frp.service" /><meta name="keywords" content='frp' /><meta itemprop="name" content="frp.service">
-<meta itemprop="description" content="frp.service"><meta itemprop="datePublished" content="2021-08-12T00:00:00+00:00" />
-<meta itemprop="dateModified" content="2021-08-12T00:00:00+00:00" />
-<meta itemprop="wordCount" content="57"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
-<meta itemprop="keywords" content="frp," /><meta property="og:title" content="frp.service" />
-<meta property="og:description" content="frp.service" />
+<meta name="description" content="今天遇到一个奇怪的现象：由于我们使用的 init_shm 清空共享内存数据，这个需要指定大小。由于初始化脚本事先不知道实际配置文件使用的 shm_size，导致两者的大小是不一样的。如此一来，init_shm 先是让操作系统分配了一个物理内存，然后使用的程序以配置文件的 shm_size 进行使用，导致内存越界了。" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="init_shm 与 config 里面的 shm_size 大小需要保持一致">
+<meta itemprop="description" content="今天遇到一个奇怪的现象：由于我们使用的 init_shm 清空共享内存数据，这个需要指定大小。由于初始化脚本事先不知道实际配置文件使用的 shm_size，导致两者的大小是不一样的。如此一来，init_shm 先是让操作系统分配了一个物理内存，然后使用的程序以配置文件的 shm_size 进行使用，导致内存越界了。"><meta itemprop="datePublished" content="2024-07-10T14:05:32+08:00" />
+<meta itemprop="dateModified" content="2024-07-10T14:05:32+08:00" />
+<meta itemprop="wordCount" content="138"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="init_shm 与 config 里面的 shm_size 大小需要保持一致" />
+<meta property="og:description" content="今天遇到一个奇怪的现象：由于我们使用的 init_shm 清空共享内存数据，这个需要指定大小。由于初始化脚本事先不知道实际配置文件使用的 shm_size，导致两者的大小是不一样的。如此一来，init_shm 先是让操作系统分配了一个物理内存，然后使用的程序以配置文件的 shm_size 进行使用，导致内存越界了。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/archives/2021-08-12-frp.service/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="archives" />
-<meta property="article:published_time" content="2021-08-12T00:00:00+00:00" />
-<meta property="article:modified_time" content="2021-08-12T00:00:00+00:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-07-10T14:05:32+08:00" />
+<meta property="article:modified_time" content="2024-07-10T14:05:32+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="frp.service"/>
-<meta name="twitter:description" content="frp.service"/>
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="init_shm 与 config 里面的 shm_size 大小需要保持一致"/>
+<meta name="twitter:description" content="今天遇到一个奇怪的现象：由于我们使用的 init_shm 清空共享内存数据，这个需要指定大小。由于初始化脚本事先不知道实际配置文件使用的 shm_size，导致两者的大小是不一样的。如此一来，init_shm 先是让操作系统分配了一个物理内存，然后使用的程序以配置文件的 shm_size 进行使用，导致内存越界了。"/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/archives/2021-08-12-frp.service/" /><link rel="prev" href="https://williamlfang.github.io/2021-08-11-linux-%E8%A7%A3%E5%8E%8B-zip-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" /><link rel="next" href="https://williamlfang.github.io/archives/2021-08-17-vim-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/" /><link rel="prev" href="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "frp.service",
+    "headline": "init_shm 与 config 里面的 shm_size 大小需要保持一致",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/archives\/2021-08-12-frp.service\/"
-    },"genre": "posts","keywords": "frp","wordcount":  57 ,
-    "url": "https:\/\/williamlfang.github.io\/archives\/2021-08-12-frp.service\/","datePublished": "2021-08-12T00:00:00+00:00","dateModified": "2021-08-12T00:00:00+00:00","publisher": {
+      "@id": "https:\/\/williamlfang.github.io\/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4\/"
+    },"genre": "posts","wordcount":  138 ,
+    "url": "https:\/\/williamlfang.github.io\/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4\/","datePublished": "2024-07-10T14:05:32+08:00","dateModified": "2024-07-10T14:05:32+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
         "name": "william"
-      },"description": "frp.service"
+      },"description": ""
   }
   </script></head>
   <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
@@ -195,75 +195,10 @@
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>frp.service</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>init_shm 与 config 里面的 shm_size 大小需要保持一致</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2021-08-12 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2021-08-12">2021-08-12</time></span>&nbsp;<span title="57 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="content" id="content"><div class="details admonition warning open">
-      <div class="details-summary admonition-title">
-        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
-      </div>
-      <div class="details-content">
-        <div class="admonition-content">本文最后更新于 2021-08-12，文中内容可能已过时。</div>
-      </div>
-    </div><div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>Unit<span class="o">]</span>
-</span></span><span class="line"><span class="cl"><span class="nv">Description</span><span class="o">=</span>frp network service
-</span></span><span class="line"><span class="cl"><span class="nv">After</span><span class="o">=</span>network.target network-online.target
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="o">[</span>Service<span class="o">]</span>
-</span></span><span class="line"><span class="cl"><span class="nv">Type</span><span class="o">=</span>forking
-</span></span><span class="line"><span class="cl"><span class="nv">Restart</span><span class="o">=</span>always
-</span></span><span class="line"><span class="cl"><span class="nv">RestartSec</span><span class="o">=</span><span class="m">5</span>
-</span></span><span class="line"><span class="cl"><span class="nv">ExecStart</span><span class="o">=</span>/root/tools/frp_0.37.0_linux_amd64/start.sh
-</span></span><span class="line"><span class="cl"><span class="nv">ExecReload</span><span class="o">=</span>/root/tools/frp_0.37.0_linux_amd64/start.sh
-</span></span><span class="line"><span class="cl"><span class="nv">ExecStop</span><span class="o">=</span>/root/tools/frp_0.37.0_linux_amd64/start.sh
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="o">[</span>Install<span class="o">]</span>
-</span></span><span class="line"><span class="cl"><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight" id="id-2"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
-</span></span><span class="line"><span class="cl"><span class="c1">## 1.kill</span>
-</span></span><span class="line"><span class="cl">ps aux <span class="p">|</span>grep frpc  <span class="p">|</span>awk <span class="s1">&#39;{print $2}&#39;</span> <span class="p">|</span>xargs <span class="nb">kill</span> -9
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">## 2.start</span>
-</span></span><span class="line"><span class="cl">nohup /root/tools/frp_0.37.0_linux_amd64/frpc -c /root/tools/frp_0.37.0_linux_amd64/frpc.ini <span class="p">&amp;</span></span></span></code></pre></td></tr></table>
-</div>
-</div></div><h2 id="see-also">相关内容</h2>
-    <ul><li>
-          <a href="/archives/2020-09-11-frp-%E5%AE%9E%E7%8E%B0%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" title="frp 实现域名解析">frp 实现域名解析</a></li><li>
-          <a href="/archives/2020-09-05-gitlab-%E5%AE%89%E8%A3%85%E5%85%A8%E8%BF%87%E7%A8%8B/" title="Gitlab 安装全过程">Gitlab 安装全过程</a></li><li>
-          <a href="/archives/2019-10-08-%E5%88%A9%E7%94%A8frp%E5%AE%9E%E7%8E%B0%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/" title="利用frp实现内网穿透">利用frp实现内网穿透</a></li><li>
-          <a href="/2021-08-11-linux-%E8%A7%A3%E5%8E%8B-zip-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" title="Linux 解压 zip 中文乱码">Linux 解压 zip 中文乱码</a></li><li>
-          <a href="/archives/2021-08-11-rstudio-server-with-ldap/" title="Rstudio server with ldap">Rstudio server with ldap</a></li></ul><div class="post-reward">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-07-10 14:05:32"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-07-10">2024-07-10</time></span>&nbsp;<span title="138 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="content" id="content"><p>今天遇到一个奇怪的现象：由于我们使用的 <code>init_shm</code> 清空共享内存数据，这个需要指定大小。由于初始化脚本事先不知道实际配置文件使用的 <code>shm_size</code>，导致两者的大小是不一样的。如此一来，<code>init_shm</code> 先是让操作系统分配了一个物理内存，然后使用的程序以配置文件的 <code>shm_size</code> 进行使用，导致内存越界了。</p></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>
@@ -274,31 +209,28 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2021-08-12 00:00:00">更新于 2021-08-12&nbsp;</span>
-      </div><div class="post-info-license">
-            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
-          </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/archives/2021-08-12-frp.service/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <span title="更新于 2024-07-10 14:05:32">更新于 2024-07-10&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/archives/2021-08-12-frp.service/" data-title="frp.service" data-hashtags="frp"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/archives/2021-08-12-frp.service/" data-hashtag="frp"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/archives/2021-08-12-frp.service/" data-title="frp.service" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/archives/2021-08-12-frp.service/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/archives/2021-08-12-frp.service/" data-title="frp.service"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/archives/2021-08-12-frp.service/" data-title="frp.service"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/" data-title="init_shm 与 config 里面的 shm_size 大小需要保持一致"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/" data-title="init_shm 与 config 里面的 shm_size 大小需要保持一致" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/" data-title="init_shm 与 config 里面的 shm_size 大小需要保持一致"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/" data-title="init_shm 与 config 里面的 shm_size 大小需要保持一致"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
 
   <div class="post-info-more">
-    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/frp/" class="post-tag" title="标签 - Frp">Frp</a></section>
+    <section class="post-tags"></section>
     <section>
       <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2021-08-11-linux-%E8%A7%A3%E5%8E%8B-zip-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" class="post-nav-item" rel="prev" title="Linux 解压 zip 中文乱码"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Linux 解压 zip 中文乱码</a>
-      <a href="/archives/2021-08-17-vim-%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" class="post-nav-item" rel="next" title="vim 中文乱码">vim 中文乱码<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/" class="post-nav-item" rel="prev" title="ubuntu 安装 sticky notes"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>ubuntu 安装 sticky notes</a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script
@@ -337,5 +269,5 @@
     <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
   </noscript>
 </div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":25},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
 </html>
