@@ -1,7 +1,7 @@
 # c&#43;&#43; lambda to funtion pointer
 
 
-
+通过 `traits` 把 `lambda` 转化成函数指针。
 
 &lt;!--more--&gt;
 
