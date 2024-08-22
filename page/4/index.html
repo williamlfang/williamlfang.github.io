@@ -187,6 +187,91 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-22-c-hash-map/">c&#43;&#43; hash map</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-22 17:01:52'>发布于 <time datetime="2024-06-22">2024-06-22</time></span></div><div class="content"><p>我们在组织不同信号、不同策略时，往往需要一个容器存放对应合约标识的容器。这个容器要求具有一定的扩展性（即事先无法知晓容器大小），具有良好的插入效率、以及较高性能的查找性能。对于一般的算法，我们直接使用标准库里的哈希容器即可，这包括 <code>std::unordered_map</code>。</p>
+<p>然后，对于一个低延迟的交易系统，我们总是对性能有着极致的渴望，尽力开发性的数据容器，提升查找性能。</p>
+<ul>
+<li>
+<ol>
+<li>对于特化容器，如 <code>&lt;int, typename T&gt;</code>，可以更加快速的实现查找</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>对于较大对象，如 <code>&lt;std::string, typename T&gt;</code>, 则尽量避免运行期的构造开销，例如在确认不同的合约标识肯定的唯一情况下，可以大胆使用类型转化，直接 <code>cast</code> 为 <code>int</code> 类型。</li>
+</ol>
+</li>
+</ul></div><div class="post-footer">
+    <a href="/2024-06-22-c-hash-map/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/">vim 支持中文解码</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-21 17:40:04'>发布于 <time datetime="2024-06-21">2024-06-21</time></span></div><div class="content"><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-21-nvim-%E5%9F%BA%E4%BA%8Ebuffer%E7%9A%84%E6%96%87%E6%9C%AC%E8%A1%A5%E5%85%A8/">nvim 基于buffer的文本补全</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-21 11:09:10'>发布于 <time datetime="2024-06-21">2024-06-21</time></span></div><div class="content"><p><code>nvim</code> 可以通过插件<code>lsp</code>实现基于编程语法的自动补全。而对于一般的文本，<code>lsp</code> 就无助于事了。这时候我们需要一个基于文本分析的自动补全功能。这个可以通过 <code>echasnovski/mini.nvim</code> 来实现</p></div><div class="post-footer">
+    <a href="/2024-06-21-nvim-%E5%9F%BA%E4%BA%8Ebuffer%E7%9A%84%E6%96%87%E6%9C%AC%E8%A1%A5%E5%85%A8/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-13-nvim-%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD-lazy-lock.json/">nvim 自动备份 lazy lock.json</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-13 19:27:04'>发布于 <time datetime="2024-06-13">2024-06-13</time></span></div><div class="content"><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- backup: lazy-lazy.json</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">lazy_cmds</span> <span class="o">=</span> <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_augroup</span><span class="p">(</span><span class="s1">&#39;lazy_cmds&#39;</span><span class="p">,</span> <span class="p">{</span><span class="n">clear</span> <span class="o">=</span> <span class="kc">true</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">os.getenv</span><span class="p">(</span><span class="s2">&#34;HOME&#34;</span><span class="p">)</span> <span class="o">..</span> <span class="s2">&#34;/.config/nvim/lazy&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">snapshot_dir</span> <span class="o">=</span> <span class="n">root</span> <span class="o">..</span> <span class="s1">&#39;/plugin-snapshot&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">os.execute</span><span class="p">(</span><span class="s2">&#34;mkdir &#34;</span> <span class="o">..</span> <span class="n">snapshot_dir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">lockfile</span> <span class="o">=</span> <span class="n">root</span> <span class="o">..</span> <span class="s1">&#39;/lazy-lock.json&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_user_command</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;BrowseSnapshots&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;edit &#39;</span> <span class="o">..</span> <span class="n">snapshot_dir</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_autocmd</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">group</span> <span class="o">=</span> <span class="n">lazy_cmds</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;LazyUpdatePre&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">desc</span> <span class="o">=</span> <span class="s1">&#39;Backup lazy.nvim lockfile&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">callback</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">vim.fn</span><span class="p">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">snapshot_dir</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">snapshot</span> <span class="o">=</span> <span class="n">snapshot_dir</span> <span class="o">..</span> <span class="n">os.date</span><span class="p">(</span><span class="s1">&#39;/%Y-%m-%dT%H:%M:%S.lazy-lock.json&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">vim.loop</span><span class="p">.</span><span class="n">fs_copyfile</span><span class="p">(</span><span class="n">lockfile</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>:Lazy restore</code></li>
+</ul></div><div class="post-footer">
+    <a href="/2024-06-13-nvim-%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD-lazy-lock.json/">阅读全文</a></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
       <a href="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/" aria-label="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题"><img loading="lazy" src="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/cmake.png" alt="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题" data-title="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
     </div><h2 class="single-title" itemprop="name headline"><a href="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/">cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题</a>
@@ -289,45 +374,6 @@
 </div></div><div class="post-footer">
     <a href="/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/glibc/' class="post-tag">Glibc</a><a href='/tags/gcc/' class="post-tag">Gcc</a><a href='/tags/c&#43;&#43;/' class="post-tag">C&#43;&#43;</a></div></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-10-g-%E8%8E%B7%E5%8F%96%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4/">g&#43;&#43; 获取编译时间</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-10 16:57:49'>发布于 <time datetime="2024-06-10">2024-06-10</time></span></div><div class="content"><p><code>gcc/g++</code> 提供编译日期，可以通过获取日期，进行相关判断。</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">months</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#34;Jan&#34;</span><span class="p">,</span> <span class="s">&#34;Feb&#34;</span><span class="p">,</span> <span class="s">&#34;Mar&#34;</span><span class="p">,</span> <span class="s">&#34;Apr&#34;</span><span class="p">,</span> <span class="s">&#34;May&#34;</span><span class="p">,</span> <span class="s">&#34;Jun&#34;</span><span class="p">,</span> <span class="s">&#34;Jul&#34;</span><span class="p">,</span> <span class="s">&#34;Aug&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                        <span class="s">&#34;Sep&#34;</span><span class="p">,</span> <span class="s">&#34;Oct&#34;</span><span class="p">,</span> <span class="s">&#34;Nov&#34;</span><span class="p">,</span> <span class="s">&#34;Dec&#34;</span><span class="p">};</span></span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer">
-    <a href="/2024-06-10-g-%E8%8E%B7%E5%8F%96%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-10-c-inline%E6%B5%85%E6%9E%90/">c&#43;&#43; inline浅析</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-10 11:17:39'>发布于 <time datetime="2024-06-10">2024-06-10</time></span></div><div class="content"><p><code>gcc</code> 提供关键词 <code>inline</code>，允许我们标注函数需要在编译时展开，这样可以避免函数调用，减低函数栈开销，从而达到优化程序的目地。然而，天下并没有免费的午餐，在引入 <code>inline</code> 的同时，我们也需要注意其带来的程序体积变大、<code>cache locality</code> 减少的风险。</p>
-<blockquote>
-<p>Pros of inlining:</p>
-<ul>
-<li>Removes function call overhead (yay!)</li>
-<li>May reveal additional optimization opportunities (sometimes yay!)</li>
-</ul>
-<p>Cons of inlining:</p>
-<ul>
-<li>Increases program size (boo!)</li>
-<li>May reduce cache locality (sometimes boo!)</li>
-<li>May increase build times (boo!)</li>
-</ul>
-</blockquote></div><div class="post-footer">
-    <a href="/2024-06-10-c-inline%E6%B5%85%E6%9E%90/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/">nvim tokyonight 修改高亮颜色</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-06 22:49:17'>发布于 <time datetime="2024-06-06">2024-06-06</time></span></div><div class="content">如果遇到在终端显示问题，可以修改高亮颜色: ~/.config/nvim/lua/plugins/tokyonight.lua 1 2 3 4 5 6 7 8 on_highlights = function(hl, colors) hl.LineNr = { fg = &#34;#fffb7b&#34;, } hl.CursorLineNr = { fg = &#34;#709db2&#34;, } end,</div><div class="post-footer">
-    <a href="/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-05-25-docker-registry-%E5%BF%98%E8%AE%B0%E8%B4%A6%E6%88%B7%E5%AF%86%E7%A0%81/">docker registry 忘记账户密码</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-05-25 16:37:57'>发布于 <time datetime="2024-05-25">2024-05-25</time></span></div><div class="content"><p>如果忘记 <code>docker-registry</code> 账户密码，可以通过复原加密密码查看。</p></div><div class="post-footer">
-    <a href="/2024-05-25-docker-registry-%E5%BF%98%E8%AE%B0%E8%B4%A6%E6%88%B7%E5%AF%86%E7%A0%81/">阅读全文</a></div>
-</article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
             <a href="/">1</a>
@@ -356,7 +402,7 @@
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/63/">63</a>
+            <a href="/page/64/">64</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
