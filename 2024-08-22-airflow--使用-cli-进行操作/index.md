@@ -13,19 +13,19 @@
 
 1. 最基础的用户组应该具备以下几组，权限才能获取相关页面、按钮、执行任务的权限
 
-    ```json
-        {&#39;actions&#39;: [
-            {&#39;action&#39;: {&#39;name&#39;: &#39;can_read&#39;},    &#39;resource&#39;: {&#39;name&#39;:&#39;Website&#39;}},
-            {&#39;action&#39;: {&#39;name&#39;: &#39;can_read&#39;},    &#39;resource&#39;: {&#39;name&#39;: &#39;Triggers&#39;}},
-            {&#39;action&#39;: {&#39;name&#39;: &#39;can_create&#39;},  &#39;resource&#39;: {&#39;name&#39;: &#39;DAG Runs&#39;}},
-            {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#34;User&#39;s Statistics&#34;}},
-            {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;Actions&#39;}},
-            {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;DAG Runs&#39;}},
-            {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;Task Instances&#39;}},
-            {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;Triggers&#39;}},
-            {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;DAGs&#39;}}
-            ],
-        &#39;name&#39;: &#39;trader&#39;}
+    ```python
+    {&#39;actions&#39;: [
+        {&#39;action&#39;: {&#39;name&#39;: &#39;can_read&#39;},    &#39;resource&#39;: {&#39;name&#39;:&#39;Website&#39;}},
+        {&#39;action&#39;: {&#39;name&#39;: &#39;can_read&#39;},    &#39;resource&#39;: {&#39;name&#39;: &#39;Triggers&#39;}},
+        {&#39;action&#39;: {&#39;name&#39;: &#39;can_create&#39;},  &#39;resource&#39;: {&#39;name&#39;: &#39;DAG Runs&#39;}},
+        {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#34;User&#39;s Statistics&#34;}},
+        {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;Actions&#39;}},
+        {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;DAG Runs&#39;}},
+        {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;Task Instances&#39;}},
+        {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;Triggers&#39;}},
+        {&#39;action&#39;: {&#39;name&#39;: &#39;menu_access&#39;}, &#39;resource&#39;: {&#39;name&#39;: &#39;DAGs&#39;}}
+        ],
+    &#39;name&#39;: &#39;trader&#39;}
     ```
 
     ![trader](./trader.png &#34;最基础的用户组应该具备&#34;)
