@@ -9,7 +9,7 @@
 
 `vim ~/.zshrc`
 
-```
+```bash
 prompt_context() {
   # if [[ &#34;$USER&#34; != &#34;$DEFAULT_USER&#34; || -n &#34;$SSH_CLIENT&#34; ]]; then
     # prompt_segment black default &#34;%(!.%{%F{yellow}%}.)$USER@%sh&#34;
@@ -51,7 +51,7 @@ schedprompt
 
 `vim ~/.oh-my-zsh/themes/agnoster.zsh-theme`
 
-```
+```bash
 # ## 显示命令执行时间
 # strlen () {
 #     FOO=$1
