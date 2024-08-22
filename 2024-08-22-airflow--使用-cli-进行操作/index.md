@@ -124,25 +124,9 @@ airflow scheduler -D
 
 `airflow` 提供 `REST API`，通过 `GET` 与 `POST` 方法，我们可以很方便的与服务端进行交互。
 
+### 登录 API
+
 ```python
-from typing import List
-import requests
-import argparse
-import base64
-from pprint import pprint
-
-def make_permissions(action, resources):
-    permissions = []
-    for perm in resources:
-        permissions.append(make_permission(action, perm))
-    return permissions
-
-def make_permission(action, resource):
-    return {
-        &#34;action&#34;: {&#34;name&#34;: action},
-        &#34;resource&#34;: {&#34;name&#34;: resource}
-    }
-
 airflow_url = &#34;http://192.168.1.160:18080/&#34;
 new_role_name = &#39;testingx&#39;
 dag_names = [&#39;pretrading.check.init.pos&#39;]
@@ -163,12 +147,20 @@ headers[&#34;Authorization&#34;] = &#34;Basic &#34; &#43; base64_auth_str
 
 ## REST API -------------------------------------------------------------------
 airflow_url &#43;= &#34;/api/v1/roles&#34;
+```
 
+### GET
+
+```python
 ## GET ------------------------------------------------------------------------
 info = requests.get(airflow_url, headers=headers).json()
 tmp = [k for k in info[&#39;roles&#39;] if k[&#39;name&#39;] == &#39;trader&#39;][0]
 pprint(tmp)
+```
 
+### Post
+
+```python
 ## POST -----------------------------------------------------------------------
 read = &#34;can_read&#34;
 edit = &#34;can_edit&#34;
@@ -257,8 +249,7 @@ else:
     raise ConnectionError(f&#34;An error occurred during role creation: {response.json()}&#34;)
 ```
 
-
-整理以上的脚本
+### 整理以上的脚本
 
 ```python
 from typing import List
