@@ -6,7 +6,7 @@
 {{&lt; style &#34;min-height: 230px;&#34; &gt;}}
 {{&lt; typeit code=c&#43;&#43; &gt;}}
 //👨williamlfang
-#include &lt;stdio.h&gt;
+#include &lt;cstdio&gt;
 int main() {
     printf(&#34;Hello, world.&#34;);
     return 0;
