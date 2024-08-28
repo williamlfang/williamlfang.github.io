@@ -58,7 +58,7 @@
 
 ## 启用 airflow cli 功能
 
-`airflow` 提供的 `cli` 功能，主要是通过 `REST API` 实现，默认是关闭的。因此，我们需要修改配置文件，使其生效。
+`airflow` 提供的 `cli` 功能[^airflow_cli]，主要是通过 `REST API` 实现，默认是关闭的。因此，我们需要修改配置文件，使其生效。
 
 打开配置文件 `airflow.cfg`，修改 `[api]` 下面的 `auth_backends`
 
@@ -414,6 +414,9 @@ if __name__ == &#34;__main__&#34;:
 ```
 
 ## DAGs 权限管理
+
+
+[^airflow_cli]:https://github.com/apache/airflow-client-python
 
 
 ---
