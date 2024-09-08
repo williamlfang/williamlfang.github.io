@@ -22,7 +22,6 @@ typeset -g POWERLEVEL9K_TIME_FORMAT=&#39;%D{%b%d %H:%M:%S}&#39;
 ## ~/.p10k.zsh
 
 
-
 ---
 
 > 作者: william  
