@@ -187,6 +187,17 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/">vim 支持中文解码</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-21 17:40:04'>发布于 <time datetime="2024-06-21">2024-06-21</time></span></div><div class="content"><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/2024-06-21-vim-%E6%94%AF%E6%8C%81%E4%B8%AD%E6%96%87%E8%A7%A3%E7%A0%81/">阅读全文</a></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-21-nvim-%E5%9F%BA%E4%BA%8Ebuffer%E7%9A%84%E6%96%87%E6%9C%AC%E8%A1%A5%E5%85%A8/">nvim 基于buffer的文本补全</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-21 11:09:10'>发布于 <time datetime="2024-06-21">2024-06-21</time></span></div><div class="content"><p><code>nvim</code> 可以通过插件<code>lsp</code>实现基于编程语法的自动补全。而对于一般的文本，<code>lsp</code> 就无助于事了。这时候我们需要一个基于文本分析的自动补全功能。这个可以通过 <code>echasnovski/mini.nvim</code> 来实现</p></div><div class="post-footer">
     <a href="/2024-06-21-nvim-%E5%9F%BA%E4%BA%8Ebuffer%E7%9A%84%E6%96%87%E6%9C%AC%E8%A1%A5%E5%85%A8/">阅读全文</a></div>
@@ -360,23 +371,6 @@
 </div></div><div class="post-footer">
     <a href="/2024-06-10-g-%E8%8E%B7%E5%8F%96%E7%BC%96%E8%AF%91%E6%97%B6%E9%97%B4/">阅读全文</a></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-10-c-inline%E6%B5%85%E6%9E%90/">c&#43;&#43; inline浅析</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-10 11:17:39'>发布于 <time datetime="2024-06-10">2024-06-10</time></span></div><div class="content"><p><code>gcc</code> 提供关键词 <code>inline</code>，允许我们标注函数需要在编译时展开，这样可以避免函数调用，减低函数栈开销，从而达到优化程序的目地。然而，天下并没有免费的午餐，在引入 <code>inline</code> 的同时，我们也需要注意其带来的程序体积变大、<code>cache locality</code> 减少的风险。</p>
-<blockquote>
-<p>Pros of inlining:</p>
-<ul>
-<li>Removes function call overhead (yay!)</li>
-<li>May reveal additional optimization opportunities (sometimes yay!)</li>
-</ul>
-<p>Cons of inlining:</p>
-<ul>
-<li>Increases program size (boo!)</li>
-<li>May reduce cache locality (sometimes boo!)</li>
-<li>May increase build times (boo!)</li>
-</ul>
-</blockquote></div><div class="post-footer">
-    <a href="/2024-06-10-c-inline%E6%B5%85%E6%9E%90/">阅读全文</a></div>
-</article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
             <a href="/">1</a>
@@ -407,7 +401,7 @@
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/64/">64</a>
+            <a href="/page/65/">65</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
