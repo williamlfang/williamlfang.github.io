@@ -3,7 +3,44 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 27 Oct 2024 09:00:46 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 27 Oct 2024 13:49:15 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+  <title>clangd 设置选项</title>
+  <link>https://williamlfang.github.io/2024-10-27-clangd-%E8%AE%BE%E7%BD%AE%E9%80%89%E9%A1%B9/</link>
+  <pubDate>Sun, 27 Oct 2024 13:49:15 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2024-10-27-clangd-%E8%AE%BE%E7%BD%AE%E9%80%89%E9%A1%B9/</guid>
+  <description><![CDATA[<p>由于系统升级 <code>g++</code>， 导致 <code>nvim clangd</code> 补全有些问题，需要指定 <code>clangd</code> 的配置</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir ~/.config/clangd
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vim ~/.config/clangd/config.yaml</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">CompileFlags</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">Add</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;-Wall&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;-I/usr/include/c++/11&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;-I/usr/include/x86_64-linux-gnu/c++/11&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
   <title>Emacs 入坑指南</title>
   <link>https://williamlfang.github.io/2024-10-27-emacs-%E5%85%A5%E5%9D%91%E6%8C%87%E5%8D%97/</link>
   <pubDate>Sun, 27 Oct 2024 09:00:46 &#43;0800</pubDate>
@@ -179,15 +216,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2024-08-31-nvim-pylsp/</guid>
   <description><![CDATA[<p>通过配置 <code>lsp</code>，可以在 <code>nvim</code> 中方便地实现 <code>python</code> 的自动补全功能（基于语法语义）</p>]]></description>
-</item>
-<item>
-  <title>airflow: 使用 cli 进行操作</title>
-  <link>https://williamlfang.github.io/2024-08-22-airflow--%E4%BD%BF%E7%94%A8-cli-%E8%BF%9B%E8%A1%8C%E6%93%8D%E4%BD%9C/</link>
-  <pubDate>Thu, 22 Aug 2024 17:41:49 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2024-08-22-airflow--%E4%BD%BF%E7%94%A8-cli-%E8%BF%9B%E8%A1%8C%E6%93%8D%E4%BD%9C/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2024-08-22-airflow--%E4%BD%BF%E7%94%A8-cli-%E8%BF%9B%E8%A1%8C%E6%93%8D%E4%BD%9C/trader.png" alt="airflow: 使用 cli 进行操作" title="airflow: 使用 cli 进行操作" referrerpolicy="no-referrer"/></div><p><code>ariflow</code> 是一款优秀的开源任务管理架构，通过 <code>DAG</code> 的图形关系，指定各个子任务之间的依赖关系，并自动执行流水线。同时，<code>airflow</code> 还提供了美观的 <code>UI</code>，方便用户通过鼠标点击进行相关操作。</p>
-<p>而本文要介绍的，则是 <code>airflow</code> 的命令行（CLI）操作模式。<code>CLI</code> 相比于 <code>UI</code> ，提供了更加灵活、可重现的运作方式，通过代码和配置，我们可以进行大规模的系统部署，避免鼠标操作存在的失误与不可重复性。</p>]]></description>
 </item>
 </channel>
 </rss>
