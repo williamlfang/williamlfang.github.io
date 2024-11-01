@@ -17,9 +17,10 @@
 modmap:
   - name: Cap as Esc # Optional
     application: # Optional
-      not: Google-chrome
+      not: [Google-chrome]
       # or
       # only: [vim, nvim, neovim]
+      # only: [Alacritty.Alacritty]
     remap: # Required
       CapsLock: Esc
 #keymap
