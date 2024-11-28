@@ -3,7 +3,7 @@
 
 利用 `reticulate` 接口，我们可以在 `R` 中调用 `python` 封装的函数。
 
-![r-python](./r-python.png &#34;R calling python function&#34;)
+![r-python](./rpython.png &#34;R calling python function&#34;)
 
 &lt;!--more--&gt;
 
