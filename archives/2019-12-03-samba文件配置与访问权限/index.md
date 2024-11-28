@@ -305,7 +305,8 @@ vim /etc/samba/smb.conf
 
 # Windows 连接
 
-1. `网络连接`
+[X] 1. `网络连接`
+1. （window：程序-&gt;程序和功能-&gt;启动或者关闭Windows功能-&gt;Samba，打勾）直接在文件栏填写：`\\192.168.1.199\fl`
 2. 填写 `\\192.168.1.199\fl` （对应于以上的用户，直接访问 `/home/fl`），注意 Windows 使用 `\\`
 3. 然后使用账户、密码即可登录
 
@@ -317,6 +318,15 @@ vim /etc/samba/smb.conf
 setenforce 0
 ```
 
+## 目录自动更新
+
+执行下列步骤： 
+1. 在注册表中找到并单击以下注册表项： 
+    HKEY_CURRENT_USER/Software/Microsoft/Windows/CurrentVersion/Policies/Explorer（如果没有，直接新增即可）
+2. 在“编辑”菜单上，指向“新建”，然后单击“DWORD 值”。 
+3. 键入 NoSimpleNetIDList，然后按 Enter。 
+4. 在“编辑”菜单上，单击“修改”。 
+5. 键入 1，然后单击“确定”。
 
 
 ---

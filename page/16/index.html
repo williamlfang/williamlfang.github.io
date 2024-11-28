@@ -187,6 +187,83 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-09-26-cs-%E9%98%85%E8%AF%BB%E4%B9%A6%E7%9B%AE/">cs 阅读书目</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-09-26 15:31:46'>发布于 <time datetime="2023-09-26">2023-09-26</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>网上一份 cs 的阅读书目列表，值得好好沉下心来阅读，为了方便查阅，特地在这里推荐一份：</p>
+<p><a href="https://github.com/cs-books/influential-cs-books"target="_blank" rel="external nofollow noopener noreferrer">Influential CS BOOKS<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p></div><div class="post-footer">
+    <a href="/2023-09-26-cs-%E9%98%85%E8%AF%BB%E4%B9%A6%E7%9B%AE/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/cs/' class="post-tag">Cs</a><a href='/tags/books/' class="post-tag">Books</a><a href='/tags/reading/' class="post-tag">Reading</a></div></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-09-22-crontab-vim-%E6%89%BE%E4%B8%8D%E5%88%B0-so-%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">crontab vim 找不到 so 的解决方法</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-09-22 08:39:20'>发布于 <time datetime="2023-09-22">2023-09-22</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>报错</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">crontab -e                                                                                                                                                                                                                                                                                                                                                 <span class="o">[</span>08:40:07<span class="o">]</span>
+</span></span><span class="line"><span class="cl">vim: error <span class="k">while</span> loading shared libraries: libpython3.9.so.1.0: cannot open shared object file: No such file or directory
+</span></span><span class="line"><span class="cl">crontab: <span class="s2">&#34;vim&#34;</span> exited with status <span class="m">127</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是因为 <code>vim</code> 编译的时候使用了动态库 <code>libpython3.9.so.1.0</code>，需要拷贝一份到</p>
+<ul>
+<li><code>/usr/lib</code></li>
+<li><code>/usr/lib64</code></li>
+</ul>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp /home/ops/vim9/local/lib/libpython3.9.so.1.0 /usr/lib
+</span></span><span class="line"><span class="cl">cp /home/ops/vim9/local/lib/libpython3.9.so.1.0 /usr/lib64</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果没有 <code>root</code> 权限，则可以通过 <code>alias</code> 来设置 <code>crontab</code> 命令</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">crontab</span><span class="o">=</span><span class="s2">&#34;export VISUAL=&#39;export VIMRUNTIME=</span><span class="nv">$HOME</span><span class="s2">/vim9/local/share/vim/vim90; LD_LIBRARY_PATH=</span><span class="nv">$HOME</span><span class="s2">/vim9/local/lib:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2"> PATH=</span><span class="nv">$HOME</span><span class="s2">/vim9/local/bin:</span><span class="nv">$HOME</span><span class="s2">/vim9/local/node-v16.20.0-linux-x64/bin:</span><span class="nv">$PATH</span><span class="s2"> </span><span class="nv">$HOME</span><span class="s2">/vim9/local/bin/vim -u </span><span class="nv">$HOME</span><span class="s2">/vim9/.vimrc&#39;; crontab&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">crontab</span><span class="o">=</span><span class="s2">&#34;export VISUAL=nvim; crontab&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/2023-09-22-crontab-vim-%E6%89%BE%E4%B8%8D%E5%88%B0-so-%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/vim/' class="post-tag">Vim</a><a href='/tags/crontab/' class="post-tag">Crontab</a><a href='/tags/so/' class="post-tag">So</a><a href='/tags/python/' class="post-tag">Python</a></div></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/">tmux 设置默认 zsh</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-09-20 15:45:58'>发布于 <time datetime="2023-09-20">2023-09-20</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>设置 <code>tmux</code> 启动后的默认 <code>$SHELL</code></p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">`vim ~/.tmux.conf`
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">set-option -g default-shell /home/lfang/opt/bin/zsh</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/tmux/' class="post-tag">Tmux</a><a href='/tags/zsh/' class="post-tag">Zsh</a><a href='/tags/shell/' class="post-tag">SHELL</a></div></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-09-18-vim-coc-%E6%9B%B4%E6%96%B0%E5%87%BA%E7%8E%B0%E5%BC%82%E5%B8%B8/">vim coc 更新出现异常</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-09-18 17:31:35'>发布于 <time datetime="2023-09-18">2023-09-18</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p><code>vim</code> 更新插件 <code>coc</code> 后运行出现异常：</p>
+<p><img loading="lazy" src="./assets/2023-09-18_17-29.png" alt="./assets/2023-09-18_17-29.png" srcset="./assets/2023-09-18_17-29.png?size=small, ./assets/2023-09-18_17-29.png?size=medium 1.5x, ./assets/2023-09-18_17-29.png?size=large 2x" data-title="./assets/2023-09-18_17-29.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>需要重新安装 <code>coc</code>，然后重新启动 <code>vim</code> 即可。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /home/william/.vim/plugged/coc.nvim
+</span></span><span class="line"><span class="cl">npm install</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="./assets/2023-09-18_17-30.png" alt="./assets/2023-09-18_17-30.png" srcset="./assets/2023-09-18_17-30.png?size=small, ./assets/2023-09-18_17-30.png?size=medium 1.5x, ./assets/2023-09-18_17-30.png?size=large 2x" data-title="./assets/2023-09-18_17-30.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p></div><div class="post-footer">
+    <a href="/2023-09-18-vim-coc-%E6%9B%B4%E6%96%B0%E5%87%BA%E7%8E%B0%E5%BC%82%E5%B8%B8/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/vim/' class="post-tag">Vim</a><a href='/tags/coc/' class="post-tag">Coc</a><a href='/tags/npm/' class="post-tag">Npm</a><a href='/tags/yarn/' class="post-tag">Yarn</a></div></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-09-16-vim-repl/">vim repl</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-09-16 15:22:04'>发布于 <time datetime="2023-09-16">2023-09-16</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>在 <code>Vim</code> 环境中运行 <code>REPL</code> 程序。</p>
 <ul>
@@ -211,87 +288,6 @@
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/lexical-scope/">c&#43;&#43; static/lexical scope</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-09-16 10:52:01'>发布于 <time datetime="2023-09-16">2023-09-16</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p><code>C++</code> 是一个静态、强类型的编译型编程语言，变量的生命周期需要在编译器确定。这与动态语言是完全不同的。</p></div><div class="post-footer">
     <a href="/lexical-scope/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/c&#43;&#43;/' class="post-tag">C&#43;&#43;</a><a href='/tags/scope/' class="post-tag">Scope</a><a href='/tags/static/' class="post-tag">Static</a><a href='/tags/lexical/' class="post-tag">Lexical</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-09-13-tmux-fzf-%E5%BF%AB%E9%80%9F%E6%90%9C%E7%B4%A2/">tmux fzf 快速搜索</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-09-13 17:36:39'>发布于 <time datetime="2023-09-13">2023-09-13</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>使用 <code>tmux-fzf</code> 快速搜索窗口。</p></div><div class="post-footer">
-    <a href="/2023-09-13-tmux-fzf-%E5%BF%AB%E9%80%9F%E6%90%9C%E7%B4%A2/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/tmux/' class="post-tag">Tmux</a><a href='/tags/fzf/' class="post-tag">Fzf</a><a href='/tags/vim/' class="post-tag">Vim</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-08-25-vim-coc-%E7%94%9F%E6%88%90-compile_commands.json/">vim coc 生成 compile_commands.json</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-08-25 10:03:41'>发布于 <time datetime="2023-08-25">2023-08-25</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p><code>vim</code> 使用 <code>coc</code> 需要找到 <code>compile_commands.json</code>。</p></div><div class="post-footer">
-    <a href="/2023-08-25-vim-coc-%E7%94%9F%E6%88%90-compile_commands.json/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/vim/' class="post-tag">Vim</a><a href='/tags/coc/' class="post-tag">Coc</a><a href='/tags/cmake/' class="post-tag">Cmake</a><a href='/tags/compile/' class="post-tag">Compile</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-08-16-sublime4-%E6%B3%A8%E5%86%8C%E7%A0%81/">sublime4 注册码</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-08-16 13:15:09'>发布于 <time datetime="2023-08-16">2023-08-16</time></span></div><div class="content"><div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim /etc/hosts
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># Sublime-Bypass</span>
-</span></span><span class="line"><span class="cl">0.0.0.0 sublimetext.com
-</span></span><span class="line"><span class="cl">0.0.0.0 sublimemerge.com
-</span></span><span class="line"><span class="cl">0.0.0.0 sublimehq.com
-</span></span><span class="line"><span class="cl">0.0.0.0 telemetry.sublimehq.com
-</span></span><span class="line"><span class="cl">0.0.0.0 license.sublimehq.com
-</span></span><span class="line"><span class="cl">0.0.0.0 45.55.255.55
-</span></span><span class="line"><span class="cl">0.0.0.0 45.55.41.223
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">wget https://raw.githubusercontent.com/CITIZENSIXTYNINE/Sublime-Bypass/mistress/sublime-bypass.sh
-</span></span><span class="line"><span class="cl">sudo bash ./sublime-bypass.sh
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">## sublime4 -&gt; Help -&gt; Enter Licence</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">—– BEGIN LICENSE —–
-</span></span><span class="line"><span class="cl">Die Socialisten GmbH
-</span></span><span class="line"><span class="cl"><span class="m">10</span> User License
-</span></span><span class="line"><span class="cl">EA7E-800613
-</span></span><span class="line"><span class="cl"><span class="m">51311422</span> E45F49ED 3F0ADE0C E5B8A508
-</span></span><span class="line"><span class="cl">2F4D9B65 64E1E244 EDA11F0E F9D06110
-</span></span><span class="line"><span class="cl">B7B2E826 E6FDAA72 2C653693 5D80582F
-</span></span><span class="line"><span class="cl">09DCFFB5 113A940C 5045C0CD 5F8332F8
-</span></span><span class="line"><span class="cl">34356CC6 D96F6FDB 4DEC20EA 0A24D83A
-</span></span><span class="line"><span class="cl">2C82C329 E3290B29 A16109A7 EC198EB9
-</span></span><span class="line"><span class="cl">F28EBB17 9C07403F D44BA75A C23C6874
-</span></span><span class="line"><span class="cl">EBF11238 5546C3DD 737DC616 445C2941
-</span></span><span class="line"><span class="cl">—— END LICENSE ——</span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer">
-    <a href="/2023-08-16-sublime4-%E6%B3%A8%E5%86%8C%E7%A0%81/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-08-04-linux-dynamic-tracing/">Linux dynamic tracing</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-08-04 16:44:41'>发布于 <time datetime="2023-08-04">2023-08-04</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"></div><div class="post-footer">
-    <a href="/2023-08-04-linux-dynamic-tracing/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/dynamic-tracing/' class="post-tag">Dynamic Tracing</a><a href='/tags/debug/' class="post-tag">Debug</a><a href='/tags/%E5%8A%A8%E6%80%81%E8%BF%BD%E8%B8%AA/' class="post-tag">动态追踪</a></div></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
@@ -323,7 +319,7 @@
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/66/">66</a>
+            <a href="/page/67/">67</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>

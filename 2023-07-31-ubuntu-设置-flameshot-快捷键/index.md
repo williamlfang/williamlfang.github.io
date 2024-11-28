@@ -3,6 +3,7 @@
 
 1. 使用 `Win` 键调出 `keyboard` 设置界面
 2. 在 `Custom Shortcuts` 点击添加 `flameshot`，其中 `Name` 可以自己写，然后在 `Command` 填写: /usr/bin/flameshot gui
+    update: /usr/bin/flatpak run --branch=stable --arch=x86_64 --command=flameshot org.flameshot.Flameshot launcher
 3. 添加快捷键为 `PrtScr`
 4. 这样，就可以用键盘上面的截屏工具进行截图了
 

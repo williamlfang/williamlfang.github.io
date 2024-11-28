@@ -10,7 +10,7 @@
 <meta name="description" content="samba 提供了从 Windows 操作系统访问 Linux 文件的服务。" /><meta name="keywords" content='centos7, samba, windows, 权限, selinux' /><meta itemprop="name" content="samba文件配置与访问权限">
 <meta itemprop="description" content="samba 提供了从 Windows 操作系统访问 Linux 文件的服务。"><meta itemprop="datePublished" content="2019-12-03T00:00:00+00:00" />
 <meta itemprop="dateModified" content="2019-12-03T00:00:00+00:00" />
-<meta itemprop="wordCount" content="1383"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="wordCount" content="1675"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
 <meta itemprop="keywords" content="centos7,samba,windows,权限,selinux," /><meta property="og:title" content="samba文件配置与访问权限" />
 <meta property="og:description" content="samba 提供了从 Windows 操作系统访问 Linux 文件的服务。" />
 <meta property="og:type" content="article" />
@@ -35,7 +35,7 @@
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https:\/\/williamlfang.github.io\/archives\/2019-12-03-samba%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90\/"
-    },"genre": "posts","keywords": "centos7, samba, windows, 权限, selinux","wordcount":  1383 ,
+    },"genre": "posts","keywords": "centos7, samba, windows, 权限, selinux","wordcount":  1675 ,
     "url": "https:\/\/williamlfang.github.io\/archives\/2019-12-03-samba%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE%E4%B8%8E%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90\/","datePublished": "2019-12-03T00:00:00+00:00","dateModified": "2019-12-03T00:00:00+00:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
@@ -197,7 +197,7 @@
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>samba文件配置与访问权限</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2019-12-03 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2019-12-03">2019-12-03</time></span>&nbsp;<span title="1383 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2019-12-03 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2019-12-03">2019-12-03</time></span>&nbsp;<span title="1675 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1700 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 4 分钟</span>&nbsp;</div>
     </div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
@@ -239,7 +239,11 @@
     </li>
     <li><a href="#设置访问">设置访问</a></li>
     <li><a href="#windows-连接">Windows 连接</a></li>
-    <li><a href="#windows-没有权限访问的解决方法">Windows 没有权限访问的解决方法</a></li>
+    <li><a href="#windows-没有权限访问的解决方法">Windows 没有权限访问的解决方法</a>
+      <ol>
+        <li><a href="#目录自动更新">目录自动更新</a></li>
+      </ol>
+    </li>
   </ol>
 </nav></div>
       </div><div class="content" id="content"><div class="details admonition warning open">
@@ -747,8 +751,9 @@
 </span></span><span class="line"><span class="cl">	valid <span class="nv">users</span> <span class="o">=</span> fl,root</span></span></code></pre></td></tr></table>
 </div>
 </div><h1 id="windows-连接" class="heading-element">
-  <a href="#windows-%e8%bf%9e%e6%8e%a5" class="heading-mark"></a>Windows 连接</h1><ol>
-<li><code>网络连接</code></li>
+  <a href="#windows-%e8%bf%9e%e6%8e%a5" class="heading-mark"></a>Windows 连接</h1><p>[X] 1. <code>网络连接</code></p>
+<ol>
+<li>（window：程序-&gt;程序和功能-&gt;启动或者关闭Windows功能-&gt;Samba，打勾）直接在文件栏填写：<code>\\192.168.1.199\fl</code></li>
 <li>填写 <code>\\192.168.1.199\fl</code> （对应于以上的用户，直接访问 <code>/home/fl</code>），注意 Windows 使用 <code>\\</code></li>
 <li>然后使用账户、密码即可登录</li>
 </ol>
@@ -761,7 +766,17 @@
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">setenforce <span class="m">0</span></span></span></code></pre></td></tr></table>
 </div>
-</div></div><h2 id="see-also">相关内容</h2>
+</div><h2 id="目录自动更新" class="heading-element">
+  <a href="#%e7%9b%ae%e5%bd%95%e8%87%aa%e5%8a%a8%e6%9b%b4%e6%96%b0" class="heading-mark"></a>目录自动更新</h2><p>执行下列步骤：</p>
+<ol>
+<li>在注册表中找到并单击以下注册表项：
+HKEY_CURRENT_USER/Software/Microsoft/Windows/CurrentVersion/Policies/Explorer（如果没有，直接新增即可）</li>
+<li>在“编辑”菜单上，指向“新建”，然后单击“DWORD 值”。</li>
+<li>键入 NoSimpleNetIDList，然后按 Enter。</li>
+<li>在“编辑”菜单上，单击“修改”。</li>
+<li>键入 1，然后单击“确定”。</li>
+</ol>
+</div><h2 id="see-also">相关内容</h2>
     <ul><li>
           <a href="/archives/2019-12-02-jupyter%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E8%BF%90%E8%A1%8C%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="Jupyter端口转发运行远程服务器">Jupyter端口转发运行远程服务器</a></li><li>
           <a href="/archives/2019-12-02-linux-%E5%AE%8C%E5%85%A8%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7/" title="Linux 完全删除用户">Linux 完全删除用户</a></li><li>
