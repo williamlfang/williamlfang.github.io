@@ -5,43 +5,102 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题 - William</title><meta name="author" content="william">
+    <title>Ubuntu 升级 ffmpeg - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="为了以指定版本的编译器进行编译，我们可以通过修改 cmake 默认编译器 (CMAKE_CXX_COMPILER)。然而，如果在多项目的 add_subdirectory 包含其他项目，可能造成死循环的问题。" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题">
-<meta itemprop="description" content="为了以指定版本的编译器进行编译，我们可以通过修改 cmake 默认编译器 (CMAKE_CXX_COMPILER)。然而，如果在多项目的 add_subdirectory 包含其他项目，可能造成死循环的问题。"><meta itemprop="datePublished" content="2024-06-11T18:53:00+08:00" />
-<meta itemprop="dateModified" content="2024-06-11T18:53:00+08:00" />
-<meta itemprop="wordCount" content="192"><meta itemprop="image" content="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/cmake.png" />
-<meta itemprop="keywords" content="" /><meta property="og:title" content="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题" />
-<meta property="og:description" content="为了以指定版本的编译器进行编译，我们可以通过修改 cmake 默认编译器 (CMAKE_CXX_COMPILER)。然而，如果在多项目的 add_subdirectory 包含其他项目，可能造成死循环的问题。" />
+<meta name="description" content="今天使用 yt-dlp 下载视频时，遇到一个报错
+
+
+1
+2
+3
+4
+5
+
+
+[youtube] Extracting URL: https://youtu.be/_dLLIjKz9MY
+[youtube] _dLLIjKz9MY: Downloading webpage
+...........................................
+[Merger] Merging formats into &#34;Fear in Tech - Titus Winters - Keynote Meeting C&#43;&#43; 2024 [_dLLIjKz9MY].mp4&#34;
+ERROR: Postprocessing:   Stream #1:0 -&gt; #0:1 (copy)
+
+查找一遍，发现这个是因为 yt-dlp 与 ffmpeg 版本冲突导致的，导致yt-dlp --merge-output-format mp4 无法合成 mp4 格式。因此需要升级 ffmpeg。" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="Ubuntu 升级 ffmpeg">
+<meta itemprop="description" content="今天使用 yt-dlp 下载视频时，遇到一个报错
+
+
+1
+2
+3
+4
+5
+
+
+[youtube] Extracting URL: https://youtu.be/_dLLIjKz9MY
+[youtube] _dLLIjKz9MY: Downloading webpage
+...........................................
+[Merger] Merging formats into &#34;Fear in Tech - Titus Winters - Keynote Meeting C&#43;&#43; 2024 [_dLLIjKz9MY].mp4&#34;
+ERROR: Postprocessing:   Stream #1:0 -&gt; #0:1 (copy)
+
+查找一遍，发现这个是因为 yt-dlp 与 ffmpeg 版本冲突导致的，导致yt-dlp --merge-output-format mp4 无法合成 mp4 格式。因此需要升级 ffmpeg。"><meta itemprop="datePublished" content="2024-12-22T12:06:55+08:00" />
+<meta itemprop="dateModified" content="2024-12-22T12:06:55+08:00" />
+<meta itemprop="wordCount" content="363"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="Ubuntu 升级 ffmpeg" />
+<meta property="og:description" content="今天使用 yt-dlp 下载视频时，遇到一个报错
+
+
+1
+2
+3
+4
+5
+
+
+[youtube] Extracting URL: https://youtu.be/_dLLIjKz9MY
+[youtube] _dLLIjKz9MY: Downloading webpage
+...........................................
+[Merger] Merging formats into &#34;Fear in Tech - Titus Winters - Keynote Meeting C&#43;&#43; 2024 [_dLLIjKz9MY].mp4&#34;
+ERROR: Postprocessing:   Stream #1:0 -&gt; #0:1 (copy)
+
+查找一遍，发现这个是因为 yt-dlp 与 ffmpeg 版本冲突导致的，导致yt-dlp --merge-output-format mp4 无法合成 mp4 格式。因此需要升级 ffmpeg。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/" /><meta property="og:image" content="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/cmake.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-06-11T18:53:00+08:00" />
-<meta property="article:modified_time" content="2024-06-11T18:53:00+08:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2024-12-22T12:06:55+08:00" />
+<meta property="article:modified_time" content="2024-12-22T12:06:55+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/cmake.png" /><meta name="twitter:title" content="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题"/>
-<meta name="twitter:description" content="为了以指定版本的编译器进行编译，我们可以通过修改 cmake 默认编译器 (CMAKE_CXX_COMPILER)。然而，如果在多项目的 add_subdirectory 包含其他项目，可能造成死循环的问题。"/>
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Ubuntu 升级 ffmpeg"/>
+<meta name="twitter:description" content="今天使用 yt-dlp 下载视频时，遇到一个报错
+
+
+1
+2
+3
+4
+5
+
+
+[youtube] Extracting URL: https://youtu.be/_dLLIjKz9MY
+[youtube] _dLLIjKz9MY: Downloading webpage
+...........................................
+[Merger] Merging formats into &#34;Fear in Tech - Titus Winters - Keynote Meeting C&#43;&#43; 2024 [_dLLIjKz9MY].mp4&#34;
+ERROR: Postprocessing:   Stream #1:0 -&gt; #0:1 (copy)
+
+查找一遍，发现这个是因为 yt-dlp 与 ffmpeg 版本冲突导致的，导致yt-dlp --merge-output-format mp4 无法合成 mp4 格式。因此需要升级 ffmpeg。"/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/" /><link rel="prev" href="https://williamlfang.github.io/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/" /><link rel="next" href="https://williamlfang.github.io/2024-06-13-nvim-%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD-lazy-lock.json/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/" /><link rel="prev" href="https://williamlfang.github.io/2024-11-28-r-%E8%B0%83%E7%94%A8-python/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题",
+    "headline": "Ubuntu 升级 ffmpeg",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98\/"
-    },"image": [{
-              "@type": "ImageObject",
-              "url": "https:\/\/williamlfang.github.io\/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98\/cmake.png",
-              "width":  712 ,
-              "height":  1286 
-            }],"genre": "posts","wordcount":  192 ,
-    "url": "https:\/\/williamlfang.github.io\/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98\/","datePublished": "2024-06-11T18:53:00+08:00","dateModified": "2024-06-11T18:53:00+08:00","publisher": {
+      "@id": "https:\/\/williamlfang.github.io\/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg\/"
+    },"genre": "posts","wordcount":  363 ,
+    "url": "https:\/\/williamlfang.github.io\/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg\/","datePublished": "2024-12-22T12:06:55+08:00","dateModified": "2024-12-22T12:06:55+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -200,19 +259,44 @@
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Ubuntu 升级 ffmpeg</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-06-11 18:53:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-06-11">2024-06-11</time></span>&nbsp;<span title="192 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="featured-image"><img loading="lazy" src="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/cmake.png" alt="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/cmake.png" data-title="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/cmake.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="content" id="content"><div class="details admonition warning open">
-      <div class="details-summary admonition-title">
-        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
-      </div>
-      <div class="details-content">
-        <div class="admonition-content">本文最后更新于 2024-06-11，文中内容可能已过时。</div>
-      </div>
-    </div><p>为了以指定版本的编译器进行编译，我们可以通过修改 <code>cmake</code> 默认编译器 (CMAKE_CXX_COMPILER)。然而，如果在多项目的 <code>add_subdirectory</code> 包含其他项目，可能造成死循环的问题。</p>
-<p>处理这个问题，需要我们在所有项目的顶层设置，即在最顶层的项目 <code>CMakeLists.txt</code> 的 <code>project</code> 之前设置</p>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-12-22 12:06:55"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-12-22">2024-12-22</time></span>&nbsp;<span title="363 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#升级-yasm">升级 yasm</a></li>
+        <li><a href="#升级-ffmpeg">升级 ffmpeg</a></li>
+        <li><a href="#成功下载">成功下载</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>今天使用 <code>yt-dlp</code> 下载视频时，遇到一个报错</p>
 <div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>youtube<span class="o">]</span> Extracting URL: https://youtu.be/_dLLIjKz9MY
+</span></span><span class="line"><span class="cl"><span class="o">[</span>youtube<span class="o">]</span> _dLLIjKz9MY: Downloading webpage
+</span></span><span class="line"><span class="cl">...........................................
+</span></span><span class="line"><span class="cl"><span class="o">[</span>Merger<span class="o">]</span> Merging formats into <span class="s2">&#34;Fear in Tech - Titus Winters - Keynote Meeting C++ 2024 [_dLLIjKz9MY].mp4&#34;</span>
+</span></span><span class="line"><span class="cl">ERROR: Postprocessing:   Stream <span class="c1">#1:0 -&gt; #0:1 (copy)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>查找一遍，发现这个是因为 <code>yt-dlp</code> 与 <code>ffmpeg</code> 版本冲突导致的，导致<code>yt-dlp --merge-output-format mp4</code> 无法合成 <code>mp4</code> 格式。因此需要升级 <code>ffmpeg</code>。</p>
+<h2 id="升级-yasm" class="heading-element">
+  <a href="#%e5%8d%87%e7%ba%a7-yasm" class="heading-mark"></a>升级 yasm</h2><div class="highlight" id="id-2"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -221,21 +305,91 @@
 </span><span class="lnt">5
 </span><span class="lnt">6
 </span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-cmake" data-lang="cmake"><span class="line"><span class="cl"><span class="c"># top setting ===========================================================----==
-</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span> <span class="s">3.15</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_C_COMPILER</span> <span class="s">/usr/bin/gcc</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nb">SET</span><span class="p">(</span><span class="s">CMAKE_CXX_COMPILER</span> <span class="s">/usr/bin/g++</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="nb">set</span><span class="p">(</span><span class="s">CMAKE_CXX_STANDARD</span> <span class="s">17</span> <span class="s">CACHE</span> <span class="s">STRING</span> <span class="s2">&#34;v&#34;</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">## =============================================================================
-</span></span></span><span class="line"><span class="cl"><span class="c">## need to be after top setting
-</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nb">project</span><span class="p">(</span><span class="s">snail</span> <span class="s">CXX</span><span class="p">)</span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err">##</span> <span class="err">=============================================================================</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## update yasm</span>
+</span></span><span class="line"><span class="cl">wget https://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz
+</span></span><span class="line"><span class="cl">tar -xvf yasm-1.3.0.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> yasm-1.3.0
+</span></span><span class="line"><span class="cl">./configure
+</span></span><span class="line"><span class="cl">make -j
+</span></span><span class="line"><span class="cl">make install</span></span></code></pre></td></tr></table>
 </div>
-</div><p>主要参考文章：<a href="https://www.cnblogs.com/yqmcu/p/16309091.html"target="_blank" rel="external nofollow noopener noreferrer">CMakeLists.txt 修改默认编译器导致死循环的问题解决<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p></div><div class="post-reward">
+</div><h2 id="升级-ffmpeg" class="heading-element">
+  <a href="#%e5%8d%87%e7%ba%a7-ffmpeg" class="heading-mark"></a>升级 ffmpeg</h2><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://ffmpeg.org/releases/ffmpeg-7.0.1.tar.xz
+</span></span><span class="line"><span class="cl">tar -xvf ffmpeg-7.0.1.tar.xz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ffmpeg-7.0.1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./configure
+</span></span><span class="line"><span class="cl">make install
+</span></span><span class="line"><span class="cl">./ffmpeg --version
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">whereis ffmpeg
+</span></span><span class="line"><span class="cl">ll /usr/bin/ffmpeg
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">cp ffmpeg* ffprobe /usr/bin/
+</span></span><span class="line"><span class="cl">ffmpeg --version</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="成功下载" class="heading-element">
+  <a href="#%e6%88%90%e5%8a%9f%e4%b8%8b%e8%bd%bd" class="heading-mark"></a>成功下载</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>youtube<span class="o">]</span> Extracting URL: https://www.youtube.com/watch?v<span class="o">=</span>nXcswVW0-Wk
+</span></span><span class="line"><span class="cl"><span class="o">[</span>youtube<span class="o">]</span> nXcswVW0-Wk: Downloading webpage
+</span></span><span class="line"><span class="cl"><span class="o">[</span>youtube<span class="o">]</span> nXcswVW0-Wk: Downloading ios player API JSON
+</span></span><span class="line"><span class="cl"><span class="o">[</span>youtube<span class="o">]</span> nXcswVW0-Wk: Downloading mweb player API JSON
+</span></span><span class="line"><span class="cl"><span class="o">[</span>youtube<span class="o">]</span> nXcswVW0-Wk: Downloading m3u8 information
+</span></span><span class="line"><span class="cl"><span class="o">[</span>info<span class="o">]</span> nXcswVW0-Wk: Downloading <span class="m">1</span> format<span class="o">(</span>s<span class="o">)</span>: 616+251
+</span></span><span class="line"><span class="cl"><span class="o">[</span>hlsnative<span class="o">]</span> Downloading m3u8 manifest
+</span></span><span class="line"><span class="cl"><span class="o">[</span>hlsnative<span class="o">]</span> Total fragments: <span class="m">655</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>download<span class="o">]</span> Destination: Herb Sutter - Peering forward  C++’s next decade <span class="o">[</span>nXcswVW0-Wk<span class="o">]</span>.f616.mp4
+</span></span><span class="line"><span class="cl"><span class="o">[</span>download<span class="o">]</span> 100% of  441.60MiB in 00:04:40 at 1.57MiB/s
+</span></span><span class="line"><span class="cl"><span class="o">[</span>download<span class="o">]</span> Destination: Herb Sutter - Peering forward  C++’s next decade <span class="o">[</span>nXcswVW0-Wk<span class="o">]</span>.f251.webm
+</span></span><span class="line"><span class="cl"><span class="o">[</span>download<span class="o">]</span> 100% of   53.14MiB in 00:00:05 at 10.23MiB/s
+</span></span><span class="line"><span class="cl"><span class="o">[</span>Merger<span class="o">]</span> Merging formats into <span class="s2">&#34;Herb Sutter - Peering forward  C++’s next decade [nXcswVW0-Wk].mp4&#34;</span>
+</span></span><span class="line"><span class="cl">Deleting original file Herb Sutter - Peering forward  C++’s next decade <span class="o">[</span>nXcswVW0-Wk<span class="o">]</span>.f616.mp4 <span class="o">(</span>pass -k to keep<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Deleting original file Herb Sutter - Peering forward  C++’s next decade <span class="o">[</span>nXcswVW0-Wk<span class="o">]</span>.f251.webm <span class="o">(</span>pass -k to keep<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>Metadata<span class="o">]</span> Adding metadata to <span class="s2">&#34;Herb Sutter - Peering forward  C++’s next decade [nXcswVW0-Wk].mp4&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>1<span class="o">]</span>  + <span class="k">done</span>       yt-dlp -f <span class="s1">&#39;bv[height&lt;=1080]+ba/b[height&lt;=1080]&#39;</span> --embed-metadata  mp4 --proxy</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>
@@ -246,16 +400,16 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2024-06-11 18:53:00">更新于 2024-06-11&nbsp;</span>
+        <span title="更新于 2024-12-22 12:06:55">更新于 2024-12-22&nbsp;</span>
       </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-md"><span><a href="/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/" data-title="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/" data-title="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/" data-title="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/" data-title="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/" data-title="Ubuntu 升级 ffmpeg"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/" data-title="Ubuntu 升级 ffmpeg" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/" data-title="Ubuntu 升级 ffmpeg"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/" data-title="Ubuntu 升级 ffmpeg"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
@@ -267,8 +421,7 @@
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/" class="post-nav-item" rel="prev" title="glibc2.18 安装"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>glibc2.18 安装</a>
-      <a href="/2024-06-13-nvim-%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD-lazy-lock.json/" class="post-nav-item" rel="next" title="nvim 自动备份 lazy lock.json">nvim 自动备份 lazy lock.json<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2024-11-28-r-%E8%B0%83%E7%94%A8-python/" class="post-nav-item" rel="prev" title="R 调用 python"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>R 调用 python</a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script
@@ -295,7 +448,8 @@
           Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
         </noscript></div></article>
 
-  <aside class="toc" id="toc-auto" aria-label="目录"></aside></main><footer class="footer">
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
         </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
             <span itemprop="copyrightYear">2013 - 2024</span><span class="author" itemprop="copyrightHolder">
