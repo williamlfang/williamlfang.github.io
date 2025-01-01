@@ -62,6 +62,14 @@ cd () {
 # zinit light agkozak/zsh-z
 ```
 
+## 使用技巧
+
+- 使用 `z abs &lt;space&gt;&lt;Tab&gt;` 进行补全
+- `zoxide add`
+- `zoxide remove`
+- `zoxide query`
+- `zoxide edit` 可以进行编辑操作(add, detele)
+
 
 ---
 
