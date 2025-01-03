@@ -187,6 +187,65 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-13-nvim-%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD-lazy-lock.json/">nvim 自动备份 lazy lock.json</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-13 19:27:04'>发布于 <time datetime="2024-06-13">2024-06-13</time></span></div><div class="content"><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- backup: lazy-lazy.json</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">lazy_cmds</span> <span class="o">=</span> <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_augroup</span><span class="p">(</span><span class="s1">&#39;lazy_cmds&#39;</span><span class="p">,</span> <span class="p">{</span><span class="n">clear</span> <span class="o">=</span> <span class="kc">true</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">root</span> <span class="o">=</span> <span class="n">os.getenv</span><span class="p">(</span><span class="s2">&#34;HOME&#34;</span><span class="p">)</span> <span class="o">..</span> <span class="s2">&#34;/.config/nvim/lazy&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">snapshot_dir</span> <span class="o">=</span> <span class="n">root</span> <span class="o">..</span> <span class="s1">&#39;/plugin-snapshot&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">os.execute</span><span class="p">(</span><span class="s2">&#34;mkdir &#34;</span> <span class="o">..</span> <span class="n">snapshot_dir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">lockfile</span> <span class="o">=</span> <span class="n">root</span> <span class="o">..</span> <span class="s1">&#39;/lazy-lock.json&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_user_command</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;BrowseSnapshots&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;edit &#39;</span> <span class="o">..</span> <span class="n">snapshot_dir</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_autocmd</span><span class="p">(</span><span class="s1">&#39;User&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">group</span> <span class="o">=</span> <span class="n">lazy_cmds</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pattern</span> <span class="o">=</span> <span class="s1">&#39;LazyUpdatePre&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">desc</span> <span class="o">=</span> <span class="s1">&#39;Backup lazy.nvim lockfile&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">callback</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">vim.fn</span><span class="p">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">snapshot_dir</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">snapshot</span> <span class="o">=</span> <span class="n">snapshot_dir</span> <span class="o">..</span> <span class="n">os.date</span><span class="p">(</span><span class="s1">&#39;/%Y-%m-%dT%H:%M:%S.lazy-lock.json&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">vim.loop</span><span class="p">.</span><span class="n">fs_copyfile</span><span class="p">(</span><span class="n">lockfile</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>:Lazy restore</code></li>
+</ul></div><div class="post-footer">
+    <a href="/2024-06-13-nvim-%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD-lazy-lock.json/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/" aria-label="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题"><img loading="lazy" src="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/cmake.png" alt="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题" data-title="cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/">cmake 设置默认编译器CMAKE_CXX_COMPILER造成死循环的问题</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-11 18:53:00'>发布于 <time datetime="2024-06-11">2024-06-11</time></span></div><div class="content"><p>为了以指定版本的编译器进行编译，我们可以通过修改 <code>cmake</code> 默认编译器 (CMAKE_CXX_COMPILER)。然而，如果在多项目的 <code>add_subdirectory</code> 包含其他项目，可能造成死循环的问题。</p></div><div class="post-footer">
+    <a href="/2024-06-11-cmake-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4%E7%BC%96%E8%AF%91%E5%99%A8cmake_cxx_compiler%E9%80%A0%E6%88%90%E6%AD%BB%E5%BE%AA%E7%8E%AF%E7%9A%84%E9%97%AE%E9%A2%98/">阅读全文</a></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/">glibc2.18 安装</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-11 16:16:21'>发布于 <time datetime="2024-06-11">2024-06-11</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="content"><p>先查看当前系统的 <code>glibc</code> 版本</p>
 <div class="highlight" id="id-1"><div class="chroma">
@@ -317,14 +376,6 @@
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/">nvim tokyonight 修改高亮颜色</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-06-06 22:49:17'>发布于 <time datetime="2024-06-06">2024-06-06</time></span></div><div class="content">如果遇到在终端显示问题，可以修改高亮颜色: ~/.config/nvim/lua/plugins/tokyonight.lua 1 2 3 4 5 6 7 8 on_highlights = function(hl, colors) hl.LineNr = { fg = &#34;#fffb7b&#34;, } hl.CursorLineNr = { fg = &#34;#709db2&#34;, } end,</div><div class="post-footer">
     <a href="/2024-06-06-nvim-tokyonight-%E4%BF%AE%E6%94%B9%E9%AB%98%E4%BA%AE%E9%A2%9C%E8%89%B2/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-05-25-docker-registry-%E5%BF%98%E8%AE%B0%E8%B4%A6%E6%88%B7%E5%AF%86%E7%A0%81/">docker registry 忘记账户密码</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-05-25 16:37:57'>发布于 <time datetime="2024-05-25">2024-05-25</time></span></div><div class="content"><p>如果忘记 <code>docker-registry</code> 账户密码，可以通过复原加密密码查看。</p></div><div class="post-footer">
-    <a href="/2024-05-25-docker-registry-%E5%BF%98%E8%AE%B0%E8%B4%A6%E6%88%B7%E5%AF%86%E7%A0%81/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-05-22-c-%E4%BD%BF%E7%94%A8-nanobench-%E6%B5%8B%E8%AF%95%E6%80%A7%E8%83%BD/">c&#43;&#43; 使用 nanobench 测试性能</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-05-22 18:06:07'>发布于 <time datetime="2024-05-22">2024-05-22</time></span></div><div class="content"><p><code>nanobench</code> 是一个简易的代码性能测试工具，有助手我们深入理解程序运行的开销。</p></div><div class="post-footer">
-    <a href="/2024-05-22-c-%E4%BD%BF%E7%94%A8-nanobench-%E6%B5%8B%E8%AF%95%E6%80%A7%E8%83%BD/">阅读全文</a></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">

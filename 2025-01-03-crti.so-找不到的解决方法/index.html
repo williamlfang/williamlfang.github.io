@@ -5,54 +5,214 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>使用 zoxide - William</title><meta name="author" content="william">
+    <title>crti.so 找不到的解决方法 - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="zoxide 是一款类比 cd 的目录导航工具，但是提供了基于使用频率的快速跳转功能。
+<meta name="description" content="在编译一个代码模块的是否，gcc 报错
 
 
-  
-" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="使用 zoxide">
-<meta itemprop="description" content="zoxide 是一款类比 cd 的目录导航工具，但是提供了基于使用频率的快速跳转功能。
+1
 
 
-  
-"><meta itemprop="datePublished" content="2025-01-01T12:42:28+08:00" />
-<meta itemprop="dateModified" content="2025-01-01T12:42:28+08:00" />
-<meta itemprop="wordCount" content="276"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
-<meta itemprop="keywords" content="" /><meta property="og:title" content="使用 zoxide" />
-<meta property="og:description" content="zoxide 是一款类比 cd 的目录导航工具，但是提供了基于使用频率的快速跳转功能。
+/usr/bin/ld: cannot find crt1.o: No such file or directory
+
+我们需要让 gcc 识别到 crt 的路径
 
 
-  
+1
+2
+3
+4
+5
+6
+
+
+find /usr -name crti*
+
+/usr/lib32/crti.o
+/usr/lib/i386-linux-gnu/crti.o
+/usr/lib/x86_64-linux-gnu/crti.o
+/usr/libx32/crti.o
+
+可以看到，在默认的路径找到了 /usr/lib32/crt1.o，但是由于这个指向的是 32 位操作系统的动态库（可能是当前系统安装了多个编译环境），导致 gcc 编译文件无法使用 64 位的动态库。同时，我们还发现 /usr/lib/x86_64-linux-gnu/crti.o 这个版本是 64 位动态库，因此需要让 gcc 使用该版本
+
+
+1
+2
+3
+4
+5
+6
+
+
+sudo apt-get install libc6-dev
+
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}
+export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LIBRARY_PATH}
+
+sudo ln -s /usr/lib/x86_64-linux-gnu /usr/lib64
+
+" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="crti.so 找不到的解决方法">
+<meta itemprop="description" content="在编译一个代码模块的是否，gcc 报错
+
+
+1
+
+
+/usr/bin/ld: cannot find crt1.o: No such file or directory
+
+我们需要让 gcc 识别到 crt 的路径
+
+
+1
+2
+3
+4
+5
+6
+
+
+find /usr -name crti*
+
+/usr/lib32/crti.o
+/usr/lib/i386-linux-gnu/crti.o
+/usr/lib/x86_64-linux-gnu/crti.o
+/usr/libx32/crti.o
+
+可以看到，在默认的路径找到了 /usr/lib32/crt1.o，但是由于这个指向的是 32 位操作系统的动态库（可能是当前系统安装了多个编译环境），导致 gcc 编译文件无法使用 64 位的动态库。同时，我们还发现 /usr/lib/x86_64-linux-gnu/crti.o 这个版本是 64 位动态库，因此需要让 gcc 使用该版本
+
+
+1
+2
+3
+4
+5
+6
+
+
+sudo apt-get install libc6-dev
+
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}
+export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LIBRARY_PATH}
+
+sudo ln -s /usr/lib/x86_64-linux-gnu /usr/lib64
+
+"><meta itemprop="datePublished" content="2025-01-03T22:29:36+08:00" />
+<meta itemprop="dateModified" content="2025-01-03T22:29:36+08:00" />
+<meta itemprop="wordCount" content="194"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="crti.so 找不到的解决方法" />
+<meta property="og:description" content="在编译一个代码模块的是否，gcc 报错
+
+
+1
+
+
+/usr/bin/ld: cannot find crt1.o: No such file or directory
+
+我们需要让 gcc 识别到 crt 的路径
+
+
+1
+2
+3
+4
+5
+6
+
+
+find /usr -name crti*
+
+/usr/lib32/crti.o
+/usr/lib/i386-linux-gnu/crti.o
+/usr/lib/x86_64-linux-gnu/crti.o
+/usr/libx32/crti.o
+
+可以看到，在默认的路径找到了 /usr/lib32/crt1.o，但是由于这个指向的是 32 位操作系统的动态库（可能是当前系统安装了多个编译环境），导致 gcc 编译文件无法使用 64 位的动态库。同时，我们还发现 /usr/lib/x86_64-linux-gnu/crti.o 这个版本是 64 位动态库，因此需要让 gcc 使用该版本
+
+
+1
+2
+3
+4
+5
+6
+
+
+sudo apt-get install libc6-dev
+
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}
+export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LIBRARY_PATH}
+
+sudo ln -s /usr/lib/x86_64-linux-gnu /usr/lib64
+
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2025-01-01T12:42:28+08:00" />
-<meta property="article:modified_time" content="2025-01-01T12:42:28+08:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-01-03T22:29:36+08:00" />
+<meta property="article:modified_time" content="2025-01-03T22:29:36+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="使用 zoxide"/>
-<meta name="twitter:description" content="zoxide 是一款类比 cd 的目录导航工具，但是提供了基于使用频率的快速跳转功能。
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="crti.so 找不到的解决方法"/>
+<meta name="twitter:description" content="在编译一个代码模块的是否，gcc 报错
 
 
-  
+1
+
+
+/usr/bin/ld: cannot find crt1.o: No such file or directory
+
+我们需要让 gcc 识别到 crt 的路径
+
+
+1
+2
+3
+4
+5
+6
+
+
+find /usr -name crti*
+
+/usr/lib32/crti.o
+/usr/lib/i386-linux-gnu/crti.o
+/usr/lib/x86_64-linux-gnu/crti.o
+/usr/libx32/crti.o
+
+可以看到，在默认的路径找到了 /usr/lib32/crt1.o，但是由于这个指向的是 32 位操作系统的动态库（可能是当前系统安装了多个编译环境），导致 gcc 编译文件无法使用 64 位的动态库。同时，我们还发现 /usr/lib/x86_64-linux-gnu/crti.o 这个版本是 64 位动态库，因此需要让 gcc 使用该版本
+
+
+1
+2
+3
+4
+5
+6
+
+
+sudo apt-get install libc6-dev
+
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}
+export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LIBRARY_PATH}
+
+sudo ln -s /usr/lib/x86_64-linux-gnu /usr/lib64
+
 "/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/" /><link rel="prev" href="https://williamlfang.github.io/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/" /><link rel="next" href="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" /><link rel="prev" href="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/" /><link rel="next" href="https://williamlfang.github.io/2025-01-03-zsh-auto-suggestion-with-key-binding/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "使用 zoxide",
+    "headline": "crti.so 找不到的解决方法",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide\/"
-    },"genre": "posts","wordcount":  276 ,
-    "url": "https:\/\/williamlfang.github.io\/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide\/","datePublished": "2025-01-01T12:42:28+08:00","dateModified": "2025-01-01T12:42:28+08:00","publisher": {
+      "@id": "https:\/\/williamlfang.github.io\/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95\/"
+    },"genre": "posts","wordcount":  194 ,
+    "url": "https:\/\/williamlfang.github.io\/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95\/","datePublished": "2025-01-03T22:29:36+08:00","dateModified": "2025-01-03T22:29:36+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -211,121 +371,54 @@
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>使用 zoxide</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>crti.so 找不到的解决方法</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-01-01 12:42:28"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-01-01">2025-01-01</time></span>&nbsp;<span title="276 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 300 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="details toc" id="toc-static" data-kept="false">
-        <div class="details-summary toc-title">
-          <span>目录</span>
-          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
-        </div>
-        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ol>
-    <li>
-      <ol>
-        <li><a href="#安装">安装</a></li>
-        <li><a href="#配置">配置</a></li>
-        <li><a href="#zsh-z">zsh-z</a></li>
-        <li><a href="#使用技巧">使用技巧</a></li>
-      </ol>
-    </li>
-  </ol>
-</nav></div>
-      </div><div class="content" id="content"><p><code>zoxide</code> 是一款类比 <code>cd</code> 的目录导航工具，但是提供了基于使用频率的快速跳转功能。</p>
-
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-  <iframe src="https://www.youtube-nocookie.com/embed/aghxkpyRVDY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
-</div>
-
-<h2 id="安装" class="heading-element">
-  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h2><div class="highlight" id="id-1"><div class="chroma">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-01-03 22:29:36"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-01-03">2025-01-03</time></span>&nbsp;<span title="194 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="content" id="content"><p>在编译一个代码模块的是否，<code>gcc</code> 报错</p>
+<div class="highlight" id="id-1"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh <span class="p">|</span> sh</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/usr/bin/ld: cannot find crt1.o: No such file or directory</span></span></code></pre></td></tr></table>
 </div>
-</div><p>默认安装在 <code>~/.local/bin/zoxide</code></p>
+</div><p>我们需要让 <code>gcc</code> 识别到 <code>crt</code> 的路径</p>
 <div class="highlight" id="id-2"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">total 1.3M
-</span></span><span class="line"><span class="cl">drwxrwxr-x <span class="m">2</span> william william 4.0K Jan  <span class="m">1</span> 12:26 .
-</span></span><span class="line"><span class="cl">drwxrwxr-x <span class="m">7</span> william william 4.0K Mar <span class="m">13</span>  <span class="m">2024</span> ..
-</span></span><span class="line"><span class="cl">-rwxr-xr-x <span class="m">1</span> william william 1.2M Jan  <span class="m">1</span> 12:26 zoxide
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">find /usr -name crti*
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">## clear .zcompdump</span>
-</span></span><span class="line"><span class="cl">rm ~/.zcompdump*<span class="p">;</span> compinit
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">which z
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">z <span class="o">()</span> <span class="o">{</span>
-</span></span><span class="line"><span class="cl">    __zoxide_z <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
+</span></span><span class="line"><span class="cl">/usr/lib32/crti.o
+</span></span><span class="line"><span class="cl">/usr/lib/i386-linux-gnu/crti.o
+</span></span><span class="line"><span class="cl">/usr/lib/x86_64-linux-gnu/crti.o
+</span></span><span class="line"><span class="cl">/usr/libx32/crti.o</span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="配置" class="heading-element">
-  <a href="#%e9%85%8d%e7%bd%ae" class="heading-mark"></a>配置</h2><div class="highlight" id="id-3"><div class="chroma">
+</div><p>可以看到，在默认的路径找到了 <code>/usr/lib32/crt1.o</code>，但是由于这个指向的是 32 位操作系统的动态库（可能是当前系统安装了多个编译环境），导致 <code>gcc</code> 编译文件无法使用 64 位的动态库。同时，我们还发现 <code>/usr/lib/x86_64-linux-gnu/crti.o</code> 这个版本是 64 位动态库，因此需要让 <code>gcc</code> 使用该版本</p>
+<div class="highlight" id="id-3"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">##=============================================================================</span>
-</span></span><span class="line"><span class="cl"><span class="c1">## zoxide</span>
-</span></span><span class="line"><span class="cl"><span class="k">export</span> <span class="n">PATH</span><span class="o">=/</span><span class="n">home</span><span class="o">/</span><span class="n">william</span><span class="o">/.</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="p">:</span><span class="o">$</span><span class="n">PATH</span>
-</span></span><span class="line"><span class="cl"><span class="n">eval</span> <span class="s2">&#34;$(zoxide init --cmd cd zsh)&#34;</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get install libc6-dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/lib/x86_64-linux-gnu:<span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LIBRARY_PATH</span><span class="o">=</span>/usr/lib/x86_64-linux-gnu:<span class="si">${</span><span class="nv">LIBRARY_PATH</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo ln -s /usr/lib/x86_64-linux-gnu /usr/lib64</span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里，我使用了 <code>cd</code> 替代 <code>z</code>，使得 <code>z</code> 依然保留其他的快捷键。</p>
-<p>使用 <code>cd path</code> 进行跳转</p>
-<div class="highlight" id="id-4"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">which <span class="nb">cd</span>
-</span></span><span class="line"><span class="cl"><span class="nb">cd</span> <span class="o">()</span> <span class="o">{</span>
-</span></span><span class="line"><span class="cl">    __zoxide_z <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>同时，还可以使用 <code>cdi</code> 进行交互式的操作。</p>
-<h2 id="zsh-z" class="heading-element">
-  <a href="#zsh-z" class="heading-mark"></a>zsh-z</h2><p>需要注意的，如果使用 <code>zsh</code> 安装了 <code>zsh-z</code>，可能导致 <code>z</code> 命令冲突，这时候需要从 <code>~/.zshrc</code>   去掉</p>
-<div class="highlight" id="id-5"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="c1">## z vs autojump vs zoxide</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># zinit light agkozak/zsh-z</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="使用技巧" class="heading-element">
-  <a href="#%e4%bd%bf%e7%94%a8%e6%8a%80%e5%b7%a7" class="heading-mark"></a>使用技巧</h2><ul>
-<li>使用 <code>z abs &lt;space&gt;&lt;Tab&gt;</code> 进行补全</li>
-<li><code>zoxide add</code></li>
-<li><code>zoxide remove</code></li>
-<li><code>zoxide query</code></li>
-<li><code>zoxide edit</code> 可以进行编辑操作(add, detele)</li>
-</ul></div><div class="post-reward">
+</div></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>
@@ -336,16 +429,16 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2025-01-01 12:42:28">更新于 2025-01-01&nbsp;</span>
+        <span title="更新于 2025-01-03 22:29:36">更新于 2025-01-03&nbsp;</span>
       </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-md"><span><a href="/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/" data-title="使用 zoxide"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/" data-title="使用 zoxide" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/" data-title="使用 zoxide"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/" data-title="使用 zoxide"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" data-title="crti.so 找不到的解决方法"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" data-title="crti.so 找不到的解决方法" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" data-title="crti.so 找不到的解决方法"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" data-title="crti.so 找不到的解决方法"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
@@ -357,8 +450,8 @@
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/" class="post-nav-item" rel="prev" title="Ubuntu 升级 ffmpeg"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Ubuntu 升级 ffmpeg</a>
-      <a href="/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" class="post-nav-item" rel="next" title="crti.so 找不到的解决方法">crti.so 找不到的解决方法<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/" class="post-nav-item" rel="prev" title="使用 zoxide"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>使用 zoxide</a>
+      <a href="/2025-01-03-zsh-auto-suggestion-with-key-binding/" class="post-nav-item" rel="next" title="zsh auto suggestion with key binding">zsh auto suggestion with key binding<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script
@@ -385,8 +478,7 @@
           Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
         </noscript></div></article>
 
-  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
-      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+  <aside class="toc" id="toc-auto" aria-label="目录"></aside></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
         </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
             <span itemprop="copyrightYear">2013 - 2025</span><span class="author" itemprop="copyrightHolder">
