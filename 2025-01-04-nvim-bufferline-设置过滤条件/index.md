@@ -20,7 +20,7 @@
 - 目录
 - 以及我们这次讨论的基于数量的过滤
 
-![bufferline-noshow](./bufferline-noshow &#34;bufferline do not show for only on opened file&#34;)
+![bufferline-noshow](./bufferline-noshow.png &#34;bufferline do not show for only on opened file&#34;)
 
 ## 实现
 
