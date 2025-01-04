@@ -10,7 +10,7 @@
 <meta name="description" content="通过源代码安装 gcc14，同时需要更新 libstdc&#43;&#43; 动态库链接。" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="gcc14 源代码安装">
 <meta itemprop="description" content="通过源代码安装 gcc14，同时需要更新 libstdc&#43;&#43; 动态库链接。"><meta itemprop="datePublished" content="2024-07-14T01:03:02+08:00" />
 <meta itemprop="dateModified" content="2024-07-14T01:03:02+08:00" />
-<meta itemprop="wordCount" content="41"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="wordCount" content="189"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
 <meta itemprop="keywords" content="" /><meta property="og:title" content="gcc14 源代码安装" />
 <meta property="og:description" content="通过源代码安装 gcc14，同时需要更新 libstdc&#43;&#43; 动态库链接。" />
 <meta property="og:type" content="article" />
@@ -35,7 +35,7 @@
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https:\/\/williamlfang.github.io\/2024-07-14-gcc14-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85\/"
-    },"genre": "posts","wordcount":  41 ,
+    },"genre": "posts","wordcount":  189 ,
     "url": "https:\/\/williamlfang.github.io\/2024-07-14-gcc14-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85\/","datePublished": "2024-07-14T01:03:02+08:00","dateModified": "2024-07-14T01:03:02+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
@@ -197,7 +197,7 @@
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>gcc14 源代码安装</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-07-14 01:03:02"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-07-14">2024-07-14</time></span>&nbsp;<span title="41 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-07-14 01:03:02"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-07-14">2024-07-14</time></span>&nbsp;<span title="189 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
     </div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
@@ -224,9 +224,74 @@
 <h2 id="安装" class="heading-element">
   <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h2><div class="highlight" id="id-1"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code></code></pre></td>
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://ftp.gnu.org/gnu/gcc/gcc-14.2.0/gcc-14.2.0.tar.gz
+</span></span><span class="line"><span class="cl">tar xvf gcc-14.2.0.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> gcc-14.2.0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## install prerequisites</span>
+</span></span><span class="line"><span class="cl">./contrib/download_prerequisites
+</span></span><span class="line"><span class="cl"><span class="k">for</span> k in <span class="sb">`</span>ls <span class="p">|</span>grep .tar.<span class="sb">`</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    tar xvf <span class="si">${</span><span class="nv">k</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span><span class="line"><span class="cl">ln -s gmp-6.2.1 gmp
+</span></span><span class="line"><span class="cl">ln -s mpfr-4.1.0 mpfr
+</span></span><span class="line"><span class="cl">ln -s mpc-1.2.1 mpc
+</span></span><span class="line"><span class="cl">ln -s isl-0.24 isl
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mkdir -p /shared/trading/lib/gcc14
+</span></span><span class="line"><span class="cl">./configure --prefix<span class="o">=</span>/shared/trading/lib/gcc14 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --enable-bootstrap <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --enable-checking<span class="o">=</span>release <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --enable-languages<span class="o">=</span>c,c++ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --disable-multilib
+</span></span><span class="line"><span class="cl">make <span class="o">&amp;&amp;</span> make install
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#echo  &#34;export PATH=/usr/local/gcc9/bin:$PATH&#34; &gt;&gt; /etc/profile.d/gcc.sh &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#source /etc/profile.d/gcc.sh &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ln -sv /usr/local/gcc9/include/ /usr/include/gcc &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#echo &#34;/usr/local/gcc9/lib64&#34; &gt;&gt; /etc/ld.so.conf.d/gcc.conf &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ldconfig -v &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ldconfig -p |grep gcc &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ln -sf /usr/local/gcc9/bin/g++ /usr/bin/g++ &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ln -sf /usr/local/gcc9/bin/gcc /usr/bin/gcc &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ln -sf /usr/local/gcc9/bin/c++ /usr/bin/c++ &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#ln -sf /usr/local/gcc9/bin/cc /usr/bin/cc &amp;&amp; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#rm -rf /tmp/gcc*</span></span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="libstdc" class="heading-element">
   <a href="#libstdc" class="heading-mark"></a>libstdc++</h2><div class="highlight" id="id-2"><div class="chroma">

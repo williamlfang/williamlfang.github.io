@@ -40,6 +40,7 @@ install.packages(&#34;https://cran.r-project.org/src/contrib/Archive/RcppTOML/Rc
 ## 使用
 
 ```R
+Sys.setenv(RETICULATE_PYTHON = &#34;~/miniconda3/bin/python&#34;)
 library(reticulate)
 use_python(&#34;~/miniconda3/bin/python&#34;)
 source_python(&#39;/fs/public/ops/config/ceph.py&#39;)
