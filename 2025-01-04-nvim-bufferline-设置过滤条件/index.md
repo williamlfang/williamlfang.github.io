@@ -3,9 +3,9 @@
 
 今天在写代码的时候，遇到一个有趣的事情：有时候我们只打开一个文件，但是 `bufferline` 也会显示该文件相关的操作。
 
-![bufferline](./bufferline.png &#34;bufferline show up for only one opened file&#34;)
-
 &lt;!--more--&gt;
+
+![bufferline](./bufferline.png &#34;bufferline show up for only one opened file&#34;)
 
 ## 过滤条件
 
