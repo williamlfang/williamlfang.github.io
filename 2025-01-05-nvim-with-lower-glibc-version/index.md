@@ -7,7 +7,10 @@ I&#39;ve also learned that starting from `v0.10.0`, `neovim` would support **bui
 
 However, there is on repo provide **unsupported release version** of `nvim` for some legacy systems. And it only require `glibc` of version `2.17`. What a great job!
 
-In case anyone would need this [repo](https://github.com/neovim/neovim-releases).
+In case anyone would need this
+
+{{&lt; link &#34;https://github.com/neovim/neovim-releases&#34; &#34;nvim with lower glibc&#34; &#34;unsupported release version&#34; true true &gt;}}
+
 
 Now I&#39;m happy with it.
 
