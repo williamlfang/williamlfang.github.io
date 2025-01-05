@@ -13,22 +13,66 @@
 
 可以编辑 `~/.config/xremap.yaml`
 
+### modmap
+
+{{&lt; admonition &gt;}}
+modmap is for key-to-key remapping like xmodmap. Note that remapping a key to a modifier key, e.g. CapsLock to Control_L, is supported only in modmap since keymap handles modifier keys differently.
+{{&lt; /admonition &gt;}}
+
+- `modmap` 是**一一对应**的关系，不像 `keymap` 可以使用组合方式。比如，我把 `CapsLock` 当成 `Esc` 使用。
+- 同时，我们还可以通过定义一个触发规则，把一个键位对应到多个事件，这个是通过定义 `held` 和 `alone` 组合来实现。比如我这里把 `Ctrl_L` 映射为两个行为
+
+    - 如果是单独触发，在时间 `alone_timeout_millis` 内没有触发其他的按键，则对应 `Esc`
+    - 如果是组合触发，比如我使用 `Ctrl-k` 来切换 `tmux` window
+
+{{&lt; admonition &gt;}}
+If you specify a map containing held and alone, you can use the key for two purposes. The key is considered alone if it&#39;s pressed and released within alone_timeout_millis (default: 1000) before any other key is pressed. Otherwise it&#39;s considered held.
+{{&lt; /admonition &gt;}}
+
+### keymap
+
 ```bash
+# modmap:
+#   - name: Cap as Esc # Optional
+#     application: # Optional
+#       not: Google-chrome
+#       # or
+#       # only: [vim, nvim, neovim]
+#     remap: # Required
+#       CapsLock: Esc
 modmap:
   - name: Cap as Esc # Optional
     application: # Optional
       not: Google-chrome
       # or
       # only: [vim, nvim, neovim]
-      # only: [Alacritty.Alacritty]
     remap: # Required
-      CapsLock: Esc
+      CapsLock:
+        held: CapsLock
+        alone: Esc
+        alone_timeout_millis: 200
+      Ctrl_L:
+        held: Ctrl_L
+        alone: Esc
+        alone_timeout_millis: 500 ## default:1000
 keymap:
-  - name: Ctrl-i as Esc (HHKB)
+  - name: Ctrl as Esc
     application: # Optional
       not: Google-chrome
+      # or
+      # only: [vim, nvim, neovim]
     remap:
       C-i: Esc
+  - name: Arrow
+    # application: # Optional
+    #   only: Google-chrome
+    #   # or
+    #   # only: [vim, nvim, neovim]
+    remap:
+      Alt-h: Left
+      Alt-j: Down
+      Alt-k: Up
+      Alt-l: Right
 ```
 
 这里需要区分 `modmap` 与 `keymap`
