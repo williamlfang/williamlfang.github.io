@@ -27,6 +27,8 @@ Summary:
 
 {{&lt; admonition &gt;}}
 But because of caching, the way you organize data directly impacts performance.
+
+Modern CPUs have **caches to speed up memory access**. These can access **memory adjacent to recently accessed memory much quicker**. Take advantage of that to improve performance by increasing data locality: **keeping data in contiguous memory in the order that you process it**.
 {{&lt; /admonition &gt;}}
 
 

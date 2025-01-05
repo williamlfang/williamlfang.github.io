@@ -3,9 +3,21 @@
     <title>William</title>
     <link>https://williamlfang.github.io/</link>
     <description>William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 04 Jan 2025 23:59:23 &#43;0800</lastBuildDate>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 05 Jan 2025 15:45:18 &#43;0800</lastBuildDate>
       <atom:link href="https://williamlfang.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+  <title>nvim with lower glibc version</title>
+  <link>https://williamlfang.github.io/2025-01-05-nvim-with-lower-glibc-version/</link>
+  <pubDate>Sun, 05 Jan 2025 15:45:18 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-01-05-nvim-with-lower-glibc-version/</guid>
+  <description><![CDATA[<p>I&rsquo;m writting code on a rather outdated Linux CentoOS7, with <code>glibc</code> of version up to &lsquo;2.18&rsquo;. And for a meanwhile, there is no hope to upgrade it, since we&rsquo;ve deployed quite a lot of services, meaning updating may cause some unanticipated crashes.</p>
+<p>I&rsquo;ve also learned that starting from <code>v1.0.0</code>, <code>neovim</code> would support <strong>buildin inlay</strong>, which definitely enhance our code reading. It&rsquo;s gonna to be the main reason I need to upgrade <code>nvim</code>. The sad part of this story is that, the official release of <code>nvim</code> require at lease <code>glibc</code> of version 2.29.</p>
+<p>However, there is on repo provide <strong>unsupported release version</strong> of <code>nvim</code> for some legacy systems. And it only require <code>glibc</code> of version <code>2.17</code>. What a great job!</p>
+<p>In case anyone would need this <a href="https://github.com/neovim/neovim-releases"target="_blank" rel="external nofollow noopener noreferrer">repo<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>.</p>
+<p>Now I&rsquo;m happy with it.</p>]]></description>
+</item>
+<item>
   <title>Nystrom: Game Programming Patterns</title>
   <link>https://williamlfang.github.io/2025-01-04-nystrom--game-programming-patterns/</link>
   <pubDate>Sat, 04 Jan 2025 23:59:23 &#43;0800</pubDate>
@@ -199,214 +211,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2024-11-28-r-%E8%B0%83%E7%94%A8-python/</guid>
   <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2024-11-28-r-%E8%B0%83%E7%94%A8-python/rpython.png" alt="R 调用 python" title="R 调用 python" referrerpolicy="no-referrer"/></div><p>利用 <code>reticulate</code> 接口，我们可以在 <code>R</code> 中调用 <code>python</code> 封装的函数。</p>]]></description>
-</item>
-<item>
-  <title>安装 python ldap</title>
-  <link>https://williamlfang.github.io/2024-11-15-%E5%AE%89%E8%A3%85-python-ldap/</link>
-  <pubDate>Fri, 15 Nov 2024 17:40:04 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2024-11-15-%E5%AE%89%E8%A3%85-python-ldap/</guid>
-  <description><![CDATA[<h2 id="问题" class="heading-element">
-  <a href="#%e9%97%ae%e9%a2%98" class="heading-mark"></a>问题</h2><p>安装 <code>python-ldap</code> 失败，报错如下：</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">~/miniconda3/bin/python -m pip install python-ldap
-</span></span><span class="line"><span class="cl">                                                                                                                                            <span class="o">[</span>Nov15 17:37:32<span class="o">]</span>
-</span></span><span class="line"><span class="cl">Looking in indexes: https://mirrors.cloud.tencent.com/pypi/simple
-</span></span><span class="line"><span class="cl">Collecting python-ldap
-</span></span><span class="line"><span class="cl">  Using cached https://mirrors.cloud.tencent.com/pypi/packages/fd/8b/1eeb4025dc1d3ac2f16678f38dec9ebdde6271c74955b72db5ce7a4dbfbd/python-ldap-3.4.4.tar.gz <span class="o">(</span><span class="m">377</span> kB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">  Installing build dependencies ... <span class="k">done</span>
-</span></span><span class="line"><span class="cl">  Getting requirements to build wheel ... <span class="k">done</span>
-</span></span><span class="line"><span class="cl">  Preparing metadata <span class="o">(</span>pyproject.toml<span class="o">)</span> ... <span class="k">done</span>
-</span></span><span class="line"><span class="cl">Collecting pyasn1&gt;<span class="o">=</span>0.3.7
-</span></span><span class="line"><span class="cl">  Using cached https://mirrors.cloud.tencent.com/pypi/packages/c8/f1/d6a797abb14f6283c0ddff96bbdd46937f64122b8c925cab503dd37f8214/pyasn1-0.6.1-py3-none-any.whl <span class="o">(</span><span class="m">83</span> kB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">Collecting pyasn1-modules&gt;<span class="o">=</span>0.1.5
-</span></span><span class="line"><span class="cl">  Using cached https://mirrors.cloud.tencent.com/pypi/packages/77/89/bc88a6711935ba795a679ea6ebee07e128050d6382eaa35a0a47c8032bdc/pyasn1_modules-0.4.1-py3-none-any.whl <span class="o">(</span><span class="m">181</span> kB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">Building wheels <span class="k">for</span> collected packages: python-ldap
-</span></span><span class="line"><span class="cl">  Building wheel <span class="k">for</span> python-ldap <span class="o">(</span>pyproject.toml<span class="o">)</span> ... error
-</span></span><span class="line"><span class="cl">  error: subprocess-exited-with-error
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  × Building wheel <span class="k">for</span> python-ldap <span class="o">(</span>pyproject.toml<span class="o">)</span> did not run successfully.
-</span></span><span class="line"><span class="cl">  │ <span class="nb">exit</span> code: <span class="m">1</span>
-</span></span><span class="line"><span class="cl">  ╰─&gt; <span class="o">[</span><span class="m">83</span> lines of output<span class="o">]</span>
-</span></span><span class="line"><span class="cl">      /tmp/ycm.lfang/pip-build-env-e1c2lubs/overlay/lib/python3.11/site-packages/setuptools/_distutils/dist.py:261: UserWarning: Unknown distribution option: <span class="s1">&#39;test_suite&#39;</span>
-</span></span><span class="line"><span class="cl">        warnings.warn<span class="o">(</span>msg<span class="o">)</span>
-</span></span><span class="line"><span class="cl">      running bdist_wheel
-</span></span><span class="line"><span class="cl">      running build
-</span></span><span class="line"><span class="cl">      running build_py
-</span></span><span class="line"><span class="cl">      creating build/lib.linux-x86_64-cpython-311
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/__init__.py -&gt; build/lib.linux-x86_64-cpython-311/slapdtest
-</span></span><span class="line"><span class="cl">      ...................................................................................
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/_slapdtest.py -&gt; build/lib.linux-x86_64-cpython-311/slapdtest
-</span></span><span class="line"><span class="cl">      running egg_info
-</span></span><span class="line"><span class="cl">      writing Lib/python_ldap.egg-info/PKG-INFO
-</span></span><span class="line"><span class="cl">      writing dependency_links to Lib/python_ldap.egg-info/dependency_links.txt
-</span></span><span class="line"><span class="cl">      writing requirements to Lib/python_ldap.egg-info/requires.txt
-</span></span><span class="line"><span class="cl">      writing top-level names to Lib/python_ldap.egg-info/top_level.txt
-</span></span><span class="line"><span class="cl">      reading manifest file <span class="s1">&#39;Lib/python_ldap.egg-info/SOURCES.txt&#39;</span>
-</span></span><span class="line"><span class="cl">      reading manifest template <span class="s1">&#39;MANIFEST.in&#39;</span>
-</span></span><span class="line"><span class="cl">      no previously-included directories found matching <span class="s1">&#39;Doc/.build&#39;</span>
-</span></span><span class="line"><span class="cl">      adding license file <span class="s1">&#39;LICENCE&#39;</span>
-</span></span><span class="line"><span class="cl">      writing manifest file <span class="s1">&#39;Lib/python_ldap.egg-info/SOURCES.txt&#39;</span>
-</span></span><span class="line"><span class="cl">      creating build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/README -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/ca.conf -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/ca.pem -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/client.conf -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/client.key -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/client.pem -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/gencerts.sh -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/gennssdb.sh -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/server.conf -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/server.key -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      copying Lib/slapdtest/certs/server.pem -&gt; build/lib.linux-x86_64-cpython-311/slapdtest/certs
-</span></span><span class="line"><span class="cl">      running build_ext
-</span></span><span class="line"><span class="cl">      building <span class="s1">&#39;_ldap&#39;</span> extension
-</span></span><span class="line"><span class="cl">      creating build/temp.linux-x86_64-cpython-311/Modules
-</span></span><span class="line"><span class="cl">      gcc -pthread -B /home/lfang/miniconda3/compiler_compat -DNDEBUG -fwrapv -O2 -Wall -fPIC -O2 -isystem /home/lfang/miniconda3/include -fPIC -O2 -isystem /home/lfang/miniconda3/include -fPIC -DHAVE_SASL -DHAVE_TLS -DLDAPMODULE_VERSION<span class="o">=</span>3.4.4 <span class="s2">&#34;-DLDAPMODULE_AUTHOR=python-ldap project&#34;</span> <span class="s2">&#34;-DLDAPMODULE_LICENSE=Python style&#34;</span> -IModules -I/home/lfang/miniconda3/include/python3.11 -c Modules/LDAPObject.c -o build/temp.linux-x86_64-cpython-311/Modules/LDAPObject.o
-</span></span><span class="line"><span class="cl">      In file included from Modules/LDAPObject.c:3:0:
-</span></span><span class="line"><span class="cl">      Modules/common.h:15:18: fatal error: lber.h: No such file or directory
-</span></span><span class="line"><span class="cl">       <span class="c1">#include &lt;lber.h&gt;</span>
-</span></span><span class="line"><span class="cl">                        ^
-</span></span><span class="line"><span class="cl">      compilation terminated.
-</span></span><span class="line"><span class="cl">      error: <span class="nb">command</span> <span class="s1">&#39;/shared/trading/lib/gcc/bin/gcc&#39;</span> failed with <span class="nb">exit</span> code <span class="m">1</span>
-</span></span><span class="line"><span class="cl">      <span class="o">[</span>end of output<span class="o">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  note: This error originates from a subprocess, and is likely not a problem with pip.
-</span></span><span class="line"><span class="cl">  ERROR: Failed building wheel <span class="k">for</span> python-ldap
-</span></span><span class="line"><span class="cl">Failed to build python-ldap
-</span></span><span class="line"><span class="cl">ERROR: Could not build wheels <span class="k">for</span> python-ldap, which is required to install pyproject.toml-based projects</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="解决" class="heading-element">
-  <a href="#%e8%a7%a3%e5%86%b3" class="heading-mark"></a>解决</h2><h3 id="安装-ldap-相关依赖包" class="heading-element">
-  <a href="#%e5%ae%89%e8%a3%85-ldap-%e7%9b%b8%e5%85%b3%e4%be%9d%e8%b5%96%e5%8c%85" class="heading-mark"></a>安装 ldap 相关依赖包</h3><div class="highlight" id="id-2"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install openldap-devel python-devel</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="安装-python-ldap" class="heading-element">
-  <a href="#%e5%ae%89%e8%a3%85-python-ldap" class="heading-mark"></a>安装 python-ldap</h3><div class="highlight" id="id-3"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">~/miniconda3/bin/python -m pip install python-ldap
-</span></span><span class="line"><span class="cl">                                                                                                                                            <span class="o">[</span>Nov15 17:39:07<span class="o">]</span>
-</span></span><span class="line"><span class="cl">Looking in indexes: https://mirrors.cloud.tencent.com/pypi/simple
-</span></span><span class="line"><span class="cl">Collecting python-ldap
-</span></span><span class="line"><span class="cl">  Using cached https://mirrors.cloud.tencent.com/pypi/packages/fd/8b/1eeb4025dc1d3ac2f16678f38dec9ebdde6271c74955b72db5ce7a4dbfbd/python-ldap-3.4.4.tar.gz <span class="o">(</span>​‌​
-</span></span><span class="line"><span class="cl"><span class="m">377</span> kB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">  Installing build dependencies ... <span class="k">done</span>
-</span></span><span class="line"><span class="cl">  Getting requirements to build wheel ... <span class="k">done</span>
-</span></span><span class="line"><span class="cl">  Preparing metadata <span class="o">(</span>pyproject.toml<span class="o">)</span> ... <span class="k">done</span>
-</span></span><span class="line"><span class="cl">Collecting pyasn1&gt;<span class="o">=</span>0.3.7
-</span></span><span class="line"><span class="cl">  Using cached https://mirrors.cloud.tencent.com/pypi/packages/c8/f1/d6a797abb14f6283c0ddff96bbdd46937f64122b8c925cab503dd37f8214/pyasn1-0.6.1-py3-none-any.​‌​
-</span></span><span class="line"><span class="cl">whl <span class="o">(</span><span class="m">83</span> kB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">Collecting pyasn1-modules&gt;<span class="o">=</span>0.1.5
-</span></span><span class="line"><span class="cl">  Using cached https://mirrors.cloud.tencent.com/pypi/packages/77/89/bc88a6711935ba795a679ea6ebee07e128050d6382eaa35a0a47c8032bdc/pyasn1_modules-0.4.1-py3-n​‌​
-</span></span><span class="line"><span class="cl">one-any.whl <span class="o">(</span><span class="m">181</span> kB<span class="o">)</span>
-</span></span><span class="line"><span class="cl">Building wheels <span class="k">for</span> collected packages: python-ldap
-</span></span><span class="line"><span class="cl">  Building wheel <span class="k">for</span> python-ldap <span class="o">(</span>pyproject.toml<span class="o">)</span> ... <span class="k">done</span>
-</span></span><span class="line"><span class="cl">  Created wheel <span class="k">for</span> python-ldap: <span class="nv">filename</span><span class="o">=</span>python_ldap-3.4.4-cp311-cp311-linux_x86_64.whl <span class="nv">size</span><span class="o">=</span><span class="m">286532</span> <span class="nv">sha256</span><span class="o">=</span>24023d98304c16abd74cebc2da6264630dc5514eb86ce72b​‌​
-</span></span><span class="line"><span class="cl">f45eb9c700f9ab3b
-</span></span><span class="line"><span class="cl">  Stored in directory: /home/lfang/.cache/pip/wheels/e1/1e/2b/95497b4a8f153525aa61c184a47e2fbf35ed9bba349a9c3b08
-</span></span><span class="line"><span class="cl">Successfully built python-ldap
-</span></span><span class="line"><span class="cl">Installing collected packages: pyasn1, pyasn1-modules, python-ldap
-</span></span><span class="line"><span class="cl">Successfully installed pyasn1-0.6.1 pyasn1-modules-0.4.1 python-ldap-3.4.4</span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
 </item>
 </channel>
 </rss>
