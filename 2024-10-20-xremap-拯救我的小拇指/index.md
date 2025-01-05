@@ -17,13 +17,18 @@
 modmap:
   - name: Cap as Esc # Optional
     application: # Optional
-      not: [Google-chrome]
+      not: Google-chrome
       # or
       # only: [vim, nvim, neovim]
       # only: [Alacritty.Alacritty]
     remap: # Required
       CapsLock: Esc
-#keymap
+keymap:
+  - name: Ctrl-i as Esc (HHKB)
+    application: # Optional
+      not: Google-chrome
+    remap:
+      C-i: Esc
 ```
 
 这里需要区分 `modmap` 与 `keymap`
@@ -40,6 +45,17 @@ modmap:
 sudo /home/william/xremap /home/william/.config/xremap.yaml
 ```
 
+如果不使用 `root` 执行，则需要设置
+
+```bash
+## 需要获取 input 执行权限
+sudo gpasswd -a william input
+echo &#39;KERNEL==&#34;uinput&#34;, GROUP=&#34;input&#34;, TAG&#43;=&#34;uaccess&#34;&#39; | sudo tee /etc/udev/rules.d/input.rules
+
+## 需要重启生效，下次就可以使用普通用户执行了
+reboot
+```
+
 ## ref
 
 - [example/config.yaml](https://github.com/xremap/xremap/blob/master/example/config.yml)
@@ -47,7 +63,6 @@ sudo /home/william/xremap /home/william/.config/xremap.yaml
 - [分享下我折腾 sway/alacritty/xremap 的经历](https://emacs-china.org/t/sway-alacritty-xremap/24781)
 - [一份参考配置](https://github.com/jixiuf/dotfiles/blob/main/linux/etc/xremap.yaml)
 - [使用内置 keyboard 修改映射](https://askubuntu.com/questions/485454/how-to-remap-keys-on-a-user-level-both-with-and-without-x)
-
 
 
 ---

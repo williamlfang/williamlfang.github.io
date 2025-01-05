@@ -5,7 +5,7 @@ Reading notes from **Robert Nystrom**&#39;s *Game Programming Patterns*.
 
 &lt;!--more--&gt;
 
-## Chap.1 Architecture, Performance, and Games
+# Chap.1 Architecture, Performance, and Games
 
 We have a few forces in play:
 
@@ -20,7 +20,14 @@ Summary:
 4. If you are going to ditch code, don&#39;t waster time making it pretty. Rock stars trash hotel rooms because they know they&#39;re going to check out the next day.
 5. But, most of all, if you want to make something fun, have fun making it.
 
-## Chap.2 Design Patterns Revisited
+# Chap.2 Design Patterns Revisited
+
+# Chap. Data Locality
+
+
+{{&lt; admonition &gt;}}
+But because of caching, the way you organize data directly impacts performance.
+{{&lt; /admonition &gt;}}
 
 
 
