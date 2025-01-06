@@ -11,7 +11,11 @@
 
 ## 配置
 
-可以编辑 `~/.config/xremap.yaml`
+可以编辑 `~/.config/xremap.yaml`，具体的键位名称可以参考：[keys](https://github.com/emberian/evdev/blob/1d020f11b283b0648427a2844b6b980f1a268221/src/scancodes.rs#L72)
+
+{{&lt; admonition &gt;}}
+For KEY_XXX and KEY_YYY, use these names. You can skip KEY_ and the name is case-insensitive. So KEY_CAPSLOCK, CAPSLOCK, and CapsLock are the same thing
+{{&lt; /admonition &gt;}}
 
 ### modmap
 
@@ -31,15 +35,10 @@ If you specify a map containing held and alone, you can use the key for two purp
 
 ### keymap
 
+`keymap` 可以实现组合键。
+
 ```bash
-# modmap:
-#   - name: Cap as Esc # Optional
-#     application: # Optional
-#       not: Google-chrome
-#       # or
-#       # only: [vim, nvim, neovim]
-#     remap: # Required
-#       CapsLock: Esc
+## https://github.com/emberian/evdev/blob/1d020f11b283b0648427a2844b6b980f1a268221/src/scancodes.rs#L26-L572
 modmap:
   - name: Cap as Esc # Optional
     application: # Optional
@@ -50,25 +49,25 @@ modmap:
       CapsLock:
         held: CapsLock
         alone: Esc
-        alone_timeout_millis: 200
+        alone_timeout_millis: 1000
       Ctrl_L:
         held: Ctrl_L
         alone: Esc
-        alone_timeout_millis: 500 ## default:1000
+        alone_timeout_millis: 1000 ## default:1000
 keymap:
-  - name: Ctrl as Esc
+  - name: Right Arrow to complete in zsh
     application: # Optional
       not: Google-chrome
       # or
       # only: [vim, nvim, neovim]
     remap:
-      C-i: Esc
+      # C-i: [Right, Right]
+      C-i: [Ctrl_L-Right]
+      C-DOT: [Right, Right]
+      Ctrl_L-COMMA: [SPACE, Shift-KEY_BACKSLASH]
   - name: Arrow
-    # application: # Optional
-    #   only: Google-chrome
-    #   # or
-    #   # only: [vim, nvim, neovim]
     remap:
+      Alt-SPACE: Shift-Insert
       Alt-h: Left
       Alt-j: Down
       Alt-k: Up

@@ -138,6 +138,28 @@ end
 return kanagawa
 ```
 
+# tmux 颜色问题
+
+`tmux` 可能出现显示颜色问题，需要修改
+
+## alacritty
+
+```toml
+## ----------------------------------------------------------------------------env
+[env]
+TERM=&#39;xterm-256color&#39;
+# TERM=&#39;Alacritty&#39;
+```
+
+## tmux
+
+```bash
+set -g default-terminal &#34;screen-256color&#34;
+set-option -sa terminal-overrides &#39;,screen-256color:Tc&#39;
+```
+
+ref: https://gist.github.com/andersevenrud/015e61af2fd264371032763d4ed965b6
+
 
 ---
 
