@@ -5,82 +5,219 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>ubuntu 安装 sticky notes - William</title><meta name="author" content="william">
+    <title>crontab FAILED to authorize user with PAM - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="
+<meta name="description" content="这几天发现有一个 crontab 没有启动，一开始以为是脚本有问题，所以添加了日志重定向。可是还是没有任何输出，所以怀疑是 crontab 没有执行，然后查看系统日志 /var/log/cron 发现有报错
+
+
+1
+
+
+crond[81985]: (infra) FAILED to authorize user with PAM (Module is unknown)
+
+在网上搜索发现是 PAM 密钥过期了，需要重新设置
+
 
 1
 2
 3
+4
 
 
-sudo add-apt-repository ppa:umang/indicator-stickynotes
-sudo apt-get update
-sudo apt-get install indicator-stickynotes
+chage -M 99999 root
+chage -M 99999 infra
+chage -M 99999 spd
+chage -M 99999 ops
 
-" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="ubuntu 安装 sticky notes">
-<meta itemprop="description" content="
+重新查看就可以了
+
 
 1
 2
 3
+4
+5
+6
+7
+8
 
 
-sudo add-apt-repository ppa:umang/indicator-stickynotes
-sudo apt-get update
-sudo apt-get install indicator-stickynotes
+chage -l infra
+Last password change                                    : Jul 12, 2024
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
 
-"><meta itemprop="datePublished" content="2024-07-10T13:36:14+08:00" />
-<meta itemprop="dateModified" content="2024-07-10T13:36:14+08:00" />
-<meta itemprop="wordCount" content="13"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
-<meta itemprop="keywords" content="" /><meta property="og:title" content="ubuntu 安装 sticky notes" />
-<meta property="og:description" content="
+" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="crontab FAILED to authorize user with PAM">
+<meta itemprop="description" content="这几天发现有一个 crontab 没有启动，一开始以为是脚本有问题，所以添加了日志重定向。可是还是没有任何输出，所以怀疑是 crontab 没有执行，然后查看系统日志 /var/log/cron 发现有报错
+
+
+1
+
+
+crond[81985]: (infra) FAILED to authorize user with PAM (Module is unknown)
+
+在网上搜索发现是 PAM 密钥过期了，需要重新设置
+
 
 1
 2
 3
+4
 
 
-sudo add-apt-repository ppa:umang/indicator-stickynotes
-sudo apt-get update
-sudo apt-get install indicator-stickynotes
+chage -M 99999 root
+chage -M 99999 infra
+chage -M 99999 spd
+chage -M 99999 ops
+
+重新查看就可以了
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+
+
+chage -l infra
+Last password change                                    : Jul 12, 2024
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
+
+"><meta itemprop="datePublished" content="2025-01-08T13:21:46+08:00" />
+<meta itemprop="dateModified" content="2025-01-08T13:21:46+08:00" />
+<meta itemprop="wordCount" content="192"><meta itemprop="image" content="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/failed.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="crontab FAILED to authorize user with PAM" />
+<meta property="og:description" content="这几天发现有一个 crontab 没有启动，一开始以为是脚本有问题，所以添加了日志重定向。可是还是没有任何输出，所以怀疑是 crontab 没有执行，然后查看系统日志 /var/log/cron 发现有报错
+
+
+1
+
+
+crond[81985]: (infra) FAILED to authorize user with PAM (Module is unknown)
+
+在网上搜索发现是 PAM 密钥过期了，需要重新设置
+
+
+1
+2
+3
+4
+
+
+chage -M 99999 root
+chage -M 99999 infra
+chage -M 99999 spd
+chage -M 99999 ops
+
+重新查看就可以了
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+
+
+chage -l infra
+Last password change                                    : Jul 12, 2024
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
 
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-07-10T13:36:14+08:00" />
-<meta property="article:modified_time" content="2024-07-10T13:36:14+08:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/" /><meta property="og:image" content="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/failed.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-01-08T13:21:46+08:00" />
+<meta property="article:modified_time" content="2025-01-08T13:21:46+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="ubuntu 安装 sticky notes"/>
-<meta name="twitter:description" content="
+<meta name="twitter:image" content="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/failed.png" /><meta name="twitter:title" content="crontab FAILED to authorize user with PAM"/>
+<meta name="twitter:description" content="这几天发现有一个 crontab 没有启动，一开始以为是脚本有问题，所以添加了日志重定向。可是还是没有任何输出，所以怀疑是 crontab 没有执行，然后查看系统日志 /var/log/cron 发现有报错
+
+
+1
+
+
+crond[81985]: (infra) FAILED to authorize user with PAM (Module is unknown)
+
+在网上搜索发现是 PAM 密钥过期了，需要重新设置
+
 
 1
 2
 3
+4
 
 
-sudo add-apt-repository ppa:umang/indicator-stickynotes
-sudo apt-get update
-sudo apt-get install indicator-stickynotes
+chage -M 99999 root
+chage -M 99999 infra
+chage -M 99999 spd
+chage -M 99999 ops
+
+重新查看就可以了
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+
+
+chage -l infra
+Last password change                                    : Jul 12, 2024
+Password expires                                        : never
+Password inactive                                       : never
+Account expires                                         : never
+Minimum number of days between password change          : 0
+Maximum number of days between password change          : 99999
+Number of days of warning before password expires       : 7
 
 "/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/" /><link rel="prev" href="https://williamlfang.github.io/2024-07-08-nvim-%E4%BD%BF%E7%94%A8-sshfs-%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%BA%E5%99%A8/" /><link rel="next" href="https://williamlfang.github.io/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/" /><link rel="prev" href="https://williamlfang.github.io/2025-01-06-%E8%8E%AB%E5%90%8D%E5%85%B6%E5%A6%99%E7%9A%84-select-to-paste-%E6%8C%89%E9%94%AE/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "ubuntu 安装 sticky notes",
+    "headline": "crontab FAILED to authorize user with PAM",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes\/"
-    },"genre": "posts","wordcount":  13 ,
-    "url": "https:\/\/williamlfang.github.io\/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes\/","datePublished": "2024-07-10T13:36:14+08:00","dateModified": "2024-07-10T13:36:14+08:00","publisher": {
+      "@id": "https:\/\/williamlfang.github.io\/2025-01-08-crontab-failed-to-authorize-user-with-pam\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2025-01-08-crontab-failed-to-authorize-user-with-pam\/failed.png",
+              "width":  1086 ,
+              "height":  981 
+            }],"genre": "posts","wordcount":  192 ,
+    "url": "https:\/\/williamlfang.github.io\/2025-01-08-crontab-failed-to-authorize-user-with-pam\/","datePublished": "2025-01-08T13:21:46+08:00","dateModified": "2025-01-08T13:21:46+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -239,26 +376,52 @@ sudo apt-get install indicator-stickynotes
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>ubuntu 安装 sticky notes</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>crontab FAILED to authorize user with PAM</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-07-10 13:36:14"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-07-10">2024-07-10</time></span>&nbsp;<span title="13 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="content" id="content"><div class="details admonition warning open">
-      <div class="details-summary admonition-title">
-        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
-      </div>
-      <div class="details-content">
-        <div class="admonition-content">本文最后更新于 2024-07-10，文中内容可能已过时。</div>
-      </div>
-    </div><div class="highlight" id="id-1"><div class="chroma">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-01-08 13:21:46"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-01-08">2025-01-08</time></span>&nbsp;<span title="192 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2025-01-08-crontab-failed-to-authorize-user-with-pam/failed.png" alt="/2025-01-08-crontab-failed-to-authorize-user-with-pam/failed.png" data-title="/2025-01-08-crontab-failed-to-authorize-user-with-pam/failed.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="content" id="content"><p>这几天发现有一个 <code>crontab</code> 没有启动，一开始以为是脚本有问题，所以添加了日志重定向。可是还是没有任何输出，所以怀疑是 <code>crontab</code> 没有执行，然后查看系统日志 <code>/var/log/cron</code> 发现有报错</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">crond<span class="o">[</span>81985<span class="o">]</span>: <span class="o">(</span>infra<span class="o">)</span> FAILED to authorize user with PAM <span class="o">(</span>Module is unknown<span class="o">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>在网上搜索发现是 <code>PAM</code> 密钥过期了，需要重新设置</p>
+<div class="highlight" id="id-2"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
+</span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo add-apt-repository ppa:umang/indicator-stickynotes
-</span></span><span class="line"><span class="cl">sudo apt-get update
-</span></span><span class="line"><span class="cl">sudo apt-get install indicator-stickynotes</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chage -M <span class="m">99999</span> root
+</span></span><span class="line"><span class="cl">chage -M <span class="m">99999</span> infra
+</span></span><span class="line"><span class="cl">chage -M <span class="m">99999</span> spd
+</span></span><span class="line"><span class="cl">chage -M <span class="m">99999</span> ops</span></span></code></pre></td></tr></table>
+</div>
+</div><p>重新查看就可以了</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chage -l infra
+</span></span><span class="line"><span class="cl">Last password change                                    : Jul 12, <span class="m">2024</span>
+</span></span><span class="line"><span class="cl">Password expires                                        : never
+</span></span><span class="line"><span class="cl">Password inactive                                       : never
+</span></span><span class="line"><span class="cl">Account expires                                         : never
+</span></span><span class="line"><span class="cl">Minimum number of days between password change          : <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Maximum number of days between password change          : <span class="m">99999</span>
+</span></span><span class="line"><span class="cl">Number of days of warning before password expires       : <span class="m">7</span></span></span></code></pre></td></tr></table>
 </div>
 </div></div><div class="post-reward">
     <div class="comment"></div>
@@ -271,16 +434,16 @@ sudo apt-get install indicator-stickynotes
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2024-07-10 13:36:14">更新于 2024-07-10&nbsp;</span>
+        <span title="更新于 2025-01-08 13:21:46">更新于 2025-01-08&nbsp;</span>
       </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-md"><span><a href="/2025-01-08-crontab-failed-to-authorize-user-with-pam/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/" data-title="ubuntu 安装 sticky notes"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/" data-title="ubuntu 安装 sticky notes" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/" data-title="ubuntu 安装 sticky notes"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-07-10-ubuntu-%E5%AE%89%E8%A3%85-sticky-notes/" data-title="ubuntu 安装 sticky notes"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/" data-title="crontab FAILED to authorize user with PAM"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/" data-title="crontab FAILED to authorize user with PAM" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/" data-title="crontab FAILED to authorize user with PAM"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2025-01-08-crontab-failed-to-authorize-user-with-pam/" data-title="crontab FAILED to authorize user with PAM"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
@@ -292,8 +455,7 @@ sudo apt-get install indicator-stickynotes
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2024-07-08-nvim-%E4%BD%BF%E7%94%A8-sshfs-%E8%BF%9E%E6%8E%A5%E8%BF%9C%E7%A8%8B%E6%9C%BA%E5%99%A8/" class="post-nav-item" rel="prev" title="nvim 使用 sshfs 连接远程机器"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>nvim 使用 sshfs 连接远程机器</a>
-      <a href="/2024-07-10-init_shm-%E4%B8%8E-config-%E9%87%8C%E9%9D%A2%E7%9A%84-shm_size-%E5%A4%A7%E5%B0%8F%E9%9C%80%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E8%87%B4/" class="post-nav-item" rel="next" title="init_shm 与 config 里面的 shm_size 大小需要保持一致">init_shm 与 config 里面的 shm_size 大小需要保持一致<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2025-01-06-%E8%8E%AB%E5%90%8D%E5%85%B6%E5%A6%99%E7%9A%84-select-to-paste-%E6%8C%89%E9%94%AE/" class="post-nav-item" rel="prev" title="莫名其妙的 Select to paste 按键"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>莫名其妙的 Select to paste 按键</a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script

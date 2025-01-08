@@ -62,7 +62,8 @@ keymap:
       # only: [vim, nvim, neovim]
     remap:
       # C-i: [Right, Right]
-      C-i: [Ctrl_L-Right]
+      # C-i: [Ctrl_L-Right]
+      Alt-i: [Ctrl_L-Right]
       C-DOT: [Right, Right]
       Ctrl_L-COMMA: [SPACE, Shift-KEY_BACKSLASH]
   - name: Arrow

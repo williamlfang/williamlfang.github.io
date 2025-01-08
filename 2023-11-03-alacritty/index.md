@@ -194,7 +194,6 @@ key = &#34;Return&#34;
 mods = &#34;Control|Shift&#34;
 
 ## https://alacritty.org/config-alacritty.html
-## 可以通过设置 &#34;None&#34; 屏蔽掉某个快捷键
 [[keyboard.bindings]]
 # action = &#34;DecreaseFontSize&#34;
 action = &#34;None&#34;
@@ -205,6 +204,14 @@ mods = &#34;Control&#34;
 action = &#34;None&#34;
 key = &#34;Equals&#34;
 mods = &#34;Control&#34;
+[[keyboard.bindings]]
+action = &#34;DecreaseFontSize&#34;
+key = &#34;Minus&#34;
+mods = &#34;Control | Alt&#34;
+[[keyboard.bindings]]
+action = &#34;IncreaseFontSize&#34;
+key = &#34;Equals&#34;
+mods = &#34;Control | Alt&#34;
 
 ## ----------------------------------------------------------------------------shell
 [shell]
@@ -233,6 +240,7 @@ action = &#34;Paste&#34;
 #   { key = &#34;C&#34;, mods = &#34;Control|Shift&#34;, mode = &#34;Vi|Search&#34;, action = &#34;ClearSelection&#34; },
 #   { key = &#34;Insert&#34;, mods = &#34;Shift&#34;, action = &#34;Paste&#34; }
 # ]
+]
 ```
 
 ## Ref
