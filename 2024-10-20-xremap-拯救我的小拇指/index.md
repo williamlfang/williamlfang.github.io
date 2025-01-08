@@ -61,18 +61,27 @@ keymap:
       # or
       # only: [vim, nvim, neovim]
     remap:
-      # C-i: [Right, Right]
       # C-i: [Ctrl_L-Right]
       Alt-i: [Ctrl_L-Right]
+      Alt-DOT: [Ctrl_L-Right]
       C-DOT: [Right, Right]
-      Ctrl_L-COMMA: [SPACE, Shift-KEY_BACKSLASH]
+      C-COMMA: [Ctrl_L-Right]
+      # Ctrl_L-SEMICOLON: [SPACE, Shift-KEY_BACKSLASH]
+      # Ctrl_L-APOSTROPHE: [SPACE, Shift-KEY_BACKSLASH]
+      C-SEMICOLON: [SPACE, Shift-KEY_BACKSLASH]
+      C-APOSTROPHE: [SPACE, Shift-KEY_BACKSLASH]
+      C-MINUS: [SPACE, Shift-KEY_MINUS]
   - name: Arrow
     remap:
+      Alt-c: [Ctrl_L-c]
+      Alt-v: [Shift-Insert]
       Alt-SPACE: Shift-Insert
-      Alt-h: Left
+      Shift-SPACE: Shift-Insert
+      # Ctrl_L-SPACE: Shift-Insert
+      Alt-h: [Ctrl_L-Left]
       Alt-j: Down
       Alt-k: Up
-      Alt-l: Right
+      Alt-l: [Ctrl_L-Right]
 ```
 
 这里需要区分 `modmap` 与 `keymap`
