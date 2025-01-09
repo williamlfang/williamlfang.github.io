@@ -47,7 +47,8 @@ modmap:
       # only: [vim, nvim, neovim]
     remap: # Required
       CapsLock:
-        held: CapsLock
+        # held: CapsLock
+        held: Ctrl_L
         alone: Esc
         alone_timeout_millis: 1000
       Ctrl_L:
