@@ -106,16 +106,19 @@ end
 ```lua
 return {
     &#34;mkdir700/im-select-remote.nvim&#34;,
+    lazy = true,
+    event = &#39;BufRead&#39;,
+    ft = {&#34;markdown&#34;},
     config = function()
         require(&#39;im-select-remote&#39;).setup({
             osc = {
                 secret = &#34;&#34;,
             },
             socket = {
-                port = 23333, -- port
+                port = 23333,
                 max_retry_count = 3,
-                -- command = &#34;fcitx-remote -c&#34;, -- inactivate input method
-                -- command = &#34;fcitx-remote -o&#34;, -- active input method
+                -- command_enter = &#34;fcitx-remote -o&#34;,
+                -- command_leave = &#34;fcitx-remote -c&#34;,
             },
         })
     end
