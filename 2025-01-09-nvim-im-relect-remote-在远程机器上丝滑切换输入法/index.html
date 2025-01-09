@@ -24,7 +24,7 @@
 一旦退出 insert 模式（即按下 Esc），再从远程发送一个命令给本地，要求切换到英文，这样就可以在 normal 模式下使用各种按键了。
 "><meta itemprop="datePublished" content="2025-01-09T22:08:47+08:00" />
 <meta itemprop="dateModified" content="2025-01-09T22:08:47+08:00" />
-<meta itemprop="wordCount" content="883"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="wordCount" content="966"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
 <meta itemprop="keywords" content="" /><meta property="og:title" content="nvim im relect remote 在远程机器上丝滑切换输入法" />
 <meta property="og:description" content="im-select.nvim 解决了在本地机器的终端上面丝滑切换中英文输入法。但是我回到家里，需要连接到公司的远程服务器，然后再登录
 我的 tmux 回话，即可快速返回下班前的工作状态了。这时候如果需要在 tmux 使用 vim 进行中文输入，就
@@ -63,7 +63,7 @@
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https:\/\/williamlfang.github.io\/2025-01-09-nvim-im-relect-remote-%E5%9C%A8%E8%BF%9C%E7%A8%8B%E6%9C%BA%E5%99%A8%E4%B8%8A%E4%B8%9D%E6%BB%91%E5%88%87%E6%8D%A2%E8%BE%93%E5%85%A5%E6%B3%95\/"
-    },"genre": "posts","wordcount":  883 ,
+    },"genre": "posts","wordcount":  966 ,
     "url": "https:\/\/williamlfang.github.io\/2025-01-09-nvim-im-relect-remote-%E5%9C%A8%E8%BF%9C%E7%A8%8B%E6%9C%BA%E5%99%A8%E4%B8%8A%E4%B8%9D%E6%BB%91%E5%88%87%E6%8D%A2%E8%BE%93%E5%85%A5%E6%B3%95\/","datePublished": "2025-01-09T22:08:47+08:00","dateModified": "2025-01-09T22:08:47+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
@@ -225,7 +225,7 @@
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>nvim im relect remote 在远程机器上丝滑切换输入法</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-01-09 22:08:47"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-01-09">2025-01-09</time></span>&nbsp;<span title="883 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 900 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-01-09 22:08:47"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-01-09">2025-01-09</time></span>&nbsp;<span title="966 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
     </div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
@@ -341,13 +341,40 @@
 </span><span class="lnt">44
 </span><span class="lnt">45
 </span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 进入 insert 模式</span>
-</span></span><span class="line"><span class="cl"><span class="n">M.IMSelectBySocketEnter</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 添加两个命令</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- command_enter： fcitx-remote -o</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- command_leave： fcitx-remote -c</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">M</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="n">M.config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">osc</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">secret</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="n">socket</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">port</span> <span class="o">=</span> <span class="mi">23333</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_retry_count</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">command_enter</span> <span class="o">=</span> <span class="s2">&#34;fcitx-remote -o&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">command_leave</span> <span class="o">=</span> <span class="s2">&#34;fcitx-remote -c&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">--- IMSelectBySocket</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- @treturn int the exit code of the command</span>
+</span></span><span class="line"><span class="cl"><span class="n">M.IMSelectBySocket</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">on_stdout</span><span class="p">()</span> <span class="kr">end</span>
 </span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&#34;echo &#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="n">vim.fn</span><span class="p">.</span><span class="n">shellescape</span><span class="p">(</span><span class="s2">&#34;fcitx-remote -o&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="n">vim.fn</span><span class="p">.</span><span class="n">shellescape</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="s2">&#34; | nc localhost &#34;</span>
 </span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="n">M.config</span><span class="p">.</span><span class="n">socket.port</span>
 </span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="s2">&#34; -q 0&#34;</span>
@@ -359,22 +386,15 @@
 </span></span><span class="line"><span class="cl">    <span class="n">stderr_buffered</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">  <span class="p">})</span>
 </span></span><span class="line"><span class="cl"><span class="kr">end</span>
-</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 进入 insert 模式</span>
+</span></span><span class="line"><span class="cl"><span class="n">M.IMSelectBySocketEnter</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- M.IMSelectBySocket(&#34;fcitx-remote -o&#34;)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">M.IMSelectBySocket</span><span class="p">(</span><span class="n">M.config</span><span class="p">.</span><span class="n">socket.command_enter</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
 </span></span><span class="line"><span class="cl"><span class="c1">-- 退出 insert，进入 normal 模式</span>
 </span></span><span class="line"><span class="cl"><span class="n">M.IMSelectBySocketLeave</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="kr">function</span> <span class="nf">on_stdout</span><span class="p">()</span> <span class="kr">end</span>
-</span></span><span class="line"><span class="cl">  <span class="kd">local</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&#34;echo &#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="n">vim.fn</span><span class="p">.</span><span class="n">shellescape</span><span class="p">(</span><span class="s2">&#34;fcitx-remote -c&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="s2">&#34; | nc localhost &#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="n">M.config</span><span class="p">.</span><span class="n">socket.port</span>
-</span></span><span class="line"><span class="cl">    <span class="o">..</span> <span class="s2">&#34; -q 0&#34;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">vim.fn</span><span class="p">.</span><span class="n">jobstart</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">on_stdout</span> <span class="o">=</span> <span class="n">on_stdout</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">on_stderr</span> <span class="o">=</span> <span class="n">on_stdout</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">on_exit</span> <span class="o">=</span> <span class="n">on_stdout</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">stdout_buffered</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">stderr_buffered</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- M.IMSelectBySocket(&#34;fcitx-remote -c&#34;)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">M.IMSelectBySocket</span><span class="p">(</span><span class="n">M.config</span><span class="p">.</span><span class="n">socket.command_leave</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="kr">end</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">M.IMSelectSocketEnable</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
@@ -493,7 +513,7 @@
 </span></span><span class="line"><span class="cl">bash ./im-server.sh</span></span></code></pre></td></tr></table>
 </div>
 </div><p>如此一来，我们就可以把服务端的命令从 <code>23333</code> 转发到本地，然后执行切换输入法的命令了。</p>
-<p>happing hacking.</p></div><div class="post-reward">
+<p>happing hacking，完美解决中英文切换问题。</p></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>

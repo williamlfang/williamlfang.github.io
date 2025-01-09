@@ -41,11 +41,28 @@ command = &#34;fcitx-remote -c&#34;
 如果我们想要扩展，需要进行判断。于是可以修改城
 
 ```lua
--- 进入 insert 模式
-M.IMSelectBySocketEnter = function()
+-- 添加两个命令
+-- command_enter： fcitx-remote -o
+-- command_leave： fcitx-remote -c
+local M = {}
+M.config = {
+  osc = {
+    secret = &#34;&#34;,
+  },
+  socket = {
+    port = 23333,
+    max_retry_count = 3,
+    command_enter = &#34;fcitx-remote -o&#34;,
+    command_leave = &#34;fcitx-remote -c&#34;,
+  },
+}
+
+--- IMSelectBySocket
+-- @treturn int the exit code of the command
+M.IMSelectBySocket = function(command)
   local function on_stdout() end
   local cmd = &#34;echo &#34;
-    .. vim.fn.shellescape(&#34;fcitx-remote -o&#34;)
+    .. vim.fn.shellescape(command)
     .. &#34; | nc localhost &#34;
     .. M.config.socket.port
     .. &#34; -q 0&#34;
@@ -57,22 +74,15 @@ M.IMSelectBySocketEnter = function()
     stderr_buffered = false,
   })
 end
-
+-- 进入 insert 模式
+M.IMSelectBySocketEnter = function()
+    -- M.IMSelectBySocket(&#34;fcitx-remote -o&#34;)
+    M.IMSelectBySocket(M.config.socket.command_enter)
+end
 -- 退出 insert，进入 normal 模式
 M.IMSelectBySocketLeave = function()
-  local function on_stdout() end
-  local cmd = &#34;echo &#34;
-    .. vim.fn.shellescape(&#34;fcitx-remote -c&#34;)
-    .. &#34; | nc localhost &#34;
-    .. M.config.socket.port
-    .. &#34; -q 0&#34;
-  vim.fn.jobstart(cmd, {
-    on_stdout = on_stdout,
-    on_stderr = on_stdout,
-    on_exit = on_stdout,
-    stdout_buffered = false,
-    stderr_buffered = false,
-  })
+    -- M.IMSelectBySocket(&#34;fcitx-remote -c&#34;)
+    M.IMSelectBySocket(M.config.socket.command_leave)
 end
 
 M.IMSelectSocketEnable = function()
@@ -159,9 +169,7 @@ bash ./im-server.sh
 
 如此一来，我们就可以把服务端的命令从 `23333` 转发到本地，然后执行切换输入法的命令了。
 
-happing hacking.
-
-
+happing hacking，完美解决中英文切换问题。
 
 
 ---
