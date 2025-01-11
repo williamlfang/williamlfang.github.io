@@ -86,16 +86,47 @@ M.IMSelectBySocketLeave = function()
 end
 
 M.IMSelectSocketEnable = function()
-  vim.notify(&#34;IMSelectRemote: Socket enabled&#34;, vim.log.levels.INFO)
-  vim.cmd([[
-      augroup im_select_remote
-        autocmd!
-        &#34; autocmd BufEnter * lua require(&#34;im-select-remote&#34;).IMSelectBySocket()
-        &#34; autocmd InsertLeave * lua require(&#34;im-select-remote&#34;).IMSelectBySocket()
-        autocmd InsertEnter * lua require(&#34;im-select-remote&#34;).IMSelectBySocketEnter()
-        autocmd InsertLeave * lua require(&#34;im-select-remote&#34;).IMSelectBySocketLeave()
-      augroup END
-    ]])
+    if vim.bo.filetype ~= &#34;markdown&#34; then
+        return
+    end
+    -- if M.config.ft[vim.bo.filetype] == nil then
+    --     return
+    -- end
+    vim.notify(&#34;IMSelectRemote: Socket enabled&#34;, vim.log.levels.INFO)
+    vim.cmd([[
+        augroup im_select_remote
+            autocmd!
+            &#34; autocmd BufEnter * lua require(&#34;im-select-remote&#34;).IMSelectBySocket()
+            &#34; autocmd InsertLeave * lua require(&#34;im-select-remote&#34;).IMSelectBySocket()
+            &#34; autocmd InsertEnter * lua require(&#34;im-select-remote&#34;).IMSelectBySocketEnter()
+            &#34; autocmd InsertLeave * lua require(&#34;im-select-remote&#34;).IMSelectBySocketLeave()
+            autocmd InsertEnter *.md lua require(&#34;im-select-remote&#34;).IMSelectBySocketEnter()
+            autocmd InsertLeave *.md lua require(&#34;im-select-remote&#34;).IMSelectBySocketLeave()
+        augroup END
+        ]])
+end
+
+-- 修改成默认关闭状态，可以通过命令打开：IMSelectSocketEnable
+M.setup = function(args)
+  M.config = vim.tbl_deep_extend(&#34;force&#34;, M.config, args or {})
+  if check_auto_enable_socket() then
+    for i = 1, M.config.socket.max_retry_count do
+      local result = os.execute(&#34;nc -z localhost &#34; .. M.config.socket.port .. &#34; -q 0&#34;)
+      if result == 0 then
+        break
+      end
+      retry_count = i
+      vim.cmd(&#34;sleep 50m&#34;)
+    end
+
+    if retry_count == M.config.socket.max_retry_count then
+      vim.notify(&#34;IMSelectServer is not running, please start it first!&#34;, vim.log.levels.WARN)
+      return
+    end
+
+    -- M.IMSelectSocketEnable()
+    M.IMSelectDisable()
+  end
 end
 ```
 
