@@ -286,6 +286,8 @@ After running this command, the line will become:
 
 我尝试让 `AI` 做这个事情，尝试了几次都没有得到结果，但是 `AI` 自我解释里竟然说可以得到结果，真的有点绷不住。所以对于生产环境的代码，我们一定要人工检查之后再允许上线。
 
+![glibc](./glibc.png &#34;shm-directory from glibc&#34;)
+
 {{&lt; admonition type=bug &gt;}}
 - Datetime: 2025-01-12 21:24:25
 
