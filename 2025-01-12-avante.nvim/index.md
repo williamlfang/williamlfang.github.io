@@ -229,6 +229,8 @@ use `sed` to add one more condition: $name ne &#34;nss_test2&#34;
 
 让我十分震惊的是，`AI` 竟然很快就给出了答案，而且还详细说明分析的思路，并且把运行的结果也展示出来。
 
+![sed](./sed.png &#34;using sed from AI&#34;)
+
 {{&lt; admonition &gt;}}
 
 - Datetime: 2025-01-12 21:24:59
