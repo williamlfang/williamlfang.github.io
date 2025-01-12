@@ -208,6 +208,63 @@ return {
 
 ## 效果
 
+最近在测试升级 `glibc`，其中有一个测试条件需要过滤：针对 `nss` 的一个办法，我们不需要添加测试，否则 `glibc` 无法通过编译。其中使用的语法就是 `bash` 的正则表达式，但是混合了特殊符号。即使对于一个非常熟悉 `bash` 语法的程序员，在处理正则表达式时也常常感到心累，大概是因为其复杂的语法。
+
+比如这里（代码位于 `glibc-2.30/scripts/test-installation.pl`）
+
+```bash
+if ($name ne &#34;nss_ldap&#34; &amp;&amp; $name ne &#34;db1&#34;
+    &amp;&amp; $name ne &#34;thread_db&#34;
+    &amp;&amp; $name ne &#34;nss_test1&#34; &amp;&amp; $name ne &#34;libgcc_s&#34;) {
+    $link_libs .= &#34; -l$name&#34;;
+    $versions{$name} = $version;
+}
+```
+
+我们想使用 `sed` 添加一个条件， `&amp;&amp; $name ne &#34;nss_test2&#34;`。一开始我尝试自己去写正则表达式，但是两次都失败了，得不到想要的结果。于是想到让 `AI` 试试看，便把上面那段代码粘贴到一个临时的脚本文件，然后简单描述了我需要得到的效果，至于怎么处理，就交给 `AI` 了。
+
+```bash
+use `sed` to add one more condition: $name ne &#34;nss_test2&#34;
+```
+
+让我十分震惊的是，`AI` 竟然很快就给出了答案，而且还详细说明分析的思路，并且把运行的结果也展示出来。
+
+{{&lt; admonition &gt;}}
+
+- Datetime: 2025-01-12 21:24:59
+
+- Model: openai/deepseek-chat
+
+- Selected files:
+  - test.sh
+
+- Selected code:
+
+```bash
+        &amp;&amp; $name ne &#34;nss_test1&#34; &amp;&amp; $name ne &#34;libgcc_s&#34;) {
+```
+
+&gt; use `sed` to add one more condition: $name ne &#34;nss_test2&#34;
+
+I&#39;ll provide a sed command that will add the new condition while preserving the existing formatting. Here&#39;s the sed command to run:
+
+```bash;h
+sed -i &#39;/&amp;&amp; $name ne &#34;nss_test1&#34; &amp;&amp; $name ne &#34;libgcc_s&#34;/s/&amp;&amp; $name ne &#34;libgcc_s&#34;/\&amp;\&amp; $name ne &#34;nss_test2&#34; \&amp;\&amp; $name ne &#34;libgcc_s&#34;/&#39; test.sh
+```
+
+This command:
+1. Looks for the specific line containing both &#34;nss_test1&#34; and &#34;libgcc_s&#34; conditions
+2. Replaces just the &#34;libgcc_s&#34; condition part with &#34;nss_test2&#34; followed by the original &#34;libgcc_s&#34; condition
+3. Maintains proper spacing and formatting
+4. Uses -i flag to edit the file in-place
+
+After running this command, the line will become:
+```bash
+        &amp;&amp; $name ne &#34;nss_test1&#34; &amp;&amp; $name ne &#34;nss_test2&#34; &amp;&amp; $name ne &#34;libgcc_s&#34;) {
+```
+
+{{&lt; /admonition &gt;}}
+
 # FAQ
 
 ## 标题颜色
