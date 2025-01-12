@@ -20,11 +20,191 @@ export OPENAI_API_KEY=sk-******************************a7c
 
 # avante.nvim
 
-
+`avante` 提供了接入多个大模型应用 `API` 的配置，比如 `openai`、`claude`，而 `deepseek` 为了跟 `openai` 保持一致接口，也是采用了 `openai` 的方式。因此我们看到上面配置的密钥格式是 `openai` 的格式。
 
 ## 配置
 
+这里我把自己使用的配置粘贴上来
+
+```lua
+return {
+    &#34;yetone/avante.nvim&#34;,
+    event = &#34;VeryLazy&#34;,
+    lazy = true,
+    version = false, -- set this if you want to always pull the latest change
+    opts = {
+        provider = &#34;openai&#34;,
+        auto_suggestions_provider = &#34;openai&#34;, -- Since auto-suggestions are a high-frequency operation and therefore expensive,
+                                              -- it is recommended to specify an inexpensive provider or even a free provider: copilot
+        openai = {
+            endpoint = &#34;https://api.deepseek.com/v1&#34;,
+            model = &#34;deepseek-chat&#34;,
+            timeout = 30000, -- Timeout in milliseconds
+            temperature = 0,
+            max_tokens = 4096,
+            [&#34;local&#34;] = false,
+        },
+    },
+    behaviour = {
+        auto_suggestions = false, -- Experimental stage
+        auto_set_highlight_group = true,
+        auto_set_keymaps = true,
+        auto_apply_diff_after_generation = false,
+        support_paste_from_clipboard = true,
+        minimize_diff = true, -- Whether to remove unchanged lines when applying a code block
+    },
+    mappings = {
+        --- @class AvanteConflictMappings
+        diff = {
+            ours = &#34;co&#34;,
+            theirs = &#34;ct&#34;,
+            all_theirs = &#34;ca&#34;,
+            both = &#34;cb&#34;,
+            cursor = &#34;cc&#34;,
+            next = &#34;]x&#34;,
+            prev = &#34;[x&#34;,
+        },
+        suggestion = {
+            accept = &#34;&lt;M-l&gt;&#34;,
+            next = &#34;&lt;M-]&gt;&#34;,
+            prev = &#34;&lt;M-[&gt;&#34;,
+            dismiss = &#34;&lt;C-]&gt;&#34;,
+        },
+        jump = {
+            next = &#34;]]&#34;,
+            prev = &#34;[[&#34;,
+        },
+        submit = {
+            normal = &#34;&lt;CR&gt;&#34;,
+            insert = &#34;&lt;C-s&gt;&#34;,
+        },
+        -- NOTE: The following will be safely set by avante.nvim
+        ask = &#34;&lt;leader&gt;aa&#34;,
+        edit = &#34;&lt;leader&gt;ae&#34;,
+        refresh = &#34;&lt;leader&gt;ar&#34;,
+        focus = &#34;&lt;leader&gt;af&#34;,
+        toggle = {
+            default = &#34;&lt;leader&gt;at&#34;,
+            debug = &#34;&lt;leader&gt;ad&#34;,
+            hint = &#34;&lt;leader&gt;ah&#34;,
+            suggestion = &#34;&lt;leader&gt;as&#34;,
+            repomap = &#34;&lt;leader&gt;aR&#34;,
+        },
+        sidebar = {
+            apply_all = &#34;A&#34;,
+            apply_cursor = &#34;a&#34;,
+            switch_windows = &#34;&lt;Tab&gt;&#34;,
+            reverse_switch_windows = &#34;&lt;S-Tab&gt;&#34;,
+            remove_file = &#34;d&#34;,
+            add_file = &#34;@&#34;,
+        },
+        files = {
+            add_current = &#34;&lt;leader&gt;ac&#34;, -- Add current buffer to selected files
+        },
+    },
+    hints = { enabled = true },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = &#34;make&#34;,
+    -- build = &#34;powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false&#34; -- for windows
+    dependencies = {
+        &#34;nvim-treesitter/nvim-treesitter&#34;,
+        &#34;stevearc/dressing.nvim&#34;,
+        &#34;nvim-lua/plenary.nvim&#34;,
+        &#34;MunifTanjim/nui.nvim&#34;,
+        {
+            &#34;nvim-treesitter/nvim-treesitter&#34;,
+            opts = {
+                highlight = {
+                    enable = true,
+                    additional_vim_regex_highlighting = false,
+                },
+                ensure_installed = {
+                    &#34;markdown&#34;,
+                    &#34;markdown_inline&#34;,
+                    &#34;bash&#34;,
+                    &#34;python&#34;,
+                    &#34;lua&#34;,
+                    &#34;javascript&#34;,
+                    &#34;typescript&#34;,
+                    &#34;html&#34;,
+                    &#34;css&#34;,
+                },
+            },
+        },
+        --- The below dependencies are optional,
+        &#34;nvim-tree/nvim-web-devicons&#34;, -- or echasnovski/mini.icons
+        &#34;zbirenbaum/copilot.lua&#34;, -- for providers=&#39;copilot&#39;
+        {
+            -- support for image pasting
+            &#34;HakonHarnes/img-clip.nvim&#34;,
+            event = &#34;VeryLazy&#34;,
+            opts = {
+                -- recommended settings
+                default = {
+                        embed_image_as_base64 = false,
+                        prompt_for_file_name = false,
+                        drag_and_drop = {
+                        insert_mode = true,
+                    },
+                    -- required for Windows users
+                    use_absolute_path = true,
+                },
+            },
+        },
+        -- {
+        --     -- Make sure to set this up properly if you have lazy=true
+        --     &#39;MeanderingProgrammer/render-markdown.nvim&#39;,
+        --     -- branch = &#34;main&#34;,
+        --     -- commit = &#34;82184c4a3c3580a7a859b2cb7e58f16c10fd29ef&#34;,
+        --     -- opts = {
+        --     --     file_types = { &#34;markdown&#34;, &#34;Avante&#34; },
+        --     -- },
+        --     -- ft = { &#34;markdown&#34;, &#34;Avante&#34; },
+        --     -- highlight = {
+        --     --     enabled = true,
+        --     --     theme = &#34;github&#34;,  -- or &#34;monokai&#34;, &#34;onedark&#34;, etc.
+        --     --     background = true,
+        --     -- },
+        --     -- code_blocks = {
+        --     --     highlight = true,
+        --     --     theme = &#34;github&#34;,  -- Match your colorscheme
+        --     -- },
+        -- },
+    },
+}
+```
+
+由于我使用的是 `markview` 这款插件来渲染 `markdown`，因此就没有使用上面注释部分中的 `render-markdown`。
+
+```lua
+return {
+    &#34;OXY2DEV/markview.nvim&#34;,
+    enabled = true,
+    lazy = true,      -- Recommended
+    event = &#34;BufRead&#34;,
+    ft = {&#34;markdown&#34;}, -- If you decide to lazy-load anyway
+    dependencies = {
+        &#34;nvim-treesitter/nvim-treesitter&#34;,
+        &#34;nvim-tree/nvim-web-devicons&#34;
+    },
+    config = function()
+        local presets = require(&#34;markview.presets&#34;);
+        require(&#34;markview&#34;).setup({
+            filetypes = { &#34;markdown&#34;, &#34;quarto&#34;, &#34;rmd&#34; },
+            headings = presets.headings.marker,
+            checkboxes = presets.checkboxes.nerd,
+            -- Initial plugin state,
+            -- true = show preview
+            -- falss = don&#39;t show preview
+            initial_state = true,
+        })
+    end,
+}
+```
+
 ## 操作
+
+我一开始犯了一个迷糊：`avante` 写的是使用 `&lt;leader&gt;aa` 启动对话。我以为这里的 `leader` 就是我自己设置的 `leader` 键位，即 `;`。但是后来发现 `avante` 配置的 `leader` 其实对应的应该是 `Space` 空格键，所以如果启动对话，需要敲击的键位是：`&lt;Space&gt;aa`。
 
 ## 效果
 
