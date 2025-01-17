@@ -1,4 +1,7 @@
-# This file is <airflow plugins directory>/timetable.py
+# This file is $AIRFLOW_HOME/plugins/mycron.py
+"""
+ref: https://williamlfang.github.io/2025-01-14-airflow-plugins/
+"""
 
 from typing import Any, Dict, List, Optional
 import pendulum
@@ -13,12 +16,13 @@ class MultiCronTimetable(Timetable):
     valid_units = ['minutes', 'hours', 'days']
 
     def __init__(self,
-                 cron_defs: List[str],
-                 timezone: str = 'Europe/Berlin',
+                 crons: str|List[str],
+                 timezone: str = "Asia/Shanghai",
                  period_length: int = 0,
                  period_unit: str = 'hours'):
-
-        self.cron_defs = cron_defs
+        if isinstance(crons, str):
+            crons = [crons]
+        self.crons = crons
         self.timezone = timezone
         self.period_length = period_length
         self.period_unit = period_unit
@@ -102,7 +106,7 @@ class MultiCronTimetable(Timetable):
             tz = timezone(self.timezone)
             base_datetime = pendulum.now(tz)
 
-        return [croniter(expr, base_datetime) for expr in self.cron_defs]
+        return [croniter(expr, base_datetime) for expr in self.crons]
 
     def next_scheduled_run_time(self, base_datetime: DateTime = None):
         min_date = None
@@ -143,9 +147,8 @@ class MultiCronTimetable(Timetable):
             return None
         return pendulum_instance(max_date)
 
-
     def validate(self) -> None:
-        if not self.cron_defs:
+        if not self.crons:
             raise AirflowTimetableInvalid("At least one cron definition must be present")
 
         if self.period_unit not in self.valid_units:
@@ -166,7 +169,7 @@ class MultiCronTimetable(Timetable):
         This is used to display the timetable in the web UI. A cron expression
         timetable, for example, can use this to display the expression.
         """
-        return ' || '.join(self.cron_defs) + f' [TZ: {self.timezone}]'
+        return ' || '.join(self.crons) + f' [TZ: {self.timezone}]'
 
     def serialize(self) -> Dict[str, Any]:
         """Serialize the timetable for JSON encoding.
@@ -175,7 +178,7 @@ class MultiCronTimetable(Timetable):
         in the database. This should return a JSON-serializable dict that will
         be fed into ``deserialize`` when the DAG is deserialized.
         """
-        return dict(cron_defs=self.cron_defs,
+        return dict(crons=self.crons,
                     timezone=self.timezone,
                     period_length=self.period_length,
                     period_unit=self.period_unit)

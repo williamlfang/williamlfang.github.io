@@ -24,16 +24,15 @@
 
 我是参考了这篇 `SO` [airflow 2.2 timetable for schedule, always with error: timetable not registered](https://stackoverflow.com/questions/69732193/airflow-2-2-timetable-for-schedule-always-with-error-timetable-not-registered)。具体的实现步骤是：
 
-1. 修改 `$AIRFLOW_HOME/airflow.cfg` 里面的配置，`lazy_discover_providers = True`
+1. 修改 `$AIRFLOW_HOME/airflow.cfg` 里面的配置，`lazy_load_plugins = False`
 
     ```
-    # By default Airflow providers are lazily-discovered (discovery and imports happen only when required).
-    # Set it to False, if you want to discover providers whenever &#39;airflow&#39; is invoked via cli or
-    # loaded from module.
+    # By default Airflow plugins are lazily-loaded (only loaded when required). Set it to ``False``,
+    # if you want to load plugins whenever &#39;airflow&#39; is invoked via cli or loaded from module.
     #
-    # Variable: AIRFLOW__CORE__LAZY_DISCOVER_PROVIDERS
+    # Variable: AIRFLOW__CORE__LAZY_LOAD_PLUGINS
     #
-    lazy_discover_providers = True
+    lazy_load_plugins = False
     ```
 
 2. 在 `$AIRFLOW_HOME/plugins` 目录添加 `__init__.py`
@@ -51,7 +50,7 @@
     # Define multiple cron schedules
     from mycron import MultiCronTimetable
     multi_cron = MultiCronTimetable(
-        cron_defs = [
+        crons = [
             &#34;50,59 08 * * 1-5&#34;,  # Original schedule
             &#34;01,05 09 * * 1-5&#34;,  # more cron expression
         ],
@@ -93,12 +92,12 @@ class MultiCronTimetable(Timetable):
     valid_units = [&#39;minutes&#39;, &#39;hours&#39;, &#39;days&#39;]
 
     def __init__(self,
-                 cron_defs: List[str],
+                 crons: List[str],
                  timezone: str = &#39;Europe/Berlin&#39;,
                  period_length: int = 0,
                  period_unit: str = &#39;hours&#39;):
 
-        self.cron_defs = cron_defs
+        self.crons = crons
         self.timezone = timezone
         self.period_length = period_length
         self.period_unit = period_unit
@@ -182,7 +181,7 @@ class MultiCronTimetable(Timetable):
             tz = timezone(self.timezone)
             base_datetime = pendulum.now(tz)
 
-        return [croniter(expr, base_datetime) for expr in self.cron_defs]
+        return [croniter(expr, base_datetime) for expr in self.crons]
 
     def next_scheduled_run_time(self, base_datetime: DateTime = None):
         min_date = None
@@ -225,7 +224,7 @@ class MultiCronTimetable(Timetable):
 
 
     def validate(self) -&gt; None:
-        if not self.cron_defs:
+        if not self.crons:
             raise AirflowTimetableInvalid(&#34;At least one cron definition must be present&#34;)
 
         if self.period_unit not in self.valid_units:
@@ -246,7 +245,7 @@ class MultiCronTimetable(Timetable):
         This is used to display the timetable in the web UI. A cron expression
         timetable, for example, can use this to display the expression.
         &#34;&#34;&#34;
-        return &#39; || &#39;.join(self.cron_defs) &#43; f&#39; [TZ: {self.timezone}]&#39;
+        return &#39; || &#39;.join(self.crons) &#43; f&#39; [TZ: {self.timezone}]&#39;
 
     def serialize(self) -&gt; Dict[str, Any]:
         &#34;&#34;&#34;Serialize the timetable for JSON encoding.
@@ -255,7 +254,7 @@ class MultiCronTimetable(Timetable):
         in the database. This should return a JSON-serializable dict that will
         be fed into ``deserialize`` when the DAG is deserialized.
         &#34;&#34;&#34;
-        return dict(cron_defs=self.cron_defs,
+        return dict(crons=self.crons,
                     timezone=self.timezone,
                     period_length=self.period_length,
                     period_unit=self.period_unit)
