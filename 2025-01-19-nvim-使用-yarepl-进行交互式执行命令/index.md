@@ -17,15 +17,15 @@
 return {
     &#34;milanglacier/yarepl.nvim&#34;,
     lazy = true,
-    event = &#34;BufReadPost&#34;,
+    event = &#34;BufRead&#34;,
     ft = { &#34;python&#34;, &#34;bash&#34;, &#34;R&#34; },
     config = function()
         local yarepl = require &#39;yarepl&#39;
         yarepl.setup {
             -- see `:h buflisted`, whether the REPL buffer should be buflisted.
-            buflisted = false,
+            buflisted = true,
             -- whether the REPL buffer should be a scratch buffer.
-            scratch = false,
+            scratch = true,
             -- the filetype of the REPL buffer created by `yarepl`
             ft = &#39;REPL&#39;,
             -- How yarepl open the REPL window, can be a string or a lua function.
