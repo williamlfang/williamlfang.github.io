@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>nvim 使用 yarepl 进行交互式执行命令 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="我有时候需要使用一些脚本语言进行工作，比如使用 bash 编写简单的任务、使用 python 进行数据分析。这些脚本语言的一个好处是可以快速的验证想法，比较灵活操作一些简单的任务。同时，脚本语言还提供了 REPL 的交互式操作，即可以一边写代码、一边执行代码。比如，对于 python 脚本，我可能写了一个函数，然后想快速验证函数里面的某写代码块是否符合逻辑，这时候我们可以利用 REPL 的功能把相关的代码快输入到解释器，即可得到验证。
+在 nvim 中编写 python 代码，如何配置实现 REPL 功能呢？
+这可以通过插件 yarepl.nvim 完成。" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="nvim 使用 yarepl 进行交互式执行命令">
+<meta itemprop="description" content="我有时候需要使用一些脚本语言进行工作，比如使用 bash 编写简单的任务、使用 python 进行数据分析。这些脚本语言的一个好处是可以快速的验证想法，比较灵活操作一些简单的任务。同时，脚本语言还提供了 REPL 的交互式操作，即可以一边写代码、一边执行代码。比如，对于 python 脚本，我可能写了一个函数，然后想快速验证函数里面的某写代码块是否符合逻辑，这时候我们可以利用 REPL 的功能把相关的代码快输入到解释器，即可得到验证。
+在 nvim 中编写 python 代码，如何配置实现 REPL 功能呢？
+这可以通过插件 yarepl.nvim 完成。"><meta itemprop="datePublished" content="2025-01-19T18:46:04+08:00" />
+<meta itemprop="dateModified" content="2025-01-19T18:46:04+08:00" />
+<meta itemprop="wordCount" content="980"><meta itemprop="image" content="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/ipython.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="nvim 使用 yarepl 进行交互式执行命令" />
+<meta property="og:description" content="我有时候需要使用一些脚本语言进行工作，比如使用 bash 编写简单的任务、使用 python 进行数据分析。这些脚本语言的一个好处是可以快速的验证想法，比较灵活操作一些简单的任务。同时，脚本语言还提供了 REPL 的交互式操作，即可以一边写代码、一边执行代码。比如，对于 python 脚本，我可能写了一个函数，然后想快速验证函数里面的某写代码块是否符合逻辑，这时候我们可以利用 REPL 的功能把相关的代码快输入到解释器，即可得到验证。
+在 nvim 中编写 python 代码，如何配置实现 REPL 功能呢？
+这可以通过插件 yarepl.nvim 完成。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" /><meta property="og:image" content="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/ipython.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-01-19T18:46:04+08:00" />
+<meta property="article:modified_time" content="2025-01-19T18:46:04+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/ipython.png" /><meta name="twitter:title" content="nvim 使用 yarepl 进行交互式执行命令"/>
+<meta name="twitter:description" content="我有时候需要使用一些脚本语言进行工作，比如使用 bash 编写简单的任务、使用 python 进行数据分析。这些脚本语言的一个好处是可以快速的验证想法，比较灵活操作一些简单的任务。同时，脚本语言还提供了 REPL 的交互式操作，即可以一边写代码、一边执行代码。比如，对于 python 脚本，我可能写了一个函数，然后想快速验证函数里面的某写代码块是否符合逻辑，这时候我们可以利用 REPL 的功能把相关的代码快输入到解释器，即可得到验证。
+在 nvim 中编写 python 代码，如何配置实现 REPL 功能呢？
+这可以通过插件 yarepl.nvim 完成。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" /><link rel="prev" href="https://williamlfang.github.io/2025-01-19-nvim-disable-pyright/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "nvim 使用 yarepl 进行交互式执行命令",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4\/ipython.png",
+              "width":  2219 ,
+              "height":  1041 
+            }],"genre": "posts","wordcount":  980 ,
+    "url": "https:\/\/williamlfang.github.io\/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4\/","datePublished": "2025-01-19T18:46:04+08:00","dateModified": "2025-01-19T18:46:04+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>nvim 使用 yarepl 进行交互式执行命令</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-01-19 18:46:04"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-01-19">2025-01-19</time></span>&nbsp;<span title="980 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/ipython.png" alt="/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/ipython.png" data-title="/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/ipython.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#yarepl">yarepl</a></li>
+    <li><a href="#设置快捷键-enter-执行代码">设置快捷键 <code>Enter</code> 执行代码</a>
+      <ol>
+        <li><a href="#效果">效果</a></li>
+        <li><a href="#修改触发条件">修改触发条件</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>我有时候需要使用一些脚本语言进行工作，比如使用 <code>bash</code> 编写简单的任务、使用 <code>python</code> 进行数据分析。这些脚本语言的一个好处是可以快速的验证想法，比较灵活操作一些简单的任务。同时，脚本语言还提供了 <code>REPL</code> 的交互式操作，即可以一边写代码、一边执行代码。比如，对于 <code>python</code> 脚本，我可能写了一个函数，然后想快速验证函数里面的某写代码块是否符合逻辑，这时候我们可以利用 <code>REPL</code> 的功能把相关的代码快输入到解释器，即可得到验证。</p>
+<p>在 <code>nvim</code> 中编写 <code>python</code> 代码，如何配置实现 <code>REPL</code> 功能呢？</p>
+<p>这可以通过插件 <code>yarepl.nvim</code> 完成。</p>
+<h1 id="yarepl" class="heading-element">
+  <a href="#yarepl" class="heading-mark"></a>yarepl</h1><p>首先需要配置</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kr">return</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;milanglacier/yarepl.nvim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">lazy</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">event</span> <span class="o">=</span> <span class="s2">&#34;BufReadPost&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ft</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&#34;python&#34;</span><span class="p">,</span> <span class="s2">&#34;bash&#34;</span><span class="p">,</span> <span class="s2">&#34;R&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="n">config</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">yarepl</span> <span class="o">=</span> <span class="n">require</span> <span class="s1">&#39;yarepl&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">yarepl.setup</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- see `:h buflisted`, whether the REPL buffer should be buflisted.</span>
+</span></span><span class="line"><span class="cl">            <span class="n">buflisted</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- whether the REPL buffer should be a scratch buffer.</span>
+</span></span><span class="line"><span class="cl">            <span class="n">scratch</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- the filetype of the REPL buffer created by `yarepl`</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ft</span> <span class="o">=</span> <span class="s1">&#39;REPL&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- How yarepl open the REPL window, can be a string or a lua function.</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- See below example for how to configure this option</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- wincmd = &#39;belowright 15 split&#39;,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- wincmd = &#39;vertical 120 split&#39;,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">wincmd</span> <span class="o">=</span> <span class="s1">&#39;vertical split&#39;</span><span class="p">,</span> <span class="c1">-- equally 50%</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- wincmd = function(bufnr, name)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--     if name == &#39;ipython&#39; then</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--         vim.api.nvim_open_win(bufnr, true, {</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             relative = &#39;editor&#39;,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             row = math.floor(vim.o.lines * 0.25),</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             col = math.floor(vim.o.columns * 0.25),</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             width = math.floor(vim.o.columns * 0.5),</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             height = math.floor(vim.o.lines * 0.5),</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             style = &#39;minimal&#39;,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             title = name,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             border = &#39;rounded&#39;,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--             title_pos = &#39;center&#39;,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--         })</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--     else</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--         -- vim.cmd [[belowright 15 split]]</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--         -- vim.api.nvim_set_current_buf(bufnr)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">--     end</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- end,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- The available REPL palattes that `yarepl` can create REPL based on</span>
+</span></span><span class="line"><span class="cl">            <span class="n">metas</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">aichat</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;aichat&#39;</span><span class="p">,</span> <span class="n">formatter</span> <span class="o">=</span> <span class="n">yarepl.formatter</span><span class="p">.</span><span class="n">bracketed_pasting</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">                <span class="n">radian</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;radian&#39;</span><span class="p">,</span> <span class="n">formatter</span> <span class="o">=</span> <span class="n">yarepl.formatter</span><span class="p">.</span><span class="n">bracketed_pasting</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ipython</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;ipython&#39;</span><span class="p">,</span> <span class="n">formatter</span> <span class="o">=</span> <span class="n">yarepl.formatter</span><span class="p">.</span><span class="n">bracketed_pasting</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">-- python = { cmd = &#39;python&#39;, formatter = yarepl.formatter.trim_empty_lines },</span>
+</span></span><span class="line"><span class="cl">                <span class="n">python</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;bpython -q&#39;</span><span class="p">,</span> <span class="n">formatter</span> <span class="o">=</span> <span class="n">yarepl.formatter</span><span class="p">.</span><span class="n">trim_empty_lines</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">                <span class="n">R</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="n">formatter</span> <span class="o">=</span> <span class="n">yarepl.formatter</span><span class="p">.</span><span class="n">trim_empty_lines</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">                <span class="n">bash</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;bash&#39;</span><span class="p">,</span> <span class="n">formatter</span> <span class="o">=</span> <span class="n">yarepl.formatter</span><span class="p">.</span><span class="n">trim_empty_lines</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">                <span class="n">zsh</span> <span class="o">=</span> <span class="p">{</span> <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;zsh&#39;</span><span class="p">,</span> <span class="n">formatter</span> <span class="o">=</span> <span class="n">yarepl.formatter</span><span class="p">.</span><span class="n">bracketed_pasting</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- when a REPL process exits, should the window associated with those REPLs closed?</span>
+</span></span><span class="line"><span class="cl">            <span class="n">close_on_exit</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- whether automatically scroll to the bottom of the REPL window after sending</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- text? This feature would be helpful if you want to ensure that your view</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- stays updated with the latest REPL output.</span>
+</span></span><span class="line"><span class="cl">            <span class="n">scroll_to_bottom_after_sending</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">os</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">-- Some hacks for Windows. macOS and Linux users can simply ignore</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">-- them. The default options are recommended for Windows user.</span>
+</span></span><span class="line"><span class="cl">                <span class="n">windows</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="c1">-- Send a final `\r` to the REPL with delay,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">send_delayed_cr_after_sending</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">-- 在这里的定义：~/.config/nvim/lazy/yarepl.nvim/lua/yarepl/init.lua</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">-- modifi: api.nvim_create_user_command(&#39;REPLStart&#39;, function(opts)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">-- vim.keymap.set({&#34;n&#34;}, &#34;&lt;CR&gt;&#34;, &#34;:REPLSendLine&lt;CR&gt;j&#34;, { silent = true })</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">-- vim.keymap.set({&#34;v&#34;}, &#34;&lt;CR&gt;&#34;, &#34;&lt;Esc&gt;:REPLSendVisual&lt;CR&gt;j&#34;, { silent = true })</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="设置快捷键-enter-执行代码" class="heading-element">
+  <a href="#%e8%ae%be%e7%bd%ae%e5%bf%ab%e6%8d%b7%e9%94%ae-enter-%e6%89%a7%e8%a1%8c%e4%bb%a3%e7%a0%81" class="heading-mark"></a>设置快捷键 <code>Enter</code> 执行代码</h1><h2 id="效果" class="heading-element">
+  <a href="#%e6%95%88%e6%9e%9c" class="heading-mark"></a>效果</h2><p>我通过绑定快捷键 <code>Enter</code> 触发代码块</p>
+<ul>
+<li>如果是在 <code>normal</code> 模式，按下 <code>Enter</code> 会执行当前这一行的代码</li>
+<li>如果是在 <code>visual</code> 模型，按下 <code>Enter</code> 则触发执行高亮的代码块</li>
+</ul>
+<h2 id="修改触发条件" class="heading-element">
+  <a href="#%e4%bf%ae%e6%94%b9%e8%a7%a6%e5%8f%91%e6%9d%a1%e4%bb%b6" class="heading-mark"></a>修改触发条件</h2><p>为了实现以上效果，我们需要修改 <code>yarepl</code> 的默认配置，使其在进入 <code>REPL</code> 状态是，修改 <code>Enter</code> 键的绑定功能。</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">api.nvim_create_user_command</span><span class="p">(</span><span class="s1">&#39;REPLStart&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- if calling the command without any count, we want count to become 1.</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">repl_name</span> <span class="o">=</span> <span class="n">opts.args</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">id</span> <span class="o">=</span> <span class="n">opts.count</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">opts.count</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">repl</span> <span class="o">=</span> <span class="n">M._repls</span><span class="p">[</span><span class="n">id</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">current_bufnr</span> <span class="o">=</span> <span class="n">api.nvim_get_current_buf</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="n">repl_is_valid</span><span class="p">(</span><span class="n">repl</span><span class="p">)</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="n">vim.notify</span><span class="p">(</span><span class="n">string.format</span><span class="p">(</span><span class="s1">&#39;REPL %d already exists&#39;</span><span class="p">,</span> <span class="n">id</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">focus_repl</span><span class="p">(</span><span class="n">repl</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">return</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">-- binding Enter under normal/visual mode</span>
+</span></span><span class="line"><span class="cl">    <span class="n">vim.keymap</span><span class="p">.</span><span class="n">set</span><span class="p">({</span><span class="s2">&#34;n&#34;</span><span class="p">},</span> <span class="s2">&#34;&lt;CR&gt;&#34;</span><span class="p">,</span> <span class="s2">&#34;:REPLSendLine&lt;CR&gt;j&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="n">vim.keymap</span><span class="p">.</span><span class="n">set</span><span class="p">({</span><span class="s2">&#34;v&#34;</span><span class="p">},</span> <span class="s2">&#34;&lt;CR&gt;&#34;</span><span class="p">,</span> <span class="s2">&#34;&lt;Esc&gt;:REPLSendVisual&lt;CR&gt;j&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="n">silent</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- ...</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2025-01-19 18:46:04">更新于 2025-01-19&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" data-title="nvim 使用 yarepl 进行交互式执行命令"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" data-title="nvim 使用 yarepl 进行交互式执行命令" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" data-title="nvim 使用 yarepl 进行交互式执行命令"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2025-01-19-nvim-%E4%BD%BF%E7%94%A8-yarepl-%E8%BF%9B%E8%A1%8C%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4/" data-title="nvim 使用 yarepl 进行交互式执行命令"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2025-01-19-nvim-disable-pyright/" class="post-nav-item" rel="prev" title="nvim disable pyright"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>nvim disable pyright</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2025</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
