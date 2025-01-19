@@ -23,9 +23,9 @@ return {
         local yarepl = require &#39;yarepl&#39;
         yarepl.setup {
             -- see `:h buflisted`, whether the REPL buffer should be buflisted.
-            buflisted = true,
+            buflisted = false,
             -- whether the REPL buffer should be a scratch buffer.
-            scratch = true,
+            scratch = false,
             -- the filetype of the REPL buffer created by `yarepl`
             ft = &#39;REPL&#39;,
             -- How yarepl open the REPL window, can be a string or a lua function.
