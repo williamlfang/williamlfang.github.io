@@ -187,6 +187,51 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-17-nvim-treesitter-%E4%B8%8E-csv.nvim-%E5%86%B2%E7%AA%81/">nvim treesitter 与 csv.nvim 冲突</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-17 22:23:35'>发布于 <time datetime="2025-01-17">2025-01-17</time></span></div><div class="content"><p>需要把 <code>nvim-treesitter</code> 的 <code>csv</code> 语法关闭</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- List of parsers to ignore installing (or &#34;all&#34;)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ignore_install</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;javascript&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;markdown&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;org&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;csv&#34;</span><span class="p">,</span> <span class="c1">-- we do not use tree-sitter csv since csv.lua would be broken</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="n">highlight</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">-- disable = {&#34;csv&#34;, &#34;markdown&#34;}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">disable</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;csv&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span></span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/2025-01-17-nvim-treesitter-%E4%B8%8E-csv.nvim-%E5%86%B2%E7%AA%81/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2025-01-14-airflow-plugins/" aria-label="Airflow Plugins"><img loading="lazy" src="/2025-01-14-airflow-plugins/mycron.png" alt="Airflow Plugins" data-title="Airflow Plugins" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2025-01-14-airflow-plugins/">Airflow Plugins</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-14 17:21:36'>发布于 <time datetime="2025-01-14">2025-01-14</time></span></div><div class="content"><p><code>ariflow</code> 的 <code>schedule</code> 可以使用 <code>timetable</code> 或者 <code>cron expression</code> 配置任务调度的时间。对于使用 <code>cron expression</code>，如果我们需要更加细粒度的控制，则比较困难。比如我有一个任务设定在两个时间执行</p>
+<ul>
+<li><code>45 08 * * 1-5</code></li>
+<li><code>01 09 * * 1-5</code></li>
+</ul>
+<p>这个在 <code>cron expression</code> 无法合并成同一个任务。</p></div><div class="post-footer">
+    <a href="/2025-01-14-airflow-plugins/">阅读全文</a></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-13-nvim-tmux-%E9%A2%9C%E8%89%B2%E6%98%BE%E7%A4%BA%E4%B8%8D%E5%AF%B9/">nvim tmux 颜色显示不对</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-13 21:28:04'>发布于 <time datetime="2025-01-13">2025-01-13</time></span></div><div class="content"><p>在 <code>~/.tmux.conf</code> 添加</p>
 <div class="highlight" id="id-1"><div class="chroma">
@@ -247,22 +292,6 @@
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-10-pyproject.toml-%E6%89%93%E5%8C%85%E9%A1%B9%E7%9B%AE/">pyproject.toml 打包项目</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-10 16:02:15'>发布于 <time datetime="2025-01-10">2025-01-10</time></span></div><div class="content"><p><code>pyproject.toml</code> 是新一代的 <code>python</code> <strong>项目打包工具</strong>。相比于 <code>setup.py</code> 能够提供更多关于项目本身的信息。</p></div><div class="post-footer">
     <a href="/2025-01-10-pyproject.toml-%E6%89%93%E5%8C%85%E9%A1%B9%E7%9B%AE/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-10-nvim-im-select-remote-%E5%9C%A8%E8%BF%9C%E7%A8%8B%E6%9C%BA%E5%99%A8%E4%B8%8A%E4%B8%9D%E6%BB%91%E5%88%87%E6%8D%A2%E8%BE%93%E5%85%A5%E6%B3%95/">nvim im select remote 在远程机器上丝滑切换输入法</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-10 00:36:18'>发布于 <time datetime="2025-01-10">2025-01-10</time></span></div><div class="content"><p><code>im-select.nvim</code> 解决了在本地机器的终端上面丝滑切换中英文输入法。但是我回到家里，需要连接到公司的远程服务器，然后再登录
-我的 <code>tmux</code> 回话，即可快速返回下班前的工作状态了。这时候如果需要在 <code>tmux</code> 使用 <code>vim</code> 进行中文输入，就
-无法再使用 <code>im-select</code> 的切换功能了，因为其使用使用的是本地的输入法切换，在远程环境中，无法调用。</p>
-<p>这时候我发现一个可以让 <code>nvim</code> 远程调用本地的输入法切换命令：</p>
-<ul>
-<li>一旦进入 <code>insert</code> 模式，就从远程发送一个命令给本地，要求切换到中文输入法</li>
-<li>一旦退出 <code>insert</code> 模式（即按下 <code>Esc</code>），再从远程发送一个命令给本地，要求切换到英文，这样就可以在 <code>normal</code> 模式下使用各种按键了。</li>
-</ul></div><div class="post-footer">
-    <a href="/2025-01-10-nvim-im-select-remote-%E5%9C%A8%E8%BF%9C%E7%A8%8B%E6%9C%BA%E5%99%A8%E4%B8%8A%E4%B8%9D%E6%BB%91%E5%88%87%E6%8D%A2%E8%BE%93%E5%85%A5%E6%B3%95/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-08-nvim-im-select/">nvim im select</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-08 23:43:01'>发布于 <time datetime="2025-01-08">2025-01-08</time></span></div><div class="content"><p>使用 <code>vim</code> 进行中文输入，遇到的最大困难是要频繁的切换中英文，这个操作是比较繁琐的，往往会打断创作思路。我们的想法是，在 <code>insert</code> 模式下，使用中文输入；但是在 <code>normal</code> 模式下，则自动切换到英文输入，如此可以方便各种键位的操作。</p>
-<p>在网上找了一会，发现有一个 <code>im-select</code> 的插件可以实现这个目的，使用起来非常的丝滑。</p></div><div class="post-footer">
-    <a href="/2025-01-08-nvim-im-select/">阅读全文</a></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">

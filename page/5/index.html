@@ -187,6 +187,62 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">crti.so 找不到的解决方法</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-03 22:29:36'>发布于 <time datetime="2025-01-03">2025-01-03</time></span></div><div class="content"><p>在编译一个代码模块的是否，<code>gcc</code> 报错</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/usr/bin/ld: cannot find crt1.o: No such file or directory</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们需要让 <code>gcc</code> 识别到 <code>crt</code> 的路径</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">find /usr -name crti*
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/usr/lib32/crti.o
+</span></span><span class="line"><span class="cl">/usr/lib/i386-linux-gnu/crti.o
+</span></span><span class="line"><span class="cl">/usr/lib/x86_64-linux-gnu/crti.o
+</span></span><span class="line"><span class="cl">/usr/libx32/crti.o</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，在默认的路径找到了 <code>/usr/lib32/crt1.o</code>，但是由于这个指向的是 32 位操作系统的动态库（可能是当前系统安装了多个编译环境），导致 <code>gcc</code> 编译文件无法使用 64 位的动态库。同时，我们还发现 <code>/usr/lib/x86_64-linux-gnu/crti.o</code> 这个版本是 64 位动态库，因此需要让 <code>gcc</code> 使用该版本</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get install libc6-dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/lib/x86_64-linux-gnu:<span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LIBRARY_PATH</span><span class="o">=</span>/usr/lib/x86_64-linux-gnu:<span class="si">${</span><span class="nv">LIBRARY_PATH</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo ln -s /usr/lib/x86_64-linux-gnu /usr/lib64</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/">使用 zoxide</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-01 12:42:28'>发布于 <time datetime="2025-01-01">2025-01-01</time></span></div><div class="content"><p><code>zoxide</code> 是一款类比 <code>cd</code> 的目录导航工具，但是提供了基于使用频率的快速跳转功能。</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe src="https://www.youtube-nocookie.com/embed/aghxkpyRVDY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+</div></div><div class="post-footer">
+    <a href="/2025-01-01-%E4%BD%BF%E7%94%A8-zoxide/">阅读全文</a></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-12-22-ubuntu-%E5%8D%87%E7%BA%A7-ffmpeg/">Ubuntu 升级 ffmpeg</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-12-22 12:06:55'>发布于 <time datetime="2024-12-22">2024-12-22</time></span></div><div class="content"><p>今天使用 <code>yt-dlp</code> 下载视频时，遇到一个报错</p>
 <div class="highlight" id="id-1"><div class="chroma">
@@ -455,40 +511,6 @@
 </div><h2 id="安装-input-leap" class="heading-element">
   <a href="#%e5%ae%89%e8%a3%85-input-leap" class="heading-mark"></a>安装 Input-Leap</h2><p>到 <a href="https://github.com/input-leap/input-leap"target="_blank" rel="external nofollow noopener noreferrer">github 项目主页<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> <a href="https://github.com/input-leap/input-leap/releases/download/v3.0.2/InputLeap_3.0.2_ubuntu_22-04_amd64.deb"target="_blank" rel="external nofollow noopener noreferrer">下载<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p></div><div class="post-footer">
     <a href="/2024-11-10-linux-%E5%AE%89%E8%A3%85-input-leap/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-11-10-linux-%E5%AE%89%E8%A3%85-synergy/">Linux 安装 synergy</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-11-10 22:39:05'>发布于 <time datetime="2024-11-10">2024-11-10</time></span></div><div class="content">无法打开 synergy 1 sudo apt install qt6-base-dev</div><div class="post-footer">
-    <a href="/2024-11-10-linux-%E5%AE%89%E8%A3%85-synergy/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2024-11-04-linux-%E6%8A%A5%E9%94%99-too-many-open-files/">Linux 报错：too many open files</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2024-11-04 17:19:14'>发布于 <time datetime="2024-11-04">2024-11-04</time></span></div><div class="content"><p>查看文件数</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">ulimit</span> -a
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nb">ulimit</span> -n</span></span></code></pre></td></tr></table>
-</div>
-</div><p>增加文件数</p>
-<div class="highlight" id="id-2"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim /etc/security/limits.conf
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">* soft nofile <span class="m">40960</span>
-</span></span><span class="line"><span class="cl">* hard nofile <span class="m">40960</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>注销后重新登录即可生效。</p></div><div class="post-footer">
-    <a href="/2024-11-04-linux-%E6%8A%A5%E9%94%99-too-many-open-files/">阅读全文</a></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
