@@ -3,7 +3,59 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 20 Feb 2025 18:19:39 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 22 Feb 2025 12:49:59 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+  <title>在 c 代码文件插入 shell 命令</title>
+  <link>https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/</link>
+  <pubDate>Sat, 22 Feb 2025 12:49:59 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/</guid>
+  <description><![CDATA[<p>今天看到一个帖子：<a href="https://www.reddit.com/r/C_Programming/comments/1iuvu0f/just_realized_you_can_put_shell_script_inside_c/"target="_blank" rel="external nofollow noopener noreferrer">Just realized you can put shell script inside c source files<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，想到以前有个朋友也是这么使用 <code>c</code>，觉得挺神奇的。</p>
+<p>这个是在 <code>c</code> 源代码文件，使用 <code>macro</code> 宏定义一组 <code>shell</code> 命令，然后再退出 <code>shell</code>，这样就不会在继续执行真正的 <code>c</code> 代码了。这样做的好处是可以使用一个命令 <code>sh main.c</code> 即可快速运行可执行文件，对于一些简单部署的任务比较方便。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#if 0</span><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">cc -o /tmp/app main.c
+</span></span></span><span class="line"><span class="cl"><span class="c">/tmp/app
+</span></span></span><span class="line"><span class="cl"><span class="c">exit # required, otherwise sh will try to interpret the C code below
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;quick script</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sh main.c
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">quick script</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
   <title>tmux: error while loading shared libraries: libevent_core 2.1.so.6</title>
   <link>https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/</link>
   <pubDate>Thu, 20 Feb 2025 18:19:39 &#43;0800</pubDate>
@@ -176,14 +228,6 @@
 </span></span><span class="line"><span class="cl"><span class="nb">set</span> -g default-terminal <span class="s2">&#34;tmux-256color&#34;</span></span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description>
-</item>
-<item>
-  <title>avante.nvim</title>
-  <link>https://williamlfang.github.io/2025-01-12-avante.nvim/</link>
-  <pubDate>Sun, 12 Jan 2025 03:43:47 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-01-12-avante.nvim/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2025-01-12-avante.nvim/nvim_deepseek.png" alt="avante.nvim" title="avante.nvim" referrerpolicy="no-referrer"/></div><p>前两天在 B 站看了一个视频， 介绍了目前国内 <code>AI</code> 领域做得非常不错的一家公司，也是量化界的领头羊-幻方。其中，谈到他们开发大模型 <code>deepseek</code> 已经拥有非常强劲的实力，能够满足大部分场景下的 <code>AGI</code> 使用，比如机器人、自动化代码生成器等。联想到之前我在网上看到 <code>avante.nvim</code> 这个插件可以为 <code>nvim</code> 带来 <code>AI</code> 辅助功能，当时由于国内还无法使用国外开发的大模型工具，所以就不了了之了。现在终于可以在国内合理合法的使用 <code>AI</code> 在 <code>nvim</code> 中辅助编程了。</p>]]></description>
 </item>
 </channel>
 </rss>

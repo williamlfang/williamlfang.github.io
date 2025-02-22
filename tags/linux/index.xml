@@ -3,7 +3,59 @@
     <title>Linux - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/linux/</link>
     <description>Linux - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 20 Feb 2025 18:19:39 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 22 Feb 2025 12:49:59 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+  <title>在 c 代码文件插入 shell 命令</title>
+  <link>https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/</link>
+  <pubDate>Sat, 22 Feb 2025 12:49:59 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/</guid>
+  <description><![CDATA[<p>今天看到一个帖子：<a href="https://www.reddit.com/r/C_Programming/comments/1iuvu0f/just_realized_you_can_put_shell_script_inside_c/"target="_blank" rel="external nofollow noopener noreferrer">Just realized you can put shell script inside c source files<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，想到以前有个朋友也是这么使用 <code>c</code>，觉得挺神奇的。</p>
+<p>这个是在 <code>c</code> 源代码文件，使用 <code>macro</code> 宏定义一组 <code>shell</code> 命令，然后再退出 <code>shell</code>，这样就不会在继续执行真正的 <code>c</code> 代码了。这样做的好处是可以使用一个命令 <code>sh main.c</code> 即可快速运行可执行文件，对于一些简单部署的任务比较方便。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#if 0</span><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">cc -o /tmp/app main.c
+</span></span></span><span class="line"><span class="cl"><span class="c">/tmp/app
+</span></span></span><span class="line"><span class="cl"><span class="c">exit # required, otherwise sh will try to interpret the C code below
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;quick script</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sh main.c
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">quick script</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
   <title>tmux: error while loading shared libraries: libevent_core 2.1.so.6</title>
   <link>https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/</link>
   <pubDate>Thu, 20 Feb 2025 18:19:39 &#43;0800</pubDate>
@@ -284,27 +336,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2023-11-04-nerd-font/</guid>
   <description><![CDATA[<p><code>nerd font</code> 是一款优秀的字体，提供了大量的图标，可以用于 <code>terminal</code>、<code>vim</code> 等终端显示。</p>]]></description>
-</item>
-<item>
-  <title>nvim 打开中文乱码</title>
-  <link>https://williamlfang.github.io/2023-10-30-nvim-%E6%89%93%E5%BC%80%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/</link>
-  <pubDate>Mon, 30 Oct 2023 15:42:46 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-10-30-nvim-%E6%89%93%E5%BC%80%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/</guid>
-  <description><![CDATA[<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">set</span> <span class="nv">encoding</span><span class="o">=</span>utf-8
-</span></span><span class="line"><span class="cl"><span class="nb">set</span> <span class="nv">termencoding</span><span class="o">=</span>utf-8
-</span></span><span class="line"><span class="cl"><span class="nb">set</span> <span class="nv">fileencodings</span><span class="o">=</span>ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr
-</span></span><span class="line"><span class="cl"><span class="nb">set</span> <span class="nv">fileencoding</span><span class="o">=</span>utf-8</span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
 </item>
 </channel>
 </rss>

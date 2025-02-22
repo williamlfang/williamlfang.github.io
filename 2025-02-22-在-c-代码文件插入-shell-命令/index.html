@@ -5,17 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>tmux: error while loading shared libraries: libevent_core 2.1.so.6 - William</title><meta name="author" content="william">
+    <title>在 c 代码文件插入 shell 命令 - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="tmux 报错
-
-
-1
-
-
-tmux: error while loading shared libraries: libevent_core-2.1.so.7
-
-使用 ldd 查看是可以找到动态库
+<meta name="description" content="今天看到一个帖子：Just realized you can put shell script inside c source files，想到以前有个朋友也是这么使用 c，觉得挺神奇的。
+这个是在 c 源代码文件，使用 macro 宏定义一组 shell 命令，然后再退出 shell，这样就不会在继续执行真正的 c 代码了。这样做的好处是可以使用一个命令 sh main.c 即可快速运行可执行文件，对于一些简单部署的任务比较方便。
 
 
  1
@@ -33,30 +26,34 @@ tmux: error while loading shared libraries: libevent_core-2.1.so.7
 13
 
 
-ldd ~/local/bin/tmux
-        linux-vdso.so.1 (0x00007ffe043f8000)
-        libutil.so.1 =&gt; /lib64/libutil.so.1 (0x00007fa85ce0c000)
-        libtinfo.so.5 =&gt; /lib64/libtinfo.so.5 (0x00007fa85cbe2000)
-        libevent_core-2.1.so.6 =&gt; /home/lfang/local/lib/libevent_core-2.1.so.6 (0x00007fa85c9ac000)
-        libm.so.6 =&gt; /lib64/libm.so.6 (0x00007fa85c6aa000)
-        libresolv.so.2 =&gt; /lib64/libresolv.so.2 (0x00007fa85c493000)
-        libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fa85c0e7000)
-        libcrypto.so.10 =&gt; /lib64/libcrypto.so.10 (0x00007fa85bc84000)
-        libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007fa85ba66000)
-        /lib64/ld-linux-x86-64.so.2 (0x00007fa85d00f000)
-        libdl.so.2 =&gt; /lib64/libdl.so.2 (0x00007fa85b862000)
-        libz.so.1 =&gt; /home/lfang/opt/lib/libz.so.1 (0x00007fa85d20c000)
+#if 0
+cc -o /tmp/app main.c
+/tmp/app
+exit # required, otherwise sh will try to interpret the C code below
+#endif
 
-" /><meta name="keywords" content='Linux, tmux, lib, libevent' /><meta itemprop="name" content="tmux: error while loading shared libraries: libevent_core 2.1.so.6">
-<meta itemprop="description" content="tmux 报错
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    printf(&#34;quick script\n&#34;);
+    return 0;
+}
+
 
 
 1
+2
+3
 
 
-tmux: error while loading shared libraries: libevent_core-2.1.so.7
+sh main.c
 
-使用 ldd 查看是可以找到动态库
+quick script
+
+" /><meta name="keywords" content='Linux, c, main, shell' /><meta itemprop="name" content="在 c 代码文件插入 shell 命令">
+<meta itemprop="description" content="今天看到一个帖子：Just realized you can put shell script inside c source files，想到以前有个朋友也是这么使用 c，觉得挺神奇的。
+这个是在 c 源代码文件，使用 macro 宏定义一组 shell 命令，然后再退出 shell，这样就不会在继续执行真正的 c 代码了。这样做的好处是可以使用一个命令 sh main.c 即可快速运行可执行文件，对于一些简单部署的任务比较方便。
 
 
  1
@@ -74,33 +71,37 @@ tmux: error while loading shared libraries: libevent_core-2.1.so.7
 13
 
 
-ldd ~/local/bin/tmux
-        linux-vdso.so.1 (0x00007ffe043f8000)
-        libutil.so.1 =&gt; /lib64/libutil.so.1 (0x00007fa85ce0c000)
-        libtinfo.so.5 =&gt; /lib64/libtinfo.so.5 (0x00007fa85cbe2000)
-        libevent_core-2.1.so.6 =&gt; /home/lfang/local/lib/libevent_core-2.1.so.6 (0x00007fa85c9ac000)
-        libm.so.6 =&gt; /lib64/libm.so.6 (0x00007fa85c6aa000)
-        libresolv.so.2 =&gt; /lib64/libresolv.so.2 (0x00007fa85c493000)
-        libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fa85c0e7000)
-        libcrypto.so.10 =&gt; /lib64/libcrypto.so.10 (0x00007fa85bc84000)
-        libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007fa85ba66000)
-        /lib64/ld-linux-x86-64.so.2 (0x00007fa85d00f000)
-        libdl.so.2 =&gt; /lib64/libdl.so.2 (0x00007fa85b862000)
-        libz.so.1 =&gt; /home/lfang/opt/lib/libz.so.1 (0x00007fa85d20c000)
+#if 0
+cc -o /tmp/app main.c
+/tmp/app
+exit # required, otherwise sh will try to interpret the C code below
+#endif
 
-"><meta itemprop="datePublished" content="2025-02-20T18:19:39+08:00" />
-<meta itemprop="dateModified" content="2025-02-20T18:19:39+08:00" />
-<meta itemprop="wordCount" content="182"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
-<meta itemprop="keywords" content="Linux,tmux,lib,libevent," /><meta property="og:title" content="tmux: error while loading shared libraries: libevent_core 2.1.so.6" />
-<meta property="og:description" content="tmux 报错
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    printf(&#34;quick script\n&#34;);
+    return 0;
+}
+
 
 
 1
+2
+3
 
 
-tmux: error while loading shared libraries: libevent_core-2.1.so.7
+sh main.c
 
-使用 ldd 查看是可以找到动态库
+quick script
+
+"><meta itemprop="datePublished" content="2025-02-22T12:49:59+08:00" />
+<meta itemprop="dateModified" content="2025-02-22T12:49:59+08:00" />
+<meta itemprop="wordCount" content="250"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,c,main,shell," /><meta property="og:title" content="在 c 代码文件插入 shell 命令" />
+<meta property="og:description" content="今天看到一个帖子：Just realized you can put shell script inside c source files，想到以前有个朋友也是这么使用 c，觉得挺神奇的。
+这个是在 c 源代码文件，使用 macro 宏定义一组 shell 命令，然后再退出 shell，这样就不会在继续执行真正的 c 代码了。这样做的好处是可以使用一个命令 sh main.c 即可快速运行可执行文件，对于一些简单部署的任务比较方便。
 
 
  1
@@ -118,37 +119,41 @@ tmux: error while loading shared libraries: libevent_core-2.1.so.7
 13
 
 
-ldd ~/local/bin/tmux
-        linux-vdso.so.1 (0x00007ffe043f8000)
-        libutil.so.1 =&gt; /lib64/libutil.so.1 (0x00007fa85ce0c000)
-        libtinfo.so.5 =&gt; /lib64/libtinfo.so.5 (0x00007fa85cbe2000)
-        libevent_core-2.1.so.6 =&gt; /home/lfang/local/lib/libevent_core-2.1.so.6 (0x00007fa85c9ac000)
-        libm.so.6 =&gt; /lib64/libm.so.6 (0x00007fa85c6aa000)
-        libresolv.so.2 =&gt; /lib64/libresolv.so.2 (0x00007fa85c493000)
-        libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fa85c0e7000)
-        libcrypto.so.10 =&gt; /lib64/libcrypto.so.10 (0x00007fa85bc84000)
-        libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007fa85ba66000)
-        /lib64/ld-linux-x86-64.so.2 (0x00007fa85d00f000)
-        libdl.so.2 =&gt; /lib64/libdl.so.2 (0x00007fa85b862000)
-        libz.so.1 =&gt; /home/lfang/opt/lib/libz.so.1 (0x00007fa85d20c000)
+#if 0
+cc -o /tmp/app main.c
+/tmp/app
+exit # required, otherwise sh will try to interpret the C code below
+#endif
+
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    printf(&#34;quick script\n&#34;);
+    return 0;
+}
+
+
+
+1
+2
+3
+
+
+sh main.c
+
+quick script
 
 " />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2025-02-20T18:19:39+08:00" />
-<meta property="article:modified_time" content="2025-02-20T18:19:39+08:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-02-22T12:49:59+08:00" />
+<meta property="article:modified_time" content="2025-02-22T12:49:59+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="tmux: error while loading shared libraries: libevent_core 2.1.so.6"/>
-<meta name="twitter:description" content="tmux 报错
-
-
-1
-
-
-tmux: error while loading shared libraries: libevent_core-2.1.so.7
-
-使用 ldd 查看是可以找到动态库
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="在 c 代码文件插入 shell 命令"/>
+<meta name="twitter:description" content="今天看到一个帖子：Just realized you can put shell script inside c source files，想到以前有个朋友也是这么使用 c，觉得挺神奇的。
+这个是在 c 源代码文件，使用 macro 宏定义一组 shell 命令，然后再退出 shell，这样就不会在继续执行真正的 c 代码了。这样做的好处是可以使用一个命令 sh main.c 即可快速运行可执行文件，对于一些简单部署的任务比较方便。
 
 
  1
@@ -166,37 +171,48 @@ tmux: error while loading shared libraries: libevent_core-2.1.so.7
 13
 
 
-ldd ~/local/bin/tmux
-        linux-vdso.so.1 (0x00007ffe043f8000)
-        libutil.so.1 =&gt; /lib64/libutil.so.1 (0x00007fa85ce0c000)
-        libtinfo.so.5 =&gt; /lib64/libtinfo.so.5 (0x00007fa85cbe2000)
-        libevent_core-2.1.so.6 =&gt; /home/lfang/local/lib/libevent_core-2.1.so.6 (0x00007fa85c9ac000)
-        libm.so.6 =&gt; /lib64/libm.so.6 (0x00007fa85c6aa000)
-        libresolv.so.2 =&gt; /lib64/libresolv.so.2 (0x00007fa85c493000)
-        libc.so.6 =&gt; /lib64/libc.so.6 (0x00007fa85c0e7000)
-        libcrypto.so.10 =&gt; /lib64/libcrypto.so.10 (0x00007fa85bc84000)
-        libpthread.so.0 =&gt; /lib64/libpthread.so.0 (0x00007fa85ba66000)
-        /lib64/ld-linux-x86-64.so.2 (0x00007fa85d00f000)
-        libdl.so.2 =&gt; /lib64/libdl.so.2 (0x00007fa85b862000)
-        libz.so.1 =&gt; /home/lfang/opt/lib/libz.so.1 (0x00007fa85d20c000)
+#if 0
+cc -o /tmp/app main.c
+/tmp/app
+exit # required, otherwise sh will try to interpret the C code below
+#endif
+
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    printf(&#34;quick script\n&#34;);
+    return 0;
+}
+
+
+
+1
+2
+3
+
+
+sh main.c
+
+quick script
 
 "/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" /><link rel="prev" href="https://williamlfang.github.io/2025-02-11-nvim-orgmode-%E4%BF%AE%E6%94%B9-archive-%E6%96%87%E4%BB%B6%E5%90%8D%E7%A7%B0/" /><link rel="next" href="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" /><link rel="prev" href="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "tmux: error while loading shared libraries: libevent_core 2.1.so.6",
+    "headline": "在 c 代码文件插入 shell 命令",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6\/"
-    },"genre": "posts","keywords": "Linux, tmux, lib, libevent","wordcount":  182 ,
-    "url": "https:\/\/williamlfang.github.io\/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6\/","datePublished": "2025-02-20T18:19:39+08:00","dateModified": "2025-02-20T18:19:39+08:00","publisher": {
+      "@id": "https:\/\/williamlfang.github.io\/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4\/"
+    },"genre": "posts","keywords": "Linux, c, main, shell","wordcount":  250 ,
+    "url": "https:\/\/williamlfang.github.io\/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4\/","datePublished": "2025-02-22T12:49:59+08:00","dateModified": "2025-02-22T12:49:59+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -355,19 +371,12 @@ ldd ~/local/bin/tmux
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>tmux: error while loading shared libraries: libevent_core 2.1.so.6</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>在 c 代码文件插入 shell 命令</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-02-20 18:19:39"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-02-20">2025-02-20</time></span>&nbsp;<span title="182 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="content" id="content"><p><code>tmux</code> 报错</p>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-02-22 12:49:59"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-02-22">2025-02-22</time></span>&nbsp;<span title="250 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 300 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="content" id="content"><p>今天看到一个帖子：<a href="https://www.reddit.com/r/C_Programming/comments/1iuvu0f/just_realized_you_can_put_shell_script_inside_c/"target="_blank" rel="external nofollow noopener noreferrer">Just realized you can put shell script inside c source files<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，想到以前有个朋友也是这么使用 <code>c</code>，觉得挺神奇的。</p>
+<p>这个是在 <code>c</code> 源代码文件，使用 <code>macro</code> 宏定义一组 <code>shell</code> 命令，然后再退出 <code>shell</code>，这样就不会在继续执行真正的 <code>c</code> 代码了。这样做的好处是可以使用一个命令 <code>sh main.c</code> 即可快速运行可执行文件，对于一些简单部署的任务比较方便。</p>
 <div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux: error <span class="k">while</span> loading shared libraries: libevent_core-2.1.so.7</span></span></code></pre></td></tr></table>
-</div>
-</div><p>使用 <code>ldd</code> 查看是可以找到动态库</p>
-<div class="highlight" id="id-2"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -384,38 +393,47 @@ ldd ~/local/bin/tmux
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ldd ~/local/bin/tmux
-</span></span><span class="line"><span class="cl">        linux-vdso.so.1 <span class="o">(</span>0x00007ffe043f8000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libutil.so.1 <span class="o">=</span>&gt; /lib64/libutil.so.1 <span class="o">(</span>0x00007fa85ce0c000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libtinfo.so.5 <span class="o">=</span>&gt; /lib64/libtinfo.so.5 <span class="o">(</span>0x00007fa85cbe2000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libevent_core-2.1.so.6 <span class="o">=</span>&gt; /home/lfang/local/lib/libevent_core-2.1.so.6 <span class="o">(</span>0x00007fa85c9ac000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libm.so.6 <span class="o">=</span>&gt; /lib64/libm.so.6 <span class="o">(</span>0x00007fa85c6aa000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libresolv.so.2 <span class="o">=</span>&gt; /lib64/libresolv.so.2 <span class="o">(</span>0x00007fa85c493000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libc.so.6 <span class="o">=</span>&gt; /lib64/libc.so.6 <span class="o">(</span>0x00007fa85c0e7000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libcrypto.so.10 <span class="o">=</span>&gt; /lib64/libcrypto.so.10 <span class="o">(</span>0x00007fa85bc84000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libpthread.so.0 <span class="o">=</span>&gt; /lib64/libpthread.so.0 <span class="o">(</span>0x00007fa85ba66000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        /lib64/ld-linux-x86-64.so.2 <span class="o">(</span>0x00007fa85d00f000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libdl.so.2 <span class="o">=</span>&gt; /lib64/libdl.so.2 <span class="o">(</span>0x00007fa85b862000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libz.so.1 <span class="o">=</span>&gt; /home/lfang/opt/lib/libz.so.1 <span class="o">(</span>0x00007fa85d20c000<span class="o">)</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#if 0</span><span class="c">
+</span></span></span><span class="line"><span class="cl"><span class="c">cc -o /tmp/app main.c
+</span></span></span><span class="line"><span class="cl"><span class="c">/tmp/app
+</span></span></span><span class="line"><span class="cl"><span class="c">exit # required, otherwise sh will try to interpret the C code below
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="cp">#endif
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;quick script</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>查询后发现，<code>tmux</code> 除非在安装的时候指定动态库路径，否则在运行时，<strong>只会查找默认的系统动态了路径</strong>，即 <code>/lib64/</code>。这样的花，需要我们手动复制一份动态库到系统路径</p>
-<div class="highlight" id="id-3"><div class="chroma">
+</div><div class="highlight" id="id-2"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /lib64
-</span></span><span class="line"><span class="cl">cp /home/lfang/local/lib/libevent_core-2.1.so.6.0.2 .
-</span></span><span class="line"><span class="cl">ln libevent_core-2.1.so.6.0.2  libevent_core-2.1.so.6</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sh main.c
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">quick script</span></span></code></pre></td></tr></table>
 </div>
-</div><p>再次启动 <code>tmux</code> 即可。</p></div><h2 id="see-also">相关内容</h2>
+</div><blockquote>
+<p>This is called a Polyglot and it&rsquo;s possible to get more than just 2 languages in one file</p>
+</blockquote>
+<p><a href="https://www.wikiwand.com/en/articles/Polyglot_%28computing%29"target="_blank" rel="external nofollow noopener noreferrer">Polyglot<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+<p>在这个帖子的回复评论里，可以找到其他实际的工程使用例子：</p>
+<ul>
+<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <a href="https://github.com/skeeto/w64devkit/blob/master/src/libmemory.c"target="_blank" rel="external nofollow noopener noreferrer">libmemory.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <a href="https://github.com/skeeto/w64devkit/blob/master/src/libchkstk.S"target="_blank" rel="external nofollow noopener noreferrer">libchkstk.S<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <a href="https://github.com/skeeto/w64devkit/blob/master/contrib/libregex.c"target="_blank" rel="external nofollow noopener noreferrer">libregex.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <a href="https://github.com/skeeto/w64devkit/blob/master/contrib/libgc.c"target="_blank" rel="external nofollow noopener noreferrer">libgc.c<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
     <ul><li>
-          <a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/" title="tmux 设置默认 zsh">tmux 设置默认 zsh</a></li><li>
-          <a href="/archives/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/" title="Linux开发环境一键部署">Linux开发环境一键部署</a></li><li>
-          <a href="/archives/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF--zsh&#43;tmux&#43;powerline&#43;autojump/" title="配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump">配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump</a></li><li>
+          <a href="/2023-07-25-bash%E5%85%A5%E9%97%A8/" title="bash入门">bash入门</a></li><li>
+          <a href="/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" title="tmux: error while loading shared libraries: libevent_core 2.1.so.6">tmux: error while loading shared libraries: libevent_core 2.1.so.6</a></li><li>
           <a href="/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/" title="glibc2.18 安装">glibc2.18 安装</a></li><li>
+          <a href="/2024-03-19-att-%E6%B1%87%E7%BC%96%E8%AF%AD%E6%B3%95/" title="ATT 汇编语法">ATT 汇编语法</a></li><li>
           <a href="/2023-11-06-zsh-compinit--insecure-directories-run-compaudit-for-list/" title="zsh compinit: insecure directories, run compaudit for list">zsh compinit: insecure directories, run compaudit for list</a></li></ul><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
@@ -427,29 +445,28 @@ ldd ~/local/bin/tmux
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2025-02-20 18:19:39">更新于 2025-02-20&nbsp;</span>
+        <span title="更新于 2025-02-22 12:49:59">更新于 2025-02-22&nbsp;</span>
       </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-md"><span><a href="/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" data-title="tmux: error while loading shared libraries: libevent_core 2.1.so.6" data-hashtags="Linux,tmux,lib,libevent"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" data-title="tmux: error while loading shared libraries: libevent_core 2.1.so.6" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" data-title="tmux: error while loading shared libraries: libevent_core 2.1.so.6"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" data-title="tmux: error while loading shared libraries: libevent_core 2.1.so.6"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" data-title="在 c 代码文件插入 shell 命令" data-hashtags="Linux,c,main,shell"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" data-title="在 c 代码文件插入 shell 命令" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" data-title="在 c 代码文件插入 shell 命令"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" data-title="在 c 代码文件插入 shell 命令"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
 
   <div class="post-info-more">
-    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/tmux/" class="post-tag" title="标签 - Tmux">Tmux</a><a href="/tags/lib/" class="post-tag" title="标签 - Lib">Lib</a><a href="/tags/libevent/" class="post-tag" title="标签 - Libevent">Libevent</a></section>
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/c/" class="post-tag" title="标签 - C">C</a><a href="/tags/main/" class="post-tag" title="标签 - Main">Main</a><a href="/tags/shell/" class="post-tag" title="标签 - Shell">Shell</a></section>
     <section>
       <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2025-02-11-nvim-orgmode-%E4%BF%AE%E6%94%B9-archive-%E6%96%87%E4%BB%B6%E5%90%8D%E7%A7%B0/" class="post-nav-item" rel="prev" title="nvim orgmode 修改 archive 文件名称"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>nvim orgmode 修改 archive 文件名称</a>
-      <a href="/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" class="post-nav-item" rel="next" title="在 c 代码文件插入 shell 命令">在 c 代码文件插入 shell 命令<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" class="post-nav-item" rel="prev" title="tmux: error while loading shared libraries: libevent_core 2.1.so.6"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>tmux: error while loading shared libraries: libevent_core 2.1.so.6</a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script
