@@ -27,7 +27,8 @@ return {
                 -- Check if any buffer has dap-repl filetype
                 local has_repl = false
                 for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-                    if vim.bo[buf].filetype == &#39;dap-repl&#39; then
+                    local ft = vim.bo[buf].filetype
+                    if ft:find(&#39;^dapui&#39;) or ft == &#39;dap-repl&#39; then
                         has_repl = true
                         break
                     end
