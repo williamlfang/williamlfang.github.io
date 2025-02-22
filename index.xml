@@ -3,9 +3,36 @@
     <title>William</title>
     <link>https://williamlfang.github.io/</link>
     <description>William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 22 Feb 2025 12:49:59 &#43;0800</lastBuildDate>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 22 Feb 2025 20:39:59 &#43;0800</lastBuildDate>
       <atom:link href="https://williamlfang.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+  <title>nvim dap 映射 r 快捷键</title>
+  <link>https://williamlfang.github.io/2025-02-22-nvim-dap-%E6%98%A0%E5%B0%84-r-%E5%BF%AB%E6%8D%B7%E9%94%AE/</link>
+  <pubDate>Sat, 22 Feb 2025 20:39:59 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-02-22-nvim-dap-%E6%98%A0%E5%B0%84-r-%E5%BF%AB%E6%8D%B7%E9%94%AE/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2025-02-22-nvim-dap-%E6%98%A0%E5%B0%84-r-%E5%BF%AB%E6%8D%B7%E9%94%AE/nvim-dap-repl.png" alt="nvim dap 映射 r 快捷键" title="nvim dap 映射 r 快捷键" referrerpolicy="no-referrer"/></div><p>最近在研究如何使用 <code>nvim-dap</code> 进行 <code>debugging</code>。在 <code>gdb</code>，我们可以很方便的使用单个按键就可以触发一些行为，如</p>
+<ul>
+<li><i class="fa-regular fa-check-square fa-fw" aria-hidden="true"></i> <code>r</code>: <code>run</code></li>
+<li><i class="fa-regular fa-check-square fa-fw" aria-hidden="true"></i> <code>c</code>: <code>continue</code></li>
+<li><i class="fa-regular fa-check-square fa-fw" aria-hidden="true"></i> <code>s</code>: <code>step-in</code></li>
+</ul>
+<p>那么，我的想法也是在 <code>nvim-dap</code> 实现这样快捷键 <code>r</code> 来模拟 <code>run</code> 的行为。现在的问题是：由于在 <code>normal mode</code>，单个按键 <code>r</code> 代表 <code>replace one character</code>。</p>
+<p>因此，我们需要在 <code>nvim</code> 的 <code>buffers</code> 去识别是否启动了 <code>nvim-dap</code></p>
+<ul>
+<li><i class="fa-regular fa-check-square fa-fw" aria-hidden="true"></i> 如果存在 <code>dap-repl</code>，则映射 <code>r</code>；</li>
+<li><i class="fa-regular fa-check-square fa-fw" aria-hidden="true"></i> 如果找不到，则回退到 <code>replace</code> 的功能。</li>
+</ul>]]></description>
+</item>
+<item>
+  <title>update GLIBC_2.28</title>
+  <link>https://williamlfang.github.io/2025-02-22-update-glibc_2.28/</link>
+  <pubDate>Sat, 22 Feb 2025 15:53:13 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-02-22-update-glibc_2.28/</guid>
+  <description><![CDATA[]]></description>
+</item>
+<item>
   <title>在 c 代码文件插入 shell 命令</title>
   <link>https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/</link>
   <pubDate>Sat, 22 Feb 2025 12:49:59 &#43;0800</pubDate>
@@ -197,37 +224,6 @@
 </span></span><span class="line"><span class="cl">    <span class="c1">-- disable = {&#34;csv&#34;, &#34;markdown&#34;}</span>
 </span></span><span class="line"><span class="cl">    <span class="n">disable</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;csv&#34;</span><span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">},</span></span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>Airflow Plugins</title>
-  <link>https://williamlfang.github.io/2025-01-14-airflow-plugins/</link>
-  <pubDate>Tue, 14 Jan 2025 17:21:36 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-01-14-airflow-plugins/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2025-01-14-airflow-plugins/mycron.png" alt="Airflow Plugins" title="Airflow Plugins" referrerpolicy="no-referrer"/></div><p><code>ariflow</code> 的 <code>schedule</code> 可以使用 <code>timetable</code> 或者 <code>cron expression</code> 配置任务调度的时间。对于使用 <code>cron expression</code>，如果我们需要更加细粒度的控制，则比较困难。比如我有一个任务设定在两个时间执行</p>
-<ul>
-<li><code>45 08 * * 1-5</code></li>
-<li><code>01 09 * * 1-5</code></li>
-</ul>
-<p>这个在 <code>cron expression</code> 无法合并成同一个任务。</p>]]></description>
-</item>
-<item>
-  <title>nvim tmux 颜色显示不对</title>
-  <link>https://williamlfang.github.io/2025-01-13-nvim-tmux-%E9%A2%9C%E8%89%B2%E6%98%BE%E7%A4%BA%E4%B8%8D%E5%AF%B9/</link>
-  <pubDate>Mon, 13 Jan 2025 21:28:04 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-01-13-nvim-tmux-%E9%A2%9C%E8%89%B2%E6%98%BE%E7%A4%BA%E4%B8%8D%E5%AF%B9/</guid>
-  <description><![CDATA[<p>在 <code>~/.tmux.conf</code> 添加</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">set</span> -ga terminal-overrides <span class="s2">&#34;,xterm-256color:Tc&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g default-terminal <span class="s2">&#34;tmux-256color&#34;</span></span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description>
 </item>
