@@ -16,7 +16,7 @@ export PATH=/shared/trading/lib/gcc/bin:/shared/trading/lib/binutils/bin:/shared
 
 ```bash
 mkdir -p ~/.R
-vim ~/R/Makevars
+vim ~/.R/Makevars
 
 CC                 = /shared/trading/lib/gcc9/bin/gcc
 CXX                = /shared/trading/lib/gcc9/bin/g&#43;&#43;
@@ -44,6 +44,7 @@ Sys.setenv(RETICULATE_PYTHON = &#34;~/miniconda3/bin/python&#34;)
 library(reticulate)
 use_python(&#34;~/miniconda3/bin/python&#34;)
 source_python(&#39;/fs/public/ops/config/ceph.py&#39;)
+reticulate::py_discover_config()
 
 dt &lt;- read_s3_csv(&#39;raven/futures_minute/prod/trade_config/GTJA_ZGC_SHFE/2024-11-28.csv&#39;)
 print(dt)

@@ -5,38 +5,54 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>docker mount fs 文件路径 - William</title><meta name="author" content="william">
+    <title>Linux 内存调优的两个重要参数 - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="Docker" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="docker mount fs 文件路径">
-<meta itemprop="description" content="Docker"><meta itemprop="datePublished" content="2024-09-02T15:02:36+08:00" />
-<meta itemprop="dateModified" content="2024-09-02T15:02:36+08:00" />
-<meta itemprop="wordCount" content="35"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
-<meta itemprop="keywords" content="" /><meta property="og:title" content="docker mount fs 文件路径" />
-<meta property="og:description" content="Docker" />
+<meta name="description" content="今天在看这篇介绍 Linux 性能调优 的博客(Linux Performance: Almost Always Add Swap Space)，其中涉及到如何调整内核内存的调整机制。主要的参数有
+
+ swappiness: This control is used to define how aggressively the kernel will swap memory pages. Higher values will increase aggressiveness; lower values decrease the amount of swap. (default = 60, recommended values between 1 and 60) Remove your swap for 0 value, but it is usually not recommended in most cases.
+ vfs_cache_pressure: Controls the kernel’s tendency to reclaim the memory, which is used for caching of directory and inode objects. (default = 100, recommend value 50 to 200)
+" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="Linux 内存调优的两个重要参数">
+<meta itemprop="description" content="今天在看这篇介绍 Linux 性能调优 的博客(Linux Performance: Almost Always Add Swap Space)，其中涉及到如何调整内核内存的调整机制。主要的参数有
+
+ swappiness: This control is used to define how aggressively the kernel will swap memory pages. Higher values will increase aggressiveness; lower values decrease the amount of swap. (default = 60, recommended values between 1 and 60) Remove your swap for 0 value, but it is usually not recommended in most cases.
+ vfs_cache_pressure: Controls the kernel’s tendency to reclaim the memory, which is used for caching of directory and inode objects. (default = 100, recommend value 50 to 200)
+"><meta itemprop="datePublished" content="2025-03-29T15:08:37+08:00" />
+<meta itemprop="dateModified" content="2025-03-29T15:08:37+08:00" />
+<meta itemprop="wordCount" content="274"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="Linux 内存调优的两个重要参数" />
+<meta property="og:description" content="今天在看这篇介绍 Linux 性能调优 的博客(Linux Performance: Almost Always Add Swap Space)，其中涉及到如何调整内核内存的调整机制。主要的参数有
+
+ swappiness: This control is used to define how aggressively the kernel will swap memory pages. Higher values will increase aggressiveness; lower values decrease the amount of swap. (default = 60, recommended values between 1 and 60) Remove your swap for 0 value, but it is usually not recommended in most cases.
+ vfs_cache_pressure: Controls the kernel’s tendency to reclaim the memory, which is used for caching of directory and inode objects. (default = 100, recommend value 50 to 200)
+" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://williamlfang.github.io/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2024-09-02T15:02:36+08:00" />
-<meta property="article:modified_time" content="2024-09-02T15:02:36+08:00" />
+<meta property="og:url" content="https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-03-29T15:08:37+08:00" />
+<meta property="article:modified_time" content="2025-03-29T15:08:37+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="docker mount fs 文件路径"/>
-<meta name="twitter:description" content="Docker"/>
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Linux 内存调优的两个重要参数"/>
+<meta name="twitter:description" content="今天在看这篇介绍 Linux 性能调优 的博客(Linux Performance: Almost Always Add Swap Space)，其中涉及到如何调整内核内存的调整机制。主要的参数有
+
+ swappiness: This control is used to define how aggressively the kernel will swap memory pages. Higher values will increase aggressiveness; lower values decrease the amount of swap. (default = 60, recommended values between 1 and 60) Remove your swap for 0 value, but it is usually not recommended in most cases.
+ vfs_cache_pressure: Controls the kernel’s tendency to reclaim the memory, which is used for caching of directory and inode objects. (default = 100, recommend value 50 to 200)
+"/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/" /><link rel="prev" href="https://williamlfang.github.io/2024-08-31-nvim-pylsp/" /><link rel="next" href="https://williamlfang.github.io/2024-09-08-powerlevel10k-%E9%85%8D%E7%BD%AE/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/" /><link rel="prev" href="https://williamlfang.github.io/2025-03-15-kitty-%E7%BB%88%E7%AB%AF%E6%A8%A1%E6%8B%9F%E5%99%A8/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "docker mount fs 文件路径",
+    "headline": "Linux 内存调优的两个重要参数",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": "https:\/\/williamlfang.github.io\/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84\/"
-    },"genre": "posts","wordcount":  35 ,
-    "url": "https:\/\/williamlfang.github.io\/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84\/","datePublished": "2024-09-02T15:02:36+08:00","dateModified": "2024-09-02T15:02:36+08:00","publisher": {
+      "@id": "https:\/\/williamlfang.github.io\/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0\/"
+    },"genre": "posts","wordcount":  274 ,
+    "url": "https:\/\/williamlfang.github.io\/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0\/","datePublished": "2025-03-29T15:08:37+08:00","dateModified": "2025-03-29T15:08:37+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -195,22 +211,38 @@
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>docker mount fs 文件路径</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Linux 内存调优的两个重要参数</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-09-02 15:02:36"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-09-02">2024-09-02</time></span>&nbsp;<span title="35 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
-    </div><div class="content" id="content"><div class="details admonition warning open">
-      <div class="details-summary admonition-title">
-        <i class="icon fa-solid fa-exclamation-triangle fa-fw" aria-hidden="true"></i>警告<i class="details-icon fa-solid fa-angle-right fa-fw" aria-hidden="true"></i>
-      </div>
-      <div class="details-content">
-        <div class="admonition-content">本文最后更新于 2024-09-02，文中内容可能已过时。</div>
-      </div>
-    </div><p><code>Docker</code></p>
-<p>Requires the following steps:</p>
-<p>uncomment user_allow_other in /etc/fuse.conf</p>
-<p>unmount the FUSE filesystem</p>
-<p>remount the FUSE filesystem with sshfs -o allow_other user@&hellip;. (making sure to include the -o allow_other option)</p>
-<p>try starting the container again</p></div><div class="post-reward">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-03-29 15:08:37"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-03-29">2025-03-29</time></span>&nbsp;<span title="274 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 300 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="content" id="content"><p>今天在看这篇介绍 <strong>Linux 性能调优</strong> 的博客(<a href="https://linuxblog.io/linux-performance-almost-always-add-swap-space/"target="_blank" rel="external nofollow noopener noreferrer">Linux Performance: Almost Always Add Swap Space<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>)，其中涉及到如何调整内核内存的调整机制。主要的参数有</p>
+<ul>
+<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <code>swappiness</code>: This control is used to define how aggressively the kernel will swap memory pages. Higher values will increase aggressiveness; lower values decrease the amount of swap. (default = 60, recommended values between 1 and 60) Remove your swap for 0 value, but it is usually not recommended in most cases.</li>
+<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <code>vfs_cache_pressure</code>: Controls the kernel’s tendency to reclaim the memory, which is used for caching of directory and inode objects. (default = 100, recommend value 50 to 200)</li>
+</ul>
+<p>我的理解是</p>
+<ul>
+<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <code>swappiness</code>: 内核处理 swap 的激进程度。越小代表越不要进行 swap，尽可能把进程都存放在内存。这有利于提升性能。</li>
+<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <code>vfs_cache_pressure</code>: 内核回收 <code>cache</code> 的激进程度。越小代表越不要回收 <code>cache</code>，尽可能保留所有的缓存在内存。这有利于提升性能。</li>
+</ul>
+<p>一般而言，我们可以这样配置</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat <span class="s">&lt;&lt;EOF &gt;&gt;/etc/sysctl.conf
+</span></span></span><span class="line"><span class="cl"><span class="s">vm.swappiness=10
+</span></span></span><span class="line"><span class="cl"><span class="s">vm.vfs_cache_pressure=50
+</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sysctl -p</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-reward">
     <div class="comment"></div>
     <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
     <label class="reward-button" for="fi-reward">赞赏</label>
@@ -221,16 +253,16 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2024-09-02 15:02:36">更新于 2024-09-02&nbsp;</span>
+        <span title="更新于 2025-03-29 15:08:37">更新于 2025-03-29&nbsp;</span>
       </div></div><div class="post-info-line">
-        <div class="post-info-md"><span><a href="/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-md"><span><a href="/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/" data-title="docker mount fs 文件路径"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/" data-title="docker mount fs 文件路径" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/" data-title="docker mount fs 文件路径"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2024-09-02-docker-mount-fs-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/" data-title="docker mount fs 文件路径"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/" data-title="Linux 内存调优的两个重要参数"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/" data-title="Linux 内存调优的两个重要参数" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/" data-title="Linux 内存调优的两个重要参数"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/" data-title="Linux 内存调优的两个重要参数"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
@@ -242,8 +274,7 @@
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2024-08-31-nvim-pylsp/" class="post-nav-item" rel="prev" title="nvim pylsp"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>nvim pylsp</a>
-      <a href="/2024-09-08-powerlevel10k-%E9%85%8D%E7%BD%AE/" class="post-nav-item" rel="next" title="powerlevel10k 配置">powerlevel10k 配置<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+  <div class="post-nav"><a href="/2025-03-15-kitty-%E7%BB%88%E7%AB%AF%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="post-nav-item" rel="prev" title="kitty 终端模拟器"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>kitty 终端模拟器</a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script

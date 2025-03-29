@@ -36,6 +36,19 @@ ln libevent_core-2.1.so.6.0.2  libevent_core-2.1.so.6
 
 再次启动 `tmux` 即可。
 
+当然，我们也可以重新编译 `tmux`，关键是需要添加参数 `LDFLAGS=&#34;-Wl,-rpath=&lt;libevent_lib_path&gt; -L$HOME/local/lib&#34;`， 比如我的路径是：`LDFLAGS=&#34;-Wl,-rpath=$HOME/local/lib -L$HOME/local/lib&#34;`。
+
+```bash
+cd $HOME/tmp
+export TMUX_VERSION=3.4
+wget --no-check-certificate https://github.com/tmux/tmux/releases/download/${TMUX_VERSION}/tmux-${TMUX_VERSION}.tar.gz
+tar -xvf tmux-${TMUX_VERSION}.tar.gz
+cd tmux-${TMUX_VERSION}
+./configure --prefix=$HOME/local CPPFLAGS=&#34;-I$HOME/local/include -I$HOME/local/include/ncurses&#34; LDFLAGS=&#34;-Wl,-rpath=$HOME/local/lib -L$HOME/local/lib&#34;
+make -j
+make install
+```
+
 
 ---
 

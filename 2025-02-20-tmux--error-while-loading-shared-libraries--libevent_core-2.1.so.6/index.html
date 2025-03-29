@@ -90,7 +90,7 @@ ldd ~/local/bin/tmux
 
 "><meta itemprop="datePublished" content="2025-02-20T18:19:39+08:00" />
 <meta itemprop="dateModified" content="2025-02-20T18:19:39+08:00" />
-<meta itemprop="wordCount" content="182"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="wordCount" content="335"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
 <meta itemprop="keywords" content="Linux,tmux,lib,libevent," /><meta property="og:title" content="tmux: error while loading shared libraries: libevent_core 2.1.so.6" />
 <meta property="og:description" content="tmux 报错
 
@@ -195,7 +195,7 @@ ldd ~/local/bin/tmux
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https:\/\/williamlfang.github.io\/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6\/"
-    },"genre": "posts","keywords": "Linux, tmux, lib, libevent","wordcount":  182 ,
+    },"genre": "posts","keywords": "Linux, tmux, lib, libevent","wordcount":  335 ,
     "url": "https:\/\/williamlfang.github.io\/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6\/","datePublished": "2025-02-20T18:19:39+08:00","dateModified": "2025-02-20T18:19:39+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
@@ -357,7 +357,7 @@ ldd ~/local/bin/tmux
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>tmux: error while loading shared libraries: libevent_core 2.1.so.6</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-02-20 18:19:39"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-02-20">2025-02-20</time></span>&nbsp;<span title="182 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-02-20 18:19:39"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-02-20">2025-02-20</time></span>&nbsp;<span title="335 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
     </div><div class="content" id="content"><p><code>tmux</code> 报错</p>
 <div class="highlight" id="id-1"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -410,7 +410,30 @@ ldd ~/local/bin/tmux
 </span></span><span class="line"><span class="cl">cp /home/lfang/local/lib/libevent_core-2.1.so.6.0.2 .
 </span></span><span class="line"><span class="cl">ln libevent_core-2.1.so.6.0.2  libevent_core-2.1.so.6</span></span></code></pre></td></tr></table>
 </div>
-</div><p>再次启动 <code>tmux</code> 即可。</p></div><h2 id="see-also">相关内容</h2>
+</div><p>再次启动 <code>tmux</code> 即可。</p>
+<p>当然，我们也可以重新编译 <code>tmux</code>，关键是需要添加参数 <code>LDFLAGS=&quot;-Wl,-rpath=&lt;libevent_lib_path&gt; -L$HOME/local/lib&quot;</code>， 比如我的路径是：<code>LDFLAGS=&quot;-Wl,-rpath=$HOME/local/lib -L$HOME/local/lib&quot;</code>。</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> <span class="nv">$HOME</span>/tmp
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">TMUX_VERSION</span><span class="o">=</span>3.4
+</span></span><span class="line"><span class="cl">wget --no-check-certificate https://github.com/tmux/tmux/releases/download/<span class="si">${</span><span class="nv">TMUX_VERSION</span><span class="si">}</span>/tmux-<span class="si">${</span><span class="nv">TMUX_VERSION</span><span class="si">}</span>.tar.gz
+</span></span><span class="line"><span class="cl">tar -xvf tmux-<span class="si">${</span><span class="nv">TMUX_VERSION</span><span class="si">}</span>.tar.gz
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> tmux-<span class="si">${</span><span class="nv">TMUX_VERSION</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">./configure --prefix<span class="o">=</span><span class="nv">$HOME</span>/local <span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">&#34;-I</span><span class="nv">$HOME</span><span class="s2">/local/include -I</span><span class="nv">$HOME</span><span class="s2">/local/include/ncurses&#34;</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">&#34;-Wl,-rpath=</span><span class="nv">$HOME</span><span class="s2">/local/lib -L</span><span class="nv">$HOME</span><span class="s2">/local/lib&#34;</span>
+</span></span><span class="line"><span class="cl">make -j
+</span></span><span class="line"><span class="cl">make install</span></span></code></pre></td></tr></table>
+</div>
+</div></div><h2 id="see-also">相关内容</h2>
     <ul><li>
           <a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/" title="tmux 设置默认 zsh">tmux 设置默认 zsh</a></li><li>
           <a href="/archives/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/" title="Linux开发环境一键部署">Linux开发环境一键部署</a></li><li>

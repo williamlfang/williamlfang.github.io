@@ -187,6 +187,62 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/archives/2021-08-07-r-nanotime/">R:nanotime</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2021-08-07 00:00:00'>发布于 <time datetime="2021-08-07">2021-08-07</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="content"><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">library<span class="o">(</span>nanotime<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">options<span class="o">(</span><span class="s2">&#34;nanotimeTz&#34;</span><span class="o">=</span><span class="s2">&#34;Asia/Shanghai&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">options<span class="o">(</span><span class="s2">&#34;nanotimeFormat&#34;</span><span class="o">=</span><span class="s2">&#34;%Y-%m-%d %H:%M:%E9S %Z&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 2021-08-07 15:00:54.080453230</span>
+</span></span><span class="line"><span class="cl">nanotime<span class="o">(</span>1628319654080453230<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>1<span class="o">]</span> 2021-08-07 15:00:54.080453120 CST</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/archives/2021-08-07-r-nanotime/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/r/' class="post-tag">R</a><a href='/tags/nanotime/' class="post-tag">Nanotime</a></div></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/archives/2021-08-04-docker-%E6%97%A0%E6%B3%95%E8%BF%90%E8%A1%8C-systemctl/">Docker 无法运行 systemctl</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2021-08-04 00:00:00'>发布于 <time datetime="2021-08-04">2021-08-04</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="content"><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 启动的时候添加 /sbin/init</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## 不是 /usr/sbin/init/ 因为有可能找不到</span>
+</span></span><span class="line"><span class="cl">docker run --name rshiny -dit --privileged<span class="o">=</span><span class="nb">true</span> -p 58787:8787 -p 53838:3838 -p50022:22 wuya-centos7-r4.0:v1.0 /sbin/init
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">docker run --name rshiny -dit --privileged<span class="o">=</span><span class="nb">true</span> -p 58787:8787 -p 53838:3838 -p50022:22 192.168.1.88:5000/wuya/centos7-r4.0:v1.0 /sbin/init
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 运行的时候添加 bash</span>
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -it rshiny bash
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo systemctl start rstudio-server
+</span></span><span class="line"><span class="cl">sudo systemctl start shiny-server</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/archives/2021-08-04-docker-%E6%97%A0%E6%B3%95%E8%BF%90%E8%A1%8C-systemctl/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/docker/' class="post-tag">Docker</a><a href='/tags/systemctl/' class="post-tag">Systemctl</a></div></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/archives/2021-08-03-r-%E7%9A%84%E5%90%84%E7%A7%8D%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85/">R 的各种版本安装</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2021-08-03 00:00:00'>发布于 <time datetime="2021-08-03">2021-08-03</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/%E5%AE%89%E8%A3%85-r/" class="post-category" title="分类 - 安装 R"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> 安装 R</a></span></div><div class="content">https://www.osradar.com/how-to-install-r-and-rstudio-on-centos-8/</div><div class="post-footer">
     <a href="/archives/2021-08-03-r-%E7%9A%84%E5%90%84%E7%A7%8D%E7%89%88%E6%9C%AC%E5%AE%89%E8%A3%85/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/r/' class="post-tag">R</a></div></div>
@@ -202,14 +258,6 @@
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/archives/2021-07-13-ycm-%E4%B8%8E-cmake/">Ycm 与 cmake</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2021-07-13 00:00:00'>发布于 <time datetime="2021-07-13">2021-07-13</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="content">最近在配置 vim 的 ycm 插件，发现如果需要针对某个非系统的头文件路径，需要单独修改 third_party/ycmd/.ycm_extra_conf.</div><div class="post-footer">
     <a href="/archives/2021-07-13-ycm-%E4%B8%8E-cmake/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/vim/' class="post-tag">Vim</a><a href='/tags/ycm/' class="post-tag">Ycm</a><a href='/tags/cmake/' class="post-tag">Cmake</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/archives/2021-07-12-c&#43;&#43;-%E5%B7%A7%E7%94%A8-do...while.false/">c&#43;&#43; 巧用 do...while.false</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2021-07-12 00:00:00'>发布于 <time datetime="2021-07-12">2021-07-12</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="content">今天看代码发现一个比较巧妙的方法，可以参考 SO 链接 对比两个 c++ 代码段 1 2 3 4 5 do { // code if (condition) break; // or continue // more code } while(false); 完爆一下的 goto 1 2 3 4 5 6 { // code if (condition) goto</div><div class="post-footer">
-    <a href="/archives/2021-07-12-c&#43;&#43;-%E5%B7%A7%E7%94%A8-do...while.false/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/c&#43;&#43;/' class="post-tag">C&#43;&#43;</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/">RShiny 使用指南</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2021-07-10 00:00:00'>发布于 <time datetime="2021-07-10">2021-07-10</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="content">RShiny 是什么Shiny 是一个 R 语言的软件包，提供了用于制作 Web-UI/app 的便捷工具。这些应用提供了交互式的数据展示、实时的统计分析与高度可定制化的操作界面，</div><div class="post-footer">
-    <a href="/archives/2021-07-10-rshiny-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/r/' class="post-tag">R</a><a href='/tags/shiny/' class="post-tag">Shiny</a><a href='/tags/rstudio/' class="post-tag">Rstudio</a><a href='/tags/docker/' class="post-tag">Docker</a></div></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
