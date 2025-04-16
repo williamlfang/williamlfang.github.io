@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>(grok)Best Practice for Writing Bash Scripts - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="
+what is the best practice for writing bash scripts
+" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="(grok)Best Practice for Writing Bash Scripts">
+<meta itemprop="description" content="
+what is the best practice for writing bash scripts
+"><meta itemprop="datePublished" content="2025-04-16T13:27:56+08:00" />
+<meta itemprop="dateModified" content="2025-04-16T13:27:56+08:00" />
+<meta itemprop="wordCount" content="902"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="" /><meta property="og:title" content="(grok)Best Practice for Writing Bash Scripts" />
+<meta property="og:description" content="
+what is the best practice for writing bash scripts
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2025-04-16T13:27:56+08:00" />
+<meta property="article:modified_time" content="2025-04-16T13:27:56+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="(grok)Best Practice for Writing Bash Scripts"/>
+<meta name="twitter:description" content="
+what is the best practice for writing bash scripts
+"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/" /><link rel="prev" href="https://williamlfang.github.io/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "(grok)Best Practice for Writing Bash Scripts",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2025-04-16-grokbest-practice-for-writing-bash-scripts\/"
+    },"genre": "posts","wordcount":  902 ,
+    "url": "https:\/\/williamlfang.github.io\/2025-04-16-grokbest-practice-for-writing-bash-scripts\/","datePublished": "2025-04-16T13:27:56+08:00","dateModified": "2025-04-16T13:27:56+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>(grok)Best Practice for Writing Bash Scripts</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2025-04-16 13:27:56"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2025-04-16">2025-04-16</time></span>&nbsp;<span title="902 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li>
+          <ol>
+            <li><a href="#1-use-a-shebang">1. <strong>Use a Shebang</strong></a></li>
+            <li><a href="#2-enable-strict-mode">2. <strong>Enable Strict Mode</strong></a></li>
+            <li><a href="#3-add-comments-and-documentation">3. <strong>Add Comments and Documentation</strong></a></li>
+            <li><a href="#4-use-meaningful-variable-names">4. <strong>Use Meaningful Variable Names</strong></a></li>
+            <li><a href="#5-quote-variables-and-strings">5. <strong>Quote Variables and Strings</strong></a></li>
+            <li><a href="#6-avoid-unnecessary-subshells">6. <strong>Avoid Unnecessary Subshells</strong></a></li>
+            <li><a href="#7-handle-errors-gracefully">7. <strong>Handle Errors Gracefully</strong></a></li>
+            <li><a href="#8-write-modular-code">8. <strong>Write Modular Code</strong></a></li>
+            <li><a href="#9-validate-inputs">9. <strong>Validate Inputs</strong></a></li>
+            <li><a href="#10-use-consistent-formatting">10. <strong>Use Consistent Formatting</strong></a></li>
+            <li><a href="#11-test-your-scripts">11. <strong>Test Your Scripts</strong></a></li>
+            <li><a href="#12-avoid-hardcoding-paths">12. <strong>Avoid Hardcoding Paths</strong></a></li>
+            <li><a href="#13-log-output">13. <strong>Log Output</strong></a></li>
+            <li><a href="#14-use-modern-constructs">14. <strong>Use Modern Constructs</strong></a></li>
+            <li><a href="#15-secure-your-scripts">15. <strong>Secure Your Scripts</strong></a></li>
+            <li><a href="#16-exit-codes">16. <strong>Exit Codes</strong></a></li>
+            <li><a href="#17-profile-and-optimize">17. <strong>Profile and Optimize</strong></a></li>
+            <li><a href="#example-script-incorporating-best-practices">Example Script Incorporating Best Practices</a></li>
+            <li><a href="#additional-tools-and-resources">Additional Tools and Resources</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><blockquote>
+<p>what is the best practice for writing bash scripts</p>
+</blockquote>
+<p>Writing robust and maintainable Bash scripts requires following best practices to ensure readability, reliability, and portability. Below are key guidelines:</p>
+<h3 id="1-use-a-shebang" class="heading-element">
+  <a href="#1-use-a-shebang" class="heading-mark"></a>1. <strong>Use a Shebang</strong></h3><ul>
+<li>Start your script with <code>#!/bin/bash</code> (or <code>#!/usr/bin/env bash</code> for portability) to specify the interpreter.</li>
+<li>Example:
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#!/usr/bin/env bash</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="2-enable-strict-mode" class="heading-element">
+  <a href="#2-enable-strict-mode" class="heading-mark"></a>2. <strong>Enable Strict Mode</strong></h3><ul>
+<li>Use <code>set</code> commands to catch errors early:
+<ul>
+<li><code>set -e</code>: Exit on error.</li>
+<li><code>set -u</code>: Exit on unset variables.</li>
+<li><code>set -o pipefail</code>: Ensure pipelines fail if any command fails.</li>
+</ul>
+</li>
+<li>Example:
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">set</span> -euo pipefail</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="3-add-comments-and-documentation" class="heading-element">
+  <a href="#3-add-comments-and-documentation" class="heading-mark"></a>3. <strong>Add Comments and Documentation</strong></h3><ul>
+<li>Comment your code to explain its purpose and logic, especially for complex sections.</li>
+<li>Include a header with script purpose, usage, and author info.</li>
+<li>Example:
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Purpose: Backup user data to a specified directory</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Usage: ./backup.sh &lt;source&gt; &lt;destination&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Author: Jane Doe, 2025</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="4-use-meaningful-variable-names" class="heading-element">
+  <a href="#4-use-meaningful-variable-names" class="heading-mark"></a>4. <strong>Use Meaningful Variable Names</strong></h3><ul>
+<li>Choose descriptive, lowercase variable names (e.g., <code>source_dir</code> instead of <code>sd</code>).</li>
+<li>Use <code>readonly</code> for constants and <code>local</code> for variables in functions.</li>
+<li>Example:
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">readonly</span> <span class="nv">BACKUP_DIR</span><span class="o">=</span><span class="s2">&#34;/backup&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">local</span> <span class="nv">file_count</span><span class="o">=</span><span class="m">0</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="5-quote-variables-and-strings" class="heading-element">
+  <a href="#5-quote-variables-and-strings" class="heading-mark"></a>5. <strong>Quote Variables and Strings</strong></h3><ul>
+<li>Always quote variables to prevent issues with unset or empty variables and word splitting.</li>
+<li>Example:
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cp <span class="s2">&#34;</span><span class="nv">$source</span><span class="s2">&#34;</span> <span class="s2">&#34;</span><span class="nv">$destination</span><span class="s2">&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="6-avoid-unnecessary-subshells" class="heading-element">
+  <a href="#6-avoid-unnecessary-subshells" class="heading-mark"></a>6. <strong>Avoid Unnecessary Subshells</strong></h3><ul>
+<li>Use built-in Bash constructs instead of external commands (e.g., <code>[[ ]]</code> for tests instead of <code>[ ]</code>).</li>
+<li>Prefer <code>read</code> over <code>echo | grep</code> for parsing.</li>
+<li>Example:
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[[</span> -d <span class="s2">&#34;</span><span class="nv">$dir</span><span class="s2">&#34;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Directory exists&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="7-handle-errors-gracefully" class="heading-element">
+  <a href="#7-handle-errors-gracefully" class="heading-mark"></a>7. <strong>Handle Errors Gracefully</strong></h3><ul>
+<li>Check command exit statuses and provide meaningful error messages.</li>
+<li>Use <code>trap</code> to clean up resources on script exit.</li>
+<li>Example:
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">trap</span> <span class="s1">&#39;echo &#34;Error on line $LINENO&#34;; exit 1&#39;</span> ERR</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="8-write-modular-code" class="heading-element">
+  <a href="#8-write-modular-code" class="heading-mark"></a>8. <strong>Write Modular Code</strong></h3><ul>
+<li>Use functions to organize code and improve reusability.</li>
+<li>Keep functions small and focused on a single task.</li>
+<li>Example:
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">log_message<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">message</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;[</span><span class="k">$(</span>date<span class="k">)</span><span class="s2">] </span><span class="nv">$message</span><span class="s2">&#34;</span> &gt;&gt; <span class="s2">&#34;</span><span class="nv">$LOG_FILE</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="9-validate-inputs" class="heading-element">
+  <a href="#9-validate-inputs" class="heading-mark"></a>9. <strong>Validate Inputs</strong></h3><ul>
+<li>Check for required arguments and validate input data.</li>
+<li>Exit with clear error messages if validation fails.</li>
+<li>Example:
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[[</span> <span class="nv">$#</span> -ne <span class="m">2</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Usage: </span><span class="nv">$0</span><span class="s2"> &lt;source&gt; &lt;destination&gt;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="10-use-consistent-formatting" class="heading-element">
+  <a href="#10-use-consistent-formatting" class="heading-mark"></a>10. <strong>Use Consistent Formatting</strong></h3><ul>
+<li>Follow a style guide (e.g., indent with 2 or 4 spaces, avoid tabs).</li>
+<li>Break long lines for readability (use <code>\</code> or wrap in functions).</li>
+<li>Example:
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[[</span> -n <span class="s2">&#34;</span><span class="nv">$variable</span><span class="s2">&#34;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Variable is set&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Variable is unset&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="11-test-your-scripts" class="heading-element">
+  <a href="#11-test-your-scripts" class="heading-mark"></a>11. <strong>Test Your Scripts</strong></h3><ul>
+<li>Test scripts in different environments to ensure portability.</li>
+<li>Use tools like <code>shellcheck</code> to catch common errors and improve quality.</li>
+<li>Example:
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">shellcheck myscript.sh</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="12-avoid-hardcoding-paths" class="heading-element">
+  <a href="#12-avoid-hardcoding-paths" class="heading-mark"></a>12. <strong>Avoid Hardcoding Paths</strong></h3><ul>
+<li>Use variables or relative paths to make scripts portable.</li>
+<li>Example:
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">SCRIPT_DIR</span><span class="o">=</span><span class="s2">&#34;</span><span class="k">$(</span>dirname <span class="s2">&#34;</span><span class="nv">$0</span><span class="s2">&#34;</span><span class="k">)</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">SCRIPT_DIR</span><span class="si">}</span><span class="s2">/config.sh&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="13-log-output" class="heading-element">
+  <a href="#13-log-output" class="heading-mark"></a>13. <strong>Log Output</strong></h3><ul>
+<li>Redirect output to log files for debugging and auditing.</li>
+<li>Use <code>tee</code> to log to both file and stdout.</li>
+<li>Example:
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;Starting backup&#34;</span> <span class="p">|</span> tee -a <span class="s2">&#34;</span><span class="nv">$LOG_FILE</span><span class="s2">&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="14-use-modern-constructs" class="heading-element">
+  <a href="#14-use-modern-constructs" class="heading-mark"></a>14. <strong>Use Modern Constructs</strong></h3><ul>
+<li>Prefer <code>[[ ]]</code> over <code>[ ]</code> for conditionals (more robust, supports regex).</li>
+<li>Use <code>$( )</code> instead of <code>` `</code> for command substitution (better nesting).</li>
+<li>Example:
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$name</span><span class="s2">&#34;</span> <span class="o">=</span>~ ^<span class="o">[</span>a-z<span class="o">]</span>+$ <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Valid name&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="15-secure-your-scripts" class="heading-element">
+  <a href="#15-secure-your-scripts" class="heading-mark"></a>15. <strong>Secure Your Scripts</strong></h3><ul>
+<li>Avoid exposing sensitive data (e.g., passwords) in scripts.</li>
+<li>Use environment variables or secure vaults for secrets.</li>
+<li>Set appropriate file permissions (<code>chmod 700 script.sh</code>).</li>
+<li>Example:
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[[</span> -z <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DB_PASSWORD</span><span class="k">:-</span><span class="si">}</span><span class="s2">&#34;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;DB_PASSWORD not set&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="16-exit-codes" class="heading-element">
+  <a href="#16-exit-codes" class="heading-mark"></a>16. <strong>Exit Codes</strong></h3><ul>
+<li>Use consistent exit codes (e.g., <code>0</code> for success, <code>1</code> for general errors).</li>
+<li>Document custom exit codes in the script header.</li>
+<li>Example:
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">exit</span> <span class="m">0</span>  <span class="c1"># Success</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="17-profile-and-optimize" class="heading-element">
+  <a href="#17-profile-and-optimize" class="heading-mark"></a>17. <strong>Profile and Optimize</strong></h3><ul>
+<li>Use <code>time</code> or debugging tools to identify slow sections.</li>
+<li>Avoid unnecessary loops or external commands.</li>
+<li>Example:
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">time</span> ./myscript.sh</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="example-script-incorporating-best-practices" class="heading-element">
+  <a href="#example-script-incorporating-best-practices" class="heading-mark"></a>Example Script Incorporating Best Practices</h3><div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Purpose: Copy files from source to destination with logging</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Usage: ./copy.sh &lt;source&gt; &lt;destination&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Author: Jane Doe, 2025</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -euo pipefail
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Constants</span>
+</span></span><span class="line"><span class="cl"><span class="nb">readonly</span> <span class="nv">LOG_FILE</span><span class="o">=</span><span class="s2">&#34;/var/log/copy.log&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">readonly</span> <span class="nv">MAX_FILES</span><span class="o">=</span><span class="m">1000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Functions</span>
+</span></span><span class="line"><span class="cl">log_message<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">message</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;[</span><span class="k">$(</span>date<span class="k">)</span><span class="s2">] </span><span class="nv">$message</span><span class="s2">&#34;</span> <span class="p">|</span> tee -a <span class="s2">&#34;</span><span class="nv">$LOG_FILE</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">validate_inputs<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">source</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">destination</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$2</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[[</span> ! -d <span class="s2">&#34;</span><span class="nv">$source</span><span class="s2">&#34;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        log_message <span class="s2">&#34;Error: Source directory does not exist&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[[</span> ! -d <span class="s2">&#34;</span><span class="nv">$destination</span><span class="s2">&#34;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        log_message <span class="s2">&#34;Creating destination directory: </span><span class="nv">$destination</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        mkdir -p <span class="s2">&#34;</span><span class="nv">$destination</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Main</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[[</span> <span class="nv">$#</span> -ne <span class="m">2</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Usage: </span><span class="nv">$0</span><span class="s2"> &lt;source&gt; &lt;destination&gt;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">source_dir</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">dest_dir</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$2</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">validate_inputs <span class="s2">&#34;</span><span class="nv">$source_dir</span><span class="s2">&#34;</span> <span class="s2">&#34;</span><span class="nv">$dest_dir</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">log_message <span class="s2">&#34;Starting copy from </span><span class="nv">$source_dir</span><span class="s2"> to </span><span class="nv">$dest_dir</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">file_count</span><span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="nv">IFS</span><span class="o">=</span> <span class="nb">read</span> -r -d <span class="s1">&#39;&#39;</span> file<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    cp <span class="s2">&#34;</span><span class="nv">$file</span><span class="s2">&#34;</span> <span class="s2">&#34;</span><span class="nv">$dest_dir</span><span class="s2">/&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">((</span>file_count++<span class="o">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[[</span> <span class="nv">$file_count</span> -ge <span class="nv">$MAX_FILES</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        log_message <span class="s2">&#34;Error: Maximum file limit reached&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">exit</span> <span class="m">2</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span> &lt; &lt;<span class="o">(</span>find <span class="s2">&#34;</span><span class="nv">$source_dir</span><span class="s2">&#34;</span> -type f -print0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">log_message <span class="s2">&#34;Copy completed. </span><span class="nv">$file_count</span><span class="s2"> files copied.&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">exit</span> <span class="m">0</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="additional-tools-and-resources" class="heading-element">
+  <a href="#additional-tools-and-resources" class="heading-mark"></a>Additional Tools and Resources</h3><ul>
+<li><strong>ShellCheck</strong>: Static analysis tool for catching syntax and logical errors (<code>shellcheck myscript.sh</code>).</li>
+<li><strong>Bash Style Guide</strong>: Follow Google’s Shell Style Guide or similar for consistency.</li>
+<li><strong>Testing Frameworks</strong>: Use <code>bats</code> for unit testing Bash scripts.</li>
+</ul>
+<p>By adhering to these practices, your Bash scripts will be more reliable, easier to maintain, and less prone to errors. Let me know if you need help with a specific script or tool!</p></div><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2025-04-16 13:27:56">更新于 2025-04-16&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2025-04-16-grokbest-practice-for-writing-bash-scripts/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/" data-title="(grok)Best Practice for Writing Bash Scripts"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/" data-title="(grok)Best Practice for Writing Bash Scripts" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/" data-title="(grok)Best Practice for Writing Bash Scripts"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/" data-title="(grok)Best Practice for Writing Bash Scripts"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/" class="post-nav-item" rel="prev" title="(转)Linux 网络大流量传输优化方法"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>(转)Linux 网络大流量传输优化方法</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2025</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

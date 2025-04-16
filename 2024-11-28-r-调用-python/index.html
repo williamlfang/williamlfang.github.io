@@ -10,7 +10,7 @@
 <meta name="description" content="利用 reticulate 接口，我们可以在 R 中调用 python 封装的函数。" /><meta name="keywords" content='Hugo, FixIt, William' /><meta itemprop="name" content="R 调用 python">
 <meta itemprop="description" content="利用 reticulate 接口，我们可以在 R 中调用 python 封装的函数。"><meta itemprop="datePublished" content="2024-11-28T22:19:38+08:00" />
 <meta itemprop="dateModified" content="2024-11-28T22:19:38+08:00" />
-<meta itemprop="wordCount" content="128"><meta itemprop="image" content="https://williamlfang.github.io/2024-11-28-r-%E8%B0%83%E7%94%A8-python/rpython.png" />
+<meta itemprop="wordCount" content="193"><meta itemprop="image" content="https://williamlfang.github.io/2024-11-28-r-%E8%B0%83%E7%94%A8-python/rpython.png" />
 <meta itemprop="keywords" content="" /><meta property="og:title" content="R 调用 python" />
 <meta property="og:description" content="利用 reticulate 接口，我们可以在 R 中调用 python 封装的函数。" />
 <meta property="og:type" content="article" />
@@ -40,7 +40,7 @@
               "url": "https:\/\/williamlfang.github.io\/2024-11-28-r-%E8%B0%83%E7%94%A8-python\/rpython.png",
               "width":  1497 ,
               "height":  1210 
-            }],"genre": "posts","wordcount":  128 ,
+            }],"genre": "posts","wordcount":  193 ,
     "url": "https:\/\/williamlfang.github.io\/2024-11-28-r-%E8%B0%83%E7%94%A8-python\/","datePublished": "2024-11-28T22:19:38+08:00","dateModified": "2024-11-28T22:19:38+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
@@ -202,7 +202,7 @@
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>R 调用 python</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-11-28 22:19:38"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-11-28">2024-11-28</time></span>&nbsp;<span title="128 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2024-11-28 22:19:38"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-11-28">2024-11-28</time></span>&nbsp;<span title="193 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
     </div><div class="featured-image"><img loading="lazy" src="/2024-11-28-r-%E8%B0%83%E7%94%A8-python/rpython.png" alt="/2024-11-28-r-%E8%B0%83%E7%94%A8-python/rpython.png" data-title="/2024-11-28-r-%E8%B0%83%E7%94%A8-python/rpython.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
@@ -254,21 +254,43 @@
 </span><span class="lnt">11
 </span><span class="lnt">12
 </span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p ~/.R
 </span></span><span class="line"><span class="cl">vim ~/.R/Makevars
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nv">CC</span>                 <span class="o">=</span> /shared/trading/lib/gcc9/bin/gcc
+</span></span><span class="line"><span class="cl"><span class="c1"># CC                 = /shared/trading/lib/gcc9/bin/gcc</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CXX                = /shared/trading/lib/gcc9/bin/g++</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CXXSTD             = -std=c++11</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CXXFLAGS           = -g -O3 -Wall -fPIC -pipe -Wno-unused -pedantic -static-libgcc -static-libstdc++</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># LD_LIBRARY_PATH    = /shared/trading/lib/gcc9/lib64:/shared/trading/lib/gcc9/lib:$LD_LIBRARY_PATH</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CPLUS_INCLUDE_PATH = /shared/trading/lib/gcc9/include:$CPLUS_INCLUDE_PATH</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># #CXX17 = g++-7 -std=gnu++17 -fPIC CXX11 = g++</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CXX14 = g++</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CXX17 = g++</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># CXX17STD = -std=c++17</span>
+</span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="nv">CXX</span>                <span class="o">=</span> /shared/trading/lib/gcc9/bin/g++
-</span></span><span class="line"><span class="cl"><span class="nv">CXXSTD</span>             <span class="o">=</span> -std<span class="o">=</span>c++11
+</span></span><span class="line"><span class="cl"><span class="nv">CXXSTD</span>             <span class="o">=</span> -std<span class="o">=</span>gnu++17
+</span></span><span class="line"><span class="cl"><span class="nv">CXX_STD</span>            <span class="o">=</span> CXX17
 </span></span><span class="line"><span class="cl"><span class="nv">CXXFLAGS</span>           <span class="o">=</span> -g -O3 -Wall -fPIC -pipe -Wno-unused -pedantic -static-libgcc -static-libstdc++
 </span></span><span class="line"><span class="cl"><span class="nv">LD_LIBRARY_PATH</span>    <span class="o">=</span> /shared/trading/lib/gcc9/lib64:/shared/trading/lib/gcc9/lib:<span class="nv">$LD_LIBRARY_PATH</span>
 </span></span><span class="line"><span class="cl"><span class="nv">CPLUS_INCLUDE_PATH</span> <span class="o">=</span> /shared/trading/lib/gcc9/include:<span class="nv">$CPLUS_INCLUDE_PATH</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#CXX17 = g++-7 -std=gnu++17 -fPIC CXX11 = g++</span>
-</span></span><span class="line"><span class="cl"><span class="nv">CXX14</span> <span class="o">=</span> g++
-</span></span><span class="line"><span class="cl"><span class="nv">CXX17</span> <span class="o">=</span> g++
-</span></span><span class="line"><span class="cl"><span class="nv">CXX17STD</span> <span class="o">=</span> -std<span class="o">=</span>c++17</span></span></code></pre></td></tr></table>
+</span></span><span class="line"><span class="cl"><span class="nv">CXX11</span> <span class="o">=</span> /shared/trading/lib/gcc9/bin/g++ -std<span class="o">=</span>c++11 -fPIC
+</span></span><span class="line"><span class="cl"><span class="nv">CXX14</span> <span class="o">=</span> /shared/trading/lib/gcc9/bin/g++ -std<span class="o">=</span>c++17 -fPIC
+</span></span><span class="line"><span class="cl"><span class="nv">CXX17</span> <span class="o">=</span> /shared/trading/lib/gcc9/bin/g++ -std<span class="o">=</span>gnu++17 -fPIC
+</span></span><span class="line"><span class="cl"><span class="nv">CXX17STD</span> <span class="o">=</span> -std<span class="o">=</span>gnu++17</span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="安装-reticulate" class="heading-element">
   <a href="#%e5%ae%89%e8%a3%85-reticulate" class="heading-mark"></a>安装 reticulate</h2><div class="highlight" id="id-3"><div class="chroma">

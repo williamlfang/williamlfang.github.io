@@ -4,8 +4,11 @@
 在 `~/.tmux.conf` 添加
 
 ```bash
-set -ga terminal-overrides &#34;,xterm-256color:Tc&#34;
-set -g default-terminal &#34;tmux-256color&#34;
+# set -ga terminal-overrides &#34;,xterm-256color:Tc&#34;
+# set -g default-terminal &#34;tmux-256color&#34;
+
+set -g default-terminal &#34;screen-256color&#34;
+set-option -sa terminal-overrides &#39;,screen-256color:Tc&#39;
 ```
 
 &lt;!--more--&gt;

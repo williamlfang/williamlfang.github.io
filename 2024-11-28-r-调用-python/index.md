@@ -18,16 +18,27 @@ export PATH=/shared/trading/lib/gcc/bin:/shared/trading/lib/binutils/bin:/shared
 mkdir -p ~/.R
 vim ~/.R/Makevars
 
-CC                 = /shared/trading/lib/gcc9/bin/gcc
+# CC                 = /shared/trading/lib/gcc9/bin/gcc
+# CXX                = /shared/trading/lib/gcc9/bin/g&#43;&#43;
+# CXXSTD             = -std=c&#43;&#43;11
+# CXXFLAGS           = -g -O3 -Wall -fPIC -pipe -Wno-unused -pedantic -static-libgcc -static-libstdc&#43;&#43;
+# LD_LIBRARY_PATH    = /shared/trading/lib/gcc9/lib64:/shared/trading/lib/gcc9/lib:$LD_LIBRARY_PATH
+# CPLUS_INCLUDE_PATH = /shared/trading/lib/gcc9/include:$CPLUS_INCLUDE_PATH
+# #CXX17 = g&#43;&#43;-7 -std=gnu&#43;&#43;17 -fPIC CXX11 = g&#43;&#43;
+# CXX14 = g&#43;&#43;
+# CXX17 = g&#43;&#43;
+# CXX17STD = -std=c&#43;&#43;17
+
 CXX                = /shared/trading/lib/gcc9/bin/g&#43;&#43;
-CXXSTD             = -std=c&#43;&#43;11
+CXXSTD             = -std=gnu&#43;&#43;17
+CXX_STD            = CXX17
 CXXFLAGS           = -g -O3 -Wall -fPIC -pipe -Wno-unused -pedantic -static-libgcc -static-libstdc&#43;&#43;
 LD_LIBRARY_PATH    = /shared/trading/lib/gcc9/lib64:/shared/trading/lib/gcc9/lib:$LD_LIBRARY_PATH
 CPLUS_INCLUDE_PATH = /shared/trading/lib/gcc9/include:$CPLUS_INCLUDE_PATH
-#CXX17 = g&#43;&#43;-7 -std=gnu&#43;&#43;17 -fPIC CXX11 = g&#43;&#43;
-CXX14 = g&#43;&#43;
-CXX17 = g&#43;&#43;
-CXX17STD = -std=c&#43;&#43;17
+CXX11 = /shared/trading/lib/gcc9/bin/g&#43;&#43; -std=c&#43;&#43;11 -fPIC
+CXX14 = /shared/trading/lib/gcc9/bin/g&#43;&#43; -std=c&#43;&#43;17 -fPIC
+CXX17 = /shared/trading/lib/gcc9/bin/g&#43;&#43; -std=gnu&#43;&#43;17 -fPIC
+CXX17STD = -std=gnu&#43;&#43;17
 ```
 
 ## 安装 reticulate
