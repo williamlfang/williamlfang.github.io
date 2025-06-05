@@ -202,7 +202,7 @@ shm_open (const char *name, int oflag, mode_t mode)
 - 根据我们传递给 `shm_open` 的 `name`，将其组合成 `/dev/shm` 的路径，然后使用 `open` 打开。我们也可以发现，在 `linux` 的哲学：「一切皆文件」
 
 - 对 `shm_name` 进行判断，这里面有
-    1. 名字不能非看，且长度不能超过 `NAME_MAX`，这个定义在 `limits.h`，是 `255`o
+    1. 名字不能非空，且长度不能超过 `NAME_MAX`，这个定义在 `limits.h`，是 `255`o
     2. 使用函数 `strchr` 判断传递的名字是否有 `/`，即是否是一个**带有目录路径的文件名**
 
 - 这里就是问题所在了，如果 `SHM_GET_NAME` 发现我们传递的名称是 `spdm/spdx_param`，就返回 `retval_for_invalid`，即 `-1`，这代表我们得到的 `fd` 是非正常，因此 `shm` 才会出现 `coredump` 的报错。
