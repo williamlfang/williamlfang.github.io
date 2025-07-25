@@ -187,6 +187,71 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-08-02-linux-coredump-%E8%AE%BE%E7%BD%AE/">Linux coredump 设置</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-08-02 08:57:53'>发布于 <time datetime="2023-08-02">2023-08-02</time></span></div><div class="content"><p>注意：需要有普通用户写入权限的路径。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## 查看当前配置</span>
+</span></span><span class="line"><span class="cl">cat /proc/sys/kernel/core_pattern
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 临时</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;/tmp/core-%e-%p-%t&#34;</span> &gt; /proc/sys/kernel/core_pattern
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 使用 sysctl 设置</span>
+</span></span><span class="line"><span class="cl">sysctl -w kernel.core_pattern<span class="o">=</span>/tmp/core-%e-%p-%t</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>%% 单个%字符</li>
+<li>%p 所dump进程的进程ID</li>
+<li>%u 所dump进程的实际用户ID</li>
+<li>%g 所dump进程的实际组ID</li>
+<li>%s 导致本次core dump的信号</li>
+<li>%t core dump的时间 (由1970年1月1日计起的秒数)</li>
+<li>%h 主机名</li>
+<li>%e 程序文件名</li>
+</ul></div><div class="post-footer">
+    <a href="/2023-08-02-linux-coredump-%E8%AE%BE%E7%BD%AE/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-08-01-systemd-%E5%AD%A6%E4%B9%A0/">systemd 学习</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-08-01 11:17:56'>发布于 <time datetime="2023-08-01">2023-08-01</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p><code>Linux systemd</code> 学习总结</p>
+<p><code>simple</code> vs <code>oneshot</code>:</p>
+<p>When you are deciding which service type to choose between simple and oneshot, here is some guidance:</p>
+<ul>
+<li>Does your service need to complete before any follow-up services run? Use oneshot.</li>
+<li>Do your follow-up services need to be running while this service does? Use simple.</li>
+<li>Is this a long-running service? Probably use simple.</li>
+<li>Do you need to run this service only at shutdown? Use oneshot.</li>
+<li>Do you need to have multiple separate commands to run? Use oneshot.</li>
+</ul></div><div class="post-footer">
+    <a href="/2023-08-01-systemd-%E5%AD%A6%E4%B9%A0/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/systemd/' class="post-tag">Systemd</a><a href='/tags/oneshot/' class="post-tag">Oneshot</a><a href='/tags/simple/' class="post-tag">Simple</a></div></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-07-31-linux-%E6%96%B0%E5%8A%A04t%E7%A1%AC%E7%9B%98%E6%8C%82%E8%BD%BD%E9%9D%9E%E9%80%BB%E8%BE%91%E7%9B%98/">Linux 新加4T硬盘挂载（非逻辑盘）</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-07-31 15:23:58'>发布于 <time datetime="2023-07-31">2023-07-31</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>新加一块 4T 硬盘挂载（非逻辑盘，没有 vgdisplay 的概念，就是简单的挂载到某个路径）</p></div><div class="post-footer">
+    <a href="/2023-07-31-linux-%E6%96%B0%E5%8A%A04t%E7%A1%AC%E7%9B%98%E6%8C%82%E8%BD%BD%E9%9D%9E%E9%80%BB%E8%BE%91%E7%9B%98/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/centos/' class="post-tag">CentOS</a><a href='/tags/fdisk/' class="post-tag">Fdisk</a><a href='/tags/parted/' class="post-tag">Parted</a><a href='/tags/%E7%A1%AC%E7%9B%98/' class="post-tag">硬盘</a><a href='/tags/%E5%88%86%E5%8C%BA/' class="post-tag">分区</a></div></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2023-07-31-ubuntu-%E8%AE%BE%E7%BD%AE-flameshot-%E5%BF%AB%E6%8D%B7%E9%94%AE/" aria-label="Ubuntu 设置 flameshot 快捷键"><img loading="lazy" src="/2023-07-31-ubuntu-%E8%AE%BE%E7%BD%AE-flameshot-%E5%BF%AB%E6%8D%B7%E9%94%AE/featured.png" alt="Ubuntu 设置 flameshot 快捷键" data-title="Ubuntu 设置 flameshot 快捷键" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2023-07-31-ubuntu-%E8%AE%BE%E7%BD%AE-flameshot-%E5%BF%AB%E6%8D%B7%E9%94%AE/">Ubuntu 设置 flameshot 快捷键</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-07-31 14:31:00'>发布于 <time datetime="2023-07-31">2023-07-31</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><ol>
+<li>使用 <code>Win</code> 键调出 <code>keyboard</code> 设置界面</li>
+<li>在 <code>Custom Shortcuts</code> 点击添加 <code>flameshot</code>，其中 <code>Name</code> 可以自己写，然后在 <code>Command</code> 填写: /usr/bin/flameshot gui
+update: /usr/bin/flatpak run &ndash;branch=stable &ndash;arch=x86_64 &ndash;command=flameshot org.flameshot.Flameshot launcher</li>
+<li>添加快捷键为 <code>PrtScr</code></li>
+<li>这样，就可以用键盘上面的截屏工具进行截图了</li>
+</ol>
+<p>参考：<a href="https://askubuntu.com/questions/1036473/how-to-change-screenshot-application-to-flameshot-on-ubuntu-18-04"target="_blank" rel="external nofollow noopener noreferrer">How to change screenshot application to Flameshot on Ubuntu 18.04?<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p></div><div class="post-footer">
+    <a href="/2023-07-31-ubuntu-%E8%AE%BE%E7%BD%AE-flameshot-%E5%BF%AB%E6%8D%B7%E9%94%AE/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/ubuntu/' class="post-tag">Ubuntu</a><a href='/tags/flameshot/' class="post-tag">Flameshot</a><a href='/tags/%E6%88%AA%E5%9B%BE/' class="post-tag">截图</a></div></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-07-29-dd-%E5%88%B6%E4%BD%9C-bios-%E5%90%AF%E5%8A%A8%E7%9B%98/">dd 制作 bios 启动盘</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-07-29 16:18:54'>发布于 <time datetime="2023-07-29">2023-07-29</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><div class="highlight" id="id-1"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -207,29 +272,6 @@
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-07-25-bash%E5%85%A5%E9%97%A8/">bash入门</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-07-25 13:19:12'>发布于 <time datetime="2023-07-25">2023-07-25</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>关于使用 <code>bash/shell</code> 编程的总结。</p></div><div class="post-footer">
     <a href="/2023-07-25-bash%E5%85%A5%E9%97%A8/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/bash/' class="post-tag">Bash</a><a href='/tags/shell/' class="post-tag">Shell</a><a href='/tags/gnu/' class="post-tag">Gnu</a><a href='/tags/c/' class="post-tag">C</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/">汇编入门</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-07-23 13:03:14'>发布于 <time datetime="2023-07-23">2023-07-23</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/learning/" class="post-category" title="分类 - Learning"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Learning</a></span></div><div class="content"><p>最近在学习汇编语言，这里做一下简要的记录，主要使用的参考书：</p>
-<ul>
-<li>Jonathan Bartlett: <a href="https://www.amazon.com/-/zh/dp/1484274369/ref=sr_1_1?keywords=learn&#43;to&#43;program&#43;with&#43;assembly&amp;qid=1690090378&amp;sprefix=learn&#43;to&#43;program%2Caps%2C380&amp;sr=8-1"target="_blank" rel="external nofollow noopener noreferrer">Learn to Program with Assembly: Foundational Learning for New Programmers<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
-<li>Jonathan Bartlett: <a href="https://www.amazon.com/-/zh/dp/0975283847/ref=sr_1_5?__mk_zh_CN=%E4%BA%9A%E9%A9%AC%E9%80%8A%E7%BD%91%E7%AB%99&amp;crid=3HQWUL7PU4EDU&amp;keywords=Jonathan&#43;Bartlett&amp;qid=1690090419&amp;sprefix=learn&#43;to&#43;program&#43;with&#43;assembly%2Caps%2C884&amp;sr=8-5"target="_blank" rel="external nofollow noopener noreferrer">Programming from the Ground Up<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
-<li><a href="https://staffwww.fullcoll.edu/aclifton/courses/cs241/"target="_blank" rel="external nofollow noopener noreferrer">CSci 241: Assembly Language Programming<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
-<li><a href="https://ocw.mit.edu/courses/6-004-computation-structures-spring-2017/"target="_blank" rel="external nofollow noopener noreferrer">MIT Computation Structures<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
-</ul>
-<p>其实，我最早是先看了 PGU，因为这是一本开源书籍，后来才看阅读 LPA，发现 LPA 其实是 PGU 的出版社书籍，是对 PGU 进行更加系统化的整理，并升级了汇编到 <code>x86-64</code> 。所以推荐直接看 LPA 即可。</p></div><div class="post-footer">
-    <a href="/2023-07-23-%E6%B1%87%E7%BC%96%E5%85%A5%E9%97%A8/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/assembly/' class="post-tag">Assembly</a><a href='/tags/cs/' class="post-tag">Cs</a><a href='/tags/x86/' class="post-tag">X86</a><a href='/tags/x86-64/' class="post-tag">X86-64</a><a href='/tags/%E6%B1%87%E7%BC%96/' class="post-tag">汇编</a><a href='/tags/%E7%BC%96%E7%A8%8B/' class="post-tag">编程</a><a href='/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/' class="post-tag">计算机</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-07-18-python3.11-%E6%97%A0%E6%B3%95%E5%AE%89%E8%A3%85-pycrypto/">python3.11 无法安装 pycrypto</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-07-18 15:59:02'>发布于 <time datetime="2023-07-18">2023-07-18</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>安装 <code>python3.11</code> 的一个软件包 <code>pycrypto</code> 时，出现一个报错，导致无法安装相关依赖包。</p></div><div class="post-footer">
-    <a href="/2023-07-18-python3.11-%E6%97%A0%E6%B3%95%E5%AE%89%E8%A3%85-pycrypto/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/python3/' class="post-tag">Python3</a><a href='/tags/pycrypto/' class="post-tag">Pycrypto</a><a href='/tags/longintrepr.h/' class="post-tag">Longintrepr.h</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-07-18-statistical-rethinking/">Statistical Rethinking</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-07-18 11:42:51'>发布于 <time datetime="2023-07-18">2023-07-18</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/stat/" class="post-category" title="分类 - Stat"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Stat</a></span></div><div class="content"></div><div class="post-footer">
-    <a href="/2023-07-18-statistical-rethinking/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/stat/' class="post-tag">Stat</a><a href='/tags/rethinking/' class="post-tag">Rethinking</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2023-07-14-%E6%9C%89%E5%85%B3-unix-c-%E7%9A%84%E4%B8%80%E4%BA%9B%E5%8E%86%E5%8F%B2%E6%95%85%E4%BA%8B/">有关 unix c 的一些历史故事</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2023-07-14 14:58:01'>发布于 <time datetime="2023-07-14">2023-07-14</time></span></div><div class="content">History and Spirit of C and C++ History and Spirit of C - Olve Maudal Dennis M. Ritchie Linux like original Unix</div><div class="post-footer">
-    <a href="/2023-07-14-%E6%9C%89%E5%85%B3-unix-c-%E7%9A%84%E4%B8%80%E4%BA%9B%E5%8E%86%E5%8F%B2%E6%95%85%E4%BA%8B/">阅读全文</a></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
@@ -261,7 +303,7 @@
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/72/">72</a>
+            <a href="/page/73/">73</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>

@@ -3,7 +3,44 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 16 Apr 2025 13:27:56 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 25 Jul 2025 14:22:44 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+  <title>Docker 修改 DNS:resolv.conf</title>
+  <link>https://williamlfang.github.io/2025-07-25-docker-%E4%BF%AE%E6%94%B9-dns-resolv.conf/</link>
+  <pubDate>Fri, 25 Jul 2025 14:22:44 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-07-25-docker-%E4%BF%AE%E6%94%B9-dns-resolv.conf/</guid>
+  <description><![CDATA[<p>为了在 <code>Docker</code> 中使用指定 <code>DNS</code>，我们需要相应修改 <code>/etc/resolv.conf</code>。现在遇到的问题是</p>
+<blockquote>
+<p>无法在 Dockerfile 里“永久”覆盖 /etc/resolv.conf；
+无论 Classic 还是 BuildKit，Docker 都会在启动阶段把运行时生成的 resolv.conf 挂到容器里，覆盖镜像中原有内容。</p>
+</blockquote>
+<p>因此，我们需要在 <code>build</code> 阶段，把 <code>DNS</code> 「传送」到 <code>docker</code> 里面。下面介绍具体的方法。</p>]]></description>
+</item>
+<item>
+  <title>Linux kill SIGTERM vs SIGKILL</title>
+  <link>https://williamlfang.github.io/2025-06-24-linux-kill-sigterm-vs-sigkill/</link>
+  <pubDate>Tue, 24 Jun 2025 10:55:02 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-06-24-linux-kill-sigterm-vs-sigkill/</guid>
+  <description><![CDATA[ Ref the real reason to not use sigkill ]]></description>
+</item>
+<item>
+  <title>gcc: Link Time Optimization</title>
+  <link>https://williamlfang.github.io/2025-06-20-gcc--link-time-optimization/</link>
+  <pubDate>Fri, 20 Jun 2025 10:23:03 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-06-20-gcc--link-time-optimization/</guid>
+  <description><![CDATA[]]></description>
+</item>
+<item>
+  <title>Linux 安装 syncthing</title>
+  <link>https://williamlfang.github.io/2025-06-08-linux-%E5%AE%89%E8%A3%85-syncthing/</link>
+  <pubDate>Sun, 08 Jun 2025 18:27:20 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-06-08-linux-%E5%AE%89%E8%A3%85-syncthing/</guid>
+  <description><![CDATA[<p>使用 <code>syncthing</code> 同步不同机器之间的文件，所有数据均保留在本地机器。</p>]]></description>
+</item>
+<item>
   <title>(grok)Best Practice for Writing Bash Scripts</title>
   <link>https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/</link>
   <pubDate>Wed, 16 Apr 2025 13:27:56 &#43;0800</pubDate>
@@ -67,136 +104,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2025-02-22-update-glibc_2.28/</guid>
   <description><![CDATA[]]></description>
-</item>
-<item>
-  <title>在 c 代码文件插入 shell 命令</title>
-  <link>https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/</link>
-  <pubDate>Sat, 22 Feb 2025 12:49:59 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/</guid>
-  <description><![CDATA[<p>今天看到一个帖子：<a href="https://www.reddit.com/r/C_Programming/comments/1iuvu0f/just_realized_you_can_put_shell_script_inside_c/"target="_blank" rel="external nofollow noopener noreferrer">Just realized you can put shell script inside c source files<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，想到以前有个朋友也是这么使用 <code>c</code>，觉得挺神奇的。</p>
-<p>这个是在 <code>c</code> 源代码文件，使用 <code>macro</code> 宏定义一组 <code>shell</code> 命令，然后再退出 <code>shell</code>，这样就不会在继续执行真正的 <code>c</code> 代码了。这样做的好处是可以使用一个命令 <code>sh main.c</code> 即可快速运行可执行文件，对于一些简单部署的任务比较方便。</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cp">#if 0</span><span class="c">
-</span></span></span><span class="line"><span class="cl"><span class="c">cc -o /tmp/app main.c
-</span></span></span><span class="line"><span class="cl"><span class="c">/tmp/app
-</span></span></span><span class="line"><span class="cl"><span class="c">exit # required, otherwise sh will try to interpret the C code below
-</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="cp">#endif
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
-</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
-</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nf">printf</span><span class="p">(</span><span class="s">&#34;quick script</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight" id="id-2"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sh main.c
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">quick script</span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>tmux: error while loading shared libraries: libevent_core 2.1.so.6</title>
-  <link>https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/</link>
-  <pubDate>Thu, 20 Feb 2025 18:19:39 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/</guid>
-  <description><![CDATA[<p><code>tmux</code> 报错</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux: error <span class="k">while</span> loading shared libraries: libevent_core-2.1.so.7</span></span></code></pre></td></tr></table>
-</div>
-</div><p>使用 <code>ldd</code> 查看是可以找到动态库</p>
-<div class="highlight" id="id-2"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ldd ~/local/bin/tmux
-</span></span><span class="line"><span class="cl">        linux-vdso.so.1 <span class="o">(</span>0x00007ffe043f8000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libutil.so.1 <span class="o">=</span>&gt; /lib64/libutil.so.1 <span class="o">(</span>0x00007fa85ce0c000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libtinfo.so.5 <span class="o">=</span>&gt; /lib64/libtinfo.so.5 <span class="o">(</span>0x00007fa85cbe2000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libevent_core-2.1.so.6 <span class="o">=</span>&gt; /home/lfang/local/lib/libevent_core-2.1.so.6 <span class="o">(</span>0x00007fa85c9ac000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libm.so.6 <span class="o">=</span>&gt; /lib64/libm.so.6 <span class="o">(</span>0x00007fa85c6aa000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libresolv.so.2 <span class="o">=</span>&gt; /lib64/libresolv.so.2 <span class="o">(</span>0x00007fa85c493000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libc.so.6 <span class="o">=</span>&gt; /lib64/libc.so.6 <span class="o">(</span>0x00007fa85c0e7000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libcrypto.so.10 <span class="o">=</span>&gt; /lib64/libcrypto.so.10 <span class="o">(</span>0x00007fa85bc84000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libpthread.so.0 <span class="o">=</span>&gt; /lib64/libpthread.so.0 <span class="o">(</span>0x00007fa85ba66000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        /lib64/ld-linux-x86-64.so.2 <span class="o">(</span>0x00007fa85d00f000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libdl.so.2 <span class="o">=</span>&gt; /lib64/libdl.so.2 <span class="o">(</span>0x00007fa85b862000<span class="o">)</span>
-</span></span><span class="line"><span class="cl">        libz.so.1 <span class="o">=</span>&gt; /home/lfang/opt/lib/libz.so.1 <span class="o">(</span>0x00007fa85d20c000<span class="o">)</span></span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>nvim orgmode 修改 archive 文件名称</title>
-  <link>https://williamlfang.github.io/2025-02-11-nvim-orgmode-%E4%BF%AE%E6%94%B9-archive-%E6%96%87%E4%BB%B6%E5%90%8D%E7%A7%B0/</link>
-  <pubDate>Tue, 11 Feb 2025 19:50:58 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-02-11-nvim-orgmode-%E4%BF%AE%E6%94%B9-archive-%E6%96%87%E4%BB%B6%E5%90%8D%E7%A7%B0/</guid>
-  <description><![CDATA[<p>修改 <code>orgmode</code> 保存 <code>archive</code> 时的文件重命名。</p>]]></description>
-</item>
-<item>
-  <title>nvim 添加自定义代码段 snippets</title>
-  <link>https://williamlfang.github.io/2025-02-09-nvim-%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BB%A3%E7%A0%81%E6%AE%B5-snippets/</link>
-  <pubDate>Sun, 09 Feb 2025 11:18:23 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-02-09-nvim-%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BB%A3%E7%A0%81%E6%AE%B5-snippets/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2025-02-09-nvim-%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BB%A3%E7%A0%81%E6%AE%B5-snippets/sched.png" alt="nvim 添加自定义代码段 snippets" title="nvim 添加自定义代码段 snippets" referrerpolicy="no-referrer"/></div><p>我们在写代码时，会经常使用一些普遍的写法，比如一个 <code>for</code> 循环；或者是一些常用的代码段，比如 <code>datetime</code> 直接输入当前的日期。</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="p">...</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
 </item>
 </channel>
 </rss>
