@@ -16,6 +16,9 @@ vim /etc/security/limits.conf
 
 * soft nofile 40960
 * hard nofile 40960
+
+echo &#34;fs.file-max = 6553500&#34; | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
 ```
 
 注销后重新登录即可生效。

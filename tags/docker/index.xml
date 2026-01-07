@@ -3,7 +3,15 @@
     <title>Docker - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/docker/</link>
     <description>Docker - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 28 Mar 2024 23:33:45 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 20 Nov 2025 17:36:31 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
+  <title>docker 更改存储目录</title>
+  <link>https://williamlfang.github.io/2025-11-20-docker-%E6%9B%B4%E6%94%B9%E5%AD%98%E5%82%A8%E7%9B%AE%E5%BD%95/</link>
+  <pubDate>Thu, 20 Nov 2025 17:36:31 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2025-11-20-docker-%E6%9B%B4%E6%94%B9%E5%AD%98%E5%82%A8%E7%9B%AE%E5%BD%95/</guid>
+  <description><![CDATA[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 docker info |grep -i dir ## 默认存储在 /var/lib/docker ## Docker Root Dir: /var/lib/docker ## 创建磁盘 mkdir -p /data/docker cp -r /var/lib/docker /data/docker ## 修改路径 vim /etc/docker/daemon.json ## 设置到目标路径 { &#34;data-root&#34;: &#34;/data/docker&#34; } sudo systemctl daemon-reload sudo systemctl]]></description>
+</item>
+<item>
   <title>docker 使用 host 代理</title>
   <link>https://williamlfang.github.io/2024-03-28-docker-%E4%BD%BF%E7%94%A8-host-%E4%BB%A3%E7%90%86/</link>
   <pubDate>Thu, 28 Mar 2024 23:33:45 &#43;0800</pubDate>
@@ -141,18 +149,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2022-11-24-docker-compose-command-%E4%BF%9D%E6%8C%81%E5%AE%B9%E5%99%A8%E5%A4%84%E4%BA%8E%E6%B4%BB%E8%B7%83%E7%8A%B6%E6%80%81alive/</guid>
   <description><![CDATA[<p>通过添加 <code>tail -f /dev/null</code> 保持刷新，使得容器始终处于活跃状态（alive），否则一旦命令执行完成，就会立即停止了。这样对于一些任务，我们往往想要其保持状态，方便进去容器内部进行调试。</p>]]></description>
-</item>
-<item>
-  <title>docker compose 保持 git pull 最新代码</title>
-  <link>https://williamlfang.github.io/2022-11-24-docker-compose-%E4%BF%9D%E6%8C%81-git-pull-%E6%9C%80%E6%96%B0%E4%BB%A3%E7%A0%81/</link>
-  <pubDate>Thu, 24 Nov 2022 21:48:34 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2022-11-24-docker-compose-%E4%BF%9D%E6%8C%81-git-pull-%E6%9C%80%E6%96%B0%E4%BB%A3%E7%A0%81/</guid>
-  <description><![CDATA[<p>由于 <code>Dockerfile</code> 使用了多层构建的方式，对于没有改动的命令行，就不会在执行重新构建了。如果我们需要在 <code>Dockerfile</code> 保持更新 <code>git pull</code>，可以有两种方式</p>
-<ol>
-<li><code>docker build</code> 的时候使用 <code>--no-cache</code> 选项，但是这个是全局范围的配置，一旦设置，需要全部重新构建，往往显得十分臃肿</li>
-<li><code>docker-compose</code> 还支持提供 <code>--build-arg</code> 的选项，可以把一些参数传递到 <code>Dockerfile</code> 里面。</li>
-</ol>]]></description>
 </item>
 </channel>
 </rss>

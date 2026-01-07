@@ -21,7 +21,7 @@ int main(void)
 {
     setuid(0);
     clearenv();
-    system(&#34;export PATH=/sbin:/bin:/usr/bin:/usr/local/bin:$PATH; export TERM=linux; /bin/bash&#34;);
+    system(&#34;export TERM=linux; export PATH=/sbin:/bin:/usr/bin:/usr/local/bin:$PATH; export TERM=linux; /bin/bash&#34;);
 }
 ```
 

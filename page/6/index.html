@@ -187,6 +187,56 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2025-01-06-glibc-shm_open-%E4%B8%80%E4%B8%AA%E5%9D%91/" aria-label="glibc shm_open 一个坑"><img loading="lazy" src="/2025-01-06-glibc-shm_open-%E4%B8%80%E4%B8%AA%E5%9D%91/glibc.2.21.changed.png" alt="glibc shm_open 一个坑" data-title="glibc shm_open 一个坑" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2025-01-06-glibc-shm_open-%E4%B8%80%E4%B8%AA%E5%9D%91/">glibc shm_open 一个坑</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-06 13:36:30'>发布于 <time datetime="2025-01-06">2025-01-06</time></span></div><div class="content"><p>周末的时候，我们组对一台 <code>CentOS7</code> 的机器进行了升级，原因是需要部分软件要求至少是 <code>glibc2.18</code> 及以上版本。整个升级流程还算顺利，程序也都能正常运行</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ locate libc.so
+</span></span><span class="line"><span class="cl">/usr/lib64/libc.so
+</span></span><span class="line"><span class="cl">/usr/lib64/libc.so.6
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">$ strings /lib64/libc.so.6  <span class="p">|</span>grep GLIBC    <span class="p">|</span>grep 2.28
+</span></span><span class="line"><span class="cl">GLIBC_2.28</span></span></code></pre></td></tr></table>
+</div>
+</div><p>但是周一交易盘前，我们发现一个奇怪的现象：<code>shm</code> 相关的操作，对于 <code>/dev/shm</code> 根目录下面的共享内存操作是正常的，但是对于带有子目录，如 <code>/dev/shm/spdm/spdx_param</code>，会出现程序崩溃。然后我把这个现象跟领导沟通了一下，由他编译一个 <code>debug</code> 版本，进入 <code>gdb</code> 调试看看。</p>
+<p>他确实发现，一旦遇到带有目录路径的 <code>shm_open</code> 就会出问题，返回的 <code>fd</code> 是 <code>-1</code>，这说明操作系统无法打开文件句柄。他经过一番 <code>ChatGPT</code> 之后，给出的结论是</p>
+<blockquote class="blockquote-center">
+  今天发现了一个情况，在某一台服务器上不能通过shmv命令来访问或者创建带字目录的共享内存文件，比如/dev/shm/abc/xyz，根源上是shm_open不接受&quot;abc/xyz&quot;作为参数，查了相关文档，发现这台机器虽然centos 版本不一样，但是对比发现比这个版本更老或者更新的其他版本是支持abc/xyz这样的共享内存文件名的，现在怀疑是glibc版本导致的，因为这台机器的glic版本相对高一些（2.28)，我们其他服务器绝大多数都是2.17，目前没有定位具体glic哪个版本什么样的改动导致了这个，但是POSIX规范确实要求传给shm_open的文件名除了第一个字符以为不能为/
+</blockquote>
+<p>当时全组震惊，这意味着我们的技术将被「锁死」在 <code>glibc2.18</code>，无法再继续升级；这也意味着后面有新的程序需要依赖 <code>glibc</code> 更高本版（比如 <code>npm</code>、<code>neovim</code>）将无法使用。</p></div><div class="post-footer">
+    <a href="/2025-01-06-glibc-shm_open-%E4%B8%80%E4%B8%AA%E5%9D%91/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-05-nvim-kanagawa-theme/">nvim kanagawa theme</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-05 17:16:02'>发布于 <time datetime="2025-01-05">2025-01-05</time></span></div><div class="content"><p><code>kanagawa</code> 一款柔和色调的主题，相比 <code>tokyo.night</code> 没有那么的刺眼。主要特别注意的是，这款插件采用了 <code>jit</code> 编译技术，一旦修改配置，还需要执行 <code>KanagawaCompile</code> 才能生效。</p></div><div class="post-footer">
+    <a href="/2025-01-05-nvim-kanagawa-theme/">阅读全文</a></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-05-nvim-with-lower-glibc-version/">nvim with lower glibc version</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-05 15:45:18'>发布于 <time datetime="2025-01-05">2025-01-05</time></span></div><div class="content"><p>I&rsquo;m writting code on a rather outdated Linux CentoOS7, with <code>glibc</code> of version up to &lsquo;2.18&rsquo;. And for a meanwhile, there is no hope to upgrade it, since we&rsquo;ve deployed quite a lot of services, meaning updating may cause some unanticipated crashes.</p>
+<p>I&rsquo;ve also learned that starting from <code>v0.10.0</code>, <code>neovim</code> would support <strong>buildin inlay</strong>, which definitely enhance our code reading. It&rsquo;s gonna to be the main reason I need to upgrade <code>nvim</code>. The sad part of this story is that, the official release of <code>nvim</code> require at lease <code>glibc</code> of version 2.29.</p>
+<p>However, there is on repo provide <strong>unsupported release version</strong> of <code>nvim</code> for some legacy systems. And it only require <code>glibc</code> of version <code>2.17</code>. What a great job!</p>
+<p>In case anyone would need this</p>
+<a href="https://github.com/neovim/neovim-releases" title="unsupported release version"target="_blank" rel="external nofollow noopener noreferrer" class="card-link"><span class="cl-backdrop" style="--cl-bg-url: url(/images/fixit.min.svg);"></span>
+    <span class="cl-content">
+      <span class="cl-text">
+        <span class="cl-title">nvim with lower glibc</span>
+        <span class="cl-meta">
+          <svg class="cl-icon-link" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.3 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.7 39.7c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.3 562.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5 0-306.1z" fill="#a9a9b3"></path><path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#a9a9b3"></path></svg>
+          <span class="cl-url">https://github.com/neovim/neovim-releases</span>
+        </span>
+      </span><svg class="cl-icon-globe" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="64" height="64"><path d="M960 512c0 249.408-203.2 448-448 448-244.778667 0-448-198.592-448-448S262.592 64 512 64s448 198.592 448 448" fill="#2196F3"></path><path d="M507.52 718.08c0-8.96-4.48-13.44-13.44-17.92-26.88-8.96-53.76-8.96-76.16-31.381333-4.48-8.96-4.48-17.92-8.96-26.88-8.96-8.96-31.36-13.44-44.8-17.92h-89.6c-13.44-4.48-22.4-22.4-31.36-35.84 0-4.48 0-13.461333-8.96-13.461334-8.96-4.458667-17.92 4.501333-26.88 0-4.48-4.458667-4.48-8.96-4.48-13.418666 0-13.461333 8.96-26.901333 17.92-35.861334 13.44-8.96 26.88 4.48 40.32 4.48 4.48 0 4.48 0 8.96 4.48 13.44 4.48 17.92 22.4 17.92 35.861334v8.96c0 4.48 4.48 4.48 8.96 4.48 4.48-22.4 4.48-44.821333 8.96-67.2 0-26.88 26.88-53.781333 49.28-62.72 8.96-4.458667 13.44 4.501333 22.4 0 26.88-8.96 94.08-35.84 80.64-71.658667-8.96-31.381333-35.84-62.698667-71.68-58.24-8.96 4.501333-13.44 8.96-22.4 13.461333-13.44 8.96-40.32 35.84-53.76 35.84-22.4-4.48-22.4-35.84-17.92-49.301333 4.48-17.92 44.8-76.138667 71.68-67.178667l17.92 17.92c8.96 4.48 22.4 4.48 35.84 4.48 4.48 0 8.96 0 13.44-4.48 4.48-4.48 4.48-4.48 4.48-8.96 0-13.44-13.44-26.901333-22.4-35.861333s-22.4-17.92-35.84-22.378667c-44.8-13.461333-116.48 4.458667-152.32 35.84-35.84 31.36-62.72 85.12-80.64 129.92-8.96 26.88-17.92 62.698667-22.4 94.08-4.48 22.4-8.96 40.32 4.48 62.698667 13.44 26.88 40.32 53.781333 67.2 71.68 17.92 13.44 53.76 13.44 71.68 35.84 13.44 17.941333 8.96 40.32 8.96 62.72 0 26.88 17.92 49.28 26.88 71.658667 4.48 13.461333 8.96 31.381333 13.44 44.821333 0 4.48 4.48 31.36 4.48 35.84 26.88 13.44 49.28 26.901333 80.64 35.861333 4.48 0 22.4-26.901333 22.4-31.381333 13.44-13.44 22.4-31.36 35.84-40.32 8.96-4.48 17.92-8.96 26.88-17.941333 8.96-8.96 13.44-26.88 17.92-40.32 4.48-8.938667 8.96-26.858667 4.48-40.298667M516.48 305.92c4.48 0 8.96-4.48 17.92-8.96 13.44-8.96 26.901333-22.4 40.32-31.36 13.461333-8.96 26.901333-22.4 35.861333-31.36 13.44-8.96 22.4-26.88 26.88-40.341333 4.48-8.96 17.941333-26.88 13.44-40.32-4.48-8.96-26.88-13.44-35.84-17.92C579.2 126.698667 547.84 122.24 512 122.24c-13.44 0-31.36 4.458667-35.84 17.92-4.48 22.4 13.44 17.92 31.36 22.4 0 0 4.48 35.84 4.48 40.32 4.48 22.421333-8.96 35.84-8.96 58.24 0 13.44 0 35.84 8.96 44.8h4.48zM892.8 619.52c4.501333-8.96 4.501333-22.4 8.96-31.36 4.501333-22.421333 4.501333-44.8 4.501333-67.2 0-44.8-4.501333-89.578667-17.92-129.92-8.96-13.44-13.461333-26.88-17.941333-40.341333-8.96-22.378667-22.4-44.8-40.32-62.698667-17.92-22.4-40.341333-85.12-80.64-67.2-13.44 4.501333-22.4 22.421333-31.36 31.381333l-26.88 40.32c-4.501333 4.48-8.96 13.44-4.501333 17.92 0 4.48 4.501333 4.48 8.96 4.48 8.96 4.501333 13.461333 4.501333 22.421333 8.96 4.48 0 8.96 4.501333 4.48 8.96 0 0 0 4.501333-4.48 4.501334-22.421333 22.4-44.8 40.32-67.2 62.698666-4.48 4.48-8.96 13.44-8.96 17.92s4.48 4.48 4.48 8.96c0 4.501333-4.48 4.501333-8.96 8.96-8.96 4.501333-17.92 8.96-22.4 13.461334-4.48 8.96 0 22.4-4.48 31.36-4.48 22.4-17.941333 40.32-26.901333 62.72-8.96 13.418667-13.418667 26.88-22.378667 40.32 0 17.92-4.501333 31.36 4.458667 44.8 22.421333 31.36 62.72 13.44 94.08 26.901333 8.96 4.458667 17.92 4.458667 22.421333 13.418667 13.418667 13.461333 13.418667 35.861333 17.92 49.301333 4.458667 17.92 8.96 35.84 17.92 53.76 4.48 22.421333 13.44 44.821333 17.92 62.72 40.341333-31.36 76.16-67.178667 103.04-112 26.88-31.424 40.341333-67.242667 53.76-103.104" fill="#CDDC39"></path></svg></span></a>
+<p>Now I&rsquo;m happy with it.</p></div><div class="post-footer">
+    <a href="/2025-01-05-nvim-with-lower-glibc-version/">阅读全文</a></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-04-nystrom--game-programming-patterns/">Nystrom: Game Programming Patterns</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-04 23:59:23'>发布于 <time datetime="2025-01-04">2025-01-04</time></span></div><div class="content"><p>Reading notes from <strong>Robert Nystrom</strong>&rsquo;s <em>Game Programming Patterns</em>.</p></div><div class="post-footer">
     <a href="/2025-01-04-nystrom--game-programming-patterns/">阅读全文</a></div>
@@ -198,121 +248,6 @@
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-04-docker-%E5%8D%A0%E7%94%A8%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E5%A4%AA%E5%A4%A7/">docker 占用磁盘空间太大</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-04 13:08:11'>发布于 <time datetime="2025-01-04">2025-01-04</time></span></div><div class="content"><p>一觉醒来发现天塌了：我的 <code>Linux Mint</code> 机器无法登录。联想到昨天启动了一个 <code>Docker</code> 用于测试更新 <code>gcc14</code>，因而有可能是编译导致的临时目标文件太大，占用磁盘空间，导致系统启动无法正常读写相关启动的配置文件。</p></div><div class="post-footer">
     <a href="/2025-01-04-docker-%E5%8D%A0%E7%94%A8%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4%E5%A4%AA%E5%A4%A7/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-03-%E5%85%A5%E5%9D%91-hhkb-%E6%97%A0%E5%88%BB%E9%94%AE%E7%9B%98/">入坑 HHKB 无刻键盘</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-03 23:11:11'>发布于 <time datetime="2025-01-03">2025-01-03</time></span></div><div class="content"><p>决定在新的一年折腾一下自己，学习一些新的技能，比如</p>
-<ul>
-<li>使用 <code>c++</code> 开发一个高性能、低延迟的通信系统</li>
-<li>更加了解 <code>Linux</code> 操作系统底层涉及</li>
-<li>熟练使用 <code>nvim</code> 以及学习 <code>lua</code> 语言开发插件</li>
-<li>&hellip;&hellip;</li>
-</ul>
-<p>再比如，本篇博客的主题：入坑 <code>HHKB</code> 无刻键盘，强迫自己在盲打情况下的写代码能力。</p></div><div class="post-footer">
-    <a href="/2025-01-03-%E5%85%A5%E5%9D%91-hhkb-%E6%97%A0%E5%88%BB%E9%94%AE%E7%9B%98/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-03-zsh-auto-suggestion-with-key-binding/">zsh auto suggestion with key binding</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-03 23:06:14'>发布于 <time datetime="2025-01-03">2025-01-03</time></span></div><div class="content"><p>We could bind key to <code>zsh-autosuggestions</code>. This is especially helpful when we use HHKB, whereas there is no such thing as left-arrow or right-arrow.</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="c1"># 自动建议</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># zinit wait lucid light-mode for \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#     atload&#34;_zsh_autosuggest_start; \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         ZSH_AUTOSUGGEST_STRATEGY=(history completion) \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         ZSH_AUTOSUGGEST_MANUAL_REBIND=0 \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         ZSH_AUTOSUGGEST_HISTORY_IGNORE=&#39; *&#39; \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         bindkey &#39;^p&#39; history-search-backward; \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         bindkey &#39;^o&#39; history-search-forward; \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         bindkey &#39;^n&#39; autosuggest-accept; \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         bindkey &#39;^e&#39; autosuggest-execute; \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         bindkey &#39;^a&#39; autosuggest-toggle; \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#         bindkey &#39;^ &#39; autosuggest-accept&#34; \</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#     zsh-users/zsh-autosuggestions</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># https://github.com/zsh-users/zsh-autosuggestions/issues/642</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># For example, this would bind ctrl + space to accept the current suggestion.</span>
-</span></span><span class="line"><span class="cl">zinit <span class="nb">wait</span> lucid light-mode <span class="k">for</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    atload<span class="s2">&#34;_zsh_autosuggest_start; \
-</span></span></span><span class="line"><span class="cl"><span class="s2">        ZSH_AUTOSUGGEST_STRATEGY=(history completion) \
-</span></span></span><span class="line"><span class="cl"><span class="s2">        ZSH_AUTOSUGGEST_MANUAL_REBIND=0 \
-</span></span></span><span class="line"><span class="cl"><span class="s2">        ZSH_AUTOSUGGEST_HISTORY_IGNORE=&#39; *&#39; \
-</span></span></span><span class="line"><span class="cl"><span class="s2">        bindkey &#39;^ &#39; autosuggest-accept;&#34;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    zsh-users/zsh-autosuggestions
-</span></span><span class="line"><span class="cl"><span class="nv">ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE</span><span class="o">=</span><span class="s1">&#39;fg=yellow&#39;</span></span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer">
-    <a href="/2025-01-03-zsh-auto-suggestion-with-key-binding/">阅读全文</a></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">crti.so 找不到的解决方法</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2025-01-03 22:29:36'>发布于 <time datetime="2025-01-03">2025-01-03</time></span></div><div class="content"><p>在编译一个代码模块的是否，<code>gcc</code> 报错</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">/usr/bin/ld: cannot find crt1.o: No such file or directory</span></span></code></pre></td></tr></table>
-</div>
-</div><p>我们需要让 <code>gcc</code> 识别到 <code>crt</code> 的路径</p>
-<div class="highlight" id="id-2"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">find /usr -name crti*
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">/usr/lib32/crti.o
-</span></span><span class="line"><span class="cl">/usr/lib/i386-linux-gnu/crti.o
-</span></span><span class="line"><span class="cl">/usr/lib/x86_64-linux-gnu/crti.o
-</span></span><span class="line"><span class="cl">/usr/libx32/crti.o</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以看到，在默认的路径找到了 <code>/usr/lib32/crt1.o</code>，但是由于这个指向的是 32 位操作系统的动态库（可能是当前系统安装了多个编译环境），导致 <code>gcc</code> 编译文件无法使用 64 位的动态库。同时，我们还发现 <code>/usr/lib/x86_64-linux-gnu/crti.o</code> 这个版本是 64 位动态库，因此需要让 <code>gcc</code> 使用该版本</p>
-<div class="highlight" id="id-3"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get install libc6-dev
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/lib/x86_64-linux-gnu:<span class="si">${</span><span class="nv">LD_LIBRARY_PATH</span><span class="si">}</span>
-</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">LIBRARY_PATH</span><span class="o">=</span>/usr/lib/x86_64-linux-gnu:<span class="si">${</span><span class="nv">LIBRARY_PATH</span><span class="si">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">sudo ln -s /usr/lib/x86_64-linux-gnu /usr/lib64</span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer">
-    <a href="/2025-01-03-crti.so-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/">阅读全文</a></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
@@ -349,7 +284,7 @@
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
         </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
-            <span itemprop="copyrightYear">2013 - 2025</span><span class="author" itemprop="copyrightHolder">
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
               <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
           <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
         </div></div>
