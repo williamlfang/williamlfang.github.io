@@ -10,7 +10,7 @@
 <meta name="description" content="systemd 可以制作端口转发（secure-tunnel，也称作 port-forwarding），如systemd 实现端口转发。但是这个只能支持单个任务；当然，如果是多个任务，我们可以多写几个 service 文件即可。但是，这个不是最优选择，因为存在大量的重复配置。那么自然而然地，我们想到使用模板来进行配置，这样可以把共同的部分抽象出来，实现模板化操作。" /><meta name="keywords" content='Linux, systemd, multiple, port-forwarding, 端口转发' /><meta itemprop="name" content="systemd 多个端口转发之模板">
 <meta itemprop="description" content="systemd 可以制作端口转发（secure-tunnel，也称作 port-forwarding），如systemd 实现端口转发。但是这个只能支持单个任务；当然，如果是多个任务，我们可以多写几个 service 文件即可。但是，这个不是最优选择，因为存在大量的重复配置。那么自然而然地，我们想到使用模板来进行配置，这样可以把共同的部分抽象出来，实现模板化操作。"><meta itemprop="datePublished" content="2023-01-18T15:06:53+00:00" />
 <meta itemprop="dateModified" content="2023-01-18T15:06:53+00:00" />
-<meta itemprop="wordCount" content="674"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="wordCount" content="1088"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
 <meta itemprop="keywords" content="Linux,systemd,multiple,port-forwarding,端口转发," /><meta property="og:title" content="systemd 多个端口转发之模板" />
 <meta property="og:description" content="systemd 可以制作端口转发（secure-tunnel，也称作 port-forwarding），如systemd 实现端口转发。但是这个只能支持单个任务；当然，如果是多个任务，我们可以多写几个 service 文件即可。但是，这个不是最优选择，因为存在大量的重复配置。那么自然而然地，我们想到使用模板来进行配置，这样可以把共同的部分抽象出来，实现模板化操作。" />
 <meta property="og:type" content="article" />
@@ -35,7 +35,7 @@
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https:\/\/williamlfang.github.io\/2023-01-18-systemd-%E5%A4%9A%E4%B8%AA%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E4%B9%8B%E6%A8%A1%E6%9D%BF\/"
-    },"genre": "posts","keywords": "Linux, systemd, multiple, port-forwarding, 端口转发","wordcount":  674 ,
+    },"genre": "posts","keywords": "Linux, systemd, multiple, port-forwarding, 端口转发","wordcount":  1088 ,
     "url": "https:\/\/williamlfang.github.io\/2023-01-18-systemd-%E5%A4%9A%E4%B8%AA%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91%E4%B9%8B%E6%A8%A1%E6%9D%BF\/","datePublished": "2023-01-18T15:06:53+00:00","dateModified": "2023-01-18T15:06:53+00:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
@@ -197,7 +197,7 @@
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>systemd 多个端口转发之模板</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2023-01-18 15:06:53"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2023-01-18">2023-01-18</time></span>&nbsp;<span title="674 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 700 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2023-01-18 15:06:53"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2023-01-18">2023-01-18</time></span>&nbsp;<span title="1088 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
     </div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
@@ -271,23 +271,111 @@
 </span><span class="lnt">16
 </span><span class="lnt">17
 </span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>Unit<span class="o">]</span>
 </span></span><span class="line"><span class="cl"><span class="nv">Description</span><span class="o">=</span>Setup Port-Forwarding to %I
-</span></span><span class="line"><span class="cl"><span class="nv">After</span><span class="o">=</span>network.target
+</span></span><span class="line"><span class="cl"><span class="nv">After</span><span class="o">=</span>network.target network-online.target sshd.service
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># --- 关键改动: 声明对其他 colo 隧道的依赖 ---</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># %I 会被替换为实例名（如 colo45），但这里我们需要写具体的服务名</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果用模板实例化: systemctl enable port-forwarding-enhanced@colo45.service</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 则下面的 Wants/After 可以按需调整</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 方式一 (推荐): 声明软依赖 —— 建议启动但不强制执行</span>
+</span></span><span class="line"><span class="cl"><span class="nv">Wants</span><span class="o">=</span>network-online.target
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 方式二: 硬依赖 —— 这些服务必须先成功启动</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Requires=port-forwarding@colo49.service port-forwarding@colo53.service port-forwarding@colo54.service</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 方式三: 顺序依赖 —— 等这些服务启动后再启动本服务（但不要求它们必须成功）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># After=port-forwarding@colo49.service port-forwarding@colo53.service port-forwarding@colo54.service</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="o">[</span>Service<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">Type</span><span class="o">=</span>simple
 </span></span><span class="line"><span class="cl"><span class="c1">## 使用用户执行命令</span>
 </span></span><span class="line"><span class="cl"><span class="nv">User</span><span class="o">=</span>william
 </span></span><span class="line"><span class="cl"><span class="nv">Environment</span><span class="o">=</span><span class="s2">&#34;LOCAL_ADDR=localhost&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="nv">EnvironmentFile</span><span class="o">=</span>/usr/lib/systemd/system/port-forwarding@%i
-</span></span><span class="line"><span class="cl"><span class="nv">ExecStart</span><span class="o">=</span>/usr/bin/ssh -NT -o <span class="nv">ServerAliveInterval</span><span class="o">=</span><span class="m">60</span> -o <span class="nv">ExitOnForwardFailure</span><span class="o">=</span>yes <span class="si">${</span><span class="nv">TARGET</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD1</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD2</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD3</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD4</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD5</span><span class="si">}</span>
 </span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># --- ExecStartPre: 启动前检查目标连通性 ---</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 在启动 SSH 之前，先检查 colo45 的 SSH 端口是否可达</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 避免网络不通时 SSH 反复失败导致 StartLimitBurst 耗尽</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ExecStartPre=/usr/bin/sh -c &#39;\</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   echo &#34;[Pre] Checking reachability of %I...&#34;; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#ExecStart=/usr/bin/ssh -NT -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes ${TARGET} ${CMD1} ${CMD2} ${CMD3} ${CMD4} ${CMD5}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">ExecStart</span><span class="o">=</span>/usr/bin/ssh -NT <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -o <span class="nv">ServerAliveInterval</span><span class="o">=</span><span class="m">60</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -o <span class="nv">ServerAliveCountMax</span><span class="o">=</span><span class="m">30</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -o <span class="nv">ExitOnForwardFailure</span><span class="o">=</span>yes <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -o <span class="nv">ConnectTimeout</span><span class="o">=</span><span class="m">10</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="si">${</span><span class="nv">TARGET</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD1</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD2</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD3</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD4</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD5</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD6</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD7</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD8</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="si">${</span><span class="nv">CMD9</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD10</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD11</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD12</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD13</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD14</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD15</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD16</span><span class="si">}</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="si">${</span><span class="nv">CMD17</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD18</span><span class="si">}</span> <span class="si">${</span><span class="nv">CMD19</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># --- ExecStartPost: 启动后验证隧道是否正常 ---</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查本地 -L 转发端口是否在监听</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 前面加 &#34;-&#34; 表示即使检查失败也不阻止服务启动</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ExecStartPost=-/usr/bin/sh -c &#39;\</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   sleep 2; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   echo &#34;[Post] Checking reachability of %I...&#34;; \</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># --- 重启策略 ---</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># Restart every &gt;5 seconds to avoid StartLimitInterval failure</span>
 </span></span><span class="line"><span class="cl"><span class="nv">Restart</span><span class="o">=</span>always
 </span></span><span class="line"><span class="cl"><span class="c1"># Restart=on-failure</span>
 </span></span><span class="line"><span class="cl"><span class="nv">RestartSec</span><span class="o">=</span>5s
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># --- (可选) 防止频繁重启耗尽 ---</span>
+</span></span><span class="line"><span class="cl"><span class="nv">StartLimitInterval</span><span class="o">=</span>10s
+</span></span><span class="line"><span class="cl"><span class="nv">StartLimitBurst</span><span class="o">=</span><span class="m">5</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="o">[</span>Install<span class="o">]</span>
 </span></span><span class="line"><span class="cl"><span class="nv">WantedBy</span><span class="o">=</span>multi-user.target</span></span></code></pre></td></tr></table>

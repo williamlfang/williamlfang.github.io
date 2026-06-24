@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Deepseek cli 工具 Reasonix - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Reasonix 是一个 DeepSeek 原生的 AI 编程助手，单一 Go 静态二进制，配置驱动、插件驱动、多模型协同，专为 DeepSeek 前缀缓存优化。" /><meta name="keywords" content='reasonix, deepseek, ai, go, cli, coding-agent' /><meta itemprop="name" content="Deepseek cli 工具 Reasonix">
+<meta itemprop="description" content="Reasonix 是一个 DeepSeek 原生的 AI 编程助手，单一 Go 静态二进制，配置驱动、插件驱动、多模型协同，专为 DeepSeek 前缀缓存优化。"><meta itemprop="datePublished" content="2026-05-29T16:15:14+08:00" />
+<meta itemprop="dateModified" content="2026-05-29T16:15:14+08:00" />
+<meta itemprop="wordCount" content="5559"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="reasonix,deepseek,ai,go,cli,coding-agent," /><meta property="og:title" content="Deepseek cli 工具 Reasonix" />
+<meta property="og:description" content="Reasonix 是一个 DeepSeek 原生的 AI 编程助手，单一 Go 静态二进制，配置驱动、插件驱动、多模型协同，专为 DeepSeek 前缀缓存优化。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-05-29T16:15:14+08:00" />
+<meta property="article:modified_time" content="2026-05-29T16:15:14+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Deepseek cli 工具 Reasonix"/>
+<meta name="twitter:description" content="Reasonix 是一个 DeepSeek 原生的 AI 编程助手，单一 Go 静态二进制，配置驱动、插件驱动、多模型协同，专为 DeepSeek 前缀缓存优化。"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/" /><link rel="prev" href="https://williamlfang.github.io/2026-05-14-centos7-vault.centos.org-%E6%8A%A5%E9%94%99/" /><link rel="next" href="https://williamlfang.github.io/2026-06-18-irqbalance-%E6%8A%A5%E9%94%99/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Deepseek cli 工具 Reasonix",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix\/"
+    },"genre": "posts","keywords": "reasonix, deepseek, ai, go, cli, coding-agent","wordcount":  5559 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix\/","datePublished": "2026-05-29T16:15:14+08:00","dateModified": "2026-05-29T16:15:14+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": "Reasonix 是一个 DeepSeek 原生的 AI 编程助手，单一 Go 静态二进制，配置驱动、插件驱动、多模型协同，专为 DeepSeek 前缀缓存优化。"
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Deepseek cli 工具 Reasonix</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2026-05-29 16:15:14"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-05-29">2026-05-29</time></span>&nbsp;<span title="5559 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 5600 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 12 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#reasonix-是什么">Reasonix 是什么</a></li>
+    <li><a href="#核心特性">核心特性</a>
+      <ol>
+        <li><a href="#配置驱动无硬编码">配置驱动，无硬编码</a></li>
+        <li><a href="#多模型可组合">多模型可组合</a></li>
+        <li><a href="#插件驱动mcp-客户端">插件驱动（MCP 客户端）</a></li>
+        <li><a href="#零摩擦分发">零摩擦分发</a></li>
+      </ol>
+    </li>
+    <li><a href="#配置详解">配置详解</a>
+      <ol>
+        <li><a href="#provider-配置">Provider 配置</a></li>
+        <li><a href="#agent-配置">Agent 配置</a></li>
+        <li><a href="#权限系统">权限系统</a></li>
+        <li><a href="#沙盒">沙盒</a></li>
+        <li><a href="#skill-系统">Skill 系统</a></li>
+        <li><a href="#codegraph-代码智能">CodeGraph 代码智能</a></li>
+      </ol>
+    </li>
+    <li><a href="#双模型协同">双模型协同</a></li>
+    <li><a href="#斜杠命令与--引用">斜杠命令与 @ 引用</a></li>
+    <li><a href="#架构赏析">架构赏析</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><blockquote>
+<p>这篇博文本身就是 reasonix 自动完成的。</p>
+</blockquote>
+<p>前两天在逛 GitHub 的时候，又看到 DeepSeek 生态里冒出来一个叫 <a href="https://github.com/esengine/DeepSeek-Reasonix"target="_blank" rel="external nofollow noopener noreferrer">Reasonix<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> 的项目。第一眼感觉就是又一个 AI coding agent 套壳，没什么稀奇的。但当我看完它的 README 和工程文档后，发现这事儿没那么简单——尤其有意思的是它的核心理念：<strong>专为 DeepSeek 的前缀缓存（automatic prefix cache）设计</strong>，所有行为都围绕这个来优化，把长会话的 token 成本压到最低。</p>
+<p>要知道 DeepSeek 有一个很厉害的特性——自动前缀缓存。如果你的请求前缀跟上一次完全一样（byte-stable），这部分 tokens 就不重新算，只算新内容的计算成本。这意味着 cache hit 的价格可以低到 <code>¥0.02/M tokens</code>，而正常输入是 <code>¥1/M</code>，差了 50 倍。Reasonix 整个架构就是奔着这个去的——系统提示词、工具描述、记忆文档，全链路保持字节稳定，永远不会在会话中途偷偷修改前缀。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -g reasonix
+</span></span><span class="line"><span class="cl">reasonix setup
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">DEEPSEEK_API_KEY</span><span class="o">=</span>sk-xxxxxxxxxxxxxxxx
+</span></span><span class="line"><span class="cl">reasonix chat</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是我自己的环境，当时从源码编译的</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#需要设置 go 代理</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">GOPROXY</span><span class="o">=</span>https://goproxy.cn,direct
+</span></span><span class="line"><span class="cl">git pull
+</span></span><span class="line"><span class="cl">git pull origin main-v
+</span></span><span class="line"><span class="cl">make build
+</span></span><span class="line"><span class="cl">make cross
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ./dist/
+</span></span><span class="line"><span class="cl">./reasonix-linux-amd64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">rs</span><span class="o">=</span><span class="s1">&#39;~/git/DeepSeek-Reasonix/dist/reasonix-linux-amd64&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reasonix — a config- and plugin-driven coding agent <span class="o">(</span>multi-model<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">  reasonix chat <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>-c<span class="p">|</span>--continue<span class="o">]</span> <span class="o">[</span>--resume<span class="o">]</span>   interactive session <span class="o">(</span>multi-turn<span class="p">;</span> -c resumes the latest, --resume picks one<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix run  <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>--max-steps N<span class="o">]</span> <span class="o">[</span>-c<span class="p">|</span>--continue<span class="o">]</span> <span class="o">[</span>--resume PATH<span class="o">]</span> &lt;task&gt;   run one task and <span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">  reasonix serve <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>--addr HOST:PORT<span class="o">]</span>      serve the session over HTTP+SSE <span class="o">(</span>browser client at /<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix acp <span class="o">[</span>--model NAME<span class="o">]</span>                           serve Agent Client Protocol over stdio <span class="o">(</span>also: reasonix --acp<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix setup <span class="o">[</span>path<span class="o">]</span>                                 interactive config wizard<span class="p">;</span> writes reasonix.toml <span class="o">(</span>+ .env<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix config auto-plan <span class="o">[</span>off<span class="p">|</span>on<span class="o">]</span>                    configure automatic plan mode
+</span></span><span class="line"><span class="cl">  reasonix mcp &lt;add<span class="p">|</span>remove<span class="p">|</span>list&gt;                        manage MCP servers in reasonix.toml
+</span></span><span class="line"><span class="cl">  reasonix doctor <span class="o">[</span>--json<span class="o">]</span>                              print redacted <span class="nb">local</span> diagnostics
+</span></span><span class="line"><span class="cl">  reasonix version
+</span></span><span class="line"><span class="cl">  reasonix <span class="nb">help</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Examples:
+</span></span><span class="line"><span class="cl">  reasonix chat
+</span></span><span class="line"><span class="cl">  reasonix chat --continue
+</span></span><span class="line"><span class="cl">  reasonix run <span class="s2">&#34;implement the TODOs in main.go&#34;</span>
+</span></span><span class="line"><span class="cl">  reasonix run --model mimo-pro <span class="s2">&#34;add unit tests for this function&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;explain this code&#34;</span> <span class="p">|</span> reasonix run
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Configuration:
+</span></span><span class="line"><span class="cl">  Resolution: flag &gt; ./reasonix.toml &gt; ~/.config/reasonix/config.toml &gt; built-in defaults
+</span></span><span class="line"><span class="cl">  Secrets come from the environment via api_key_env <span class="o">(</span>e.g. DEEPSEEK_API_KEY<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">  Run <span class="s1">&#39;reasonix setup&#39;</span> to scaffold a config<span class="p">;</span> see docs/SPEC.md.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 启动 server</span>
+</span></span><span class="line"><span class="cl">reasonix serve</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="reasonix-是什么" class="heading-element">
+  <a href="#reasonix-%e6%98%af%e4%bb%80%e4%b9%88" class="heading-mark"></a>Reasonix 是什么</h1><p>一句话：<strong>Reasonix 是一个 DeepSeek 原生的 AI coding agent</strong>。一个单静态 Go 二进制，不依赖 Node、Python 或任何运行时，通过 <code>reasonix.toml</code> 完全配置驱动。</p>
+<p>它提供了三种前端界面：</p>
+<ul>
+<li><strong>TUI（Bubble Tea 终端界面）</strong>—— 最常用的方式，<code>reasonix chat</code> 进入交互式对话</li>
+<li><strong>HTTP/SSE 服务器</strong> —— <code>reasonix serve</code>，可以集成到其他工具中</li>
+<li><strong>Wails 桌面应用</strong> —— 在 <code>desktop/</code> 目录下，<code>./dev</code> 启动开发模式</li>
+</ul>
+<p>所有前端驱动同一个 <code>control.Controller</code>，逻辑完全一致，没有哪个前端需要重复实现轮询、取消、审批这些生命周期管理。</p>
+<p>值得一提的是，Reasonix 1.0 是<strong>从 TypeScript 到 Go 的完全重写</strong>。0.x 的 TypeScript 版本已经转为 legacy，保留在 <code>v1</code> 分支。为什么重写？作者在文档里说得很清楚：要一个真正跨平台的、<code>CGO_ENABLED=0</code> 的静态二进制，不需要 npm 以外的任何依赖。Go 的标准库 + 一个 TOML 解析库就是全部依赖，编译出来扔到任何 Linux 服务器上就能跑。</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> go build -ldflags <span class="s2">&#34;-s -w -X main.version=</span><span class="k">$(</span>git describe --tags --always<span class="k">)</span><span class="s2">&#34;</span> -o bin/reasonix ./cmd/reasonix</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="核心特性" class="heading-element">
+  <a href="#%e6%a0%b8%e5%bf%83%e7%89%b9%e6%80%a7" class="heading-mark"></a>核心特性</h1><h2 id="配置驱动无硬编码" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae%e9%a9%b1%e5%8a%a8%e6%97%a0%e7%a1%ac%e7%bc%96%e7%a0%81" class="heading-mark"></a>配置驱动，无硬编码</h2><p>这是最重要的一点。Provider、agent、启用的工具、插件，全部在 <code>reasonix.toml</code> 中声明。内核里没有 <code>switch model</code> 这种硬编码判断。</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="nx">default_model</span> <span class="p">=</span> <span class="s2">&#34;deepseek&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">agent</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">max_steps</span> <span class="p">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="nx">auto_plan</span> <span class="p">=</span> <span class="s2">&#34;off&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">providers</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">name</span>        <span class="p">=</span> <span class="s2">&#34;deepseek&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">kind</span>        <span class="p">=</span> <span class="s2">&#34;openai&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">base_url</span>    <span class="p">=</span> <span class="s2">&#34;https://api.deepseek.com&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">models</span>      <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;deepseek-v4-flash&#34;</span><span class="p">,</span> <span class="s2">&#34;deepseek-v4-pro&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">default</span>     <span class="p">=</span> <span class="s2">&#34;deepseek-v4-flash&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">api_key_env</span> <span class="p">=</span> <span class="s2">&#34;DEEPSEEK_API_KEY&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">context_window</span> <span class="p">=</span> <span class="mi">1000000</span>
+</span></span><span class="line"><span class="cl"><span class="nx">price</span>       <span class="p">=</span> <span class="p">{</span> <span class="nx">cache_hit</span> <span class="p">=</span> <span class="mf">0.02</span><span class="p">,</span> <span class="nx">input</span> <span class="p">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">output</span> <span class="p">=</span> <span class="mi">2</span><span class="p">,</span> <span class="nx">currency</span> <span class="p">=</span> <span class="s2">&#34;¥&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">effort</span>      <span class="p">=</span> <span class="s2">&#34;high&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>DeepSeek 和 MiMo 不是代码，而是配置实例</strong>。两者都是 <code>kind = &quot;openai&quot;</code>，只是 <code>base_url</code>、<code>model</code>、<code>api_key_env</code> 不同。要加一个新的 OpenAI 兼容模型，编辑配置文件就够了，不用改一行代码。</p>
+<p>看这个配置里的 <code>price</code>，DeepSeek 的 cache_hit 价格是 ¥0.02/M tokens，对比正常输入的 ¥1/M——差了 50 倍。这就是前缀缓存优化的价值所在。</p>
+<h2 id="多模型可组合" class="heading-element">
+  <a href="#%e5%a4%9a%e6%a8%a1%e5%9e%8b%e5%8f%af%e7%bb%84%e5%90%88" class="heading-mark"></a>多模型可组合</h2><p>Reasonix 内置了 DeepSeek（flash/pro）和 MiMo（小米的大模型）作为预设。更重要的是它支持<strong>双模型协同</strong>：</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">agent</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">planner_model</span> <span class="p">=</span> <span class="s2">&#34;mimo-pro&#34;</span>    <span class="c"># 作为低频规划器</span>
+</span></span><span class="line"><span class="cl"><span class="nx">planner_max_steps</span> <span class="p">=</span> <span class="mi">12</span>        <span class="c"># 暂停前允许的只读工具调用轮数</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>执行器（executor）和规划器（planner）各自运行在独立、缓存稳定的 session 中。Planner 只拿只读工具（读文件、搜索代码），先分析问题、生成计划，再交给执行器去实际写代码。两者的 <code>max_steps</code> 互不干扰。</p>
+<p>Subagent 也有独立的模型配置：</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">agent</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">subagent_model</span> <span class="p">=</span> <span class="s2">&#34;deepseek-pro&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">subagent_models</span> <span class="p">=</span> <span class="p">{</span> <span class="nx">review</span> <span class="p">=</span> <span class="s2">&#34;deepseek-pro&#34;</span><span class="p">,</span> <span class="nx">security_review</span> <span class="p">=</span> <span class="s2">&#34;deepseek-pro&#34;</span> <span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这样 <code>review</code>、<code>security_review</code> 这些子任务可以走不同的模型——比如重任务用 pro，轻任务用 flash 省钱。</p>
+<h2 id="插件驱动mcp-客户端" class="heading-element">
+  <a href="#%e6%8f%92%e4%bb%b6%e9%a9%b1%e5%8a%a8mcp-%e5%ae%a2%e6%88%b7%e7%ab%af" class="heading-mark"></a>插件驱动（MCP 客户端）</h2><p>Reasonix 本身是一个 MCP 客户端。外部工具以子进程形式运行，通过 stdio JSON-RPC 或 HTTP（Streamable HTTP）通信。</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">plugins</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">name</span>    <span class="p">=</span> <span class="s2">&#34;example&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">command</span> <span class="p">=</span> <span class="s2">&#34;reasonix-plugin-example&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">plugins</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">name</span>    <span class="p">=</span> <span class="s2">&#34;stripe&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">type</span>    <span class="p">=</span> <span class="s2">&#34;http&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">url</span>     <span class="p">=</span> <span class="s2">&#34;https://mcp.stripe.com&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">headers</span> <span class="p">=</span> <span class="p">{</span> <span class="nx">Authorization</span> <span class="p">=</span> <span class="s2">&#34;Bearer ${STRIPE_KEY}&#34;</span> <span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果你已经有 Claude Code 的 <code>.mcp.json</code>，直接放到项目根目录，Reasonix 会原样读取——它的 <code>mcpServers</code> 规范与 <code>[[plugins]]</code> 字段一一对应，两处来源合并加载，同名时以 <code>reasonix.toml</code> 为准。</p>
+<p>MCP 的工具暴露为 <code>mcp__&lt;server&gt;__&lt;tool&gt;</code>，声明了 <code>readOnlyHint: true</code> 的工具会参与并行调度并走权限层的只读默认放行。服务器的 prompts 变成斜杠命令 <code>/mcp__&lt;server&gt;__&lt;prompt&gt;</code>，resources 通过 <code>@&lt;server&gt;:&lt;uri&gt;</code> 拉入。</p>
+<p>内置工具（bash、read_file、write_file、edit_file、grep、glob、ls、web_fetch、todo_write 等）在编译期通过 <code>init()</code> 自注册，<code>main.go</code> 一行 blank import 拉入。新增一个内置工具 = 一个文件 + 一行 import。</p>
+<h2 id="零摩擦分发" class="heading-element">
+  <a href="#%e9%9b%b6%e6%91%a9%e6%93%a6%e5%88%86%e5%8f%91" class="heading-mark"></a>零摩擦分发</h2><p><code>CGO_ENABLED=0</code> 编译出单静态二进制，一条 <code>make cross</code> 交叉编译六个目标平台（darwin|linux|windows × amd64|arm64）。</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm i -g reasonix                  <span class="c1"># 任意系统；自动拉取对应平台的原生二进制</span>
+</span></span><span class="line"><span class="cl">brew install esengine/reasonix/reasonix   <span class="c1"># macOS</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Windows 构建还使用了 <a href="https://signpath.org/"target="_blank" rel="external nofollow noopener noreferrer">SignPath 基金会<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> 提供的免费代码签名证书，所以 Windows 上不会遇到&quot;不明来源程序&quot;的警告。</p>
+<h1 id="配置详解" class="heading-element">
+  <a href="#%e9%85%8d%e7%bd%ae%e8%af%a6%e8%a7%a3" class="heading-mark"></a>配置详解</h1><p><code>reasonix.example.toml</code> 是项目中最权威的配置参考（比 README 更全）。这里挑几个关键配置说说。</p>
+<h2 id="provider-配置" class="heading-element">
+  <a href="#provider-%e9%85%8d%e7%bd%ae" class="heading-mark"></a>Provider 配置</h2><p>一个 provider 就是一个 vendor 端点（一个 <code>base_url</code> + <code>api_key_env</code>），可以提供一个或多个模型：</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">providers</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">name</span>     <span class="p">=</span> <span class="s2">&#34;deepseek&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">kind</span>     <span class="p">=</span> <span class="s2">&#34;openai&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">base_url</span> <span class="p">=</span> <span class="s2">&#34;https://api.deepseek.com&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">models</span>   <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;deepseek-v4-flash&#34;</span><span class="p">,</span> <span class="s2">&#34;deepseek-v4-pro&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">default</span>  <span class="p">=</span> <span class="s2">&#34;deepseek-v4-flash&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">api_key_env</span> <span class="p">=</span> <span class="s2">&#34;DEEPSEEK_API_KEY&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">context_window</span> <span class="p">=</span> <span class="mi">1000000</span>
+</span></span><span class="line"><span class="cl"><span class="nx">effort</span>   <span class="p">=</span> <span class="s2">&#34;high&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>用 <code>models = [...]</code> 列表可以让一个 vendor 暴露多个模型而无需重复声明 endpoint/key——切换模型复用同一个连接。<code>context_window</code> 和 <code>price</code> 是 per-provider 的，所以需要不同值的模型就保持独立的单 <code>model</code> 条目。</p>
+<p>除了 <code>openai</code> 类型，还有一个 <code>anthropic</code> 类型，直接调用 Anthropic Messages API，不走 OpenAI shim：</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">providers</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">name</span>           <span class="p">=</span> <span class="s2">&#34;claude&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">kind</span>           <span class="p">=</span> <span class="s2">&#34;anthropic&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">model</span>          <span class="p">=</span> <span class="s2">&#34;claude-opus-4-8&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">api_key_env</span>    <span class="p">=</span> <span class="s2">&#34;ANTHROPIC_API_KEY&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">context_window</span> <span class="p">=</span> <span class="mi">1000000</span>
+</span></span><span class="line"><span class="cl"><span class="nx">thinking</span>       <span class="p">=</span> <span class="s2">&#34;adaptive&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">effort</span>         <span class="p">=</span> <span class="s2">&#34;high&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="agent-配置" class="heading-element">
+  <a href="#agent-%e9%85%8d%e7%bd%ae" class="heading-mark"></a>Agent 配置</h2><div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">agent</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">max_steps</span>         <span class="p">=</span> <span class="mi">0</span>       <span class="c"># 执行器工具调用轮数；0 = 不限</span>
+</span></span><span class="line"><span class="cl"><span class="nx">planner_max_steps</span> <span class="p">=</span> <span class="mi">12</span>      <span class="c"># 规划器只读调用轮数；0 = 不限</span>
+</span></span><span class="line"><span class="cl"><span class="nx">temperature</span>       <span class="p">=</span> <span class="mf">0.0</span>
+</span></span><span class="line"><span class="cl"><span class="nx">auto_plan</span>         <span class="p">=</span> <span class="s2">&#34;off&#34;</span>   <span class="c"># 计划模式</span>
+</span></span><span class="line"><span class="cl"><span class="nx">soft_compact_ratio</span>  <span class="p">=</span> <span class="mf">0.5</span>   <span class="c"># 仅通知，保持缓存前缀不变</span>
+</span></span><span class="line"><span class="cl"><span class="nx">compact_ratio</span>       <span class="p">=</span> <span class="mf">0.8</span>   <span class="c"># 达到这个比例时尝试压缩</span>
+</span></span><span class="line"><span class="cl"><span class="nx">compact_force_ratio</span> <span class="p">=</span> <span class="mf">0.9</span>   <span class="c"># 强制压缩的水位线</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里的 <code>soft_compact_ratio</code> 和 <code>compact_ratio</code> 是<strong>缓存优先（cache-first）压缩策略</strong>的精髓。当 prompt 长度达到 <code>soft_compact_ratio</code>（50%）时，模型会收到一个&quot;你的上下文快满了&quot;的提示——但这<strong>不会修改前缀</strong>，所以前缀缓存依然有效。只有达到 <code>compact_ratio</code>（80%）才真正触发压缩，而此时压缩后的前缀仍然保持 byte-stable。</p>
+<h2 id="权限系统" class="heading-element">
+  <a href="#%e6%9d%83%e9%99%90%e7%b3%bb%e7%bb%9f" class="heading-mark"></a>权限系统</h2><p>权限按 <code>deny</code> &gt; <code>ask</code> &gt; <code>allow</code> &gt; fallback 逐次判断：</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">permissions</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">mode</span>  <span class="p">=</span> <span class="s2">&#34;ask&#34;</span>                                <span class="c"># 兜底策略</span>
+</span></span><span class="line"><span class="cl"><span class="nx">deny</span>  <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;Bash(rm -rf*)&#34;</span><span class="p">,</span> <span class="s2">&#34;Bash(git push*)&#34;</span><span class="p">]</span> <span class="c"># 硬阻断</span>
+</span></span><span class="line"><span class="cl"><span class="nx">allow</span> <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;Bash(go test:*)&#34;</span><span class="p">]</span>                  <span class="c"># 从不询问</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>注意这里的授权规则是<strong>按命令模式匹配</strong>，不是按按钮文案。<code>Bash(go test:*)</code> 匹配所有以 <code>go test</code> 开头的命令。<code>Edit(src/app.go)</code> 匹配对特定文件的编辑。chat 模式下每次 writer 调用前都会征求同意（1=本次允许，2=本会话允许此范围，3=总是允许并保存，4=拒绝），而 <code>reasonix run</code> 保持自主运行但仍然遵守 <code>deny</code>。</p>
+<h2 id="沙盒" class="heading-element">
+  <a href="#%e6%b2%99%e7%9b%92" class="heading-mark"></a>沙盒</h2><p>权限是策略（哪些调用放行/询问），沙盒是强制执行：</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">sandbox</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="c"># workspace_root = &#34;&#34;          # 文件写工具限制在此目录；留空=当前目录</span>
+</span></span><span class="line"><span class="cl"><span class="c"># allow_write    = [&#34;/tmp&#34;]    # 额外可写目录</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>文件写工具（<code>write_file</code>、<code>edit_file</code>、<code>multi_edit</code>）拒绝任何在 <code>workspace_root</code> 之外的路径，并且解析符号链接和 <code>..</code>，防止链接打洞越界。读不受限。macOS 上 bash 默认通过 Seatbelt 进沙盒——命令只能写允许的 root + 临时目录和工具链缓存，由 <code>[sandbox] network</code> 控制是否可联网。</p>
+<h2 id="skill-系统" class="heading-element">
+  <a href="#skill-%e7%b3%bb%e7%bb%9f" class="heading-mark"></a>Skill 系统</h2><p>兼容 Claude Code 风格的 playbook 系统：</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">skills</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">paths</span> <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;~/my-skills&#34;</span><span class="p">,</span> <span class="s2">&#34;../shared/skills&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">disabled_skills</span> <span class="p">=</span> <span class="p">[</span><span class="s2">&#34;review&#34;</span><span class="p">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Built-in skills（explore、research、review、security-review、test）开箱即用。用户自定义的放在 <code>.reasonix/commands/&lt;name&gt;.md</code>，调用即 <code>/name</code>。文件正文是 prompt 模板：</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">description: Review the staged diff
+</span></span><span class="line"><span class="cl">argument-hint: [focus-area]
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">Review the staged diff. Focus on $ARGUMENTS, list bugs with file:line.</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>$ARGUMENTS</code> 展开为全部空格分隔参数，<code>$1</code>…<code>$N</code> 为位置参数。</p>
+<h2 id="codegraph-代码智能" class="heading-element">
+  <a href="#codegraph-%e4%bb%a3%e7%a0%81%e6%99%ba%e8%83%bd" class="heading-mark"></a>CodeGraph 代码智能</h2><p>Reasonix 内置了 CodeGraph——一个基于 tree-sitter + SQLite 的代码符号/调用图工具。与其他 AI 编程工具不同，它<strong>不需要 embedding 服务，没有额外的 API 成本</strong>。</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">codegraph</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">enabled</span>      <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl"><span class="nx">auto_install</span> <span class="p">=</span> <span class="kc">true</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>CodeGraph 提供了 <code>codegraph_*</code> 系列工具（context、search、explore、trace、node、callers、callees、impact），整个索引就是本地 SQLite 数据库 + tree-sitter AST 解析，纯本地运行，不消耗任何 token 或 API 调用。首次使用时自动拉取运行时，后台建索引，对会话启动速度影响极小。</p>
+<h1 id="双模型协同" class="heading-element">
+  <a href="#%e5%8f%8c%e6%a8%a1%e5%9e%8b%e5%8d%8f%e5%90%8c" class="heading-mark"></a>双模型协同</h1><p>这是 Reasonix 最独特的设计之一。大多数 AI coding agent 只有一个模型跑到底，但 Reasonix 允许你分配两个模型协作：</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">agent</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">planner_model</span> <span class="p">=</span> <span class="s2">&#34;mimo-pro&#34;</span>   <span class="c"># 低频规划器</span>
+</span></span><span class="line"><span class="cl"><span class="nx">planner_max_steps</span> <span class="p">=</span> <span class="mi">12</span>       <span class="c"># 暂停前允许的只读工具调用轮数</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Planner 会看到已加载的 <code>REASONIX.md</code> / <code>AGENTS.md</code> 记忆，拿到一小组只读研究工具（读文件、搜索代码），先分析项目结构、理解问题上下文，然后生成一份计划。执行器只看到写入类和流程类工具，按计划执行。</p>
+<p>两者各走各的 session，各自的缓存前缀互不干扰。Planner 的低频调用（通常一次会话只调几次）可以配一个更贵的模型做深度分析，执行器用更快的模型做日常编码。</p>
+<p>自动计划模式也很有意思：</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="p">[</span><span class="nx">agent</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">auto_plan</span> <span class="p">=</span> <span class="s2">&#34;on&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">auto_plan_classifier</span> <span class="p">=</span> <span class="s2">&#34;deepseek-flash&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>设置 <code>auto_plan = &quot;on&quot;</code> 后，看起来复杂的任务会自动进入 plan mode：Reasonix 先只读生成计划，待用户批准后才编辑文件或执行有副作用的命令。<code>auto_plan_classifier</code> 指定一个便宜的模型（如 deepseek-flash）用来做边界任务分类，只有分类失败时回退到启发式规则。</p>
+<h1 id="斜杠命令与--引用" class="heading-element">
+  <a href="#%e6%96%9c%e6%9d%a0%e5%91%bd%e4%bb%a4%e4%b8%8e--%e5%bc%95%e7%94%a8" class="heading-mark"></a>斜杠命令与 @ 引用</h1><p><code>reasonix chat</code> 里的斜杠命令在本地执行，不需要消耗模型调用：</p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/compact   — 压缩上下文
+</span></span><span class="line"><span class="cl">/new       — 开启干净的模型上下文（保留历史 transcript）
+</span></span><span class="line"><span class="cl">/rewind    — 回退到上一步
+</span></span><span class="line"><span class="cl">/tree      — 查看已保存的对话分支
+</span></span><span class="line"><span class="cl">/branch    — 从当前对话末端创建分支
+</span></span><span class="line"><span class="cl">/switch    — 切换到另一个分支
+</span></span><span class="line"><span class="cl">/model     — 切换模型
+</span></span><span class="line"><span class="cl">/effort    — 调整思考深度
+</span></span><span class="line"><span class="cl">/mcp       — 管理 MCP 服务器连接
+</span></span><span class="line"><span class="cl">/help      — 显示帮助</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>@</code> 引用会在发送前解析成带标签的上下文块：</p>
+<ul>
+<li><code>@path/to/file</code> — 注入本地文件内容</li>
+<li><code>@dir</code> — 注入目录清单</li>
+<li><code>@&lt;server&gt;:&lt;uri&gt;</code> — 注入 MCP 资源</li>
+</ul>
+<p>敲 <code>/</code> 或 <code>@</code> 会弹出补全菜单——斜杠命令或逐层的文件导航（一次只列当前一层目录，可下钻进子目录），外加 MCP 资源。</p>
+<h1 id="架构赏析" class="heading-element">
+  <a href="#%e6%9e%b6%e6%9e%84%e8%b5%8f%e6%9e%90" class="heading-mark"></a>架构赏析</h1><p>如果只看功能列表，Reasonix 可能也就是又一个 AI coding agent。但它的架构设计体现了很深的工程思考。三层可扩展性，全部藏在按名解析的 registry 之后：</p>
+<ol>
+<li><strong>Registry</strong>：<code>Provider</code> 与 <code>Tool</code> 是接口；内核没有 <code>switch model</code>。注册中心根据名字查找实现。</li>
+<li><strong>编译期内置</strong>：provider（如 <code>provider/openai</code>）和 tool（如 <code>tool/builtin</code>）通过 <code>init()</code> 自注册，<code>main</code> 用 blank import 拉入。新增一个内置工具 = 一个文件 + 一行 import。</li>
+<li><strong>运行时插件</strong>：配置里声明的可执行文件，通过 stdin/stdout 上的 JSON-RPC 2.0（MCP stdio 约定）通信，每个远程 tool 适配成 <code>Tool</code> 接口。</li>
+</ol>
+<p>依赖方向是单向的：<code>cli → {agent, plugin, config} → {tool, provider}</code>。子包（<code>provider/openai</code>、<code>tool/builtin</code>）导入父包注册自己，父包从不导入子包。</p>
+<p>再看项目结构（摘自 REASONIX.md 的架构图）：</p>
+<div class="highlight" id="id-20"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">cmd</span><span class="o">/</span><span class="n">reasonix</span><span class="o">/</span><span class="n">main</span><span class="o">.</span><span class="n">go</span>         <span class="err">→</span> <span class="n">cli</span><span class="o">.</span><span class="n">Run</span><span class="p">()</span>          <span class="p">(</span><span class="err">入口点</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">internal</span><span class="o">/</span>
+</span></span><span class="line"><span class="cl">  <span class="n">boot</span><span class="o">/</span>          <span class="n">Bootstrap</span><span class="p">:</span> <span class="err">读取配置、组装</span> <span class="n">provider</span><span class="o">/</span><span class="n">plugin</span><span class="o">/</span><span class="k">tool</span><span class="err">，</span>
+</span></span><span class="line"><span class="cl">                 <span class="err">然后交给</span> <span class="n">control</span><span class="o">.</span><span class="n">Controller</span><span class="err">。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">control</span><span class="o">/</span>       <span class="err">传输无关的</span> <span class="n">Controller</span><span class="err">。驱动</span> <span class="n">agent</span> <span class="err">主循环、</span>
+</span></span><span class="line"><span class="cl">                 <span class="err">会话生命周期、审批、斜杠命令。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">agent</span><span class="o">/</span>         <span class="n">Agent</span> <span class="err">主循环：</span><span class="n">turn</span> <span class="err">生命周期、</span><span class="k">tool</span> <span class="err">调度、</span>
+</span></span><span class="line"><span class="cl">                 <span class="err">压缩、子</span> <span class="n">agent</span><span class="err">、多模型协调。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">provider</span><span class="o">/</span>      <span class="n">Provider</span> <span class="err">抽象。具体实现通过</span> <span class="n">init</span><span class="p">()</span> <span class="err">自注册。</span>
+</span></span><span class="line"><span class="cl">  <span class="k">tool</span><span class="o">/</span>          <span class="n">Tool</span> <span class="err">注册中心</span> <span class="o">+</span> <span class="err">执行框架。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">plugin</span><span class="o">/</span>        <span class="n">MCP</span> <span class="err">插件生命周期：发现、</span><span class="n">stdio</span><span class="o">/</span><span class="n">HTTP</span> <span class="err">传输、延迟加载。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">permission</span><span class="o">/</span>   <span class="n">allow</span><span class="o">/</span><span class="n">ask</span><span class="o">/</span><span class="n">deny</span> <span class="err">策略引擎。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sandbox</span><span class="o">/</span>      <span class="err">沙盒</span><span class="o">/</span><span class="err">强制。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">codegraph</span><span class="o">/</span>    <span class="n">CodeGraph</span> <span class="n">MCP</span> <span class="err">服务集成。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">skill</span><span class="o">/</span>        <span class="n">Skill</span> <span class="err">系统。</span>
+</span></span><span class="line"><span class="cl">  <span class="n">memory</span><span class="o">/</span>       <span class="err">层级记忆文档</span> <span class="o">+</span> <span class="err">自动记忆。</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>缓存优先（cache-first）设计</strong>是整个系统的北极星。系统提示词前缀（base prompt + 工具描述 + 记忆文档）在会话中必须保持 byte-stable，这样 DeepSeek 的服务端自动前缀缓存才能持续命中。怎么做到的？<code>control.Compose</code> 确保每次拼接出的前缀都不变。压缩策略中的 <code>soft_compact_ratio</code> 在低水位只给模型发提示而不截断前缀，高水位才替换前缀但替换后仍然保持稳定。</p>
+<p>你可以感受到这个项目背后有清晰的工程哲学——作者在 <a href="https://github.com/esengine/DeepSeek-Reasonix/blob/main/docs/SPEC.md"target="_blank" rel="external nofollow noopener noreferrer">SPEC.md<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> 开头就写了：<strong>&ldquo;Change the contract first, then the code.&rdquo;</strong></p>
+<h1 id="总结" class="heading-element">
+  <a href="#%e6%80%bb%e7%bb%93" class="heading-mark"></a>总结</h1><p>Reasonix 打动我的不是它有多少功能（功能列表固然不错），而是它的设计目标非常清晰——<strong>为 DeepSeek 的前缀缓存而生</strong>。不是把 Claude Code 换个皮，不是 OpenAI 的套壳，而是围绕 DeepSeek 的特性从零构建。</p>
+<p>它的 Go 重写也是有魄力的决定。TypeScript 版本已经有一批用户了，但为了&quot;CGO-free 单二进制 + 零外部依赖&quot;这个承诺，毅然从零开始。结果就是：<code>npm install -g reasonix</code> 拉下来的是一个原生 Go 二进制，不需要 Node 运行时就能跑，扔到服务器上也是一个命令的事。</p>
+<p>对我来说，Reasonix 最实用的场景是：</p>
+<ul>
+<li><strong><code>reasonix run</code></strong> — 在 CI/CD 或终端里直接执行一次性任务，比如&quot;重构这个函数&quot;、&ldquo;补测试&rdquo;</li>
+<li><strong><code>reasonix chat</code></strong> — 交互式编码，带着 <code>/</code> 和 <code>@</code> 补全的 TUI 体验很流畅</li>
+<li><strong>双模型协同</strong> — Planner 用 pro 做代码分析，Executor 用 flash 快速执行，token 分配很合理</li>
+<li><strong>MCP 插件</strong> — 已经接入了 Stripe API、文件系统等 MCP 服务</li>
+</ul>
+<p>项目在 GitHub 的 <a href="https://github.com/esengine/DeepSeek-Reasonix"target="_blank" rel="external nofollow noopener noreferrer">esengine/DeepSeek-Reasonix<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>，有双语 README（中/英），Discord 社区也很活跃。如果你平时用 DeepSeek 比较多，或者想要一个真正 DeepSeek-native 的编程助手，Reasonix 值得一试。</p>
+<hr>
+<p><strong>相关链接</strong></p>
+<ul>
+<li><a href="https://github.com/esengine/DeepSeek-Reasonix"target="_blank" rel="external nofollow noopener noreferrer">GitHub 仓库<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/esengine/DeepSeek-Reasonix/blob/main/reasonix.example.toml"target="_blank" rel="external nofollow noopener noreferrer">reasonix.example.toml 配置参考<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/esengine/DeepSeek-Reasonix/blob/main/docs/SPEC.md"target="_blank" rel="external nofollow noopener noreferrer">工程规格文档 SPEC.md<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://discord.gg/XF78rEME2D"target="_blank" rel="external nofollow noopener noreferrer">Discord 社区<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2025-01-12-avante.nvim/" title="avante.nvim">avante.nvim</a></li><li>
+          <a href="/archives/2020-08-27-evans--grpc-%E4%BA%A4%E4%BA%92%E5%BC%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7/" title="Evans: gRPC 交互式测试工具">Evans: gRPC 交互式测试工具</a></li><li>
+          <a href="/archives/2020-02-03-speedtest-cli/" title="speedtest cli">speedtest cli</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-05-29 16:15:14">更新于 2026-05-29&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/" data-title="Deepseek cli 工具 Reasonix" data-hashtags="reasonix,deepseek,ai,go,cli,coding-agent"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/" data-hashtag="reasonix"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/" data-title="Deepseek cli 工具 Reasonix" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/" data-title="Deepseek cli 工具 Reasonix"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/" data-title="Deepseek cli 工具 Reasonix"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/reasonix/" class="post-tag" title="标签 - Reasonix">Reasonix</a><a href="/tags/deepseek/" class="post-tag" title="标签 - Deepseek">Deepseek</a><a href="/tags/ai/" class="post-tag" title="标签 - Ai">Ai</a><a href="/tags/go/" class="post-tag" title="标签 - Go">Go</a><a href="/tags/cli/" class="post-tag" title="标签 - Cli">Cli</a><a href="/tags/coding-agent/" class="post-tag" title="标签 - Coding-Agent">Coding-Agent</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-05-14-centos7-vault.centos.org-%E6%8A%A5%E9%94%99/" class="post-nav-item" rel="prev" title="CentOS7 vault.centos.org 报错"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>CentOS7 vault.centos.org 报错</a>
+      <a href="/2026-06-18-irqbalance-%E6%8A%A5%E9%94%99/" class="post-nav-item" rel="next" title="irqbalance 报错">irqbalance 报错<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

@@ -30,19 +30,63 @@ vim port-forwarding@.service
 ```bash
 [Unit]
 Description=Setup Port-Forwarding to %I
-After=network.target
+After=network.target network-online.target sshd.service
+
+# --- 关键改动: 声明对其他 colo 隧道的依赖 ---
+# %I 会被替换为实例名（如 colo45），但这里我们需要写具体的服务名
+# 如果用模板实例化: systemctl enable port-forwarding-enhanced@colo45.service
+# 则下面的 Wants/After 可以按需调整
+
+# 方式一 (推荐): 声明软依赖 —— 建议启动但不强制执行
+Wants=network-online.target
+
+# 方式二: 硬依赖 —— 这些服务必须先成功启动
+# Requires=port-forwarding@colo49.service port-forwarding@colo53.service port-forwarding@colo54.service
+
+# 方式三: 顺序依赖 —— 等这些服务启动后再启动本服务（但不要求它们必须成功）
+# After=port-forwarding@colo49.service port-forwarding@colo53.service port-forwarding@colo54.service
 
 [Service]
+Type=simple
 ## 使用用户执行命令
 User=william
 Environment=&#34;LOCAL_ADDR=localhost&#34;
 EnvironmentFile=/usr/lib/systemd/system/port-forwarding@%i
-ExecStart=/usr/bin/ssh -NT -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes ${TARGET} ${CMD1} ${CMD2} ${CMD3} ${CMD4} ${CMD5}
 
+# --- ExecStartPre: 启动前检查目标连通性 ---
+# 在启动 SSH 之前，先检查 colo45 的 SSH 端口是否可达
+# 避免网络不通时 SSH 反复失败导致 StartLimitBurst 耗尽
+# ExecStartPre=/usr/bin/sh -c &#39;\
+#   echo &#34;[Pre] Checking reachability of %I...&#34;; \
+#   &#39;
+
+#ExecStart=/usr/bin/ssh -NT -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes ${TARGET} ${CMD1} ${CMD2} ${CMD3} ${CMD4} ${CMD5}
+ExecStart=/usr/bin/ssh -NT \
+  -o ServerAliveInterval=60 \
+  -o ServerAliveCountMax=30 \
+  -o ExitOnForwardFailure=yes \
+  -o ConnectTimeout=10 \
+  ${TARGET} ${CMD1} ${CMD2} ${CMD3} ${CMD4} ${CMD5} ${CMD6} ${CMD7} ${CMD8} \
+  ${CMD9} ${CMD10} ${CMD11} ${CMD12} ${CMD13} ${CMD14} ${CMD15} ${CMD16} \
+  ${CMD17} ${CMD18} ${CMD19}
+
+# --- ExecStartPost: 启动后验证隧道是否正常 ---
+# 检查本地 -L 转发端口是否在监听
+# 前面加 &#34;-&#34; 表示即使检查失败也不阻止服务启动
+# ExecStartPost=-/usr/bin/sh -c &#39;\
+#   sleep 2; \
+#   echo &#34;[Post] Checking reachability of %I...&#34;; \
+#   &#39;
+
+# --- 重启策略 ---
 # Restart every &gt;5 seconds to avoid StartLimitInterval failure
 Restart=always
 # Restart=on-failure
 RestartSec=5s
+
+# --- (可选) 防止频繁重启耗尽 ---
+StartLimitInterval=10s
+StartLimitBurst=5
 
 [Install]
 WantedBy=multi-user.target

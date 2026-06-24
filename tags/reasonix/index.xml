@@ -1,0 +1,119 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Reasonix - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/reasonix/</link>
+    <description>Reasonix - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 29 May 2026 16:15:14 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/reasonix/" rel="self" type="application/rss+xml" /><item>
+  <title>Deepseek cli 工具 Reasonix</title>
+  <link>https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/</link>
+  <pubDate>Fri, 29 May 2026 16:15:14 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/</guid>
+  <description><![CDATA[<blockquote>
+<p>这篇博文本身就是 reasonix 自动完成的。</p>
+</blockquote>
+<p>前两天在逛 GitHub 的时候，又看到 DeepSeek 生态里冒出来一个叫 <a href="https://github.com/esengine/DeepSeek-Reasonix"target="_blank" rel="external nofollow noopener noreferrer">Reasonix<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> 的项目。第一眼感觉就是又一个 AI coding agent 套壳，没什么稀奇的。但当我看完它的 README 和工程文档后，发现这事儿没那么简单——尤其有意思的是它的核心理念：<strong>专为 DeepSeek 的前缀缓存（automatic prefix cache）设计</strong>，所有行为都围绕这个来优化，把长会话的 token 成本压到最低。</p>
+<p>要知道 DeepSeek 有一个很厉害的特性——自动前缀缓存。如果你的请求前缀跟上一次完全一样（byte-stable），这部分 tokens 就不重新算，只算新内容的计算成本。这意味着 cache hit 的价格可以低到 <code>¥0.02/M tokens</code>，而正常输入是 <code>¥1/M</code>，差了 50 倍。Reasonix 整个架构就是奔着这个去的——系统提示词、工具描述、记忆文档，全链路保持字节稳定，永远不会在会话中途偷偷修改前缀。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -g reasonix
+</span></span><span class="line"><span class="cl">reasonix setup
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">DEEPSEEK_API_KEY</span><span class="o">=</span>sk-xxxxxxxxxxxxxxxx
+</span></span><span class="line"><span class="cl">reasonix chat</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是我自己的环境，当时从源码编译的</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#需要设置 go 代理</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">GOPROXY</span><span class="o">=</span>https://goproxy.cn,direct
+</span></span><span class="line"><span class="cl">git pull
+</span></span><span class="line"><span class="cl">git pull origin main-v
+</span></span><span class="line"><span class="cl">make build
+</span></span><span class="line"><span class="cl">make cross
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ./dist/
+</span></span><span class="line"><span class="cl">./reasonix-linux-amd64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">rs</span><span class="o">=</span><span class="s1">&#39;~/git/DeepSeek-Reasonix/dist/reasonix-linux-amd64&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reasonix — a config- and plugin-driven coding agent <span class="o">(</span>multi-model<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">  reasonix chat <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>-c<span class="p">|</span>--continue<span class="o">]</span> <span class="o">[</span>--resume<span class="o">]</span>   interactive session <span class="o">(</span>multi-turn<span class="p">;</span> -c resumes the latest, --resume picks one<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix run  <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>--max-steps N<span class="o">]</span> <span class="o">[</span>-c<span class="p">|</span>--continue<span class="o">]</span> <span class="o">[</span>--resume PATH<span class="o">]</span> &lt;task&gt;   run one task and <span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">  reasonix serve <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>--addr HOST:PORT<span class="o">]</span>      serve the session over HTTP+SSE <span class="o">(</span>browser client at /<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix acp <span class="o">[</span>--model NAME<span class="o">]</span>                           serve Agent Client Protocol over stdio <span class="o">(</span>also: reasonix --acp<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix setup <span class="o">[</span>path<span class="o">]</span>                                 interactive config wizard<span class="p">;</span> writes reasonix.toml <span class="o">(</span>+ .env<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix config auto-plan <span class="o">[</span>off<span class="p">|</span>on<span class="o">]</span>                    configure automatic plan mode
+</span></span><span class="line"><span class="cl">  reasonix mcp &lt;add<span class="p">|</span>remove<span class="p">|</span>list&gt;                        manage MCP servers in reasonix.toml
+</span></span><span class="line"><span class="cl">  reasonix doctor <span class="o">[</span>--json<span class="o">]</span>                              print redacted <span class="nb">local</span> diagnostics
+</span></span><span class="line"><span class="cl">  reasonix version
+</span></span><span class="line"><span class="cl">  reasonix <span class="nb">help</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Examples:
+</span></span><span class="line"><span class="cl">  reasonix chat
+</span></span><span class="line"><span class="cl">  reasonix chat --continue
+</span></span><span class="line"><span class="cl">  reasonix run <span class="s2">&#34;implement the TODOs in main.go&#34;</span>
+</span></span><span class="line"><span class="cl">  reasonix run --model mimo-pro <span class="s2">&#34;add unit tests for this function&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;explain this code&#34;</span> <span class="p">|</span> reasonix run
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Configuration:
+</span></span><span class="line"><span class="cl">  Resolution: flag &gt; ./reasonix.toml &gt; ~/.config/reasonix/config.toml &gt; built-in defaults
+</span></span><span class="line"><span class="cl">  Secrets come from the environment via api_key_env <span class="o">(</span>e.g. DEEPSEEK_API_KEY<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">  Run <span class="s1">&#39;reasonix setup&#39;</span> to scaffold a config<span class="p">;</span> see docs/SPEC.md.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 启动 server</span>
+</span></span><span class="line"><span class="cl">reasonix serve</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+</channel>
+</rss>

@@ -3,7 +3,233 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 06 Jan 2026 17:50:04 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 18 Jun 2026 13:12:08 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+  <title>irqbalance 报错</title>
+  <link>https://williamlfang.github.io/2026-06-18-irqbalance-%E6%8A%A5%E9%94%99/</link>
+  <pubDate>Thu, 18 Jun 2026 13:12:08 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-06-18-irqbalance-%E6%8A%A5%E9%94%99/</guid>
+  <description><![CDATA[<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">centos 终端一直出现：
+</span></span><span class="line"><span class="cl">kernel:do_IRQ: 3.186 No irq handler <span class="k">for</span> vector <span class="o">(</span>irq -1<span class="o">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
+  <title>Deepseek cli 工具 Reasonix</title>
+  <link>https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/</link>
+  <pubDate>Fri, 29 May 2026 16:15:14 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-05-29-deepseek-cli-%E5%B7%A5%E5%85%B7-reasonix/</guid>
+  <description><![CDATA[<blockquote>
+<p>这篇博文本身就是 reasonix 自动完成的。</p>
+</blockquote>
+<p>前两天在逛 GitHub 的时候，又看到 DeepSeek 生态里冒出来一个叫 <a href="https://github.com/esengine/DeepSeek-Reasonix"target="_blank" rel="external nofollow noopener noreferrer">Reasonix<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> 的项目。第一眼感觉就是又一个 AI coding agent 套壳，没什么稀奇的。但当我看完它的 README 和工程文档后，发现这事儿没那么简单——尤其有意思的是它的核心理念：<strong>专为 DeepSeek 的前缀缓存（automatic prefix cache）设计</strong>，所有行为都围绕这个来优化，把长会话的 token 成本压到最低。</p>
+<p>要知道 DeepSeek 有一个很厉害的特性——自动前缀缓存。如果你的请求前缀跟上一次完全一样（byte-stable），这部分 tokens 就不重新算，只算新内容的计算成本。这意味着 cache hit 的价格可以低到 <code>¥0.02/M tokens</code>，而正常输入是 <code>¥1/M</code>，差了 50 倍。Reasonix 整个架构就是奔着这个去的——系统提示词、工具描述、记忆文档，全链路保持字节稳定，永远不会在会话中途偷偷修改前缀。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npm install -g reasonix
+</span></span><span class="line"><span class="cl">reasonix setup
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">DEEPSEEK_API_KEY</span><span class="o">=</span>sk-xxxxxxxxxxxxxxxx
+</span></span><span class="line"><span class="cl">reasonix chat</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是我自己的环境，当时从源码编译的</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#需要设置 go 代理</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">GOPROXY</span><span class="o">=</span>https://goproxy.cn,direct
+</span></span><span class="line"><span class="cl">git pull
+</span></span><span class="line"><span class="cl">git pull origin main-v
+</span></span><span class="line"><span class="cl">make build
+</span></span><span class="line"><span class="cl">make cross
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ./dist/
+</span></span><span class="line"><span class="cl">./reasonix-linux-amd64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">alias</span> <span class="nv">rs</span><span class="o">=</span><span class="s1">&#39;~/git/DeepSeek-Reasonix/dist/reasonix-linux-amd64&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">reasonix — a config- and plugin-driven coding agent <span class="o">(</span>multi-model<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Usage:
+</span></span><span class="line"><span class="cl">  reasonix chat <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>-c<span class="p">|</span>--continue<span class="o">]</span> <span class="o">[</span>--resume<span class="o">]</span>   interactive session <span class="o">(</span>multi-turn<span class="p">;</span> -c resumes the latest, --resume picks one<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix run  <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>--max-steps N<span class="o">]</span> <span class="o">[</span>-c<span class="p">|</span>--continue<span class="o">]</span> <span class="o">[</span>--resume PATH<span class="o">]</span> &lt;task&gt;   run one task and <span class="nb">exit</span>
+</span></span><span class="line"><span class="cl">  reasonix serve <span class="o">[</span>--model NAME<span class="o">]</span> <span class="o">[</span>--addr HOST:PORT<span class="o">]</span>      serve the session over HTTP+SSE <span class="o">(</span>browser client at /<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix acp <span class="o">[</span>--model NAME<span class="o">]</span>                           serve Agent Client Protocol over stdio <span class="o">(</span>also: reasonix --acp<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix setup <span class="o">[</span>path<span class="o">]</span>                                 interactive config wizard<span class="p">;</span> writes reasonix.toml <span class="o">(</span>+ .env<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  reasonix config auto-plan <span class="o">[</span>off<span class="p">|</span>on<span class="o">]</span>                    configure automatic plan mode
+</span></span><span class="line"><span class="cl">  reasonix mcp &lt;add<span class="p">|</span>remove<span class="p">|</span>list&gt;                        manage MCP servers in reasonix.toml
+</span></span><span class="line"><span class="cl">  reasonix doctor <span class="o">[</span>--json<span class="o">]</span>                              print redacted <span class="nb">local</span> diagnostics
+</span></span><span class="line"><span class="cl">  reasonix version
+</span></span><span class="line"><span class="cl">  reasonix <span class="nb">help</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Examples:
+</span></span><span class="line"><span class="cl">  reasonix chat
+</span></span><span class="line"><span class="cl">  reasonix chat --continue
+</span></span><span class="line"><span class="cl">  reasonix run <span class="s2">&#34;implement the TODOs in main.go&#34;</span>
+</span></span><span class="line"><span class="cl">  reasonix run --model mimo-pro <span class="s2">&#34;add unit tests for this function&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;explain this code&#34;</span> <span class="p">|</span> reasonix run
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Configuration:
+</span></span><span class="line"><span class="cl">  Resolution: flag &gt; ./reasonix.toml &gt; ~/.config/reasonix/config.toml &gt; built-in defaults
+</span></span><span class="line"><span class="cl">  Secrets come from the environment via api_key_env <span class="o">(</span>e.g. DEEPSEEK_API_KEY<span class="o">)</span>.
+</span></span><span class="line"><span class="cl">  Run <span class="s1">&#39;reasonix setup&#39;</span> to scaffold a config<span class="p">;</span> see docs/SPEC.md.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 启动 server</span>
+</span></span><span class="line"><span class="cl">reasonix serve</span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
+  <title>CentOS7 vault.centos.org 报错</title>
+  <link>https://williamlfang.github.io/2026-05-14-centos7-vault.centos.org-%E6%8A%A5%E9%94%99/</link>
+  <pubDate>Thu, 14 May 2026 00:07:13 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-05-14-centos7-vault.centos.org-%E6%8A%A5%E9%94%99/</guid>
+  <description><![CDATA[<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@localhost ~<span class="o">]</span><span class="c1"># yum update</span>
+</span></span><span class="line"><span class="cl">Loaded plugins: fastestmirror
+</span></span><span class="line"><span class="cl">Loading mirror speeds from cached hostfile
+</span></span><span class="line"><span class="cl">http://vault.centos.org/centos/7/os/x86_64/repodata/repomd.xml: <span class="o">[</span>Errno 14<span class="o">]</span> curl#6 - <span class="s2">&#34;C
+</span></span></span><span class="line"><span class="cl"><span class="s2">Trying other mirror.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2"> One of the configured repositories failed (CentOS-7 - Base),
+</span></span></span><span class="line"><span class="cl"><span class="s2"> and yum doesn&#39;t have enough cached data to continue. At this point the only
+</span></span></span><span class="line"><span class="cl"><span class="s2"> safe thing yum can do is fail. There are a few ways to work &#34;</span>fix<span class="s2">&#34; this:
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">     1. Contact the upstream for the repository and get them to fix the problem.
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">     2. Reconfigure the baseurl/etc. for the repository, to point to a working
+</span></span></span><span class="line"><span class="cl"><span class="s2">        upstream. This is most often useful if you are using a newer
+</span></span></span><span class="line"><span class="cl"><span class="s2">        distribution release than is supported by the repository (and the
+</span></span></span><span class="line"><span class="cl"><span class="s2">        packages for the previous distribution release still work).
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">     3. Run the command with the repository temporarily disabled
+</span></span></span><span class="line"><span class="cl"><span class="s2">            yum --disablerepo=base ...
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">     4. Disable the repository permanently, so yum won&#39;t use it by default. Yum
+</span></span></span><span class="line"><span class="cl"><span class="s2">        will then just ignore the repository until you permanently enable it
+</span></span></span><span class="line"><span class="cl"><span class="s2">        again or use --enablerepo for temporary usage:
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            yum-config-manager --disable base
+</span></span></span><span class="line"><span class="cl"><span class="s2">        or
+</span></span></span><span class="line"><span class="cl"><span class="s2">            subscription-manager repos --disable=base
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">     5. Configure the failing repository to be skipped, if it is unavailable.
+</span></span></span><span class="line"><span class="cl"><span class="s2">        Note that yum will try to contact the repo. when it runs most commands,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        so will have to try and fail each time (and thus. yum will be be much
+</span></span></span><span class="line"><span class="cl"><span class="s2">        slower). If it is a very temporary problem though, this is often a nice
+</span></span></span><span class="line"><span class="cl"><span class="s2">        compromise:
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">            yum-config-manager --save --setopt=base.skip_if_unavailable=true
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">failure: repodata/repomd.xml from base: [Errno 256] No more mirrors to try.</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
+  <title>编译安装 nvim</title>
+  <link>https://williamlfang.github.io/2026-01-17-%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85-nvim/</link>
+  <pubDate>Sat, 17 Jan 2026 13:08:11 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-01-17-%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85-nvim/</guid>
+  <description><![CDATA[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 git clone https://github.com/neovim/neovim git checkout stable # 创建构建目录 mkdir build &amp;&amp; cd build # 配置 CMake 指定安装路径 cmake .. \ -DCMAKE_INSTALL_PREFIX=$HOME/.local/neovim \ -DCMAKE_PREFIX_PATH=$HOME/.local \ -DCMAKE_BUILD_TYPE=Release \ -DENABLE_JEMALLOC=ON \ # 自定义所有]]></description>
+</item>
+<item>
   <title>maple font</title>
   <link>https://williamlfang.github.io/2026-01-06-maple-font/</link>
   <pubDate>Tue, 06 Jan 2026 17:50:04 &#43;0800</pubDate>
@@ -65,44 +291,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2025-06-20-gcc--link-time-optimization/</guid>
   <description><![CDATA[]]></description>
-</item>
-<item>
-  <title>Linux 安装 syncthing</title>
-  <link>https://williamlfang.github.io/2025-06-08-linux-%E5%AE%89%E8%A3%85-syncthing/</link>
-  <pubDate>Sun, 08 Jun 2025 18:27:20 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-06-08-linux-%E5%AE%89%E8%A3%85-syncthing/</guid>
-  <description><![CDATA[<p>使用 <code>syncthing</code> 同步不同机器之间的文件，所有数据均保留在本地机器。</p>]]></description>
-</item>
-<item>
-  <title>(grok)Best Practice for Writing Bash Scripts</title>
-  <link>https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/</link>
-  <pubDate>Wed, 16 Apr 2025 13:27:56 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-04-16-grokbest-practice-for-writing-bash-scripts/</guid>
-  <description><![CDATA[<blockquote>
-<p>what is the best practice for writing bash scripts</p>
-</blockquote>]]></description>
-</item>
-<item>
-  <title>(转)Linux 网络大流量传输优化方法</title>
-  <link>https://williamlfang.github.io/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/</link>
-  <pubDate>Sat, 12 Apr 2025 22:36:25 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/</guid>
-  <description><![CDATA[<p>提升 <code>Linux</code> 性能。</p>]]></description>
-</item>
-<item>
-  <title>Linux 内存调优的两个重要参数</title>
-  <link>https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/</link>
-  <pubDate>Sat, 29 Mar 2025 15:08:37 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2025-03-29-linux-%E5%86%85%E5%AD%98%E8%B0%83%E4%BC%98%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0/</guid>
-  <description><![CDATA[<p>今天在看这篇介绍 <strong>Linux 性能调优</strong> 的博客(<a href="https://linuxblog.io/linux-performance-almost-always-add-swap-space/"target="_blank" rel="external nofollow noopener noreferrer">Linux Performance: Almost Always Add Swap Space<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>)，其中涉及到如何调整内核内存的调整机制。主要的参数有</p>
-<ul>
-<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <code>swappiness</code>: This control is used to define how aggressively the kernel will swap memory pages. Higher values will increase aggressiveness; lower values decrease the amount of swap. (default = 60, recommended values between 1 and 60) Remove your swap for 0 value, but it is usually not recommended in most cases.</li>
-<li><i class="fa-regular fa-square fa-fw" aria-hidden="true"></i> <code>vfs_cache_pressure</code>: Controls the kernel’s tendency to reclaim the memory, which is used for caching of directory and inode objects. (default = 100, recommend value 50 to 200)</li>
-</ul>]]></description>
 </item>
 </channel>
 </rss>
