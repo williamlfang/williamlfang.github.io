@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>gdb 编译代码与调试分离 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Remote GDB Debugging with C&#43;&#43; — Source Code StrategiesWhen C&#43;&#43; code is compiled on a dev machine (A) and debugged on a target machine (B), GDB needs to find matching source files. Here are the options, from best to worst. 1. Best: Use gdbserver (no source copy to target)Run a thin gdbserver on the target; connect full GDB from the dev machine where sources live. 1 2 3 4 5" /><meta name="keywords" content='gdb, gdbserver, c&#43;&#43;' /><meta itemprop="name" content="gdb 编译代码与调试分离">
+<meta itemprop="description" content="Remote GDB Debugging with C&#43;&#43; — Source Code StrategiesWhen C&#43;&#43; code is compiled on a dev machine (A) and debugged on a target machine (B), GDB needs to find matching source files. Here are the options, from best to worst. 1. Best: Use gdbserver (no source copy to target)Run a thin gdbserver on the target; connect full GDB from the dev machine where sources live. 1 2 3 4 5"><meta itemprop="datePublished" content="2026-07-02T11:21:46+08:00" />
+<meta itemprop="dateModified" content="2026-07-02T11:21:46+08:00" />
+<meta itemprop="wordCount" content="433"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="gdb,gdbserver,c&#43;&#43;," /><meta property="og:title" content="gdb 编译代码与调试分离" />
+<meta property="og:description" content="Remote GDB Debugging with C&#43;&#43; — Source Code StrategiesWhen C&#43;&#43; code is compiled on a dev machine (A) and debugged on a target machine (B), GDB needs to find matching source files. Here are the options, from best to worst. 1. Best: Use gdbserver (no source copy to target)Run a thin gdbserver on the target; connect full GDB from the dev machine where sources live. 1 2 3 4 5" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-07-02T11:21:46+08:00" />
+<meta property="article:modified_time" content="2026-07-02T11:21:46+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="gdb 编译代码与调试分离"/>
+<meta name="twitter:description" content="Remote GDB Debugging with C&#43;&#43; — Source Code StrategiesWhen C&#43;&#43; code is compiled on a dev machine (A) and debugged on a target machine (B), GDB needs to find matching source files. Here are the options, from best to worst. 1. Best: Use gdbserver (no source copy to target)Run a thin gdbserver on the target; connect full GDB from the dev machine where sources live. 1 2 3 4 5"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/" /><link rel="prev" href="https://williamlfang.github.io/2026-06-18-irqbalance-%E6%8A%A5%E9%94%99/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "gdb 编译代码与调试分离",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB\/"
+    },"genre": "posts","keywords": "gdb, gdbserver, c\u002b\u002b","wordcount":  433 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB\/","datePublished": "2026-07-02T11:21:46+08:00","dateModified": "2026-07-02T11:21:46+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>gdb 编译代码与调试分离</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2026-07-02 11:21:46"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-07-02">2026-07-02</time></span>&nbsp;<span title="433 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 500 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li><a href="#remote-gdb-debugging-with-c--source-code-strategies">Remote GDB Debugging with C++ — Source Code Strategies</a>
+      <ol>
+        <li><a href="#1-best-use-gdbserver-no-source-copy-to-target">1. Best: Use <code>gdbserver</code> (no source copy to target)</a></li>
+        <li><a href="#2-good-compile-with-path-remapping-then-copy-sources-anywhere">2. Good: Compile with path remapping, then copy sources anywhere</a></li>
+        <li><a href="#3-flexible-use-set-substitute-path-in-gdb">3. Flexible: Use <code>set substitute-path</code> in GDB</a></li>
+        <li><a href="#4-quick-use-the-directory-command">4. Quick: Use the <code>directory</code> command</a></li>
+        <li><a href="#5-last-resort-copy-sources-to-the-exact-same-absolute-path">5. Last resort: Copy sources to the exact same absolute path</a></li>
+        <li><a href="#summary">Summary</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><h1 id="remote-gdb-debugging-with-c--source-code-strategies" class="heading-element">
+  <a href="#remote-gdb-debugging-with-c--source-code-strategies" class="heading-mark"></a>Remote GDB Debugging with C++ — Source Code Strategies</h1><p>When C++ code is compiled on a dev machine (A) and debugged on a target machine (B),
+GDB needs to find matching source files. Here are the options, from best to worst.</p>
+<h2 id="1-best-use-gdbserver-no-source-copy-to-target" class="heading-element">
+  <a href="#1-best-use-gdbserver-no-source-copy-to-target" class="heading-mark"></a>1. Best: Use <code>gdbserver</code> (no source copy to target)</h2><p>Run a thin <code>gdbserver</code> on the target; connect full GDB from the dev machine where sources live.</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># On target machine (machine B):</span>
+</span></span><span class="line"><span class="cl">gdbserver :1234 ./mybinary
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># On dev machine (machine A) — where sources &amp; binary live:</span>
+</span></span><span class="line"><span class="cl">gdb ./mybinary
+</span></span><span class="line"><span class="cl"><span class="o">(</span>gdb<span class="o">)</span> target remote target-host:1234
+</span></span><span class="line"><span class="cl"><span class="c1"># GDB on machine A has full source access; machine B never needs sources.</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Build requirement</strong>: the binary on both sides must match exactly (same build artifact).</p>
+<h2 id="2-good-compile-with-path-remapping-then-copy-sources-anywhere" class="heading-element">
+  <a href="#2-good-compile-with-path-remapping-then-copy-sources-anywhere" class="heading-mark"></a>2. Good: Compile with path remapping, then copy sources anywhere</h2><p>At <strong>compile time</strong> on machine A, remap the absolute source paths in the DWARF debug info:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># GCC / Clang:</span>
+</span></span><span class="line"><span class="cl">g++ -g -fdebug-prefix-map<span class="o">=</span>/home/user/project<span class="o">=</span>/opt/src/project ...
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Or older GCC:</span>
+</span></span><span class="line"><span class="cl">g++ -g -fdebug-prefix-map<span class="o">=</span>/home/user/project<span class="o">=</span>.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then on the target machine B, copy sources to the remapped path:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># On dev machine:</span>
+</span></span><span class="line"><span class="cl">rsync -av ./src/ target:/opt/src/project/</span></span></code></pre></td></tr></table>
+</div>
+</div><p>GDB on machine B finds them automatically because DWARF now contains <code>/opt/src/project/...</code>
+instead of <code>/home/user/project/...</code>.</p>
+<h2 id="3-flexible-use-set-substitute-path-in-gdb" class="heading-element">
+  <a href="#3-flexible-use-set-substitute-path-in-gdb" class="heading-mark"></a>3. Flexible: Use <code>set substitute-path</code> in GDB</h2><p>If you already built without <code>-fdebug-prefix-map</code>, redirect at debug time:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Copy sources anywhere on target, e.g. /tmp/src/</span>
+</span></span><span class="line"><span class="cl">scp -r ./src/ target:/tmp/src/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># On target in GDB:</span>
+</span></span><span class="line"><span class="cl"><span class="o">(</span>gdb<span class="o">)</span> <span class="nb">set</span> substitute-path /home/user/project /tmp/src
+</span></span><span class="line"><span class="cl"><span class="o">(</span>gdb<span class="o">)</span> list   <span class="c1"># now shows source lines</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Add this to <code>~/.gdbinit</code> on the target to make it permanent.</p>
+<h2 id="4-quick-use-the-directory-command" class="heading-element">
+  <a href="#4-quick-use-the-directory-command" class="heading-mark"></a>4. Quick: Use the <code>directory</code> command</h2><p>Point GDB to the copied source tree:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">scp -r ./src/ target:/tmp/src/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># In GDB on target:</span>
+</span></span><span class="line"><span class="cl"><span class="o">(</span>gdb<span class="o">)</span> directory /tmp/src</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This adds <code>/tmp/src</code> to the source search path. Simpler than <code>substitute-path</code> but only works
+if the relative directory structure under the DWARF path matches.</p>
+<h2 id="5-last-resort-copy-sources-to-the-exact-same-absolute-path" class="heading-element">
+  <a href="#5-last-resort-copy-sources-to-the-exact-same-absolute-path" class="heading-mark"></a>5. Last resort: Copy sources to the exact same absolute path</h2><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># If DWARF records /home/user/project/src/main.cpp</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Then on target, put it at exactly the same path:</span>
+</span></span><span class="line"><span class="cl">scp -r ./src/ target:/home/user/project/src/</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Fragile — only works when usernames and paths are identical across machines.</p>
+<h2 id="summary" class="heading-element">
+  <a href="#summary" class="heading-mark"></a>Summary</h2><table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Copy sources to target?</th>
+<th>Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gdbserver</code></td>
+<td><strong>No</strong></td>
+<td>Low (best)</td>
+</tr>
+<tr>
+<td><code>-fdebug-prefix-map</code> at build</td>
+<td>Yes (to a fixed path)</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><code>set substitute-path</code></td>
+<td>Yes (any path)</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><code>directory</code></td>
+<td>Yes (any path)</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>Same absolute path</td>
+<td>Yes (exact path)</td>
+<td>Low (fragile)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommendation</strong>: If you control the build, add <code>-fdebug-prefix-map</code> to your CMake/Makefile.
+If you don&rsquo;t, use <code>gdbserver</code> — it&rsquo;s the cleanest workflow and avoids source-sync problems entirely.</p></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2020-05-31-cgdb--%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" title="cgdb: 安装与使用">cgdb: 安装与使用</a></li><li>
+          <a href="/archives/2019-12-04-clion-%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/" title="Clion 远程调试">Clion 远程调试</a></li><li>
+          <a href="/2025-02-22-nvim-dap-%E6%98%A0%E5%B0%84-r-%E5%BF%AB%E6%8D%B7%E9%94%AE/" title="nvim dap 映射 r 快捷键">nvim dap 映射 r 快捷键</a></li><li>
+          <a href="/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/" title="glibc2.18 安装">glibc2.18 安装</a></li><li>
+          <a href="/2024-03-19-att-%E6%B1%87%E7%BC%96%E8%AF%AD%E6%B3%95/" title="ATT 汇编语法">ATT 汇编语法</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-07-02 11:21:46">更新于 2026-07-02&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/" data-title="gdb 编译代码与调试分离" data-hashtags="gdb,gdbserver,c&#43;&#43;"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/" data-hashtag="gdb"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/" data-title="gdb 编译代码与调试分离" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/" data-title="gdb 编译代码与调试分离"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-07-02-gdb-%E7%BC%96%E8%AF%91%E4%BB%A3%E7%A0%81%E4%B8%8E%E8%B0%83%E8%AF%95%E5%88%86%E7%A6%BB/" data-title="gdb 编译代码与调试分离"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/gdb/" class="post-tag" title="标签 - Gdb">Gdb</a><a href="/tags/gdbserver/" class="post-tag" title="标签 - Gdbserver">Gdbserver</a><a href="/tags/c&#43;&#43;/" class="post-tag" title="标签 - C&#43;&#43;">C&#43;&#43;</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-06-18-irqbalance-%E6%8A%A5%E9%94%99/" class="post-nav-item" rel="prev" title="irqbalance 报错"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>irqbalance 报错</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
