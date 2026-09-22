@@ -112,8 +112,6 @@ sudo docker run --restart always --name openwrt  --network macvLan --privileged 
 
 
 
-
-
 # William-Ubuntu 安装
 
 ```bash

@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31) - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Anthropic&rsquo;s official Claude Desktop .deb declares libc6 (&gt;= 2.34), which
+means Ubuntu 22.04&#43; / Mint 21&#43;. On Mint 20.3 (focal, glibc 2.31) apt refuses
+to install it. It turns out that dependency is an overstatement, and the app
+runs fine on glibc 2.31 once you know which three files actually need 2.34." /><meta name="keywords" content='Linux, Mint, Ubuntu, glibc, deb, dpkg, Claude, Electron, proxy' /><meta itemprop="name" content="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)">
+<meta itemprop="description" content="Anthropic&rsquo;s official Claude Desktop .deb declares libc6 (&gt;= 2.34), which
+means Ubuntu 22.04&#43; / Mint 21&#43;. On Mint 20.3 (focal, glibc 2.31) apt refuses
+to install it. It turns out that dependency is an overstatement, and the app
+runs fine on glibc 2.31 once you know which three files actually need 2.34."><meta itemprop="datePublished" content="2026-09-22T14:45:00+08:00" />
+<meta itemprop="dateModified" content="2026-09-22T14:45:00+08:00" />
+<meta itemprop="wordCount" content="1322"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,Mint,Ubuntu,glibc,deb,dpkg,Claude,Electron,proxy," /><meta property="og:title" content="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)" />
+<meta property="og:description" content="Anthropic&rsquo;s official Claude Desktop .deb declares libc6 (&gt;= 2.34), which
+means Ubuntu 22.04&#43; / Mint 21&#43;. On Mint 20.3 (focal, glibc 2.31) apt refuses
+to install it. It turns out that dependency is an overstatement, and the app
+runs fine on glibc 2.31 once you know which three files actually need 2.34." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-09-22T14:45:00+08:00" />
+<meta property="article:modified_time" content="2026-09-22T14:45:00+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)"/>
+<meta name="twitter:description" content="Anthropic&rsquo;s official Claude Desktop .deb declares libc6 (&gt;= 2.34), which
+means Ubuntu 22.04&#43; / Mint 21&#43;. On Mint 20.3 (focal, glibc 2.31) apt refuses
+to install it. It turns out that dependency is an overstatement, and the app
+runs fine on glibc 2.31 once you know which three files actually need 2.34."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/" /><link rel="prev" href="https://williamlfang.github.io/2026-09-12-youtube-dl-viewer/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-09-22-claude-desktop-on-ubuntu-20.04\/"
+    },"genre": "posts","keywords": "Linux, Mint, Ubuntu, glibc, deb, dpkg, Claude, Electron, proxy","wordcount":  1322 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-09-22-claude-desktop-on-ubuntu-20.04\/","datePublished": "2026-09-22T14:45:00+08:00","dateModified": "2026-09-22T14:45:00+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2026-09-22 14:45:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-09-22">2026-09-22</time></span>&nbsp;<span title="1322 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 7 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-error">The error</a></li>
+        <li><a href="#why-the-appimage-doesnt-help">Why the AppImage doesn&rsquo;t help</a></li>
+        <li><a href="#the-trick-find-out-what-actually-needs-234">The trick: find out what actually needs 2.34</a></li>
+        <li><a href="#which-symbols-and-why-it-barely-matters">Which symbols, and why it barely matters</a></li>
+        <li><a href="#test-before-installing-anything">Test before installing anything</a></li>
+        <li><a href="#repackage-the-deb-with-a-corrected-dependency">Repackage the .deb with a corrected dependency</a>
+          <ol>
+            <li><a href="#check-the-maintainer-scripts-first">Check the maintainer scripts first</a></li>
+          </ol>
+        </li>
+        <li><a href="#install">Install</a></li>
+        <li><a href="#what-you-lose-on-glibc-231">What you lose on glibc 2.31</a></li>
+        <li><a href="#bonus-routing-it-through-a-proxy">Bonus: routing it through a proxy</a></li>
+        <li><a href="#launching">Launching</a></li>
+        <li><a href="#two-harmless-errors">Two harmless errors</a></li>
+        <li><a href="#takeaway">Takeaway</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>Anthropic&rsquo;s official Claude Desktop <code>.deb</code> declares <code>libc6 (&gt;= 2.34)</code>, which
+means Ubuntu 22.04+ / Mint 21+. On Mint 20.3 (focal, glibc 2.31) <code>apt</code> refuses
+to install it. It turns out that dependency is an overstatement, and the app
+runs fine on glibc 2.31 once you know which three files actually need 2.34.</p>
+<h2 id="the-error" class="heading-element">
+  <a href="#the-error" class="heading-mark"></a>The error</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">The following packages have unmet dependencies:
+</span></span><span class="line"><span class="cl"> claude-desktop : Depends: libc6 (&gt;= 2.34) but 2.31-0ubuntu9.16 is to be installed
+</span></span><span class="line"><span class="cl">                  Recommends: qemu-system-x86 but it is not going to be installed
+</span></span><span class="line"><span class="cl">                  Recommends: ovmf but it is not going to be installed
+</span></span><span class="line"><span class="cl">                  Recommends: virtiofsd but it is not installable
+</span></span><span class="line"><span class="cl">E: Unmet dependencies.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Confirm what you are on:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat /etc/os-release      <span class="c1"># Mint 20.3 / UBUNTU_CODENAME=focal</span>
+</span></span><span class="line"><span class="cl">ldd --version <span class="p">|</span> head -1  <span class="c1"># ldd (Ubuntu GLIBC 2.31-0ubuntu9.18) 2.31</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>glibc cannot be upgraded in place on focal. Every binary on the system links
+against it, and PPA-hacking it will brick the machine. So that route is out.</p>
+<h2 id="why-the-appimage-doesnt-help" class="heading-element">
+  <a href="#why-the-appimage-doesnt-help" class="heading-mark"></a>Why the AppImage doesn&rsquo;t help</h2><p>There is no official AppImage — Anthropic ships only the <code>.deb</code> (apt repo, or a
+direct download at <code>claude.com/download</code>). The community AppImages all
+<strong>repackage that same <code>.deb</code></strong>.</p>
+<p>More importantly, <strong>AppImage does not bundle glibc</strong>. That is the format&rsquo;s core
+rule: build on the oldest distro you want to support, because glibc is
+backward- but not forward-compatible. An AppImage carrying these binaries hits
+the identical <code>GLIBC_2.34 not found</code>.</p>
+<h2 id="the-trick-find-out-what-actually-needs-234" class="heading-element">
+  <a href="#the-trick-find-out-what-actually-needs-234" class="heading-mark"></a>The trick: find out what actually needs 2.34</h2><p><code>dpkg-shlibdeps</code> computes <code>Depends:</code> by taking the <strong>maximum</strong> requirement
+across <em>every</em> ELF file in the package. One stray binary raises the floor for
+the whole thing. So check them individually:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># grab the package without installing it</span>
+</span></span><span class="line"><span class="cl">curl -sSL -o cd.deb <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s2">&#34;https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.17377.1_amd64.deb&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">mkdir x <span class="o">&amp;&amp;</span> dpkg-deb -x cd.deb x
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># max GLIBC symbol version required by each ELF file</span>
+</span></span><span class="line"><span class="cl">find x -type f <span class="p">|</span> <span class="k">while</span> <span class="nb">read</span> f<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  head -c4 <span class="s2">&#34;</span><span class="nv">$f</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="p">|</span> grep -q <span class="s1">$&#39;\x7fELF&#39;</span> <span class="o">||</span> <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">v</span><span class="o">=</span><span class="k">$(</span>objdump -T <span class="s2">&#34;</span><span class="nv">$f</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="p">|</span> grep -o <span class="s1">&#39;GLIBC_[0-9.]*&#39;</span> <span class="p">|</span> sort -uV <span class="p">|</span> tail -1<span class="k">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">[</span> -n <span class="s2">&#34;</span><span class="nv">$v</span><span class="s2">&#34;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$v</span><span class="s2">  </span><span class="nv">$f</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span> <span class="p">|</span> sort -V <span class="p">|</span> tail</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Result:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Max glibc</th>
+<th>OK on 2.31?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>claude-desktop</code> (the Electron binary)</td>
+<td><strong>2.25</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>bundled <code>.so</code> (libffmpeg, libGLESv2, libvulkan, …)</td>
+<td>2.17</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>resources/virtiofsd</code></td>
+<td>2.34</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>resources/chrome-native-host</code></td>
+<td>2.34</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>@ant/claude-native/claude-native-binding.node</code></td>
+<td>2.33/2.34</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>The app itself only needs <strong>2.25</strong>. Three auxiliary binaries drag the
+declaration up to 2.34.</p>
+<h2 id="which-symbols-and-why-it-barely-matters" class="heading-element">
+  <a href="#which-symbols-and-why-it-barely-matters" class="heading-mark"></a>Which symbols, and why it barely matters</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">objdump -T x/usr/lib/claude-desktop/resources/virtiofsd <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="p">|</span> grep <span class="s1">&#39;GLIBC_2.3[4-9]&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $NF, $(NF-1)}&#39;</span> <span class="p">|</span> sort -u</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">dlsym                     GLIBC_2.34
+</span></span><span class="line"><span class="cl">__libc_start_main         GLIBC_2.34
+</span></span><span class="line"><span class="cl">pthread_create            GLIBC_2.34
+</span></span><span class="line"><span class="cl">pthread_join              GLIBC_2.34
+</span></span><span class="line"><span class="cl">pthread_key_create        GLIBC_2.34
+</span></span><span class="line"><span class="cl">pthread_setname_np        GLIBC_2.34
+</span></span><span class="line"><span class="cl">...</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Every one of those is the well-known <strong>glibc 2.34 libpthread/libdl merge</strong>. In
+2.34 upstream folded <code>libpthread.so.0</code> and <code>libdl.so.2</code> into <code>libc.so.6</code> and
+re-versioned the symbols. The <em>functions</em> all exist on 2.31 — they just live in
+<code>libpthread</code>/<code>libdl</code> under older version tags. It is a symbol-versioning
+artifact, not a missing feature.</p>
+<h2 id="test-before-installing-anything" class="heading-element">
+  <a href="#test-before-installing-anything" class="heading-mark"></a>Test before installing anything</h2><p>You can run the extracted tree directly. No root, no dpkg, apt untouched:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> x/usr/lib/claude-desktop
+</span></span><span class="line"><span class="cl">./claude-desktop --no-sandbox --user-data-dir<span class="o">=</span>/tmp/cdtest</span></span></code></pre></td></tr></table>
+</div>
+</div><p>It launches. The only complaint in <code>/tmp/cdtest/logs/main.log</code>:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">[</span><span class="n">error</span><span class="p">]</span> <span class="n">Failed</span> <span class="n">to</span> <span class="nb">load</span> <span class="n">Claude</span> <span class="n">Native</span>
+</span></span><span class="line"><span class="cl">  <span class="n">Error</span><span class="p">:</span> <span class="n">libc</span><span class="o">.</span><span class="n">so</span><span class="o">.</span><span class="mi">6</span><span class="p">:</span> <span class="n">version</span> <span class="err">`</span><span class="n">GLIBC_2</span><span class="o">.</span><span class="mi">33</span><span class="s1">&#39; not found (required by claude-native-binding.node)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Looking inside <code>app.asar</code>, that <code>require</code> is wrapped in a <code>try/catch</code> that sets
+the module to <code>null</code> and logs — so the app degrades instead of crashing:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">_a</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span><span class="p">(</span><span class="nx">g9</span><span class="o">!==</span><span class="k">void</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="nx">g9</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">try</span><span class="p">{</span> <span class="nx">g9</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&#34;@ant/claude-native&#34;</span><span class="p">)</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">catch</span><span class="p">(</span><span class="nx">A</span><span class="p">){</span> <span class="nx">g9</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">vDt</span> <span class="o">=</span> <span class="nx">A</span><span class="p">,</span> <span class="nx">D</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&#34;Failed to load Claude Native&#34;</span><span class="p">,</span> <span class="nx">A</span><span class="p">)</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="repackage-the-deb-with-a-corrected-dependency" class="heading-element">
+  <a href="#repackage-the-deb-with-a-corrected-dependency" class="heading-mark"></a>Repackage the .deb with a corrected dependency</h2><p>Since nothing gets recompiled, repackaging cannot lower the <em>real</em> floor — but
+the real floor was never the problem. Only the declaration needs fixing:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dpkg-deb -R cd.deb build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sed -i <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/libc6 (&gt;= 2\.34)/libc6 (&gt;= 2.31)/&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/, virtiofsd//&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/^Version: .*/Version: 1.17377.1~focal1/&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> build/DEBIAN/control
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dpkg-deb -Zgzip -z6 -b build claude-desktop_1.17377.1~focal1_amd64.deb</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>virtiofsd</code> is dropped from <code>Recommends</code> because it is not packaged for focal at
+all. <code>qemu-system-x86</code> and <code>ovmf</code> do exist there, so they can stay.</p>
+<h3 id="check-the-maintainer-scripts-first" class="heading-element">
+  <a href="#check-the-maintainer-scripts-first" class="heading-mark"></a>Check the maintainer scripts first</h3><p>Always read these before repackaging — a failing <code>postinst</code> leaves you with a
+half-configured package:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dpkg-deb -e cd.deb ctl/DEBIAN <span class="o">&amp;&amp;</span> less ctl/DEBIAN/postinst</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This one does two things: writes Anthropic&rsquo;s apt keyring + sources, and installs
+an AppArmor profile. The AppArmor block is guarded by
+<code>[ -f /etc/apparmor.d/abi/4.0 ]</code>, and focal ships AppArmor 2.13 with no
+<code>abi/4.0</code>, so it is skipped. Nothing else is risky.</p>
+<h2 id="install" class="heading-element">
+  <a href="#install" class="heading-mark"></a>Install</h2><p><strong>Clear any pre-existing broken packages first.</strong> <code>apt</code> refuses to do anything
+while the dependency tree is broken, and it will blame <em>your</em> package for
+someone else&rsquo;s mess. <code>apt-get -f install</code> cannot help if the broken package&rsquo;s
+dependencies are unsatisfiable — use <code>dpkg</code> directly, which bypasses the
+resolver:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo dpkg --remove --force-remove-reinstreq &lt;broken-package&gt;
+</span></span><span class="line"><span class="cl">sudo apt-get -f install</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install ./claude-desktop_1.17377.1~focal1_amd64.deb
+</span></span><span class="line"><span class="cl">sudo apt-mark hold claude-desktop</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>The hold is not optional.</strong> <code>postinst</code> re-registers Anthropic&rsquo;s apt repo, so
+the next <code>apt upgrade</code> pulls the stock glibc-2.34 build and breaks everything
+again. With the hold in place you re-apply the patch manually per release.</p>
+<h2 id="what-you-lose-on-glibc-231" class="heading-element">
+  <a href="#what-you-lose-on-glibc-231" class="heading-mark"></a>What you lose on glibc 2.31</h2><ul>
+<li><strong>Computer use / &ldquo;Computer control&rdquo;</strong> — needs <code>claude-native</code></li>
+<li><strong>The Cowork local VM sandbox</strong> — logs <code>yukonSilver not supported</code> and cleans
+up gracefully; it needs <code>qemu</code> + <code>ovmf</code> + <code>virtiofsd</code> anyway, and <code>virtiofsd</code>
+is not in focal</li>
+<li><strong>Claude-in-Chrome native messaging</strong> — <code>chrome-native-host</code> won&rsquo;t start</li>
+</ul>
+<p>Core chat, projects and MCP work normally.</p>
+<h2 id="bonus-routing-it-through-a-proxy" class="heading-element">
+  <a href="#bonus-routing-it-through-a-proxy" class="heading-mark"></a>Bonus: routing it through a proxy</h2><p>An Electron app launched from the desktop menu inherits <strong>neither</strong> your shell&rsquo;s
+proxy variables (those live in <code>.zshrc</code>, interactive shells only) nor the GNOME
+proxy setting if <code>org.gnome.system.proxy mode</code> is <code>'none'</code>. Check with:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gsettings get org.gnome.system.proxy mode</span></span></code></pre></td></tr></table>
+</div>
+</div><p>You need both the env vars (for the Claude Code CLI and SSH subprocesses the app
+spawns) and Chromium&rsquo;s <code>--proxy-server</code> flag (for the Electron network stack) —
+they are separate code paths. A wrapper is the clean way, because <code>;</code>, <code>&lt;</code> and
+<code>&gt;</code> are <strong>reserved characters in a <code>.desktop</code> <code>Exec=</code> line</strong> and will fail
+<code>desktop-file-validate</code>.</p>
+<p><code>~/.local/bin/claude-desktop-proxy</code>:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">PROXY</span><span class="o">=</span><span class="s2">&#34;http://192.168.1.82:20170&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">BYPASS</span><span class="o">=</span><span class="s2">&#34;&lt;local&gt;;localhost;127.0.0.1;::1;192.168.*;172.16.*;172.1?.*;172.2?.*;10.*&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">HTTP_PROXY</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span>  <span class="nv">HTTPS_PROXY</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">http_proxy</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span>  <span class="nv">https_proxy</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">NO_PROXY</span><span class="o">=</span><span class="s2">&#34;localhost,127.0.0.1,::1,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">no_proxy</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$NO_PROXY</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">exec</span> /usr/bin/claude-desktop <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --proxy-server<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --proxy-bypass-list<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$BYPASS</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The bypass list matters: without it Chromium pushes your Docker bridge networks
+(<code>172.17–172.28.*</code>) and LAN traffic through the proxy too.</p>
+<p>Then shadow the packaged launcher with a user-level copy. <code>XDG_DATA_HOME</code>
+(<code>~/.local/share</code>) is searched before everything in <code>XDG_DATA_DIRS</code>, so this
+wins over <code>/usr/share/applications/</code> and survives reinstalls — no root needed.</p>
+<p><code>~/.local/share/applications/claude-desktop.desktop</code>:</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Desktop Entry]</span>
+</span></span><span class="line"><span class="cl"><span class="na">Name</span><span class="o">=</span><span class="s">Claude</span>
+</span></span><span class="line"><span class="cl"><span class="na">Comment</span><span class="o">=</span><span class="s">Desktop application for Claude.ai (via local proxy)</span>
+</span></span><span class="line"><span class="cl"><span class="na">Exec</span><span class="o">=</span><span class="s">/home/william/.local/bin/claude-desktop-proxy %U</span>
+</span></span><span class="line"><span class="cl"><span class="na">Icon</span><span class="o">=</span><span class="s">claude-desktop</span>
+</span></span><span class="line"><span class="cl"><span class="na">Type</span><span class="o">=</span><span class="s">Application</span>
+</span></span><span class="line"><span class="cl"><span class="na">StartupNotify</span><span class="o">=</span><span class="s">true</span>
+</span></span><span class="line"><span class="cl"><span class="na">StartupWMClass</span><span class="o">=</span><span class="s">claude-desktop</span>
+</span></span><span class="line"><span class="cl"><span class="na">Categories</span><span class="o">=</span><span class="s">Utility;Development;</span>
+</span></span><span class="line"><span class="cl"><span class="na">MimeType</span><span class="o">=</span><span class="s">x-scheme-handler/claude;</span>
+</span></span><span class="line"><span class="cl"><span class="na">Actions</span><span class="o">=</span><span class="s">NewChat;NewCode;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">[Desktop Action NewChat]</span>
+</span></span><span class="line"><span class="cl"><span class="na">Name</span><span class="o">=</span><span class="s">New chat</span>
+</span></span><span class="line"><span class="cl"><span class="na">Exec</span><span class="o">=</span><span class="s">/home/william/.local/bin/claude-desktop-proxy claude://claude.ai/new</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">[Desktop Action NewCode]</span>
+</span></span><span class="line"><span class="cl"><span class="na">Name</span><span class="o">=</span><span class="s">New Claude Code session</span>
+</span></span><span class="line"><span class="cl"><span class="na">Exec</span><span class="o">=</span><span class="s">/home/william/.local/bin/claude-desktop-proxy claude://code/new</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">update-desktop-database ~/.local/share/applications</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Measured difference on my machine, from <code>[startup-perf]</code> in <code>main.log</code>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>did_finish_load</code></th>
+<th><code>dom_ready</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No proxy</td>
+<td>1570 ms</td>
+<td>10227 ms</td>
+</tr>
+<tr>
+<td>Via proxy</td>
+<td>1241 ms</td>
+<td><strong>2536 ms</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="launching" class="heading-element">
+  <a href="#launching" class="heading-mark"></a>Launching</h2><p>Search <strong>Claude</strong> in the application menu (the entry is <code>Name=Claude</code>), or run
+<code>claude-desktop-proxy</code> from a terminal. Avoid calling <code>claude-desktop</code>
+directly — that skips the <code>--proxy-server</code> flag.</p>
+<h2 id="two-harmless-errors" class="heading-element">
+  <a href="#two-harmless-errors" class="heading-mark"></a>Two harmless errors</h2><div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="p">[</span><span class="n">error</span><span class="p">]</span> <span class="n">Failed</span> <span class="n">to</span> <span class="nb">load</span> <span class="n">Claude</span> <span class="n">Native</span> <span class="o">...</span> <span class="n">GLIBC_2</span><span class="o">.</span><span class="mi">33</span> <span class="ow">not</span> <span class="n">found</span>
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="n">EventLogging</span><span class="p">]</span> <span class="n">POST</span> <span class="n">threw</span><span class="p">:</span> <span class="n">net</span><span class="p">::</span><span class="n">ERR_FAILED</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The first is the known limitation. The second is telemetry/Sentry being blocked.
+Neither affects the app.</p>
+<h2 id="takeaway" class="heading-element">
+  <a href="#takeaway" class="heading-mark"></a>Takeaway</h2><p>When a <code>.deb</code> refuses to install over <code>libc6 (&gt;= X)</code>, don&rsquo;t reach for
+<code>--force-depends</code> — the binary would abort at launch and leave a broken package
+behind. Audit the package with <code>objdump -T</code> first. If the high requirement comes
+from optional components, and especially if the symbols are just the glibc 2.34
+<code>libpthread</code>/<code>libdl</code> merge, the application itself may run perfectly well on
+your older system. Extract and run it before installing anything.</p></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/" title="glibc2.18 安装">glibc2.18 安装</a></li><li>
+          <a href="/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/" title="(转)Linux 网络大流量传输优化方法">(转)Linux 网络大流量传输优化方法</a></li><li>
+          <a href="/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" title="在 c 代码文件插入 shell 命令">在 c 代码文件插入 shell 命令</a></li><li>
+          <a href="/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" title="tmux: error while loading shared libraries: libevent_core 2.1.so.6">tmux: error while loading shared libraries: libevent_core 2.1.so.6</a></li><li>
+          <a href="/2023-11-06-zsh-compinit--insecure-directories-run-compaudit-for-list/" title="zsh compinit: insecure directories, run compaudit for list">zsh compinit: insecure directories, run compaudit for list</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-09-22 14:45:00">更新于 2026-09-22&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/" data-title="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)" data-hashtags="Linux,Mint,Ubuntu,glibc,deb,dpkg,Claude,Electron,proxy"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/" data-title="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/" data-title="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/" data-title="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/mint/" class="post-tag" title="标签 - Mint">Mint</a><a href="/tags/ubuntu/" class="post-tag" title="标签 - Ubuntu">Ubuntu</a><a href="/tags/glibc/" class="post-tag" title="标签 - Glibc">Glibc</a><a href="/tags/deb/" class="post-tag" title="标签 - Deb">Deb</a><a href="/tags/dpkg/" class="post-tag" title="标签 - Dpkg">Dpkg</a><a href="/tags/claude/" class="post-tag" title="标签 - Claude">Claude</a><a href="/tags/electron/" class="post-tag" title="标签 - Electron">Electron</a><a href="/tags/proxy/" class="post-tag" title="标签 - Proxy">Proxy</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-09-12-youtube-dl-viewer/" class="post-nav-item" rel="prev" title="youtube dl viewer"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>youtube dl viewer</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
