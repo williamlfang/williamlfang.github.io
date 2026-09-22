@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="OpenAI shipped an official ChatGPT Desktop for Linux in August 2026 (preview),
+supporting Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 and Arch. Mint 20.3
+(focal, glibc 2.31) is nowhere on that list, so I expected a rerun of the
+Claude Desktop surgery.
+It wasn&rsquo;t. The glibc floor was fine all along — the package is blocked by three
+library renames and one optional TPM module. The fix is smaller, and the
+audit is worth showing because the conclusion is the opposite of last time." /><meta name="keywords" content='Linux, Mint, Ubuntu, glibc, deb, dpkg, ChatGPT, OpenAI, Electron, proxy, ar' /><meta itemprop="name" content="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc">
+<meta itemprop="description" content="OpenAI shipped an official ChatGPT Desktop for Linux in August 2026 (preview),
+supporting Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 and Arch. Mint 20.3
+(focal, glibc 2.31) is nowhere on that list, so I expected a rerun of the
+Claude Desktop surgery.
+It wasn&rsquo;t. The glibc floor was fine all along — the package is blocked by three
+library renames and one optional TPM module. The fix is smaller, and the
+audit is worth showing because the conclusion is the opposite of last time."><meta itemprop="datePublished" content="2026-09-22T16:16:26+08:00" />
+<meta itemprop="dateModified" content="2026-09-22T16:16:26+08:00" />
+<meta itemprop="wordCount" content="2468"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,Mint,Ubuntu,glibc,deb,dpkg,ChatGPT,OpenAI,Electron,proxy,ar," /><meta property="og:title" content="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc" />
+<meta property="og:description" content="OpenAI shipped an official ChatGPT Desktop for Linux in August 2026 (preview),
+supporting Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 and Arch. Mint 20.3
+(focal, glibc 2.31) is nowhere on that list, so I expected a rerun of the
+Claude Desktop surgery.
+It wasn&rsquo;t. The glibc floor was fine all along — the package is blocked by three
+library renames and one optional TPM module. The fix is smaller, and the
+audit is worth showing because the conclusion is the opposite of last time." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-09-22T16:16:26+08:00" />
+<meta property="article:modified_time" content="2026-09-22T16:16:26+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc"/>
+<meta name="twitter:description" content="OpenAI shipped an official ChatGPT Desktop for Linux in August 2026 (preview),
+supporting Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 and Arch. Mint 20.3
+(focal, glibc 2.31) is nowhere on that list, so I expected a rerun of the
+Claude Desktop surgery.
+It wasn&rsquo;t. The glibc floor was fine all along — the package is blocked by three
+library renames and one optional TPM module. The fix is smaller, and the
+audit is worth showing because the conclusion is the opposite of last time."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/" /><link rel="prev" href="https://williamlfang.github.io/2026-09-22-claude-desktop-on-ubuntu-20.04/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn't glibc",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-09-22-chatgpt-desktop-on-mint-20\/"
+    },"genre": "posts","keywords": "Linux, Mint, Ubuntu, glibc, deb, dpkg, ChatGPT, OpenAI, Electron, proxy, ar","wordcount":  2468 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-09-22-chatgpt-desktop-on-mint-20\/","datePublished": "2026-09-22T16:16:26+08:00","dateModified": "2026-09-22T16:16:26+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span></div><div class="post-meta-line"><span title="发布于 2026-09-22 16:16:26"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-09-22">2026-09-22</time></span>&nbsp;<span title="2468 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2500 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 12 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#start-by-reading-the-control-file">Start by reading the control file</a></li>
+        <li><a href="#verify-it-anyway">Verify it anyway</a></li>
+        <li><a href="#so-what-is-blocking-it">So what <em>is</em> blocking it?</a></li>
+        <li><a href="#the-one-real-missing-library">The one real missing library</a></li>
+        <li><a href="#dont-be-tempted-by-a-stray-libssl3">Don&rsquo;t be tempted by a stray libssl3</a></li>
+        <li><a href="#test-before-installing-anything">Test before installing anything</a>
+          <ol>
+            <li><a href="#why-env--u-ld_library_path-matters">Why <code>env -u LD_LIBRARY_PATH</code> matters</a></li>
+          </ol>
+        </li>
+        <li><a href="#patch-the-control-file-only">Patch the control file only</a></li>
+        <li><a href="#check-the-maintainer-scripts">Check the maintainer scripts</a></li>
+        <li><a href="#install-and-hold">Install and hold</a></li>
+        <li><a href="#the-desktop-wants-to-be-your-browser">The .desktop wants to be your browser</a></li>
+        <li><a href="#what-you-lose">What you lose</a></li>
+        <li><a href="#troubleshooting-it-opens-but-it-isnt-connected">Troubleshooting: it opens, but it isn&rsquo;t connected</a>
+          <ol>
+            <li><a href="#1-http_proxy-is-not-a-proxy-setting">1. <code>$http_proxy</code> is not a proxy setting</a></li>
+            <li><a href="#2-chatgpt-was-not-the-app-i-thought-it-was">2. <code>chatgpt</code> was not the app I thought it was</a></li>
+            <li><a href="#3-a-stale-instance-swallows-your-flags">3. A stale instance swallows your flags</a></li>
+            <li><a href="#a-trap-i-didnt-fall-into-but-nearly">A trap I didn&rsquo;t fall into, but nearly</a></li>
+            <li><a href="#a-red-herring-in-the-log">A red herring in the log</a></li>
+          </ol>
+        </li>
+        <li><a href="#takeaway">Takeaway</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>OpenAI shipped an official ChatGPT Desktop for Linux in August 2026 (preview),
+supporting Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 and Arch. Mint 20.3
+(focal, glibc 2.31) is nowhere on that list, so I expected a rerun of the
+<a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/">Claude Desktop surgery</a>.</p>
+<p>It wasn&rsquo;t. The glibc floor was fine all along — the package is blocked by three
+<strong>library renames</strong> and one optional TPM module. The fix is smaller, and the
+audit is worth showing because the conclusion is the opposite of last time.</p>
+<h2 id="start-by-reading-the-control-file" class="heading-element">
+  <a href="#start-by-reading-the-control-file" class="heading-mark"></a>Start by reading the control file</h2><p>Before extracting a single byte, look at what the package actually claims:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -sSL -o chatgpt_amd64.deb <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s2">&#34;https://persistent.oaistatic.com/codex-app-prod/linux/deb/latest/chatgpt_amd64.deb&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dpkg-deb -I chatgpt_amd64.deb</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The interesting line:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Depends: ..., libc6 (&gt;= 2.30), ..., libssl3 (&gt;= 3.0.0), libstdc++6 (&gt;= 9),
+</span></span><span class="line"><span class="cl"> libtss2-esys-3.0.2-0 (&gt;= 2.3.1), libtss2-mu0 (&gt;= 3.0.1) | libtss2-mu-4.0.1-0t64 (&gt;= 3.0.1),
+</span></span><span class="line"><span class="cl"> libtss2-tcti-device0 (&gt;= 3.0.1), ...</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>libc6 (&gt;= 2.30)</code>. <strong>2.30.</strong> Focal has 2.31.</p>
+<p>That single number changes the whole shape of the problem. Last time
+<code>dpkg-shlibdeps</code> had computed <code>&gt;= 2.34</code> and the entire exercise was proving the
+declaration was an overstatement. Here the declaration is honest and already
+satisfied. Whatever is breaking, it isn&rsquo;t libc.</p>
+<h2 id="verify-it-anyway" class="heading-element">
+  <a href="#verify-it-anyway" class="heading-mark"></a>Verify it anyway</h2><p>Trusting a <code>Depends:</code> line is how you end up with a half-configured package. Same
+audit as last time — max GLIBC symbol version across every ELF file:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir x <span class="o">&amp;&amp;</span> dpkg-deb -x chatgpt_amd64.deb x
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">find x -type f <span class="p">|</span> <span class="k">while</span> <span class="nb">read</span> f<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  head -c4 <span class="s2">&#34;</span><span class="nv">$f</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="p">|</span> grep -q <span class="s1">$&#39;\x7fELF&#39;</span> <span class="o">||</span> <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">v</span><span class="o">=</span><span class="k">$(</span>objdump -T <span class="s2">&#34;</span><span class="nv">$f</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="p">|</span> grep -o <span class="s1">&#39;GLIBC_[0-9.]*&#39;</span> <span class="p">|</span> sort -uV <span class="p">|</span> tail -1<span class="k">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">[</span> -n <span class="s2">&#34;</span><span class="nv">$v</span><span class="s2">&#34;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$v</span><span class="s2">  </span><span class="nv">$f</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span> <span class="p">|</span> sort -V <span class="p">|</span> tail</span></span></code></pre></td></tr></table>
+</div>
+</div><p>45 ELF files. The top of the list:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Max glibc</th>
+<th>OK on 2.31?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sky_linux_x64</code> (the CUA agent binary)</td>
+<td><strong>2.30</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>resources/cua_node/bin/node</code></td>
+<td>2.28</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>ChatGPT</code> (the Electron binary)</td>
+<td>2.25</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>libvk_swiftshader.so</code>, <code>browser_crashpad_handler</code></td>
+<td>2.17</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>libEGL.so</code>, <code>libGLESv2.so</code>, <code>libvulkan.so.1</code></td>
+<td>2.16</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>Nothing above 2.30. Max <code>GLIBCXX</code> is 3.4.26, and focal&rsquo;s <code>libstdc++6</code> is at
+13.1.0 (GLIBCXX 3.4.31) here, so C++ is clear too.</p>
+<p>A handful of files report no GLIBC symbols at all — <code>resources/codex</code>,
+<code>resources/rg</code>, <code>tectonic</code> — those are statically linked Rust binaries. They
+don&rsquo;t care what your libc is.</p>
+<h2 id="so-what-is-blocking-it" class="heading-element">
+  <a href="#so-what-is-blocking-it" class="heading-mark"></a>So what <em>is</em> blocking it?</h2><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt-get -s install ./chatgpt_amd64.deb</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chatgpt : Depends: libgdk-pixbuf-2.0-0 (&gt;= 2.36.9) but it is not installable</span></span></code></pre></td></tr></table>
+</div>
+</div><p>apt reports these one at a time, which is tedious. Check all of them at once:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> p in <span class="k">$(</span>dpkg-deb -f chatgpt_amd64.deb Depends <span class="p">|</span> tr <span class="s1">&#39;,&#39;</span> <span class="s1">&#39;\n&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>           <span class="p">|</span> sed <span class="s1">&#39;s/|.*//; s/(.*)//&#39;</span> <span class="p">|</span> tr -d <span class="s1">&#39; &#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  apt-cache policy <span class="s2">&#34;</span><span class="nv">$p</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="p">|</span> grep -q <span class="s1">&#39;Candidate:&#39;</span> <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;MISSING: </span><span class="nv">$p</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Three tss2 packages, plus <code>libgdk-pixbuf-2.0-0</code>, plus <code>libssl3</code>. And here is the
+thing worth internalising:</p>
+<table>
+<thead>
+<tr>
+<th>Declared</th>
+<th>Reality on focal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>libgdk-pixbuf-2.0-0</code></td>
+<td>renamed upstream; focal ships <code>libgdk-pixbuf2.0-0</code></td>
+</tr>
+<tr>
+<td><code>libtss2-esys-3.0.2-0</code></td>
+<td>soname <code>libtss2-esys.so.0</code> is in <code>libtss2-esys0</code></td>
+</tr>
+<tr>
+<td><code>libtss2-mu0</code></td>
+<td>soname <code>libtss2-mu.so.0</code> — <strong>also</strong> in <code>libtss2-esys0</code></td>
+</tr>
+<tr>
+<td><code>libtss2-tcti-device0</code></td>
+<td>soname <code>libtss2-tcti-device.so.0</code> — <strong>also</strong> in <code>libtss2-esys0</code></td>
+</tr>
+<tr>
+<td><code>libssl3 (&gt;= 3.0.0)</code></td>
+<td>genuinely absent; focal has OpenSSL 1.1</td>
+</tr>
+</tbody>
+</table>
+<p>Four of the five are pure packaging archaeology. Debian split <code>libtss2-esys0</code>
+into per-soname packages after focal, and renamed gdk-pixbuf&rsquo;s runtime package.
+The <em>files</em> have been sitting on the system the whole time:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dpkg -S libtss2 <span class="p">|</span> sort -u
+</span></span><span class="line"><span class="cl">libtss2-esys0: /usr/lib/x86_64-linux-gnu/libtss2-esys.so.0
+</span></span><span class="line"><span class="cl">libtss2-esys0: /usr/lib/x86_64-linux-gnu/libtss2-mu.so.0
+</span></span><span class="line"><span class="cl">libtss2-esys0: /usr/lib/x86_64-linux-gnu/libtss2-tcti-device.so.0
+</span></span><span class="line"><span class="cl">...</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="the-one-real-missing-library" class="heading-element">
+  <a href="#the-one-real-missing-library" class="heading-mark"></a>The one real missing library</h2><p><code>libssl3</code> is the only genuine absence. Find out who wants it:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">find x -type f <span class="p">|</span> <span class="k">while</span> <span class="nb">read</span> f<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  head -c4 <span class="s2">&#34;</span><span class="nv">$f</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="p">|</span> grep -q <span class="s1">$&#39;\x7fELF&#39;</span> <span class="o">||</span> <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">n</span><span class="o">=</span><span class="k">$(</span>objdump -p <span class="s2">&#34;</span><span class="nv">$f</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="p">|</span> awk <span class="s1">&#39;/NEEDED/{print $2}&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>      <span class="p">|</span> grep -E <span class="s1">&#39;libssl|libcrypto|libtss2&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">[</span> -n <span class="s2">&#34;</span><span class="nv">$n</span><span class="s2">&#34;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;=== </span><span class="nv">$f</span><span class="s2">&#34;</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Exactly one hit, out of 45:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">=== x/usr/lib/chatgpt/resources/native/remote-control-device-key.node
+</span></span><span class="line"><span class="cl">libtss2-esys.so.0
+</span></span><span class="line"><span class="cl">libtss2-mu.so.0
+</span></span><span class="line"><span class="cl">libtss2-tcti-device.so.0
+</span></span><span class="line"><span class="cl">libcrypto.so.3</span></span></code></pre></td></tr></table>
+</div>
+</div><p>One optional native module — the TPM-backed device key used for remote-control
+pairing — is the sole consumer of <code>libcrypto.so.3</code> <em>and</em> of all three tss2 libs.
+Different mechanism from last time, identical moral: <strong><code>dpkg-shlibdeps</code> takes the
+union over every ELF in the tree</strong>, so one auxiliary binary sets the floor for a
+1.4 GB package.</p>
+<p>Note it needs <code>libcrypto.so.3</code>, not <code>libssl.so.3</code>. The declared <code>libssl3</code>
+dependency is the package that happens to ship both.</p>
+<h2 id="dont-be-tempted-by-a-stray-libssl3" class="heading-element">
+  <a href="#dont-be-tempted-by-a-stray-libssl3" class="heading-mark"></a>Don&rsquo;t be tempted by a stray libssl3</h2><p><code>apt-cache policy libssl3</code> surprised me:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">libssl3:
+</span></span><span class="line"><span class="cl">  Candidate: 3.2.4-0deepin1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A Deepin-built OpenSSL 3, from a <code>deepin-wine</code> repo I&rsquo;d added years ago and
+forgotten. It would probably have satisfied the dependency. Installing a
+foreign-distro OpenSSL into <code>/usr/lib/x86_64-linux-gnu</code> to make one optional
+telemetry-adjacent module load is a terrible trade — and <code>[trusted=yes]</code> on that
+repo means no signature check either. Drop the dependency instead.</p>
+<h2 id="test-before-installing-anything" class="heading-element">
+  <a href="#test-before-installing-anything" class="heading-mark"></a>Test before installing anything</h2><p>Run the extracted tree directly. No root, no dpkg, apt untouched:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> x/usr/lib/chatgpt
+</span></span><span class="line"><span class="cl">env -u LD_LIBRARY_PATH ./ChatGPT --no-sandbox --user-data-dir<span class="o">=</span>/tmp/cgtest</span></span></code></pre></td></tr></table>
+</div>
+</div><p>It launches, renders, reaches <code>chatgpt.com</code> and mounts the renderer in ~3.6 s.
+No <code>GLIBC_</code> errors, no missing-symbol aborts. The TPM module simply never gets
+required at startup.</p>
+<h3 id="why-env--u-ld_library_path-matters" class="heading-element">
+  <a href="#why-env--u-ld_library_path-matters" class="heading-mark"></a>Why <code>env -u LD_LIBRARY_PATH</code> matters</h3><p>That flag isn&rsquo;t decoration. My <code>.zshrc</code> exports a long <code>LD_LIBRARY_PATH</code>
+covering <code>/usr/local/gcc14/lib64</code>, <code>~/miniconda3/lib</code> and more. With it set:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ldd resources/native/remote-control-device-key.node
+</span></span><span class="line"><span class="cl">libcrypto.so.3 <span class="o">=</span>&gt; /home/william/miniconda3/lib/libcrypto.so.3
+</span></span><span class="line"><span class="cl">libstdc++.so.6 <span class="o">=</span>&gt; /usr/local/gcc14/lib64/libstdc++.so.6</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Conda&rsquo;s OpenSSL 3 &ldquo;satisfies&rdquo; the missing library, and gcc14&rsquo;s libstdc++ shadows
+the system one. That is a <em>fake pass</em>: an app launched from the Cinnamon menu
+inherits none of it, because <code>.zshrc</code> only runs for interactive shells. Audit
+in the same environment the app will actually run in, or you will conclude
+something works and then watch it fail from the menu.</p>
+<h2 id="patch-the-control-file-only" class="heading-element">
+  <a href="#patch-the-control-file-only" class="heading-mark"></a>Patch the control file only</h2><p>Last time I used <code>dpkg-deb -R</code> / <code>dpkg-deb -b</code>, which rebuilds the data archive.
+Here the payload is 399 MB compressed and 1.4 GB installed — recompressing it to
+change five lines of text is pointless. A <code>.deb</code> is just an <code>ar</code> archive of three
+members, so replace the control member in place and leave <code>data.tar.xz</code> alone:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir ctlx <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ctlx
+</span></span><span class="line"><span class="cl">ar x ../chatgpt_amd64.deb control.tar.xz
+</span></span><span class="line"><span class="cl">tar xf control.tar.xz <span class="o">&amp;&amp;</span> rm control.tar.xz
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sed -i <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/, libssl3 (&gt;= 3\.0\.0)//&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/libtss2-esys-3\.0\.2-0 (&gt;= 2\.3\.1)/libtss2-esys0 (&gt;= 2.3.1)/&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/, libtss2-mu0 (&gt;= 3\.0\.1) | libtss2-mu-4\.0\.1-0t64 (&gt;= 3\.0\.1)//&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/, libtss2-tcti-device0 (&gt;= 3\.0\.1)//&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/libgdk-pixbuf-2\.0-0 (&gt;= 2\.36\.9)/libgdk-pixbuf2.0-0 (&gt;= 2.36.9)/&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -e <span class="s1">&#39;s/^Version: .*/Version: 26.915.31945~focal1/&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> control
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">tar cJf control.tar.xz --owner<span class="o">=</span><span class="m">0</span> --group<span class="o">=</span><span class="m">0</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  control conffiles postinst postrm prerm md5sums
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">cp ../chatgpt_amd64.deb ../chatgpt_26.915.31945~focal1_amd64.deb
+</span></span><span class="line"><span class="cl">ar r ../chatgpt_26.915.31945~focal1_amd64.deb control.tar.xz</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>ar r</code> replaces a member while preserving its position, so the required
+<code>debian-binary</code> → <code>control.tar.xz</code> → <code>data.tar.xz</code> ordering survives. The whole
+repack takes about a second instead of several minutes.</p>
+<p>The three tss2 entries collapse onto the same package, so dedupe the result —
+apt tolerates a repeated dependency, but it looks like a mistake:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dpkg-deb -f ../chatgpt_26.915.31945~focal1_amd64.deb Depends <span class="p">|</span> tr <span class="s1">&#39;,&#39;</span> <span class="s1">&#39;\n&#39;</span> <span class="p">|</span> grep tss2</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Always dry-run before committing:</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt-get -s install ./chatgpt_26.915.31945~focal1_amd64.deb
+</span></span><span class="line"><span class="cl"><span class="c1"># 0 upgraded, 1 newly installed, 0 to remove</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>No pulled-in extras, no held packages. That&rsquo;s the signal you want.</p>
+<h2 id="check-the-maintainer-scripts" class="heading-element">
+  <a href="#check-the-maintainer-scripts" class="heading-mark"></a>Check the maintainer scripts</h2><div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">dpkg-deb -e chatgpt_amd64.deb ctl <span class="o">&amp;&amp;</span> less ctl/postinst</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Two jobs: install OpenAI&rsquo;s signing key + a deb822 <code>.sources</code> file, and handle
+AppArmor. The AppArmor branch is the one to read:</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">test</span> -f /etc/apparmor.d/abi/4.0<span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  ... apparmor_parser -r -W -T /etc/apparmor.d/chatgpt
+</span></span><span class="line"><span class="cl"><span class="k">elif</span> <span class="nb">command</span> -v apparmor_parser &gt;/dev/null 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="o">&amp;&amp;</span> ...<span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  mkdir -p /etc/apparmor.d/disable
+</span></span><span class="line"><span class="cl">  ln -s <span class="s2">&#34;.././chatgpt&#34;</span> <span class="s2">&#34;/etc/apparmor.d/disable/chatgpt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Focal ships AppArmor 2.13 with no <code>abi/4.0</code>, so it takes the <code>elif</code> and
+<em>disables</em> the profile by symlink rather than trying to load a 4.0-syntax profile
+that would fail. Well-behaved. Nothing here bites on focal.</p>
+<h2 id="install-and-hold" class="heading-element">
+  <a href="#install-and-hold" class="heading-mark"></a>Install and hold</h2><div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install ./chatgpt_26.915.31945~focal1_amd64.deb
+</span></span><span class="line"><span class="cl">sudo apt-mark hold chatgpt</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>The hold is not optional</strong>, for the same reason as last time: <code>postinst</code>
+registers</p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">URIs: https://persistent.oaistatic.com/codex-app-prod/linux/deb
+</span></span><span class="line"><span class="cl">Suites: stable</span></span></code></pre></td></tr></table>
+</div>
+</div><p>so the next <code>apt upgrade</code> happily replaces your patched package with the stock
+one and re-breaks the dependency tree. With the hold you re-apply the patch per
+release — which takes about thirty seconds now that it&rsquo;s a control-only rewrite.</p>
+<h2 id="the-desktop-wants-to-be-your-browser" class="heading-element">
+  <a href="#the-desktop-wants-to-be-your-browser" class="heading-mark"></a>The .desktop wants to be your browser</h2><p>Read the shipped entry before you let it register:</p>
+<div class="highlight" id="id-20"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="na">Exec</span><span class="o">=</span><span class="s">chatgpt %U</span>
+</span></span><span class="line"><span class="cl"><span class="na">MimeType</span><span class="o">=</span><span class="s">x-scheme-handler/codex;x-scheme-handler/http;x-scheme-handler/https;text/csv;...</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>It claims <code>x-scheme-handler/http</code> and <code>https</code> — which makes ChatGPT a candidate
+default browser in Cinnamon&rsquo;s preferred-application list, and a target for any
+<code>xdg-open http://...</code> call. Maybe you want that. I didn&rsquo;t.</p>
+<p>Since <code>XDG_DATA_HOME</code> (<code>~/.local/share</code>) is searched before <code>XDG_DATA_DIRS</code>, a
+user-level copy shadows the packaged one, survives reinstalls, and needs no root
+— the same trick as last time, now doing double duty: proxy wiring <em>and</em>
+trimming the MIME claims.</p>
+<p><code>~/.local/bin/chatgpt-proxy</code>:</p>
+<div class="highlight" id="id-21"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">PROXY</span><span class="o">=</span><span class="s2">&#34;http://192.168.1.82:20170&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">BYPASS</span><span class="o">=</span><span class="s2">&#34;&lt;local&gt;;localhost;127.0.0.1;::1;192.168.*;172.16.*;172.1?.*;172.2?.*;10.*&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">HTTP_PROXY</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span>  <span class="nv">HTTPS_PROXY</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">http_proxy</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span>  <span class="nv">https_proxy</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">NO_PROXY</span><span class="o">=</span><span class="s2">&#34;localhost,127.0.0.1,::1,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">no_proxy</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$NO_PROXY</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># conda / gcc14 paths leaking from .zshrc bind the wrong libcrypto + libstdc++</span>
+</span></span><span class="line"><span class="cl"><span class="nb">unset</span> LD_LIBRARY_PATH
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">exec</span> /usr/bin/chatgpt <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --proxy-server<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$PROXY</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --proxy-bypass-list<span class="o">=</span><span class="s2">&#34;</span><span class="nv">$BYPASS</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>unset</code> is the new part, and it&rsquo;s the important one. It guarantees a menu
+launch and a terminal launch resolve libraries identically — otherwise the app
+binds conda&rsquo;s OpenSSL from your shell and the system&rsquo;s from the menu, and you get
+bugs that &ldquo;only happen sometimes&rdquo;.</p>
+<p><code>~/.local/share/applications/chatgpt.desktop</code>:</p>
+<div class="highlight" id="id-22"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Desktop Entry]</span>
+</span></span><span class="line"><span class="cl"><span class="na">Name</span><span class="o">=</span><span class="s">ChatGPT</span>
+</span></span><span class="line"><span class="cl"><span class="na">Comment</span><span class="o">=</span><span class="s">ChatGPT by OpenAI (via local proxy)</span>
+</span></span><span class="line"><span class="cl"><span class="na">GenericName</span><span class="o">=</span><span class="s">AI assistant</span>
+</span></span><span class="line"><span class="cl"><span class="na">Exec</span><span class="o">=</span><span class="s">/home/william/.local/bin/chatgpt-proxy %U</span>
+</span></span><span class="line"><span class="cl"><span class="na">Icon</span><span class="o">=</span><span class="s">chatgpt</span>
+</span></span><span class="line"><span class="cl"><span class="na">Type</span><span class="o">=</span><span class="s">Application</span>
+</span></span><span class="line"><span class="cl"><span class="na">StartupNotify</span><span class="o">=</span><span class="s">true</span>
+</span></span><span class="line"><span class="cl"><span class="na">StartupWMClass</span><span class="o">=</span><span class="s">Chatgpt</span>
+</span></span><span class="line"><span class="cl"><span class="na">Categories</span><span class="o">=</span><span class="s">Utility;Development;</span>
+</span></span><span class="line"><span class="cl"><span class="na">MimeType</span><span class="o">=</span><span class="s">x-scheme-handler/codex;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-23"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">update-desktop-database ~/.local/share/applications
+</span></span><span class="line"><span class="cl">desktop-file-validate ~/.local/share/applications/chatgpt.desktop</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Get <code>StartupWMClass</code> from the running app rather than guessing it — I first wrote
+<code>ChatGPT</code> and the taskbar showed an unmatched generic icon:</p>
+<div class="highlight" id="id-24"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ xprop WM_CLASS   <span class="c1"># then click the window</span>
+</span></span><span class="line"><span class="cl">WM_CLASS<span class="o">(</span>STRING<span class="o">)</span> <span class="o">=</span> <span class="s2">&#34;chatgpt (/home/william/.config/Codex)&#34;</span>, <span class="s2">&#34;Chatgpt&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The second member of the pair is what <code>StartupWMClass</code> has to match: <code>Chatgpt</code>.</p>
+<p>A terminal <code>chatgpt</code> still reaches <code>/usr/bin/chatgpt</code> and bypasses all of this,
+so shadow it too — <code>~/.local/bin</code> comes first on my <code>PATH</code>:</p>
+<div class="highlight" id="id-25"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ln -sfn ~/.local/bin/chatgpt-proxy ~/.local/bin/chatgpt</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Note <code>/usr/bin/chatgpt</code> is itself a symlink to <code>../lib/chatgpt/codex-launcher</code>,
+a two-line shell script that resolves its own path and execs <code>ChatGPT</code>. Pointing
+the wrapper at <code>/usr/bin/chatgpt</code> is fine and survives updates.</p>
+<h2 id="what-you-lose" class="heading-element">
+  <a href="#what-you-lose" class="heading-mark"></a>What you lose</h2><ul>
+<li><strong>Remote control / device pairing</strong> — needs <code>remote-control-device-key.node</code>,
+which needs <code>libcrypto.so.3</code></li>
+</ul>
+<p>That&rsquo;s it. Codex, CUA, chat, file access and MCP all work. Considerably better
+than the Claude Desktop outcome, where computer-use, the Cowork VM and Chrome
+native messaging all fell over.</p>
+<h2 id="troubleshooting-it-opens-but-it-isnt-connected" class="heading-element">
+  <a href="#troubleshooting-it-opens-but-it-isnt-connected" class="heading-mark"></a>Troubleshooting: it opens, but it isn&rsquo;t connected</h2><p>This is the failure I actually hit, and the wrapper was innocent. One command
+settles it — the app talks to the proxy or it doesn&rsquo;t:</p>
+<div class="highlight" id="id-26"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ss -tnp <span class="p">|</span> grep ChatGPT <span class="p">|</span> grep -c <span class="m">20170</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A healthy session shows a dozen or more established connections to the proxy
+port. Zero — or no matching process at all — means something upstream of the
+proxy went wrong. Three candidates, in the order they cost me time:</p>
+<h3 id="1-http_proxy-is-not-a-proxy-setting" class="heading-element">
+  <a href="#1-http_proxy-is-not-a-proxy-setting" class="heading-mark"></a>1. <code>$http_proxy</code> is not a proxy setting</h3><div class="highlight" id="id-27"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ gsettings get org.gnome.system.proxy mode
+</span></span><span class="line"><span class="cl"><span class="s1">&#39;none&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Chromium on Cinnamon reads its proxy configuration from GSettings, not from the
+environment. Every <code>HTTP_PROXY</code> export in my <code>.zshrc</code> is invisible to it. Without
+an explicit <code>--proxy-server</code> the app goes direct, and direct is blocked — so the
+env exports in the wrapper are there for the bundled Node/<code>codex</code> child
+processes, and the <code>--proxy-server</code> flag is what actually moves the Electron
+traffic. Both are load-bearing, for different consumers.</p>
+<p>If you would rather fix it once for every Electron app on the machine:</p>
+<div class="highlight" id="id-28"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gsettings <span class="nb">set</span> org.gnome.system.proxy mode <span class="s1">&#39;manual&#39;</span>
+</span></span><span class="line"><span class="cl">gsettings <span class="nb">set</span> org.gnome.system.proxy.http  host <span class="s1">&#39;192.168.1.82&#39;</span>
+</span></span><span class="line"><span class="cl">gsettings <span class="nb">set</span> org.gnome.system.proxy.http  port <span class="m">20170</span>
+</span></span><span class="line"><span class="cl">gsettings <span class="nb">set</span> org.gnome.system.proxy.https host <span class="s1">&#39;192.168.1.82&#39;</span>
+</span></span><span class="line"><span class="cl">gsettings <span class="nb">set</span> org.gnome.system.proxy.https port <span class="m">20170</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="2-chatgpt-was-not-the-app-i-thought-it-was" class="heading-element">
+  <a href="#2-chatgpt-was-not-the-app-i-thought-it-was" class="heading-mark"></a>2. <code>chatgpt</code> was not the app I thought it was</h3><div class="highlight" id="id-29"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="nb">type</span> chatgpt
+</span></span><span class="line"><span class="cl">chatgpt is a shell <span class="k">function</span> from /home/william/.zshrc</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The function predated the official package and pointed at
+<code>/snap/bin/chatgpt-desktop-client</code> — an unrelated third-party snap (v1.1.1) I had
+installed back when there was no Linux build. Typing <code>chatgpt</code> in a terminal
+launched <em>that</em>, with its own empty session, and of course it wasn&rsquo;t connected.
+The official app was never involved.</p>
+<p>Check <code>type</code>/<code>command -v</code> before drawing any conclusion about &ldquo;the app&rdquo;. A name
+that has been on your <code>PATH</code> for a year is not evidence about a package you
+installed this morning.</p>
+<h3 id="3-a-stale-instance-swallows-your-flags" class="heading-element">
+  <a href="#3-a-stale-instance-swallows-your-flags" class="heading-mark"></a>3. A stale instance swallows your flags</h3><p>Electron enforces single-instance through <code>~/.config/Codex/SingletonLock</code>. If a
+proxy-less instance is already running, launching the wrapper just focuses the
+existing window and discards its arguments entirely. Check before testing:</p>
+<div class="highlight" id="id-30"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pgrep -af <span class="s1">&#39;lib/chatgpt/ChatGPT --proxy-server&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="a-trap-i-didnt-fall-into-but-nearly" class="heading-element">
+  <a href="#a-trap-i-didnt-fall-into-but-nearly" class="heading-mark"></a>A trap I didn&rsquo;t fall into, but nearly</h3><p>My <code>.zshrc</code> also had a helper that &ldquo;added&rdquo; the proxy on top of the wrapper:</p>
+<div class="highlight" id="id-31"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chatgpt.app<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    ~/.local/bin/chatgpt-proxy --proxy-server<span class="o">=</span><span class="s2">&#34;socks5://192.168.1.82:20170&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The wrapper already passes <code>--proxy-server=http://...</code>, so the process gets the
+switch twice, and <strong>Chromium keeps the last occurrence of a command-line switch,
+not the first.</strong> Proved by appending a deliberately dead
+<code>--proxy-server=socks5://127.0.0.1:9</code>, which produced <strong>0</strong> sockets to the proxy
+— the working flag had been thrown away.</p>
+<p>Here it happened to be harmless: 20170 is a mixed port that answers HTTP proxy
+<em>and</em> SOCKS5, so the override landed on the same working endpoint.</p>
+<div class="highlight" id="id-32"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ curl -so /dev/null -w <span class="s1">&#39;%{http_code}\n&#39;</span> --socks5-hostname 192.168.1.82:20170 https://chatgpt.com
+</span></span><span class="line"><span class="cl"><span class="m">403</span>
+</span></span><span class="line"><span class="cl">$ curl -so /dev/null -w <span class="s1">&#39;%{http_code}\n&#39;</span> -x http://192.168.1.82:20170 https://chatgpt.com
+</span></span><span class="line"><span class="cl"><span class="m">403</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>(403 from Cloudflare to a bare <code>curl</code> still means the request got there.) Change
+that port to an HTTP-only proxy and the same line breaks the app with no
+diagnostic beyond &ldquo;not connected&rdquo;. Don&rsquo;t layer proxy flags — set them in one
+place, which here is the wrapper.</p>
+<h3 id="a-red-herring-in-the-log" class="heading-element">
+  <a href="#a-red-herring-in-the-log" class="heading-mark"></a>A red herring in the log</h3><p>This line shows up in a perfectly healthy session:</p>
+<div class="highlight" id="id-33"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">remote_connections.connection_state_changed hostId=durable state=disconnected</span></span></code></pre></td></tr></table>
+</div>
+</div><p>That is the remote-control pairing that needs <code>remote-control-device-key.node</code>
+— the one thing we knowingly gave up. <code>hostId=local</code> reaching <code>state=connected</code>,
+and <code>[chatgpt-account-lookup] ... result=succeeded</code>, are the lines that tell you
+the network is fine.</p>
+<h2 id="takeaway" class="heading-element">
+  <a href="#takeaway" class="heading-mark"></a>Takeaway</h2><p>Last time the lesson was <em>don&rsquo;t trust an inflated <code>libc6</code> bound — audit it</em>.
+This time the bound was accurate and the lesson is the mirror image: <strong>an
+uninstallable <code>.deb</code> on an old release is usually not an ABI problem at all.</strong></p>
+<p>Before assuming your glibc is too old, ask which of these you actually have:</p>
+<ol>
+<li><strong>A renamed package.</strong> Debian/Ubuntu reshuffle runtime package names between
+releases (<code>libgdk-pixbuf-2.0-0</code>, the tss2 split, the <code>t64</code> transition). The
+soname is the contract; the package name is not. Check with
+<code>dpkg -S</code> and <code>ldconfig -p</code> before believing anything is missing.</li>
+<li><strong>One optional component setting the floor.</strong> <code>dpkg-shlibdeps</code> unions over
+every ELF file. Find the outlier with <code>objdump -p | grep NEEDED</code>.</li>
+<li><strong>An actual ABI wall.</strong> Rare, and <code>objdump -T</code> will prove it in one command.</li>
+</ol>
+<p>And run your audit with a clean environment. A stray <code>LD_LIBRARY_PATH</code> will
+cheerfully tell you everything resolves, right up until you launch from the
+application menu.</p></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/" title="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)">Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)</a></li><li>
+          <a href="/2024-06-11-glibc2.18-%E5%AE%89%E8%A3%85/" title="glibc2.18 安装">glibc2.18 安装</a></li><li>
+          <a href="/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/" title="(转)Linux 网络大流量传输优化方法">(转)Linux 网络大流量传输优化方法</a></li><li>
+          <a href="/2025-02-22-%E5%9C%A8-c-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E6%8F%92%E5%85%A5-shell-%E5%91%BD%E4%BB%A4/" title="在 c 代码文件插入 shell 命令">在 c 代码文件插入 shell 命令</a></li><li>
+          <a href="/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" title="tmux: error while loading shared libraries: libevent_core 2.1.so.6">tmux: error while loading shared libraries: libevent_core 2.1.so.6</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-09-22 16:16:26">更新于 2026-09-22&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-09-22-chatgpt-desktop-on-mint-20/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/" data-title="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc" data-hashtags="Linux,Mint,Ubuntu,glibc,deb,dpkg,ChatGPT,OpenAI,Electron,proxy,ar"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/" data-title="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/" data-title="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/" data-title="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/mint/" class="post-tag" title="标签 - Mint">Mint</a><a href="/tags/ubuntu/" class="post-tag" title="标签 - Ubuntu">Ubuntu</a><a href="/tags/glibc/" class="post-tag" title="标签 - Glibc">Glibc</a><a href="/tags/deb/" class="post-tag" title="标签 - Deb">Deb</a><a href="/tags/dpkg/" class="post-tag" title="标签 - Dpkg">Dpkg</a><a href="/tags/chatgpt/" class="post-tag" title="标签 - ChatGPT">ChatGPT</a><a href="/tags/openai/" class="post-tag" title="标签 - OpenAI">OpenAI</a><a href="/tags/electron/" class="post-tag" title="标签 - Electron">Electron</a><a href="/tags/proxy/" class="post-tag" title="标签 - Proxy">Proxy</a><a href="/tags/ar/" class="post-tag" title="标签 - Ar">Ar</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/" class="post-nav-item" rel="prev" title="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
