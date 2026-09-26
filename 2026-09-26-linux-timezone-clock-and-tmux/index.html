@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Linux 时区、系统时间与 tmux 状态栏时间不一致的排查 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="我把 Linux 的时区设成 Asia/Tokyo，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 14:37 JST，tmux 却显示 13:37 CST。问题不在 timedatectl set-time：一个早已启动的 tmux server 仍按旧时区格式化状态栏。
+
+
+1
+2
+3
+4
+
+
+sudo timedatectl set-timezone Asia/Tokyo
+sudo timedatectl set-ntp false
+# aligned to real Asia/Shanghai time
+timedatectl set-time &#34;2026-09-26 15:33:00&#34;
+
+" /><meta name="keywords" content='Linux, timedatectl, timezone, tmux' /><meta itemprop="name" content="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查">
+<meta itemprop="description" content="我把 Linux 的时区设成 Asia/Tokyo，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 14:37 JST，tmux 却显示 13:37 CST。问题不在 timedatectl set-time：一个早已启动的 tmux server 仍按旧时区格式化状态栏。
+
+
+1
+2
+3
+4
+
+
+sudo timedatectl set-timezone Asia/Tokyo
+sudo timedatectl set-ntp false
+# aligned to real Asia/Shanghai time
+timedatectl set-time &#34;2026-09-26 15:33:00&#34;
+
+"><meta itemprop="datePublished" content="2026-09-26T14:45:00+09:00" />
+<meta itemprop="dateModified" content="2026-09-26T14:45:00+09:00" />
+<meta itemprop="wordCount" content="1121"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,timedatectl,timezone,tmux," /><meta property="og:title" content="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查" />
+<meta property="og:description" content="我把 Linux 的时区设成 Asia/Tokyo，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 14:37 JST，tmux 却显示 13:37 CST。问题不在 timedatectl set-time：一个早已启动的 tmux server 仍按旧时区格式化状态栏。
+
+
+1
+2
+3
+4
+
+
+sudo timedatectl set-timezone Asia/Tokyo
+sudo timedatectl set-ntp false
+# aligned to real Asia/Shanghai time
+timedatectl set-time &#34;2026-09-26 15:33:00&#34;
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-09-26T14:45:00+09:00" />
+<meta property="article:modified_time" content="2026-09-26T14:45:00+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查"/>
+<meta name="twitter:description" content="我把 Linux 的时区设成 Asia/Tokyo，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 14:37 JST，tmux 却显示 13:37 CST。问题不在 timedatectl set-time：一个早已启动的 tmux server 仍按旧时区格式化状态栏。
+
+
+1
+2
+3
+4
+
+
+sudo timedatectl set-timezone Asia/Tokyo
+sudo timedatectl set-ntp false
+# aligned to real Asia/Shanghai time
+timedatectl set-time &#34;2026-09-26 15:33:00&#34;
+
+"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/" /><link rel="prev" href="https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Linux 时区、系统时间与 tmux 状态栏时间不一致的排查",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-09-26-linux-timezone-clock-and-tmux\/"
+    },"genre": "posts","keywords": "Linux, timedatectl, timezone, tmux","wordcount":  1121 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-09-26-linux-timezone-clock-and-tmux\/","datePublished": "2026-09-26T14:45:00+09:00","dateModified": "2026-09-26T14:45:00+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-09-26 14:45:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-09-26">2026-09-26</time></span>&nbsp;<span title="1121 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#时区和系统时间是两件事">时区和系统时间是两件事</a></li>
+        <li><a href="#系统时钟确实错误时再设置时间">系统时钟确实错误时，再设置时间</a></li>
+        <li><a href="#为什么-tmux-仍慢一个小时">为什么 tmux 仍慢一个小时</a></li>
+        <li><a href="#不关闭-tmux-会话的临时修复">不关闭 tmux 会话的临时修复</a></li>
+        <li><a href="#参考">参考</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>我把 Linux 的时区设成 <code>Asia/Tokyo</code>，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 <code>14:37 JST</code>，tmux 却显示 <code>13:37 CST</code>。问题不在 <code>timedatectl set-time</code>：一个早已启动的 tmux server 仍按旧时区格式化状态栏。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-timezone Asia/Tokyo
+</span></span><span class="line"><span class="cl">sudo timedatectl set-ntp <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># aligned to real Asia/Shanghai time</span>
+</span></span><span class="line"><span class="cl">timedatectl set-time <span class="s2">&#34;2026-09-26 15:33:00&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="时区和系统时间是两件事" class="heading-element">
+  <a href="#%e6%97%b6%e5%8c%ba%e5%92%8c%e7%b3%bb%e7%bb%9f%e6%97%b6%e9%97%b4%e6%98%af%e4%b8%a4%e4%bb%b6%e4%ba%8b" class="heading-mark"></a>时区和系统时间是两件事</h2><p>系统时钟记录的是同一个时间点；时区决定它如何显示。东京是 UTC+9，上海是 UTC+8，因此同一个时间点在东京显示 <code>14:36</code> 时，在上海显示 <code>13:36</code>。如果只是要把系统从东京时区改为上海时区，执行：</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-timezone Asia/Shanghai
+</span></span><span class="line"><span class="cl">timedatectl</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这一步不需要再运行 <code>set-time</code>。反过来，如果要保留东京时区，就设置为：</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">timedatectl list-timezones <span class="p">|</span> grep -E <span class="s1">&#39;^Asia/(Tokyo|Shanghai)$&#39;</span>
+</span></span><span class="line"><span class="cl">sudo timedatectl set-timezone Asia/Tokyo
+</span></span><span class="line"><span class="cl">timedatectl
+</span></span><span class="line"><span class="cl">date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S %Z %z&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>timedatectl</code> 会显示 <code>Time zone</code>、<code>Local time</code>、<code>Universal time</code> 和时间同步状态。<code>date</code> 则方便核对当前 shell 看到的本地时间与 UTC 偏移量。东京应显示 <code>JST +0900</code>。如果只是想临时查看上海时间，而不更改系统设置，可以运行：</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">TZ</span><span class="o">=</span>Asia/Shanghai date <span class="s1">&#39;+%Y-%m-%d %H:%M:%S %Z %z&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="系统时钟确实错误时再设置时间" class="heading-element">
+  <a href="#%e7%b3%bb%e7%bb%9f%e6%97%b6%e9%92%9f%e7%a1%ae%e5%ae%9e%e9%94%99%e8%af%af%e6%97%b6%e5%86%8d%e8%ae%be%e7%bd%ae%e6%97%b6%e9%97%b4" class="heading-mark"></a>系统时钟确实错误时，再设置时间</h2><p>优先让系统自动同步时间：</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-ntp <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">timedatectl</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果无法使用自动同步，先关闭它，再输入<strong>当前系统时区下</strong>的日期和时间。例如系统时区为 <code>Asia/Tokyo</code> 时：</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-ntp <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">sudo timedatectl set-time <span class="s1">&#39;2026-09-26 14:36:00&#39;</span>
+</span></span><span class="line"><span class="cl">timedatectl</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上面的日期和时间只是示例，不能原样当作现在的时间使用。<code>set-time</code> 修改系统时钟；<code>set-timezone</code> 修改本地时间的显示规则。如果启用了时间同步服务，手动设置的时间之后可能被同步服务校正。</p>
+<h2 id="为什么-tmux-仍慢一个小时" class="heading-element">
+  <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88-tmux-%e4%bb%8d%e6%85%a2%e4%b8%80%e4%b8%aa%e5%b0%8f%e6%97%b6" class="heading-mark"></a>为什么 tmux 仍慢一个小时</h2><p>这次排查时，系统时钟和 tmux 自己格式化的时钟分别显示：</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">system: 2026-09-26 14:37:26 JST
+</span></span><span class="line"><span class="cl">tmux:   2026-09-26 13:37:26 CST</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以用以下命令分别检查，不必凭状态栏猜测：</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">timedatectl status
+</span></span><span class="line"><span class="cl">date <span class="s1">&#39;+system: %Y-%m-%d %H:%M:%S %Z %z&#39;</span>
+</span></span><span class="line"><span class="cl">tmux display-message -p <span class="s1">&#39;tmux: %Y-%m-%d %H:%M:%S %Z&#39;</span>
+</span></span><span class="line"><span class="cl">tmux show-options -gv status-right</span></span></code></pre></td></tr></table>
+</div>
+</div><p>该 tmux server 在修改系统时区之前已经运行了多日，状态栏配置又直接使用 <code>%b%d</code> 和 <code>%H:%M:%S</code>。tmux 因而继续用旧时区格式化这部分内容。重复执行 <code>timedatectl set-time</code> 只会把正确的系统时钟改错。</p>
+<h2 id="不关闭-tmux-会话的临时修复" class="heading-element">
+  <a href="#%e4%b8%8d%e5%85%b3%e9%97%ad-tmux-%e4%bc%9a%e8%af%9d%e7%9a%84%e4%b8%b4%e6%97%b6%e4%bf%ae%e5%a4%8d" class="heading-mark"></a>不关闭 tmux 会话的临时修复</h2><p>tmux 的状态栏支持 <code>#(command)</code>，可以改由新启动的 <code>date</code> 进程生成东京时间。下面的脚本只替换当前 <code>status-right</code> 里的日期和时间格式，保留其余样式，并把原值存进 tmux 的用户选项中：</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python3 - <span class="s">&lt;&lt;&#39;PY&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s">import subprocess
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">old = subprocess.check_output(
+</span></span></span><span class="line"><span class="cl"><span class="s">    [&#39;tmux&#39;, &#39;show-options&#39;, &#39;-gv&#39;, &#39;status-right&#39;], text=True
+</span></span></span><span class="line"><span class="cl"><span class="s">).rstrip(&#39;\n&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">if &#39;%b%d&#39; not in old or &#39;%H:%M:%S&#39; not in old:
+</span></span></span><span class="line"><span class="cl"><span class="s">    raise SystemExit(&#39;This status-right does not use the expected date/time formats&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">new = old.replace(&#39;%b%d&#39;, &#39;#(TZ=Asia/Tokyo date +%%b%%d)&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="s">new = new.replace(&#39;%H:%M:%S&#39;, &#39;#(TZ=Asia/Tokyo date +%%H:%%M:%%S)&#39;)
+</span></span></span><span class="line"><span class="cl"><span class="s">
+</span></span></span><span class="line"><span class="cl"><span class="s">subprocess.run(
+</span></span></span><span class="line"><span class="cl"><span class="s">    [&#39;tmux&#39;, &#39;set-option&#39;, &#39;-g&#39;, &#39;@tz_fix_original_status_right&#39;, old],
+</span></span></span><span class="line"><span class="cl"><span class="s">    check=True,
+</span></span></span><span class="line"><span class="cl"><span class="s">)
+</span></span></span><span class="line"><span class="cl"><span class="s">subprocess.run([&#39;tmux&#39;, &#39;set-option&#39;, &#39;-g&#39;, &#39;status-right&#39;, new], check=True)
+</span></span></span><span class="line"><span class="cl"><span class="s">PY</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>tmux 会先处理状态栏中的 <code>%</code>，所以传给 <code>date</code> 的格式符要写成 <code>%%</code>。这个修复立即作用于正在运行的 tmux server，不会关闭 pane 或 session。如果要恢复原状态栏配置：</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux set-option -g status-right <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s2">&#34;</span><span class="k">$(</span>tmux show-options -gv @tz_fix_original_status_right<span class="k">)</span><span class="s2">&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>这是运行时设置；重新加载 tmux 配置后可能被原配置覆盖。之后如果重启 tmux server，它会读取当前系统时区；但 <code>tmux kill-server</code> 会终止<strong>所有</strong> tmux 会话及其中运行的程序，应先保存工作。</p>
+<h2 id="参考" class="heading-element">
+  <a href="#%e5%8f%82%e8%80%83" class="heading-mark"></a>参考</h2><ul>
+<li><a href="https://github.com/systemd/systemd/blob/main/src/timedate/timedatectl.c"target="_blank" rel="external nofollow noopener noreferrer">systemd <code>timedatectl</code> 实现<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/tmux/tmux/wiki/Getting-Started"target="_blank" rel="external nofollow noopener noreferrer">tmux 官方入门文档：状态栏命令和 <code>%</code> 转义<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/tmux/tmux/blob/master/tmux.1"target="_blank" rel="external nofollow noopener noreferrer">tmux 手册<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/" title="tmux 设置默认 zsh">tmux 设置默认 zsh</a></li><li>
+          <a href="/archives/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/" title="Linux开发环境一键部署">Linux开发环境一键部署</a></li><li>
+          <a href="/archives/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF--zsh&#43;tmux&#43;powerline&#43;autojump/" title="配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump">配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump</a></li><li>
+          <a href="/2023-11-06-zsh-compinit--insecure-directories-run-compaudit-for-list/" title="zsh compinit: insecure directories, run compaudit for list">zsh compinit: insecure directories, run compaudit for list</a></li><li>
+          <a href="/2023-10-22-c-%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/" title="c&#43;&#43; 内存对齐">c&#43;&#43; 内存对齐</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-09-26 14:45:00">更新于 2026-09-26&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-09-26-linux-timezone-clock-and-tmux/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/" data-title="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查" data-hashtags="Linux,timedatectl,timezone,tmux"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/" data-title="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/" data-title="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/" data-title="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/timedatectl/" class="post-tag" title="标签 - Timedatectl">Timedatectl</a><a href="/tags/timezone/" class="post-tag" title="标签 - Timezone">Timezone</a><a href="/tags/tmux/" class="post-tag" title="标签 - Tmux">Tmux</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-09-22-chatgpt-desktop-on-mint-20/" class="post-nav-item" rel="prev" title="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/copy-tex.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

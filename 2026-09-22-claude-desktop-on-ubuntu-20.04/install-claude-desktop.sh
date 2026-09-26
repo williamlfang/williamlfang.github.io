@@ -3,8 +3,8 @@
 # Must be run with sudo:   sudo bash ~/install-claude-desktop.sh
 set -euo pipefail
 
-DEB="/home/william/claude-desktop_1.17377.1~focal1_amd64.deb"
-EXPECT_SHA="e43a316222ad74e22b68b3cf711f8684d86377cb54fd1401de8fe0bc2ad562d7"
+DEB="/home/william/claude-desktop_2.2553.1~focal1_amd64.deb"
+EXPECT_SHA="f53cf779f8456653ed196742f622a83c0db28d7c9d783cff0d2807bece7a3d96"
 
 [ "$(id -u)" -eq 0 ] || { echo "ERROR: run with sudo." >&2; exit 1; }
 [ -f "$DEB" ] || { echo "ERROR: package not found: $DEB" >&2; exit 1; }
@@ -27,6 +27,7 @@ read -r -p "    Does the above look safe? Type yes to continue: " ans
 apt-get -f install -y
 
 echo "==> Step 3/5: installing Claude Desktop"
+apt-mark unhold claude-desktop >/dev/null 2>&1 || true
 apt-get install -y "$DEB"
 
 echo "==> Step 4/5: holding the package so apt cannot replace it with the glibc-2.34 build"

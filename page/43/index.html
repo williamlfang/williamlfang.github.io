@@ -187,6 +187,43 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2022-09-13-tmux-vim-%E5%AF%BC%E8%87%B4%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8-ctrl-l-%E6%B8%85%E5%B1%8F/">tmux vim 导致无法使用 ctrl l 清屏</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2022-09-13 13:14:58'>发布于 <time datetime="2022-09-13">2022-09-13</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p><a href="https://github.com/christoomey/vim-tmux-navigator/issues/9"target="_blank" rel="external nofollow noopener noreferrer">conflicts with clear screen #9<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></p>
+<p>Since I misunderstood README and lost a bit of time figuring this out, I want to clarify what can be done to restore behavior.</p>
+<ol>
+<li>If you use tpm, put restoring bind <strong>after</strong> calling package manager:</li>
+</ol>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">run &#39;~/.tmux/plugins/tpm/tpm&#39;
+</span></span><span class="line"><span class="cl">bind-key -n C-l if-shell &#34;$is_vim&#34; &#34;send-keys C-l&#34;  &#34;send-keys C-l&#34;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>(if you don’t use tpm - just do not put “bind-key -n C-l” line in config)</p>
+<ol>
+<li>Do this part of README in vimrc (also wo C-l line)</li>
+</ol>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">let g:tmux_navigator_no_mappings = 1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">nnoremap &lt;silent&gt; &lt;C-h&gt; :TmuxNavigateLeft&lt;cr&gt;
+</span></span><span class="line"><span class="cl">nnoremap &lt;silent&gt; &lt;C-j&gt; :TmuxNavigateDown&lt;cr&gt;
+</span></span><span class="line"><span class="cl">nnoremap &lt;silent&gt; &lt;C-k&gt; :TmuxNavigateUp&lt;cr&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div></div><div class="post-footer">
+    <a href="/2022-09-13-tmux-vim-%E5%AF%BC%E8%87%B4%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8-ctrl-l-%E6%B8%85%E5%B1%8F/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/tmux/' class="post-tag">Tmux</a><a href='/tags/vim/' class="post-tag">Vim</a></div></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2022-09-13-linux-%E8%AE%BE%E7%BD%AE%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%E7%A8%8B%E5%BA%8F/">linux 设置超级用户程序</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2022-09-13 13:13:59'>发布于 <time datetime="2022-09-13">2022-09-13</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>通过在 <code>Linux</code> 系统配置一个超级用户程序，获取 <code>root</code> 权限</p></div><div class="post-footer">
     <a href="/2022-09-13-linux-%E8%AE%BE%E7%BD%AE%E8%B6%85%E7%BA%A7%E7%94%A8%E6%88%B7%E7%A8%8B%E5%BA%8F/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/c/' class="post-tag">C</a><a href='/tags/root/' class="post-tag">Root</a></div></div>
@@ -206,10 +243,6 @@
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2022-09-13-nginx-%E9%85%8D%E7%BD%AE%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%8C%E7%BA%A7%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE/">nginx 配置阿里云二级域名访问</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2022-09-13 13:08:55'>发布于 <time datetime="2022-09-13">2022-09-13</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>通过配置，运行直接在浏览器访问网站二级域名，实现对指定端口的服务程序的访问。</p></div><div class="post-footer">
     <a href="/2022-09-13-nginx-%E9%85%8D%E7%BD%AE%E9%98%BF%E9%87%8C%E4%BA%91%E4%BA%8C%E7%BA%A7%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/ngix/' class="post-tag">Ngix</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2022-09-13-v2ray%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/">v2ray配置教程</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2022-09-13 13:07:51'>发布于 <time datetime="2022-09-13">2022-09-13</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>使用 v2ray 实现江湖失传已久的轻功。</p></div><div class="post-footer">
-    <a href="/2022-09-13-v2ray%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/v2ray/' class="post-tag">V2ray</a></div></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">

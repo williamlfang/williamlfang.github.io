@@ -3,7 +3,29 @@
     <title>Linux - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/linux/</link>
     <description>Linux - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 22 Sep 2026 16:16:26 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 26 Sep 2026 14:45:00 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+  <title>Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</title>
+  <link>https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/</link>
+  <pubDate>Sat, 26 Sep 2026 14:45:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/</guid>
+  <description><![CDATA[<p>我把 Linux 的时区设成 <code>Asia/Tokyo</code>，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 <code>14:37 JST</code>，tmux 却显示 <code>13:37 CST</code>。问题不在 <code>timedatectl set-time</code>：一个早已启动的 tmux server 仍按旧时区格式化状态栏。</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-timezone Asia/Tokyo
+</span></span><span class="line"><span class="cl">sudo timedatectl set-ntp <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># aligned to real Asia/Shanghai time</span>
+</span></span><span class="line"><span class="cl">timedatectl set-time <span class="s2">&#34;2026-09-26 15:33:00&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></description>
+</item>
+<item>
   <title>Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc</title>
   <link>https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/</link>
   <pubDate>Tue, 22 Sep 2026 16:16:26 &#43;0800</pubDate>
@@ -282,32 +304,6 @@ runs fine on glibc 2.31 once you know which three files actually need 2.34.</p>]
 </span></span><span class="line"><span class="cl">setfacl -m u:spd:x /home/ops/shared
 </span></span><span class="line"><span class="cl">setfacl -m u:spd:x /home/ops/shared/trading
 </span></span><span class="line"><span class="cl">setfacl -R -m u:spd:rx /home/ops/shared/trading/<span class="o">{</span>PublicInfo,lib,Snail,Spider<span class="o">}</span></span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>bat: better than cat</title>
-  <link>https://williamlfang.github.io/2023-11-17-bat--better-than-cat/</link>
-  <pubDate>Fri, 17 Nov 2023 22:18:28 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-11-17-bat--better-than-cat/</guid>
-  <description><![CDATA[<h2 id="安装" class="heading-element">
-  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h2><div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## CentOS</span>
-</span></span><span class="line"><span class="cl">wget https://github.com/sharkdp/bat/releases/download/v0.24.0/bat-v0.24.0-x86_64-unknown-linux-gnu.tar.gz
-</span></span><span class="line"><span class="cl">tar -xvf bat-v0.24.0-x86_64-unknown-linux-gnu.tar.gz
-</span></span><span class="line"><span class="cl"><span class="nb">cd</span> bat-v0.24.0-x86_64-unknown-linux-gnu
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">cp ./bat ~/local/bin</span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description>
 </item>
