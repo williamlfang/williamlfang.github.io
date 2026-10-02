@@ -1,6 +1,12 @@
 # Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second
 
 
+&gt; **Update 2026-10-02:** two days later the lag was back. Each fork of the server
+&gt; had become slow (~30 ms), and one claim below was wrong: passing
+&gt; `#{E:#{@quote_cond}}` into the job does not work, because tmux does not apply
+&gt; strftime inside a `#()` command. See
+&gt; [round 2]({{&lt; relref &#34;2026-10-02-tmux-lag-round-2&#34; &gt;}}).
+
 My tmux had started to feel sluggish. Nothing was broken, it just felt heavy.
 It turned out the tmux server was using about a third of a CPU core all the time,
 and nearly all of that went on the status bar. Part of the cost came from the

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>A Claude Code skill and subagent that write posts for this blog - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Most of my recent posts start the same way: I debug something in a Claude Code
+session, then ask it to &ldquo;write this up&rdquo;. Without guidance the result is
+generic: wrong front matter, a made-up category, marketing intros, and
+sometimes output that was never actually printed. So I gave the repo two
+small files that teach Claude Code how this blog works: a skill
+(blog-post) and a subagent (blog-writer). This post is how they are
+set up. It was written with the skill." /><meta name="keywords" content='Claude, ClaudeCode, hugo, blog, skill, agent' /><meta itemprop="name" content="A Claude Code skill and subagent that write posts for this blog">
+<meta itemprop="description" content="Most of my recent posts start the same way: I debug something in a Claude Code
+session, then ask it to &ldquo;write this up&rdquo;. Without guidance the result is
+generic: wrong front matter, a made-up category, marketing intros, and
+sometimes output that was never actually printed. So I gave the repo two
+small files that teach Claude Code how this blog works: a skill
+(blog-post) and a subagent (blog-writer). This post is how they are
+set up. It was written with the skill."><meta itemprop="datePublished" content="2026-10-02T22:36:58+09:00" />
+<meta itemprop="dateModified" content="2026-10-02T22:36:58+09:00" />
+<meta itemprop="wordCount" content="1794"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Claude,ClaudeCode,hugo,blog,skill,agent," /><meta property="og:title" content="A Claude Code skill and subagent that write posts for this blog" />
+<meta property="og:description" content="Most of my recent posts start the same way: I debug something in a Claude Code
+session, then ask it to &ldquo;write this up&rdquo;. Without guidance the result is
+generic: wrong front matter, a made-up category, marketing intros, and
+sometimes output that was never actually printed. So I gave the repo two
+small files that teach Claude Code how this blog works: a skill
+(blog-post) and a subagent (blog-writer). This post is how they are
+set up. It was written with the skill." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-10-02T22:36:58+09:00" />
+<meta property="article:modified_time" content="2026-10-02T22:36:58+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="A Claude Code skill and subagent that write posts for this blog"/>
+<meta name="twitter:description" content="Most of my recent posts start the same way: I debug something in a Claude Code
+session, then ask it to &ldquo;write this up&rdquo;. Without guidance the result is
+generic: wrong front matter, a made-up category, marketing intros, and
+sometimes output that was never actually printed. So I gave the repo two
+small files that teach Claude Code how this blog works: a skill
+(blog-post) and a subagent (blog-writer). This post is how they are
+set up. It was written with the skill."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" /><link rel="prev" href="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "A Claude Code skill and subagent that write posts for this blog",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-10-02-claude-code-blog-skill-and-agent\/"
+    },"genre": "posts","keywords": "Claude, ClaudeCode, hugo, blog, skill, agent","wordcount":  1794 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-10-02-claude-code-blog-skill-and-agent\/","datePublished": "2026-10-02T22:36:58+09:00","dateModified": "2026-10-02T22:36:58+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>A Claude Code skill and subagent that write posts for this blog</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-10-02 22:36:58"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-10-02">2026-10-02</time></span>&nbsp;<span title="1794 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1800 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 4 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#skill-vs-agent-who-does-what">Skill vs. agent: who does what</a></li>
+        <li><a href="#step-1-the-skill">Step 1: the skill</a>
+          <ol>
+            <li><a href="#the-category-rule-came-from-real-data">The category rule came from real data</a></li>
+            <li><a href="#the-style-guide">The style guide</a></li>
+            <li><a href="#the-scaffolding-script">The scaffolding script</a></li>
+          </ol>
+        </li>
+        <li><a href="#step-2-the-agent">Step 2: the agent</a>
+          <ol>
+            <li><a href="#why-never-deploy-is-not-optional">Why &ldquo;never deploy&rdquo; is not optional</a></li>
+          </ol>
+        </li>
+        <li><a href="#using-it">Using it</a></li>
+        <li><a href="#verifying">Verifying</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>Most of my recent posts start the same way: I debug something in a Claude Code
+session, then ask it to &ldquo;write this up&rdquo;. Without guidance the result is
+generic: wrong front matter, a made-up category, marketing intros, and
+sometimes output that was never actually printed. So I gave the repo two
+small files that teach Claude Code how this blog works: a <strong>skill</strong>
+(<code>blog-post</code>) and a <strong>subagent</strong> (<code>blog-writer</code>). This post is how they are
+set up. It was written with the skill.</p>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li>Claude Code 2.1.287, run from the blog repo root</li>
+<li>Hugo v0.123.8 extended, theme FixIt, 298 posts in <code>content/posts/</code></li>
+<li>Every post is a page bundle: <code>content/posts/&lt;YYYY-MM-DD&gt;-&lt;slug&gt;/index.md</code></li>
+<li><code>deploy.sh</code> builds with <code>--buildDrafts</code>, then <code>git add -A</code>, commits and
+pushes both the source and the <code>public/</code> GitHub Pages repo</li>
+</ul>
+<p>Everything lives in the project&rsquo;s <code>.claude/</code> folder, so it travels with the
+repo and only applies when Claude Code is started in this directory:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">.claude/
+</span></span><span class="line"><span class="cl">├── agents/
+</span></span><span class="line"><span class="cl">│   └── blog-writer.md
+</span></span><span class="line"><span class="cl">└── skills/
+</span></span><span class="line"><span class="cl">    └── blog-post/
+</span></span><span class="line"><span class="cl">        ├── SKILL.md
+</span></span><span class="line"><span class="cl">        ├── references/
+</span></span><span class="line"><span class="cl">        │   └── style-guide.md
+</span></span><span class="line"><span class="cl">        └── scripts/
+</span></span><span class="line"><span class="cl">            └── new-post.sh</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="skill-vs-agent-who-does-what" class="heading-element">
+  <a href="#skill-vs-agent-who-does-what" class="heading-mark"></a>Skill vs. agent: who does what</h2><p>The two pieces do different jobs:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>skill (<code>blog-post</code>)</th>
+<th>agent (<code>blog-writer</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>what it is</td>
+<td>instructions + files, loaded into the current session</td>
+<td>a separate Claude with its own context and system prompt</td>
+</tr>
+<tr>
+<td>when it runs</td>
+<td>Claude decides from the <code>description</code>, or <code>/blog-post</code></td>
+<td>Claude delegates to it, or you ask for it by name</td>
+</tr>
+<tr>
+<td>what it knows</td>
+<td>the whole conversation so far</td>
+<td>only what it is handed, plus the preloaded skill</td>
+</tr>
+<tr>
+<td>tools</td>
+<td>whatever the session has</td>
+<td>restricted list in its front matter</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The skill holds the knowledge; the agent is a sandboxed worker that uses
+it.</strong> In practice I mostly use the skill directly, right after a debugging
+session, because the conversation already contains the real commands and
+output. The agent is for when I want the writing done in a separate context
+(it keeps the long post drafting out of the main session) or in the
+background.</p>
+<h2 id="step-1-the-skill" class="heading-element">
+  <a href="#step-1-the-skill" class="heading-mark"></a>Step 1: the skill</h2><p>A skill is a folder under <code>.claude/skills/&lt;name&gt;/</code> with a <code>SKILL.md</code>. Only the
+front matter is always visible to Claude; the body is loaded when the skill
+is triggered, and the other files are read only when the body says so.</p>
+<p><code>.claude/skills/blog-post/SKILL.md</code> front matter:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">blog-post</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">Write a new post (or revise an existing one) for william&#39;s Hugo/FixIt blog in content/posts/, in the house style. Use whenever the user asks to write, draft, blog about, or &#34;turn this into a post&#34; — e.g. after a debugging session, an install/config walkthrough, or notes on a tool.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nn">---</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>description</code> is what makes it trigger, so it lists the phrases I
+actually use (&ldquo;write&rdquo;, &ldquo;draft&rdquo;, &ldquo;blog about&rdquo;, &ldquo;turn this into a post&rdquo;). The body is
+a numbered workflow:</p>
+<ol>
+<li><strong>Gather the material</strong> from the conversation, shell history, configs and
+logs. Never invent output, benchmarks or versions; leave a <code>TODO</code> instead.</li>
+<li><strong>Decide language, title, slug, category, tags</strong>, with examples from real
+posts.</li>
+<li><strong>Check for related posts</strong> with <code>ls content/posts | grep -i &lt;keyword&gt;</code>
+and link them with <code>relref</code>. If the new post corrects an old one, add a
+dated <code>&gt; **Update YYYY-MM-DD:**</code> note to the old one.</li>
+<li><strong>Scaffold</strong> with the bundled script.</li>
+<li><strong>Write the body</strong>, then fill <code>summary:</code>.</li>
+<li><strong>Verify</strong> with a Hugo build.</li>
+<li><strong>Report</strong> the path and outline. Don&rsquo;t run <code>deploy.sh</code>, commit or push.</li>
+</ol>
+<p>Plus a front matter table, so fields like <code>math</code> and <code>resources</code> only get
+set when they are actually needed.</p>
+<h3 id="the-category-rule-came-from-real-data" class="heading-element">
+  <a href="#the-category-rule-came-from-real-data" class="heading-mark"></a>The category rule came from real data</h3><p>Step 2 says &ldquo;use an existing category, don&rsquo;t invent new ones&rdquo;. That rule
+exists because of what years of hand-written front matter look like:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -h <span class="s1">&#39;^categories:&#39;</span> content/posts/*/index.md <span class="p">|</span> sort <span class="p">|</span> uniq -c</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">    136 categories: []
+</span></span><span class="line"><span class="cl">      1 categories: [books]
+</span></span><span class="line"><span class="cl">      1 categories: [learning]
+</span></span><span class="line"><span class="cl">      5 categories: [Linux]
+</span></span><span class="line"><span class="cl">     16 categories: [programming]
+</span></span><span class="line"><span class="cl">      8 categories: [Programming]
+</span></span><span class="line"><span class="cl">      5 categories: [tool]
+</span></span><span class="line"><span class="cl">    112 categories: [tools]
+</span></span><span class="line"><span class="cl">      2 categories: [Tools]
+</span></span><span class="line"><span class="cl">      2 categories: [toolsj]
+</span></span><span class="line"><span class="cl">    ...</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>tool</code>, <code>Tools</code>, <code>toolsj</code> and <code>tools</code> are all the same category. The skill
+pins it to <code>Linux</code>, <code>tools</code> or <code>programming</code> and tells Claude to run that same
+one-liner if unsure.</p>
+<h3 id="the-style-guide" class="heading-element">
+  <a href="#the-style-guide" class="heading-mark"></a>The style guide</h3><p><code>references/style-guide.md</code> is the longest file. It is distilled from the
+existing posts and names four exemplars to read when unsure about tone (the
+two tmux lag posts, the Claude Desktop install guide, and a short Chinese
+note). It covers:</p>
+<ul>
+<li><strong>Voice</strong>: first person, short sentences, no &ldquo;In this comprehensive guide&rdquo;,
+no emoji, include dead ends, bold one key fact per section.</li>
+<li><strong>Structure</strong> per post type: debugging posts (setup → steps → why → fix →
+results table → takeaways), how-to posts (error → why the obvious fix fails
+→ steps → gotchas), short Chinese notes. Every post has a standalone
+opening and then <code>&lt;!--more--&gt;</code>, because that is the home page excerpt.</li>
+<li><strong>Code</strong>: commands and their output in separate blocks, output in <code>text</code>
+blocks, real output only, trimmed with <code>...</code>.</li>
+<li><strong>Cross-references</strong> with <code>relref</code>, and the FixIt shortcodes that exist.</li>
+<li><strong>Privacy</strong>: scrub hostnames, tokens, company names before finishing.</li>
+<li><strong>Chinese posts</strong>: spaces between Chinese and English, full-width
+punctuation, technical terms left in English.</li>
+</ul>
+<p>Keeping this in a separate file matters: <code>SKILL.md</code> stays short, and the
+guide is only read when a post is actually being written.</p>
+<h3 id="the-scaffolding-script" class="heading-element">
+  <a href="#the-scaffolding-script" class="heading-mark"></a>The scaffolding script</h3><p><code>scripts/new-post.sh</code> writes the standard FixIt front matter, so Claude never
+has to remember two dozen fields or get the timezone offset wrong:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">.claude/skills/blog-post/scripts/new-post.sh &lt;slug&gt; <span class="s2">&#34;&lt;title&gt;&#34;</span> &lt;category&gt; &lt;tag1,tag2,...&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li>
+<p>It finds the repo root with <code>git rev-parse --show-toplevel</code>, so it works
+from any directory.</p>
+</li>
+<li>
+<p><code>date</code> and <code>lastmod</code> come from <code>date +%Y-%m-%dT%H:%M:%S%:z</code>, i.e. the real
+local offset.</p>
+</li>
+<li>
+<p>It normalises the slug the same way my old <code>Rakefile</code> did: spaces and
+colons (including the full-width <code>：</code>) become dashes, so Chinese slugs work.</p>
+</li>
+<li>
+<p><code>DRAFT=false</code> publishes, <code>DATE=YYYY-MM-DD</code> backdates, and it <strong>refuses to
+overwrite an existing post</strong>:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -e <span class="s2">&#34;</span><span class="nv">$file</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;exists: </span><span class="nv">$file</span><span class="s2">&#34;</span> &gt;<span class="p">&amp;</span><span class="m">2</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p>This post was created with it:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">.claude/skills/blog-post/scripts/new-post.sh claude-code-blog-skill-and-agent <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s2">&#34;A Claude Code skill and subagent that write posts for this blog&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  tools <span class="s2">&#34;Claude,ClaudeCode,hugo,blog,skill,agent&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">/home/william/git/myblog/content/posts/2026-10-02-claude-code-blog-skill-and-agent/index.md</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Remember to <code>chmod +x</code> the script, since Claude calls it directly.</p>
+<h2 id="step-2-the-agent" class="heading-element">
+  <a href="#step-2-the-agent" class="heading-mark"></a>Step 2: the agent</h2><p>A subagent is a single Markdown file under <code>.claude/agents/</code>. The front
+matter configures it; the body is its system prompt.</p>
+<p><code>.claude/agents/blog-writer.md</code>:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nn">---</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">blog-writer</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l">Writes or revises a post for william&#39;s Hugo blog (content/posts/) in the house style. Give it the topic plus the raw material — what was done, commands, outputs, errors, numbers, file paths — and the preferred language if any. Use proactively when the user asks to write up / blog about something.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">tools</span><span class="p">:</span><span class="w"> </span><span class="l">Read, Write, Edit, Bash, Grep, Glob, WebFetch</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">skills</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="l">blog-post</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nn">---</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Three fields do the work:</p>
+<ul>
+<li><strong><code>description</code></strong> is written for the <em>main</em> Claude, which decides when to
+delegate. It says what to hand over: the topic and the raw material. This
+is important because <strong>a subagent starts cold</strong>; it does not see the
+conversation that produced the material.</li>
+<li><strong><code>tools</code></strong> is an allowlist. No <code>Agent</code> (it can&rsquo;t spawn more agents), no
+web search, just enough to read, write and build.</li>
+<li><strong><code>skills: [blog-post]</code></strong> preloads the skill, so the agent doesn&rsquo;t have to
+discover it. The agent and the skill share one source of truth: if I change
+the style guide, both paths pick it up.</li>
+</ul>
+<p>The body is short, because the skill already holds the workflow:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">Follow the preloaded <span class="sb">`blog-post`</span> skill exactly: read its
+</span></span><span class="line"><span class="cl"><span class="sb">`references/style-guide.md`</span>, skim one or two of the exemplar posts it names
+</span></span><span class="line"><span class="cl">that match the post type, scaffold with its <span class="sb">`scripts/new-post.sh`</span>, write the
+</span></span><span class="line"><span class="cl">body, fill <span class="sb">`summary:`</span>, and verify with a <span class="sb">`hugo`</span> build.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>followed by the rules that need repeating for an agent working alone:</p>
+<ul>
+<li>Use only facts from the material given or verifiable on this machine. If
+something is missing, write <code>TODO: &lt;what is needed&gt;</code> and report it.</li>
+<li>Don&rsquo;t run anything destructive to &ldquo;reproduce&rdquo; an issue.</li>
+<li><strong>Never run <code>deploy.sh</code>, <code>git commit</code> or <code>git push</code>.</strong></li>
+<li>Scrub secrets, internal hostnames and company names.</li>
+</ul>
+<p>and a fixed report format: path, title, category/tags, a 3-line outline, any
+TODOs, and any older post it added an update note to.</p>
+<h3 id="why-never-deploy-is-not-optional" class="heading-element">
+  <a href="#why-never-deploy-is-not-optional" class="heading-mark"></a>Why &ldquo;never deploy&rdquo; is not optional</h3><p>Look at <code>deploy.sh</code> again: it runs <code>hugo --buildDrafts=true</code> and then
+<code>git add -A</code> and <code>git push</code> on both repos. So <strong><code>draft: true</code> does not keep
+anything private</strong>; it is a marker, not a gate. Anything in the working tree,
+including a half-written post or a stray file, goes public the moment deploy
+runs. The skill says so in its front matter table, and the agent has the rule
+in its own prompt. Publishing stays my decision.</p>
+<h2 id="using-it" class="heading-element">
+  <a href="#using-it" class="heading-mark"></a>Using it</h2><p>Both are picked up automatically when Claude Code starts in the repo; no
+settings change is needed. <code>/agents</code> lists the agent and the skill shows up
+in the skill list.</p>
+<p>After a debugging session, the skill path:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">&gt; write a blog post about what we just found</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Claude matches the request to the skill&rsquo;s description, loads <code>SKILL.md</code>, and
+follows the workflow with the real commands and output still in context.
+<code>/blog-post</code> invokes it explicitly.</p>
+<p>The agent path, when I want it out of the main context:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">&gt; use the blog-writer agent to write up the tmux fix; here is the material: ...</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The main session passes the material along, the agent writes and builds the
+post, and returns the report.</p>
+<p>Then I review the diff, edit, and run <code>./deploy.sh</code> myself.</p>
+<h2 id="verifying" class="heading-element">
+  <a href="#verifying" class="heading-mark"></a>Verifying</h2><p>The skill&rsquo;s last step is a build into a throwaway directory:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hugo --buildDrafts --buildFuture --quiet -d /tmp/hugo-check 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">|</span> tail -20</span></span></code></pre></td></tr></table>
+</div>
+</div><p>No output means it built, and that every <code>relref</code> resolves; a broken
+<code>relref</code> is a build error in Hugo, which makes this a cheap link checker.</p>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>Put the knowledge in a skill, and the isolation in an agent.</strong> The
+agent&rsquo;s prompt is mostly &ldquo;follow the skill&rdquo;, so there is one place to edit.</li>
+<li><strong>Write descriptions for the model that reads them.</strong> The skill&rsquo;s
+description lists trigger phrases; the agent&rsquo;s tells the caller what
+material to hand over, because the agent can&rsquo;t see the conversation.</li>
+<li><strong>Derive the style guide from your own posts</strong>, not from general writing
+advice. Naming concrete exemplar posts did more than any list of rules.</li>
+<li><strong>Move anything mechanical into a script.</strong> Front matter, dates and slug
+normalisation are exactly where a model drifts; a 60-line shell script
+doesn&rsquo;t.</li>
+<li><strong>Guard the irreversible step.</strong> Here that is <code>deploy.sh</code>, which publishes
+everything including drafts. Both files forbid running it.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><a href="https://docs.claude.com/en/docs/claude-code/skills"target="_blank" rel="external nofollow noopener noreferrer">Claude Code: Agent Skills<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://docs.claude.com/en/docs/claude-code/sub-agents"target="_blank" rel="external nofollow noopener noreferrer">Claude Code: Subagents<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://gohugo.io/content-management/shortcodes/#relref"target="_blank" rel="external nofollow noopener noreferrer">Hugo: <code>relref</code> shortcode<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="/%E4%BD%BF%E7%94%A8hugo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">My earlier post on setting up this blog</a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/" title="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)">Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)</a></li><li>
+          <a href="/%E4%BD%BF%E7%94%A8hugo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" title="使用hugo&#43;github搭建博客">使用hugo&#43;github搭建博客</a></li><li>
+          <a href="/2022-05-13-%E9%82%A3%E4%BA%9B%E5%B9%B4%E6%88%91%E8%BF%BD%E7%9A%84%E5%8D%9A%E5%AE%A2%E4%BB%AC/" title="那些年我追的博客们">那些年我追的博客们</a></li><li>
+          <a href="/archives/2019-10-29-%E4%BD%BF%E7%94%A8-github-%E5%8F%91%E5%B8%83-gitbook-%E7%94%B5%E5%AD%90%E4%B9%A6/" title="使用 github 发布 gitbook 电子书">使用 github 发布 gitbook 电子书</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-10-02 22:36:58">更新于 2026-10-02&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-10-02-claude-code-blog-skill-and-agent/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" data-title="A Claude Code skill and subagent that write posts for this blog" data-hashtags="Claude,ClaudeCode,hugo,blog,skill,agent"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" data-hashtag="Claude"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" data-title="A Claude Code skill and subagent that write posts for this blog" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" data-title="A Claude Code skill and subagent that write posts for this blog"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" data-title="A Claude Code skill and subagent that write posts for this blog"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/claude/" class="post-tag" title="标签 - Claude">Claude</a><a href="/tags/claudecode/" class="post-tag" title="标签 - ClaudeCode">ClaudeCode</a><a href="/tags/hugo/" class="post-tag" title="标签 - Hugo">Hugo</a><a href="/tags/blog/" class="post-tag" title="标签 - Blog">Blog</a><a href="/tags/skill/" class="post-tag" title="标签 - Skill">Skill</a><a href="/tags/agent/" class="post-tag" title="标签 - Agent">Agent</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-10-02-tmux-lag-round-2/" class="post-nav-item" rel="prev" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>tmux lag, round 2: every status-bar fork froze the server for 30 ms</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

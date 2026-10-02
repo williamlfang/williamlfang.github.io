@@ -3,13 +3,71 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 30 Sep 2026 12:00:00 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 02 Oct 2026 22:36:58 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
   <title>Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</title>
   <link>https://williamlfang.github.io/2026-09-30-tmux-status-bar-lag/</link>
   <pubDate>Wed, 30 Sep 2026 12:00:00 &#43;0900</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-09-30-tmux-status-bar-lag/</guid>
-  <description><![CDATA[<p>My tmux had started to feel sluggish. Nothing was broken, it just felt heavy.
+  <description><![CDATA[<blockquote>
+<p><strong>Update 2026-10-02:</strong> two days later the lag was back. Each fork of the server
+had become slow (~30 ms), and one claim below was wrong: passing
+<code>#{E:#{@quote_cond}}</code> into the job does not work, because tmux does not apply
+strftime inside a <code>#()</code> command. See
+<a href="/2026-10-02-tmux-lag-round-2/">round 2</a>.</p>
+</blockquote>
+<p>My tmux had started to feel sluggish. Nothing was broken, it just felt heavy.
+It turned out the tmux server was using about a third of a CPU core all the time,
+and nearly all of that went on the status bar. Part of the cost came from the
+clock workaround in my
+<a href="/2026-09-26-linux-timezone-clock-and-tmux/">previous post</a>.</p>
+<p>This post covers how I tracked it down, including two wrong guesses, and the fix,
+which brought the server from <strong>~35% CPU to ~4%</strong> without restarting it.</p>]]></description>
+</item>
+<item>
+  <title>A Claude Code skill and subagent that write posts for this blog</title>
+  <link>https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/</link>
+  <pubDate>Fri, 02 Oct 2026 22:36:58 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/</guid>
+  <description><![CDATA[<p>Most of my recent posts start the same way: I debug something in a Claude Code
+session, then ask it to &ldquo;write this up&rdquo;. Without guidance the result is
+generic: wrong front matter, a made-up category, marketing intros, and
+sometimes output that was never actually printed. So I gave the repo two
+small files that teach Claude Code how this blog works: a <strong>skill</strong>
+(<code>blog-post</code>) and a <strong>subagent</strong> (<code>blog-writer</code>). This post is how they are
+set up. It was written with the skill.</p>]]></description>
+</item>
+<item>
+  <title>tmux lag, round 2: every status-bar fork froze the server for 30 ms</title>
+  <link>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</link>
+  <pubDate>Fri, 02 Oct 2026 22:30:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</guid>
+  <description><![CDATA[<p>Two days after the
+<a href="/2026-09-30-tmux-status-bar-lag/">last fix</a>, my tmux was laggy
+again, and the server was back at about a quarter of a CPU core. The culprit was
+the same as last time: the status bar&rsquo;s <code>#()</code> jobs. This time, though, the
+number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
+is a fork of the whole tmux server and my server had grown to 1.5 GB.</p>
+<p>This post covers how I measured it, where the 1.5 GB came from (mostly the
+scrollback of three panes), and the fixes. One of them corrects a claim in my
+previous post.</p>]]></description>
+</item>
+<item>
+  <title>Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</title>
+  <link>https://williamlfang.github.io/2026-09-30-tmux-status-bar-lag/</link>
+  <pubDate>Wed, 30 Sep 2026 12:00:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-09-30-tmux-status-bar-lag/</guid>
+  <description><![CDATA[<blockquote>
+<p><strong>Update 2026-10-02:</strong> two days later the lag was back. Each fork of the server
+had become slow (~30 ms), and one claim below was wrong: passing
+<code>#{E:#{@quote_cond}}</code> into the job does not work, because tmux does not apply
+strftime inside a <code>#()</code> command. See
+<a href="/2026-10-02-tmux-lag-round-2/">round 2</a>.</p>
+</blockquote>
+<p>My tmux had started to feel sluggish. Nothing was broken, it just felt heavy.
 It turned out the tmux server was using about a third of a CPU core all the time,
 and nearly all of that went on the status bar. Part of the cost came from the
 clock workaround in my
@@ -109,24 +167,6 @@ Your historical install reported as v0.12.5.]]></description>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-08-30-openai-%E5%9D%8E%E5%9D%B7%E8%B7%AF/</guid>
   <description><![CDATA[购买 just my socks5(tokyo100) 安装 xray + xrayA 1 2 3 4 sudo sh -c &#34;$(proxychains4 wget -qO- https://github.com/v2rayA/v2rayA-installer/raw/main/installer.sh)&#34; @ --with-xray sudo systemctl daemon-reload sudo systemctl restart v2raya ## web gui: http://127.0.0.1:2017 使用 Proxy Omega 区分不同的代理模式(openai需要全程走独立 ip) 使用代理打开 codex, 1]]></description>
-</item>
-<item>
-  <title>源代码安装 deepseek harness</title>
-  <link>https://williamlfang.github.io/2026-08-28-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-deepseek-harness/</link>
-  <pubDate>Fri, 28 Aug 2026 15:34:40 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-08-28-%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E8%A3%85-deepseek-harness/</guid>
-  <description><![CDATA[1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 #FIXME: 需要使用 node-24 # https://nodejs.org/en/download node --version v24.20.0 npm install -g pnpm git clone https://github.com/deepseek-ai/deepseek-harness.git cd deepseek-harness pnpm install pnpm run build # FIXME: 默认使用环境变量里的参数配置 export DEEPSEEK_API_KEY=&#34;&#34; echo $DEEPSEEK_API_KEY pnpm]]></description>
-</item>
-<item>
-  <title>nvim tree input completion</title>
-  <link>https://williamlfang.github.io/2026-07-24-nvim-tree-input-completion/</link>
-  <pubDate>Fri, 24 Jul 2026 15:15:59 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-07-24-nvim-tree-input-completion/</guid>
-  <description><![CDATA[<h1 id="nvim-tree-删除垃圾箱确认提示中禁用-blink-cmp-自动补全" class="heading-element">
-  <a href="#nvim-tree-%e5%88%a0%e9%99%a4%e5%9e%83%e5%9c%be%e7%ae%b1%e7%a1%ae%e8%ae%a4%e6%8f%90%e7%a4%ba%e4%b8%ad%e7%a6%81%e7%94%a8-blink-cmp-%e8%87%aa%e5%8a%a8%e8%a1%a5%e5%85%a8" class="heading-mark"></a>nvim-tree 删除/垃圾箱确认提示中禁用 blink-cmp 自动补全</h1><h2 id="问题" class="heading-element">
-  <a href="#%e9%97%ae%e9%a2%98" class="heading-mark"></a>问题</h2><p>在 nvim-tree 中执行 Remove/Trash 操作时，dressing.nvim 会弹出确认对话框（DressingInput buffer，<code>filetype = &quot;DressingInput&quot;</code>）。用户输入 <code>y</code>/<code>n</code> 时，blink-cmp 会在这个 buffer 中触发自动补全，干扰确认操作。</p>]]></description>
 </item>
 </channel>
 </rss>

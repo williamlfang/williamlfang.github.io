@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>tmux lag, round 2: every status-bar fork froze the server for 30 ms - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Two days after the
+last fix, my tmux was laggy
+again, and the server was back at about a quarter of a CPU core. The culprit was
+the same as last time: the status bar&rsquo;s #() jobs. This time, though, the
+number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
+is a fork of the whole tmux server and my server had grown to 1.5 GB.
+This post covers how I measured it, where the 1.5 GB came from (mostly the
+scrollback of three panes), and the fixes. One of them corrects a claim in my
+previous post." /><meta name="keywords" content='Linux, tmux, performance, strace, fork, malloc_trim, scrollback' /><meta itemprop="name" content="tmux lag, round 2: every status-bar fork froze the server for 30 ms">
+<meta itemprop="description" content="Two days after the
+last fix, my tmux was laggy
+again, and the server was back at about a quarter of a CPU core. The culprit was
+the same as last time: the status bar&rsquo;s #() jobs. This time, though, the
+number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
+is a fork of the whole tmux server and my server had grown to 1.5 GB.
+This post covers how I measured it, where the 1.5 GB came from (mostly the
+scrollback of three panes), and the fixes. One of them corrects a claim in my
+previous post."><meta itemprop="datePublished" content="2026-10-02T22:30:00+09:00" />
+<meta itemprop="dateModified" content="2026-10-02T22:30:00+09:00" />
+<meta itemprop="wordCount" content="1818"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Linux,tmux,performance,strace,fork,malloc_trim,scrollback," /><meta property="og:title" content="tmux lag, round 2: every status-bar fork froze the server for 30 ms" />
+<meta property="og:description" content="Two days after the
+last fix, my tmux was laggy
+again, and the server was back at about a quarter of a CPU core. The culprit was
+the same as last time: the status bar&rsquo;s #() jobs. This time, though, the
+number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
+is a fork of the whole tmux server and my server had grown to 1.5 GB.
+This post covers how I measured it, where the 1.5 GB came from (mostly the
+scrollback of three panes), and the fixes. One of them corrects a claim in my
+previous post." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-10-02T22:30:00+09:00" />
+<meta property="article:modified_time" content="2026-10-02T22:30:00+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="tmux lag, round 2: every status-bar fork froze the server for 30 ms"/>
+<meta name="twitter:description" content="Two days after the
+last fix, my tmux was laggy
+again, and the server was back at about a quarter of a CPU core. The culprit was
+the same as last time: the status bar&rsquo;s #() jobs. This time, though, the
+number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
+is a fork of the whole tmux server and my server had grown to 1.5 GB.
+This post covers how I measured it, where the 1.5 GB came from (mostly the
+scrollback of three panes), and the fixes. One of them corrects a claim in my
+previous post."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/" /><link rel="prev" href="https://williamlfang.github.io/2026-09-30-tmux-status-bar-lag/" /><link rel="next" href="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "tmux lag, round 2: every status-bar fork froze the server for 30 ms",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-10-02-tmux-lag-round-2\/"
+    },"genre": "posts","keywords": "Linux, tmux, performance, strace, fork, malloc_trim, scrollback","wordcount":  1818 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-10-02-tmux-lag-round-2\/","datePublished": "2026-10-02T22:30:00+09:00","dateModified": "2026-10-02T22:30:00+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>tmux lag, round 2: every status-bar fork froze the server for 30 ms</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-10-02 22:30:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-10-02">2026-10-02</time></span>&nbsp;<span title="1818 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1900 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 4 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#measure-what-lag-feels-like">Measure what lag feels like</a></li>
+        <li><a href="#the-profiler-pointed-at-the-frame-after-the-problem">The profiler pointed at the frame after the problem</a></li>
+        <li><a href="#where-15-gb-came-from">Where 1.5 GB came from</a></li>
+        <li><a href="#fix-1-one-job-for-the-whole-status-line">Fix 1: one job for the whole status line</a></li>
+        <li><a href="#fix-2-strftime-doesnt-run-inside--which-my-last-post-got-wrong">Fix 2: strftime doesn&rsquo;t run inside <code>#()</code>, which my last post got wrong</a></li>
+        <li><a href="#fix-3-ctrl-l-was-forking-the-server">Fix 3: Ctrl-L was forking the server</a></li>
+        <li><a href="#fix-4-save-the-scrollback-then-clear-it">Fix 4: save the scrollback, then clear it</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#whats-still-left">What&rsquo;s still left</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>Two days after the
+<a href="/2026-09-30-tmux-status-bar-lag/">last fix</a>, my tmux was laggy
+again, and the server was back at about a quarter of a CPU core. The culprit was
+the same as last time: the status bar&rsquo;s <code>#()</code> jobs. This time, though, the
+number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
+is a fork of the whole tmux server and my server had grown to 1.5 GB.</p>
+<p>This post covers how I measured it, where the 1.5 GB came from (mostly the
+scrollback of three panes), and the fixes. One of them corrects a claim in my
+previous post.</p>
+<h2 id="measure-what-lag-feels-like" class="heading-element">
+  <a href="#measure-what-lag-feels-like" class="heading-mark"></a>Measure what lag feels like</h2><p>CPU percentage doesn&rsquo;t tell you how typing feels. Latency does. A trivial tmux
+command makes a good probe, because it goes through the same event loop as your
+keystrokes:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">random</span>
+</span></span><span class="line"><span class="cl"><span class="n">lat</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">300</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&#34;tmux&#34;</span><span class="p">,</span> <span class="s2">&#34;display&#34;</span><span class="p">,</span> <span class="s2">&#34;-p&#34;</span><span class="p">,</span> <span class="s2">&#34;x&#34;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">lat</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.06</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">lat</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;p50 </span><span class="si">%.1f</span><span class="s2">  p99 </span><span class="si">%.1f</span><span class="s2">  max </span><span class="si">%.1f</span><span class="s2"> ms, &gt;40 ms: </span><span class="si">%d</span><span class="s2">&#34;</span> <span class="o">%</span>
+</span></span><span class="line"><span class="cl">      <span class="p">(</span><span class="n">lat</span><span class="p">[</span><span class="mi">150</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="mi">297</span><span class="p">],</span> <span class="n">lat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">40</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lat</span><span class="p">)))</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">p50 5.0  p99 119.5  max 123.2 ms, &gt;40 ms: 23</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Most commands came back in 5 ms, but about one in thirteen took 40–120 ms.
+Hits like that, several times a second, are what lag feels like.</p>
+<h2 id="the-profiler-pointed-at-the-frame-after-the-problem" class="heading-element">
+  <a href="#the-profiler-pointed-at-the-frame-after-the-problem" class="heading-mark"></a>The profiler pointed at the frame after the problem</h2><p>I ran the same <code>eu-stack</code> sampling loop as last time, and got the same picture:
+the busy samples sat in <code>job_run</code>, mostly in <code>environ_free</code>:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">14  _int_free;environ_free;job_run;format_expand1;...;status_redraw
+</span></span><span class="line"><span class="cl"> 5  environ_RB_REMOVE;environ_free;job_run;...</span></span></code></pre></td></tr></table>
+</div>
+</div><p>But the environment tmux builds for a job was only 104 variables (15 KB).
+Freeing that can&rsquo;t take milliseconds. So I timed the syscalls instead:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">timeout <span class="m">6</span> strace -p &lt;server-pid&gt; -T -ttt -qq -o st.txt
+</span></span><span class="line"><span class="cl">grep clone st.txt     <span class="c1"># one line per fork, duration in &lt;...&gt;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>There were 40 forks in 6 seconds, and <strong>each <code>clone()</code> took 28–37 ms in the
+kernel</strong>. tmux is single-threaded, so the server handles no input while it
+forks.</p>
+<p>A fork has to copy the page tables of the whole process, swap entries included,
+and this server was 918 MB in RAM plus 614 MB in swap. After the fork, every page
+is shared copy-on-write, so the first writes the parent makes take page faults.
+In tmux, the first thing that writes is <code>environ_free</code>, and that&rsquo;s why the
+sampling profile blamed it. <strong>A sampling profiler shows you where the time
+surfaced; <code>strace -T</code> shows you which syscall it went into.</strong></p>
+<p>The forks also came in pairs. Every client ran <code>status-left.sh</code> and
+<code>status-right.sh</code> back to back each second, so one client&rsquo;s refresh froze the
+server for 60 ms or more. That accounts for the long tail in the latency numbers.</p>
+<h2 id="where-15-gb-came-from" class="heading-element">
+  <a href="#where-15-gb-came-from" class="heading-mark"></a>Where 1.5 GB came from</h2><p>tmux reports scrollback memory per pane:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux list-panes -a -F <span class="s1">&#39;#{history_bytes} #{history_size} #{session_name}:#{window_index}.#{pane_index} #{pane_current_command}&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="p">|</span> sort -rn <span class="p">|</span> head -4</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">531541574 61441 ch:3.1 python3
+</span></span><span class="line"><span class="cl">196847422 38544 ch:1.1 python3
+</span></span><span class="line"><span class="cl">139474919 34260 ch:2.1 python3
+</span></span><span class="line"><span class="cl"> 18343891 59805 ...    tail</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The panes held 881 MB of scrollback, and <strong>827 MB of it was in three panes</strong>
+running interactive <code>clickhouse-cli</code>. Their result tables are drawn with 24-bit
+color and box-drawing characters, and tmux has to store cells like that in its
+large &ldquo;extended&rdquo; format. That came to <strong>~52 bytes per cell, 8.6 KB per line</strong>.
+One pane held 61,441 lines and 507 MB. The plain text of all three histories
+saved to 18.6 MB.</p>
+<p>My <code>history-limit 65535</code> is what let them get that big. The other 163 panes held
+54 MB between them.</p>
+<h2 id="fix-1-one-job-for-the-whole-status-line" class="heading-element">
+  <a href="#fix-1-one-job-for-the-whole-status-line" class="heading-mark"></a>Fix 1: one job for the whole status line</h2><p>One job per client is the minimum, since something has to render the clock each
+second. Two was one too many. The new <code>status-line.sh</code> draws both halves of the
+status line. <code>status-left</code> runs it and <code>status-right</code> is empty:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">set</span> -g status-left-length <span class="m">300</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-left <span class="s2">&#34;#{?#{E:#{@quote_cond}},#(</span><span class="nv">$HOME</span><span class="s2">/.tmux/scripts/status-line.sh 1 #{q:session_name}),#(</span><span class="nv">$HOME</span><span class="s2">/.tmux/scripts/status-line.sh 0 #{q:session_name})}&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-right <span class="s2">&#34;&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The script prints the left block, then a style tag that moves everything after
+it to the right edge (Nerd Font icons left out here):</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1"># $1: 1 to show the quote, else 0    $2: session name</span>
+</span></span><span class="line"><span class="cl"><span class="nv">dir</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/.cache/tmux-status&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># left side</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -f <span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/.tmux/plugins/tmux-pom/data/pom_start_time.txt&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">printf</span> <span class="s1">&#39;#[fg=black,bg=yellow,bold]&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">printf</span> <span class="s1">&#39;#[fg=black,bg=blue,bold]&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="nb">printf</span> <span class="s1">&#39; XPS:%s #[nobold,italics,nounderscore]&#39;</span> <span class="s2">&#34;</span><span class="nv">$2</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">cat <span class="s2">&#34;</span><span class="nv">$dir</span><span class="s2">/left_pom&#34;</span> 2&gt;/dev/null
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># right side</span>
+</span></span><span class="line"><span class="cl"><span class="nb">printf</span> <span class="s1">&#39;#[default align=right range=right]&#39;</span>
+</span></span><span class="line"><span class="cl">cat <span class="s2">&#34;</span><span class="nv">$dir</span><span class="s2">/right&#34;</span> 2&gt;/dev/null
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">printf</span> <span class="s1">&#39;#[fg=color244,bg=brightblack,noitalics]&#39;</span>
+</span></span><span class="line"><span class="cl">    cat <span class="s2">&#34;</span><span class="nv">$dir</span><span class="s2">/quote&#34;</span> 2&gt;/dev/null
+</span></span><span class="line"><span class="cl">    <span class="nb">printf</span> <span class="s1">&#39; &#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="nb">printf</span> <span class="s1">&#39;%s&#39;</span> <span class="s2">&#34;</span><span class="k">$(</span>date <span class="s1">&#39;+#[fg=blue,bg=brightblack] %b%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>tmux honors <code>#[...]</code> style tags in job output, and that includes <code>align=</code>. Three
+details took a test each to get right:</p>
+<ul>
+<li><strong>It has to be <code>status-left</code>.</strong> My first version put the job in <code>status-right</code>
+and sent the left block over with <code>#[align=left]</code>. The block was drawn <em>after</em>
+the window list. My window list is left-justified, and text that comes after a
+left-justified list stays attached to it.</li>
+<li><strong>The output must be a single line.</strong> tmux shows only one line of a job&rsquo;s
+output, and <code>date</code>&rsquo;s trailing newline split the first draft in two, so one half
+disappeared. That&rsquo;s why the clock is wrapped in <code>printf '%s' &quot;$(...)&quot;</code>.</li>
+<li><strong><code>status-left-length</code> has to cover the whole line.</strong> Mine was 30, which would
+have cut off the right half.</li>
+</ul>
+<p>To check that nothing changed visually, I started two throwaway servers on their
+own sockets, one with the old config and one with the new, and attached a
+client to each from inside a third server. <code>capture-pane -e</code> on that outer pane
+returns the inner client&rsquo;s screen, status line and colors included. Once the
+clock and the CPU numbers were masked, the two lines were byte-identical. (Pin
+the window name for this, or <code>automatic-rename</code> will race you: a pane started
+as <code>zsh -c cat</code> shows up as zsh for a moment.) Server forks went from 20 to 10
+per 10 seconds per client.</p>
+<h2 id="fix-2-strftime-doesnt-run-inside--which-my-last-post-got-wrong" class="heading-element">
+  <a href="#fix-2-strftime-doesnt-run-inside--which-my-last-post-got-wrong" class="heading-mark"></a>Fix 2: strftime doesn&rsquo;t run inside <code>#()</code>, which my last post got wrong</h2><p>In the previous post I passed the quote condition into the job as
+<code>#{E:#{@quote_cond}}</code>. That condition contains a time window, <code>%H%M</code> compared
+against <code>1715</code> and <code>0630</code>. It turns out tmux does <strong>not</strong> apply strftime to
+anything expanded inside a <code>#()</code> command:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux <span class="nb">set</span> -g @t <span class="s1">&#39;#{&gt;=:%H%M,0000}&#39;</span>
+</span></span><span class="line"><span class="cl">tmux <span class="nb">set</span> -g status-right <span class="s1">&#39;#(echo JOB=#{E:#{@t}}) NATIVE=#{E:#{@t}}&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">JOB=0 NATIVE=1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Inside the job, <code>%H%M</code> stayed a literal string, so <code>#{&lt;:%H%M,0630}</code> was always
+true, and so was the condition. Nobody noticed because the quote was switched
+off. Now tmux evaluates the condition outside the job and picks which of two
+commands to run: <code>#{?cond,#(job 1),#(job 0)}</code>. Only the chosen branch runs, so
+it is still one job.</p>
+<p>One caveat remains on this particular server. A long-running tmux server keeps
+the timezone it started with (see
+<a href="/2026-09-26-linux-timezone-clock-and-tmux/">this post</a>), and mine
+is still an hour behind. Until it restarts, the window flips an hour late. The
+clock itself is fine, because it comes from <code>date</code>.</p>
+<h2 id="fix-3-ctrl-l-was-forking-the-server" class="heading-element">
+  <a href="#fix-3-ctrl-l-was-forking-the-server" class="heading-mark"></a>Fix 3: Ctrl-L was forking the server</h2><p>My config still had this line from my
+<a href="/2022-09-13-tmux-vim-%E5%AF%BC%E8%87%B4%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8-ctrl-l-%E6%B8%85%E5%B1%8F/">2022 post</a>,
+which took Ctrl-L back from vim-tmux-navigator:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">bind-key -n C-l <span class="k">if</span>-shell <span class="s2">&#34;</span><span class="nv">$is_vim</span><span class="s2">&#34;</span> <span class="s2">&#34;send-keys C-l&#34;</span>  <span class="s2">&#34;send-keys C-l&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>I had stopped using vim-tmux-navigator long ago, and <code>$is_vim</code> was commented
+out. So every Ctrl-L ran an empty shell command, which meant a full fork of the
+1.5 GB server, only to choose between two identical branches. I removed it:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">unbind -q -n C-l    <span class="c1"># -q: on a fresh server the key isn&#39;t bound</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>If you do use vim-tmux-navigator, <code>bind-key -n C-l send-keys C-l</code> after the tpm
+line has the same effect without a fork.</p>
+<h2 id="fix-4-save-the-scrollback-then-clear-it" class="heading-element">
+  <a href="#fix-4-save-the-scrollback-then-clear-it" class="heading-mark"></a>Fix 4: save the scrollback, then clear it</h2><p>I didn&rsquo;t want to lose those query results, so I saved them first. <code>-J</code> joins
+lines that tmux wrapped, which makes the wide tables readable again:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux capture-pane -p -J -S - -E - -t &lt;pane&gt; &gt; ch_3.1.txt
+</span></span><span class="line"><span class="cl">tmux clear-history -t &lt;pane&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Reading 507 MB of history that was partly in swap froze tmux for 4.3 seconds,
+once. After the three panes, scrollback across all panes went from 881 MB to
+53 MB, and clickhouse-cli kept running.</p>
+<p>Clearing alone doesn&rsquo;t shrink the process: freed memory stays inside malloc. As
+it turns out, tmux 3.5a calls <code>malloc_trim(0)</code> once an hour, from
+<code>server_tidy_event</code>:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">objdump -d /usr/local/bin/tmux <span class="p">|</span> awk <span class="s1">&#39;/^[0-9a-f]+ &lt;.*&gt;:$/{fn=$2} /call.*&lt;malloc_trim@plt&gt;/{print fn}&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># &lt;server_tidy_event&gt;:</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>So within an hour, the memory goes back to the OS on its own.</p>
+<h2 id="results" class="heading-element">
+  <a href="#results" class="heading-mark"></a>Results</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>before</th>
+<th>after fixes 1–3</th>
+<th>after fix 4 + trim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>server forks per second</td>
+<td>6.7</td>
+<td>3.2</td>
+<td>AFTER_FORKS</td>
+</tr>
+<tr>
+<td>fork, median</td>
+<td>28 ms</td>
+<td>21 ms</td>
+<td>AFTER_FORK_P50</td>
+</tr>
+<tr>
+<td>command round trip, p99 / max</td>
+<td>120 / 123 ms</td>
+<td>63 / 69 ms</td>
+<td>AFTER_LAT</td>
+</tr>
+<tr>
+<td>round trips over 40 ms (of 300)</td>
+<td>23</td>
+<td>10</td>
+<td>AFTER_GT40</td>
+</tr>
+<tr>
+<td>tmux server CPU</td>
+<td>~25%</td>
+<td>~18%</td>
+<td>AFTER_CPU</td>
+</tr>
+<tr>
+<td>server memory (RAM + swap)</td>
+<td>918 + 614 MB</td>
+<td>same</td>
+<td>AFTER_MEM</td>
+</tr>
+</tbody>
+</table>
+<h2 id="whats-still-left" class="heading-element">
+  <a href="#whats-still-left" class="heading-mark"></a>What&rsquo;s still left</h2><ul>
+<li><strong><code>history-limit</code> is still 65535</strong>, so those panes will grow back. A pane keeps
+the limit it was created with, so lowering it only takes effect in new panes.</li>
+<li><strong>Every attached client costs one fork per second.</strong> Two of mine were terminal
+windows I hadn&rsquo;t typed into for two days.</li>
+<li><strong>The server has leaked panes.</strong> It holds 279 pseudo-terminals for 166 panes.
+The other 112 belong to processes that no session lists anymore, because tmux
+never freed their windows. Some of them are probe panes from my own
+measurements two weeks earlier, which ended up in the live server instead of a
+throwaway one.</li>
+<li><strong>A leftover plugin loop still calls <code>set-option</code> every 5 minutes.</strong> That
+repaints every pane on every client (see the
+<a href="/2026-09-30-tmux-status-bar-lag/">last post</a>).</li>
+<li><strong>Restarting the server fixes all of the above.</strong> A fresh server is tens of MB,
+so a fork takes well under a millisecond. It also loses every process running
+in a pane.</li>
+</ul>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>Measure latency, not just CPU.</strong> A loop of trivial tmux commands shows the
+stalls you feel when typing.</li>
+<li><strong>Time the syscall.</strong> A sampling profiler showed the fork&rsquo;s cost in the code
+that ran after it. <code>strace -T</code> on <code>clone</code> showed the cost itself.</li>
+<li><strong>Every <code>#()</code> forks the server, and a fork costs more as the server grows.</strong>
+Scrollback is most of that size, and colorful output costs several times more
+per cell than plain text.</li>
+<li><strong>strftime isn&rsquo;t applied inside <code>#()</code> commands.</strong> Evaluate anything with
+<code>%H</code>/<code>%M</code> in it outside the job.</li>
+<li><strong>Save before you clear.</strong> <code>capture-pane -p -J -S - -E -</code> keeps the text, and
+tmux&rsquo;s hourly <code>malloc_trim</code> returns the memory.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><a href="https://github.com/tmux/tmux/blob/master/tmux.1"target="_blank" rel="external nofollow noopener noreferrer">tmux manual: <code>FORMATS</code>, <code>STYLES</code> (<code>align=</code>, <code>range=</code>), <code>capture-pane</code>, <code>clear-history</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/tmux/tmux/blob/master/format.c"target="_blank" rel="external nofollow noopener noreferrer">tmux source: <code>format_job_get()</code>, where job commands are expanded without strftime<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/tmux/tmux/blob/master/server.c"target="_blank" rel="external nofollow noopener noreferrer">tmux source: <code>server_tidy_event()</code> and <code>malloc_trim</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="/2026-09-30-tmux-status-bar-lag/">Previous post: the status bar was forking a 1.2 GB server 24 times a second</a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-09-30-tmux-status-bar-lag/" title="Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second">Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</a></li><li>
+          <a href="/2026-09-26-linux-timezone-clock-and-tmux/" title="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查">Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</a></li><li>
+          <a href="/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/" title="(转)Linux 网络大流量传输优化方法">(转)Linux 网络大流量传输优化方法</a></li><li>
+          <a href="/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" title="tmux: error while loading shared libraries: libevent_core 2.1.so.6">tmux: error while loading shared libraries: libevent_core 2.1.so.6</a></li><li>
+          <a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/" title="tmux 设置默认 zsh">tmux 设置默认 zsh</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-10-02 22:30:00">更新于 2026-10-02&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-10-02-tmux-lag-round-2/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/" data-title="tmux lag, round 2: every status-bar fork froze the server for 30 ms" data-hashtags="Linux,tmux,performance,strace,fork,malloc_trim,scrollback"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/" data-title="tmux lag, round 2: every status-bar fork froze the server for 30 ms" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/" data-title="tmux lag, round 2: every status-bar fork froze the server for 30 ms"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/" data-title="tmux lag, round 2: every status-bar fork froze the server for 30 ms"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/tmux/" class="post-tag" title="标签 - Tmux">Tmux</a><a href="/tags/performance/" class="post-tag" title="标签 - Performance">Performance</a><a href="/tags/strace/" class="post-tag" title="标签 - Strace">Strace</a><a href="/tags/fork/" class="post-tag" title="标签 - Fork">Fork</a><a href="/tags/malloc_trim/" class="post-tag" title="标签 - Malloc_trim">Malloc_trim</a><a href="/tags/scrollback/" class="post-tag" title="标签 - Scrollback">Scrollback</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-09-30-tmux-status-bar-lag/" class="post-nav-item" rel="prev" title="Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</a>
+      <a href="/2026-10-02-claude-code-blog-skill-and-agent/" class="post-nav-item" rel="next" title="A Claude Code skill and subagent that write posts for this blog">A Claude Code skill and subagent that write posts for this blog<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>
