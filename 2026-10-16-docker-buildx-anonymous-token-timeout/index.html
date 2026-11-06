@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>docker buildx: the builder had a proxy, the client didn&#39;t - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="My image build script started failing on its very first line, FROM python:3.10,
+with failed to fetch anonymous token ... TLS handshake timeout. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.
+The token request is not made by the builder. It is made by the docker buildx
+client in your own shell, using your shell&rsquo;s proxy variables. My interactive
+zsh exports none, so that one request went direct and timed out. Two export
+lines in the build script fixed it." /><meta name="keywords" content='docker, buildx, buildkit, proxy, socks5, network' /><meta itemprop="name" content="docker buildx: the builder had a proxy, the client didn&#39;t">
+<meta itemprop="description" content="My image build script started failing on its very first line, FROM python:3.10,
+with failed to fetch anonymous token ... TLS handshake timeout. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.
+The token request is not made by the builder. It is made by the docker buildx
+client in your own shell, using your shell&rsquo;s proxy variables. My interactive
+zsh exports none, so that one request went direct and timed out. Two export
+lines in the build script fixed it."><meta itemprop="datePublished" content="2026-10-16T14:03:28+09:00" />
+<meta itemprop="dateModified" content="2026-10-16T14:03:28+09:00" />
+<meta itemprop="wordCount" content="1195"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="docker,buildx,buildkit,proxy,socks5,network," /><meta property="og:title" content="docker buildx: the builder had a proxy, the client didn&#39;t" />
+<meta property="og:description" content="My image build script started failing on its very first line, FROM python:3.10,
+with failed to fetch anonymous token ... TLS handshake timeout. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.
+The token request is not made by the builder. It is made by the docker buildx
+client in your own shell, using your shell&rsquo;s proxy variables. My interactive
+zsh exports none, so that one request went direct and timed out. Two export
+lines in the build script fixed it." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-10-16T14:03:28+09:00" />
+<meta property="article:modified_time" content="2026-10-16T14:03:28+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="docker buildx: the builder had a proxy, the client didn&#39;t"/>
+<meta name="twitter:description" content="My image build script started failing on its very first line, FROM python:3.10,
+with failed to fetch anonymous token ... TLS handshake timeout. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.
+The token request is not made by the builder. It is made by the docker buildx
+client in your own shell, using your shell&rsquo;s proxy variables. My interactive
+zsh exports none, so that one request went direct and timed out. Two export
+lines in the build script fixed it."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" /><link rel="prev" href="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" /><link rel="next" href="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "docker buildx: the builder had a proxy, the client didn't",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-10-16-docker-buildx-anonymous-token-timeout\/"
+    },"genre": "posts","keywords": "docker, buildx, buildkit, proxy, socks5, network","wordcount":  1195 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-10-16-docker-buildx-anonymous-token-timeout\/","datePublished": "2026-10-16T14:03:28+09:00","dateModified": "2026-10-16T14:03:28+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>docker buildx: the builder had a proxy, the client didn&#39;t</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-10-16 14:03:28"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-10-16">2026-10-16</time></span>&nbsp;<span title="1195 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 3 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#the-error">The error</a></li>
+        <li><a href="#step-1-the-builders-proxy-works">Step 1: the builder&rsquo;s proxy works</a>
+          <ol>
+            <li><a href="#wrong-turn-it-was-a-blip">Wrong turn: &ldquo;it was a blip&rdquo;</a></li>
+          </ol>
+        </li>
+        <li><a href="#step-2-reproduce-it-by-removing-the-clients-proxy">Step 2: reproduce it by removing the client&rsquo;s proxy</a></li>
+        <li><a href="#why-the-client-fetches-the-token">Why the client fetches the token</a></li>
+        <li><a href="#the-fix">The fix</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>My image build script started failing on its very first line, <code>FROM python:3.10</code>,
+with <code>failed to fetch anonymous token ... TLS handshake timeout</code>. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.</p>
+<p><strong>The token request is not made by the builder. It is made by the <code>docker buildx</code>
+client in your own shell, using your shell&rsquo;s proxy variables.</strong> My interactive
+zsh exports none, so that one request went direct and timed out. Two <code>export</code>
+lines in the build script fixed it.</p>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li>Ubuntu, kernel 5.15, BuildKit v0.22.0 in a <code>docker-container</code> builder named
+<code>proxy-builder</code></li>
+<li>The builder was created with <code>--driver-opt env.HTTPS_PROXY=...</code>, so
+<code>buildkitd</code> inside its container goes through a proxy</li>
+<li><code>run.sh</code> builds <code>william-ubuntu-python3:v1.0</code> with
+<code>docker buildx build --builder proxy-builder --load</code> and pushes it to a LAN
+registry at <code>192.168.1.162:5000</code></li>
+<li>Docker Hub is not reachable directly from this network</li>
+</ul>
+<h2 id="the-error" class="heading-element">
+  <a href="#the-error" class="heading-mark"></a>The error</h2><div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl"> =&gt; ERROR [internal] load metadata for docker.io/library/python:3.10          10.9s
+</span></span><span class="line"><span class="cl">------
+</span></span><span class="line"><span class="cl">Dockerfile:2
+</span></span><span class="line"><span class="cl">--------------------
+</span></span><span class="line"><span class="cl">   1 |     ## error for python3.11 fatal error: longintrepr.h: No such file or directory
+</span></span><span class="line"><span class="cl">   2 | &gt;&gt;&gt; FROM python:3.10
+</span></span><span class="line"><span class="cl">--------------------
+</span></span><span class="line"><span class="cl">ERROR: failed to solve: failed to fetch anonymous token: Get &#34;https://auth.docker.io/token?scope=repository%3Alibrary%2Fpython%3Apull&amp;service=registry.docker.io&#34;: net/http: TLS handshake timeout</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The step dies after about 10 seconds, which matches Go&rsquo;s default
+<code>TLSHandshakeTimeout</code>. The TCP connection opens, but the TLS handshake never
+finishes. That&rsquo;s what a blocked direct connection looks like here.</p>
+<h2 id="step-1-the-builders-proxy-works" class="heading-element">
+  <a href="#step-1-the-builders-proxy-works" class="heading-mark"></a>Step 1: the builder&rsquo;s proxy works</h2><p>The builder&rsquo;s proxy is visible in <code>docker buildx inspect</code>:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker buildx inspect proxy-builder <span class="p">|</span> grep -E <span class="s1">&#39;Driver Options|Status&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Driver Options:        env.HTTPS_PROXY=&#34;socks5://&lt;socks-host&gt;:1080&#34; env.HTTP_PROXY=&#34;socks5://&lt;socks-host&gt;:1080&#34;
+</span></span><span class="line"><span class="cl">Status:                running</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Both proxies I have reached the exact URL from the error in about a second:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> p in socks5h://&lt;socks-host&gt;:1080 http://192.168.1.82:20170<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    curl -sS -o /dev/null -w <span class="s1">&#39;%{http_code} %{time_total}s\n&#39;</span> -m <span class="m">15</span> -x <span class="s2">&#34;</span><span class="nv">$p</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        <span class="s2">&#34;https://auth.docker.io/token?scope=repository%3Alibrary%2Fpython%3Apull&amp;service=registry.docker.io&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">200 1.160909s
+</span></span><span class="line"><span class="cl">200 0.593667s</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <code>buildkitd</code> log in the builder container showed the same error, so I
+assumed the request came from there:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker logs --tail <span class="m">15</span> buildx_buildkit_proxy-builder0 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">|</span> grep -i timeout</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">level=error msg=&#34;... failed to fetch anonymous token: Get \&#34;https://auth.docker.io/token?...\&#34;: net/http: TLS handshake timeout&#34;</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="wrong-turn-it-was-a-blip" class="heading-element">
+  <a href="#wrong-turn-it-was-a-blip" class="heading-mark"></a>Wrong turn: &ldquo;it was a blip&rdquo;</h3><p>I ran a minimal <code>FROM python:3.10</code> build through <code>proxy-builder</code>, it passed,
+and I put the failure down to a flaky SOCKS proxy. I also re-created the
+builder to use the faster HTTP proxy at <code>192.168.1.82:20170</code>. The full
+<code>run.sh</code> then built and pushed fine.</p>
+<p>Then I ran <code>bash ./run.sh</code> in my normal terminal and got the exact same error.</p>
+<p>What I had missed: the shell I tested from was not my normal shell. It
+<strong>already had <code>HTTPS_PROXY</code> exported</strong>, and my interactive zsh doesn&rsquo;t. So
+every test I ran passed for a reason that didn&rsquo;t apply to my real terminal.
+Re-creating the builder did no harm, but it didn&rsquo;t fix anything.</p>
+<h2 id="step-2-reproduce-it-by-removing-the-clients-proxy" class="heading-element">
+  <a href="#step-2-reproduce-it-by-removing-the-clients-proxy" class="heading-mark"></a>Step 2: reproduce it by removing the client&rsquo;s proxy</h2><p>Same builder and same Dockerfile. The only change is whether the
+<code>docker buildx</code> process itself sees the proxy variables:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">printf</span> <span class="s1">&#39;FROM python:3.10\n&#39;</span> &gt; Dockerfile
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># client without proxy variables</span>
+</span></span><span class="line"><span class="cl">env -u HTTP_PROXY -u HTTPS_PROXY -u http_proxy -u https_proxy -u ALL_PROXY -u all_proxy <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    docker buildx build --builder proxy-builder --no-cache --pull .
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># client with proxy variables</span>
+</span></span><span class="line"><span class="cl">docker buildx build --builder proxy-builder --no-cache --pull .</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">#2 ERROR: failed to authorize: failed to fetch anonymous token: Get &#34;https://auth.docker.io/token?...&#34;: net/http: TLS handshake timeout
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">#4 CACHED</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The first command fails and the second one passes. And a clean interactive zsh
+confirms what my terminal actually exports:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">env -i <span class="nv">HOME</span><span class="o">=</span><span class="nv">$HOME</span> <span class="nv">USER</span><span class="o">=</span><span class="nv">$USER</span> <span class="nv">TERM</span><span class="o">=</span>xterm <span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:/usr/bin:/bin <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    zsh -i -c <span class="s1">&#39;env | grep -i proxy || echo &#34;NO PROXY VARS&#34;&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">GOPROXY=https://goproxy.cn,direct</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Only <code>GOPROXY</code>. My <code>.zshrc</code> sets proxies inside a few aliases and functions
+(<code>proxychains4 -q</code>, <code>env HTTPS_PROXY=... some-app</code>) but never exports one for
+the whole shell.</p>
+<h2 id="why-the-client-fetches-the-token" class="heading-element">
+  <a href="#why-the-client-fetches-the-token" class="heading-mark"></a>Why the client fetches the token</h2><p>With BuildKit, registry credentials stay on the client. When the builder needs
+to pull from a registry, it asks the client over the build session, and the
+client&rsquo;s auth provider fetches the bearer token from <code>auth.docker.io</code>, anonymous
+or not. The builder then uses that token to pull the layers through its own
+proxy.</p>
+<p>So a pull from Docker Hub needs <strong>two</strong> working network paths:</p>
+<table>
+<thead>
+<tr>
+<th>request</th>
+<th>made by</th>
+<th>proxy it uses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET auth.docker.io/token</code></td>
+<td><code>docker buildx</code> client (your shell)</td>
+<td>your shell&rsquo;s <code>HTTPS_PROXY</code></td>
+</tr>
+<tr>
+<td>manifests and layers from <code>registry-1.docker.io</code></td>
+<td><code>buildkitd</code> in the builder container</td>
+<td>the builder&rsquo;s <code>env.HTTPS_PROXY</code></td>
+</tr>
+</tbody>
+</table>
+<p>The error is reported by the builder, which is why I first looked there. But
+it is relaying a failure from the client side. Setting
+<code>--driver-opt env.HTTPS_PROXY</code> only covers the second row.</p>
+<h2 id="the-fix" class="heading-element">
+  <a href="#the-fix" class="heading-mark"></a>The fix</h2><p>Export the proxy in the build script, so it doesn&rsquo;t depend on whichever shell
+runs it.</p>
+<p><code>run.sh</code>:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nb">set</span> -e
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">cp /home/william/git/wepy/wepy/requirements.txt .
+</span></span><span class="line"><span class="cl"><span class="nv">TAG</span><span class="o">=</span>william-ubuntu-python3:v1.0
+</span></span><span class="line"><span class="cl"><span class="nv">URL</span><span class="o">=</span>192.168.1.162:5000
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## buildx client fetches the docker.io auth token itself, so it needs the proxy too</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">HTTP_PROXY</span><span class="o">=</span>http://192.168.1.82:20170 <span class="nv">HTTPS_PROXY</span><span class="o">=</span>http://192.168.1.82:20170
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">NO_PROXY</span><span class="o">=</span>localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">COMPOSE_DOCKER_CLI_BUILD</span><span class="o">=</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">docker buildx build --builder proxy-builder --load <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --ssh default <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --build-arg <span class="nv">BUILD_DATE</span><span class="o">=</span><span class="s2">&#34;</span><span class="k">$(</span>date -u +<span class="s1">&#39;%Y-%m-%dT%H:%M&#39;</span><span class="k">)</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -t <span class="s2">&#34;</span><span class="nv">$TAG</span><span class="s2">&#34;</span> .
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">docker tag <span class="s2">&#34;</span><span class="nv">$TAG</span><span class="s2">&#34;</span> <span class="s2">&#34;</span><span class="nv">$URL</span><span class="s2">/</span><span class="nv">$TAG</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">docker push <span class="s2">&#34;</span><span class="nv">$URL</span><span class="s2">/</span><span class="nv">$TAG</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">rm -rf ./requirements.txt</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To check it, run the script from a clean zsh with no proxy set, the same way it
+runs from my terminal:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">env -i <span class="nv">HOME</span><span class="o">=</span><span class="nv">$HOME</span> <span class="nv">USER</span><span class="o">=</span><span class="nv">$USER</span> <span class="nv">TERM</span><span class="o">=</span>xterm <span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:/usr/bin:/bin <span class="nv">SSH_AUTH_SOCK</span><span class="o">=</span><span class="nv">$SSH_AUTH_SOCK</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    zsh -i -c <span class="s1">&#39;cd ~/git/jobs/dockerfiles/ubuntu &amp;&amp; bash ./run.sh&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">#2 [internal] load metadata for docker.io/library/python:3.10
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">v1.0: digest: sha256:c5c0bd0128e874fb40481547c05cc90de342f26931e558141c5fcfba92fbd358 size: 5372</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li>
+<p><strong>The scheme has to match what the port speaks.</strong> My SOCKS port only speaks
+SOCKS5. Pointing an <code>http://</code> proxy at it fails right away:</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -sS -o /dev/null -m <span class="m">15</span> -x http://&lt;socks-host&gt;:1080 https://auth.docker.io/token</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">curl: (56) Proxy CONNECT aborted</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Use <code>socks5://&lt;socks-host&gt;:1080</code> for that one. The buildx client is a Go
+program and accepts <code>socks5://</code> in <code>HTTPS_PROXY</code>; I tested it and the token
+fetch went through. The <code>192.168.1.82:20170</code> port speaks HTTP, so <code>http://</code>
+is correct there.</p>
+</li>
+<li>
+<p><strong><code>NO_PROXY</code> keeps LAN traffic direct.</strong> The push goes to
+<code>192.168.1.162:5000</code>, and you don&rsquo;t want local addresses going through the
+proxy.</p>
+</li>
+<li>
+<p><strong>Put it in the script, not in <code>.zshrc</code>.</strong> Exporting a proxy for the whole
+shell changes every other program you run. The script is the one place that
+needs it.</p>
+</li>
+</ul>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>With BuildKit, a Docker Hub pull crosses two processes, and both need a
+network path.</strong> The builder proxy covers layer downloads; the client&rsquo;s
+environment covers the auth token.</li>
+<li><strong>The process that reports an error is not always the one that failed.</strong>
+<code>buildkitd</code> logged the timeout, but the request that timed out came from
+the client.</li>
+<li><strong>Test from the same environment the failure happens in.</strong> My checks passed
+in a shell that already had a proxy exported. A clean <code>env -i ... zsh -i</code>
+reproduced the failure on the first try.</li>
+</ol>
+<p>Related: <a href="/2023-06-29-docker-buildx/">docker buildx</a>,
+<a href="/2024-07-17-docker-%E9%85%8D%E7%BD%AE%E5%9C%A8pull%E9%98%B6%E6%AE%B5%E4%BD%BF%E7%94%A8-proxy/">docker 配置在pull阶段使用 proxy</a>
+(that one is the <code>dockerd</code> side, for plain <code>docker pull</code>).</p>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><a href="https://docs.docker.com/build/buildkit/configure/"target="_blank" rel="external nofollow noopener noreferrer">Configure BuildKit: proxy and registry settings<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://docs.docker.com/engine/cli/proxy/"target="_blank" rel="external nofollow noopener noreferrer">Docker build: use a proxy<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li>BuildKit client-side auth provider: <a href="https://github.com/moby/buildkit/blob/master/session/auth/authprovider/authprovider.go"target="_blank" rel="external nofollow noopener noreferrer"><code>session/auth/authprovider/authprovider.go</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2024-03-28-docker-%E4%BD%BF%E7%94%A8-host-%E4%BB%A3%E7%90%86/" title="docker 使用 host 代理">docker 使用 host 代理</a></li><li>
+          <a href="/2023-06-29-docker-buildx/" title="docker buildx">docker buildx</a></li><li>
+          <a href="/2026-09-28-clash-verge-on-mint-20/" title="Installing Clash Verge Rev on Ubuntu 20.04 / Mint 20 — and upgrading its mihomo core">Installing Clash Verge Rev on Ubuntu 20.04 / Mint 20 — and upgrading its mihomo core</a></li><li>
+          <a href="/2026-09-22-chatgpt-desktop-on-mint-20/" title="Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc">Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc</a></li><li>
+          <a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/" title="Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)">Installing Claude Desktop on Ubuntu 20.04 / Mint 20 (glibc 2.31)</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-10-16 14:03:28">更新于 2026-10-16&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-10-16-docker-buildx-anonymous-token-timeout/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" data-title="docker buildx: the builder had a proxy, the client didn&#39;t" data-hashtags="docker,buildx,buildkit,proxy,socks5,network"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" data-hashtag="docker"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" data-title="docker buildx: the builder had a proxy, the client didn&#39;t" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" data-title="docker buildx: the builder had a proxy, the client didn&#39;t"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" data-title="docker buildx: the builder had a proxy, the client didn&#39;t"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/docker/" class="post-tag" title="标签 - Docker">Docker</a><a href="/tags/buildx/" class="post-tag" title="标签 - Buildx">Buildx</a><a href="/tags/buildkit/" class="post-tag" title="标签 - Buildkit">Buildkit</a><a href="/tags/proxy/" class="post-tag" title="标签 - Proxy">Proxy</a><a href="/tags/socks5/" class="post-tag" title="标签 - Socks5">Socks5</a><a href="/tags/network/" class="post-tag" title="标签 - Network">Network</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-10-15-log-full-dataframe-from-fstring/" class="post-nav-item" rel="prev" title="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source</a>
+      <a href="/2026-10-17-nvim-big-log-files/" class="post-nav-item" rel="next" title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15">Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

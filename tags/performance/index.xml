@@ -3,13 +3,147 @@
     <title>Performance - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/performance/</link>
     <description>Performance - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 02 Oct 2026 22:30:00 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/performance/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 17 Oct 2026 12:00:00 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/performance/" rel="self" type="application/rss+xml" /><item>
+  <title>Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15</title>
+  <link>https://williamlfang.github.io/2026-10-17-nvim-big-log-files/</link>
+  <pubDate>Sat, 17 Oct 2026 12:00:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-17-nvim-big-log-files/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/featured-image.png" alt="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" referrerpolicy="no-referrer"/></div><p>After the <a href="/2026-10-03-nvim-startup-lazy-loading/">startup pass</a>,
+the slowest thing left in my Neovim was big log files. <code>~/log</code> holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. <code>n</code>, <code>/</code>, typing and <code>&lt;Esc&gt;</code> each stalled.
+Just reading the log while it grew <strong>froze the UI for about 11 of every 15
+seconds</strong>.</p>
+<p>No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed <code>n</code> in every file. Medians of 5 runs in a
+real terminal:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>open the 87 MB log until keys are accepted</td>
+<td style="text-align:right">1857 ms</td>
+<td style="text-align:right"><strong>199 ms</strong></td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td style="text-align:right">523 ms</td>
+<td style="text-align:right"><strong>21 ms</strong></td>
+</tr>
+<tr>
+<td>UI blocked per 15 s while reading the growing log</td>
+<td style="text-align:right">10963 ms</td>
+<td style="text-align:right"><strong>0 ms</strong></td>
+</tr>
+</tbody>
+</table>]]></description>
+</item>
+<item>
+  <title>Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy</title>
+  <link>https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/</link>
+  <pubDate>Sat, 03 Oct 2026 00:08:03 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/featured-image.png" alt="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" title="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-10-17:</strong> the next pass looked at big log files, and found an
+<code>nc</code> mapping that made every <code>n</code> wait <code>timeoutlen</code> (500 ms) in every file. See
+<a href="/2026-10-17-nvim-big-log-files/">Profiling Neovim on big logs</a>.</p>
+</blockquote>
+<p>After <a href="/2026-10-02-tmux-lag-round-2/">tmux</a> and
+<a href="/2026-10-02-zsh-startup-and-command-lag/">zsh</a>, I looked at
+Neovim. My config has grown to 138 plugins on lazy.nvim and LazyVim. Almost
+every spec has an <code>event</code>, <code>cmd</code> or <code>keys</code>, so I assumed most of them were lazy.
+They weren&rsquo;t: <strong>89 of the 138 plugins loaded at startup</strong>.</p>
+<p>None of the causes was a slow plugin. They were config mistakes that only show
+up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two rounds:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU time to first screen, opening a new file</td>
+<td style="text-align:right">~150 ms</td>
+<td style="text-align:right"><strong>~120 ms</strong></td>
+</tr>
+<tr>
+<td>CPU time to first screen, no file (dashboard)</td>
+<td style="text-align:right">69 ms</td>
+<td style="text-align:right"><strong>50 ms</strong></td>
+</tr>
+<tr>
+<td>plugins loaded at startup</td>
+<td style="text-align:right">89</td>
+<td style="text-align:right"><strong>73</strong></td>
+</tr>
+</tbody>
+</table>]]></description>
+</item>
+<item>
+  <title>Profiling zsh: a Python plugin was adding 190 ms to every command</title>
+  <link>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</link>
+  <pubDate>Fri, 02 Oct 2026 23:15:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/featured-image.png" alt="Profiling zsh: a Python plugin was adding 190 ms to every command" title="Profiling zsh: a Python plugin was adding 190 ms to every command" referrerpolicy="no-referrer"/></div><p>After <a href="/2026-10-02-tmux-lag-round-2/">fixing tmux</a>, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.</p>
+<p>Measured properly, it was slow in three separate ways, each with its own cause:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>startup to a usable shell</td>
+<td style="text-align:right">267 ms</td>
+<td style="text-align:right">101 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every command</strong></td>
+<td style="text-align:right">188 ms</td>
+<td style="text-align:right">3 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every prompt</strong></td>
+<td style="text-align:right">15 ms</td>
+<td style="text-align:right">4 ms</td>
+</tr>
+</tbody>
+</table>
+<p>This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own.</p>]]></description>
+</item>
+<item>
   <title>tmux lag, round 2: every status-bar fork froze the server for 30 ms</title>
   <link>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</link>
   <pubDate>Fri, 02 Oct 2026 22:30:00 &#43;0900</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</guid>
-  <description><![CDATA[<p>Two days after the
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/featured-image.png" alt="tmux lag, round 2: every status-bar fork froze the server for 30 ms" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-10-09:</strong> I extended this renderer for a 71-column iPhone
+client: compact text stopped duplicated bottom status rows while keeping
+the desktop colors and widgets. See the
+<a href="/2026-10-09-tmux-termius-iphone-status-bar/">Termius on iPhone follow-up</a>.</p>
+</blockquote>
+<p>Two days after the
 <a href="/2026-09-30-tmux-status-bar-lag/">last fix</a>, my tmux was laggy
 again, and the server was back at about a quarter of a CPU core. The culprit was
 the same as last time: the status bar&rsquo;s <code>#()</code> jobs. This time, though, the

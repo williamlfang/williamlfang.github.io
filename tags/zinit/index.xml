@@ -1,0 +1,47 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Zinit - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/zinit/</link>
+    <description>Zinit - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 02 Oct 2026 23:15:00 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/zinit/" rel="self" type="application/rss+xml" /><item>
+  <title>Profiling zsh: a Python plugin was adding 190 ms to every command</title>
+  <link>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</link>
+  <pubDate>Fri, 02 Oct 2026 23:15:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/featured-image.png" alt="Profiling zsh: a Python plugin was adding 190 ms to every command" title="Profiling zsh: a Python plugin was adding 190 ms to every command" referrerpolicy="no-referrer"/></div><p>After <a href="/2026-10-02-tmux-lag-round-2/">fixing tmux</a>, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.</p>
+<p>Measured properly, it was slow in three separate ways, each with its own cause:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>startup to a usable shell</td>
+<td style="text-align:right">267 ms</td>
+<td style="text-align:right">101 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every command</strong></td>
+<td style="text-align:right">188 ms</td>
+<td style="text-align:right">3 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every prompt</strong></td>
+<td style="text-align:right">15 ms</td>
+<td style="text-align:right">4 ms</td>
+</tr>
+</tbody>
+</table>
+<p>This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own.</p>]]></description>
+</item>
+</channel>
+</rss>

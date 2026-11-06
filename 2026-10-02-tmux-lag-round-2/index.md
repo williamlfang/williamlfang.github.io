@@ -1,6 +1,11 @@
 # tmux lag, round 2: every status-bar fork froze the server for 30 ms
 
 
+&gt; **Update 2026-10-09:** I extended this renderer for a 71-column iPhone
+&gt; client: compact text stopped duplicated bottom status rows while keeping
+&gt; the desktop colors and widgets. See the
+&gt; [Termius on iPhone follow-up]({{&lt; relref &#34;2026-10-09-tmux-termius-iphone-status-bar&#34; &gt;}}).
+
 Two days after the
 [last fix]({{&lt; relref &#34;2026-09-30-tmux-status-bar-lag&#34; &gt;}}), my tmux was laggy
 again, and the server was back at about a quarter of a CPU core. The culprit was
@@ -239,12 +244,21 @@ So within an hour, the memory goes back to the OS on its own.
 
 |                                  | before        | after fixes 1–3 | after fix 4 &#43; trim |
 |----------------------------------|---------------|-----------------|--------------------|
-| server forks per second          | 6.7           | 3.2             | AFTER_FORKS        |
-| fork, median                     | 28 ms         | 21 ms           | AFTER_FORK_P50     |
-| command round trip, p99 / max    | 120 / 123 ms  | 63 / 69 ms      | AFTER_LAT          |
-| round trips over 40 ms (of 300)  | 23            | 10              | AFTER_GT40         |
-| tmux server CPU                  | ~25%          | ~18%            | AFTER_CPU          |
-| server memory (RAM &#43; swap)       | 918 &#43; 614 MB  | same            | AFTER_MEM          |
+| server forks per second          | 6.7           | 3.2             | 3.1                |
+| fork, median                     | 28 ms         | 21 ms           | 17 ms              |
+| command round trip, p99 / max    | 120 / 123 ms  | 63 / 69 ms      | 69 / 81 ms         |
+| round trips over 40 ms (of 300)  | 23            | 10              | 9                  |
+| tmux server CPU                  | ~25%          | ~18%            | ~17%               |
+| server memory (RAM &#43; swap)       | 918 &#43; 614 MB  | same            | 705 &#43; 245 MB       |
+
+The config fixes did most of the work. Halving the forks and getting rid of the
+back-to-back pairs took away the worst stalls: nothing over 80 ms, against
+about one in thirteen commands before. Clearing the scrollback did return
+615 MB at the next hourly trim, and each fork got about 20% cheaper. But the
+latency tail didn&#39;t move; the difference between the last two columns is
+within measurement noise. Scrollback is now only 53 MB of the remaining
+0.95 GB. I haven&#39;t measured how the rest splits between the leaked panes below
+and malloc fragmentation.
 
 ## What&#39;s still left
 

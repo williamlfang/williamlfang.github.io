@@ -3,7 +3,147 @@
     <title>Tools - 分类 - William</title>
     <link>https://williamlfang.github.io/categories/tools/</link>
     <description>Tools - 分类 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 02 Oct 2026 22:36:58 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/tools/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/tools/" rel="self" type="application/rss+xml" /><item>
+  <title>Use the IDC proxy from XPS and Codex</title>
+  <link>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</link>
+  <pubDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</guid>
+  <description><![CDATA[<p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>]]></description>
+</item>
+<item>
+  <title>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</title>
+  <link>https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/</link>
+  <pubDate>Thu, 05 Nov 2026 18:38:39 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/featured-image.png" alt="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" referrerpolicy="no-referrer"/></div><p>I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same <a href="/2024-09-08-powerlevel10k-%E9%85%8D%E7%BD%AE/">powerlevel10k</a>
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.</p>
+<p>The fix was a dotted gap computed from <code>$COLUMNS</code> and <strong><code>&quot;padding&quot;: -2</code></strong>, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135.</p>]]></description>
+</item>
+<item>
+  <title>Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate</title>
+  <link>https://williamlfang.github.io/2026-10-29-lan-https-local-ca/</link>
+  <pubDate>Thu, 29 Oct 2026 21:55:45 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-29-lan-https-local-ca/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/featured-image.png" alt="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" title="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" referrerpolicy="no-referrer"/></div><p>My team&rsquo;s internal portal runs on plain http on the LAN, at <code>http://192.168.1.82:8888</code>. I wanted its
+note editor to grab a screenshot of another window straight from the browser, Flameshot-style, with
+<code>getDisplayMedia()</code>. On that address the API isn&rsquo;t there at all: <strong>browsers only offer screen capture
+in a secure context, and an http page on a LAN IP is not one.</strong></p>
+<p>The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
+once. My first attempt, the usual one-line self-signed <code>openssl req -x509</code>, made the wrong kind of
+certificate: a CA certificate with no <code>serverAuth</code> usage, which Apple&rsquo;s rules reject.</p>]]></description>
+</item>
+<item>
+  <title>Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15</title>
+  <link>https://williamlfang.github.io/2026-10-17-nvim-big-log-files/</link>
+  <pubDate>Sat, 17 Oct 2026 12:00:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-17-nvim-big-log-files/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/featured-image.png" alt="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" referrerpolicy="no-referrer"/></div><p>After the <a href="/2026-10-03-nvim-startup-lazy-loading/">startup pass</a>,
+the slowest thing left in my Neovim was big log files. <code>~/log</code> holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. <code>n</code>, <code>/</code>, typing and <code>&lt;Esc&gt;</code> each stalled.
+Just reading the log while it grew <strong>froze the UI for about 11 of every 15
+seconds</strong>.</p>
+<p>No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed <code>n</code> in every file. Medians of 5 runs in a
+real terminal:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>open the 87 MB log until keys are accepted</td>
+<td style="text-align:right">1857 ms</td>
+<td style="text-align:right"><strong>199 ms</strong></td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td style="text-align:right">523 ms</td>
+<td style="text-align:right"><strong>21 ms</strong></td>
+</tr>
+<tr>
+<td>UI blocked per 15 s while reading the growing log</td>
+<td style="text-align:right">10963 ms</td>
+<td style="text-align:right"><strong>0 ms</strong></td>
+</tr>
+</tbody>
+</table>]]></description>
+</item>
+<item>
+  <title>docker buildx: the builder had a proxy, the client didn&#39;t</title>
+  <link>https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/</link>
+  <pubDate>Fri, 16 Oct 2026 14:03:28 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/</guid>
+  <description><![CDATA[<p>My image build script started failing on its very first line, <code>FROM python:3.10</code>,
+with <code>failed to fetch anonymous token ... TLS handshake timeout</code>. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.</p>
+<p><strong>The token request is not made by the builder. It is made by the <code>docker buildx</code>
+client in your own shell, using your shell&rsquo;s proxy variables.</strong> My interactive
+zsh exports none, so that one request went direct and timed out. Two <code>export</code>
+lines in the build script fixed it.</p>]]></description>
+</item>
+<item>
+  <title>Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy</title>
+  <link>https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/</link>
+  <pubDate>Sat, 03 Oct 2026 00:08:03 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/featured-image.png" alt="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" title="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-10-17:</strong> the next pass looked at big log files, and found an
+<code>nc</code> mapping that made every <code>n</code> wait <code>timeoutlen</code> (500 ms) in every file. See
+<a href="/2026-10-17-nvim-big-log-files/">Profiling Neovim on big logs</a>.</p>
+</blockquote>
+<p>After <a href="/2026-10-02-tmux-lag-round-2/">tmux</a> and
+<a href="/2026-10-02-zsh-startup-and-command-lag/">zsh</a>, I looked at
+Neovim. My config has grown to 138 plugins on lazy.nvim and LazyVim. Almost
+every spec has an <code>event</code>, <code>cmd</code> or <code>keys</code>, so I assumed most of them were lazy.
+They weren&rsquo;t: <strong>89 of the 138 plugins loaded at startup</strong>.</p>
+<p>None of the causes was a slow plugin. They were config mistakes that only show
+up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two rounds:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU time to first screen, opening a new file</td>
+<td style="text-align:right">~150 ms</td>
+<td style="text-align:right"><strong>~120 ms</strong></td>
+</tr>
+<tr>
+<td>CPU time to first screen, no file (dashboard)</td>
+<td style="text-align:right">69 ms</td>
+<td style="text-align:right"><strong>50 ms</strong></td>
+</tr>
+<tr>
+<td>plugins loaded at startup</td>
+<td style="text-align:right">89</td>
+<td style="text-align:right"><strong>73</strong></td>
+</tr>
+</tbody>
+</table>]]></description>
+</item>
+<item>
   <title>A Claude Code skill and subagent that write posts for this blog</title>
   <link>https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/</link>
   <pubDate>Fri, 02 Oct 2026 22:36:58 &#43;0900</pubDate>
@@ -42,88 +182,6 @@ set up. It was written with the skill.</p>]]></description>
   <guid>https://williamlfang.github.io/2024-03-18-nvim-%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</guid>
   <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2024-03-18-nvim-%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/gf.gif" alt="nvim 直接打开当前光标下的文件" title="nvim 直接打开当前光标下的文件" referrerpolicy="no-referrer"/></div><p><code>nvim</code> 可以利用跳转功能，直接在当前光标下打开文件。如果该文件不存在，则新建一个。</p>
 <p>我配置的快捷键是 <code>gf</code>(go file)。</p>]]></description>
-</item>
-<item>
-  <title>使用hugo&#43;github搭建博客</title>
-  <link>https://williamlfang.github.io/%E4%BD%BF%E7%94%A8hugo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>
-  <pubDate>Sat, 16 Mar 2024 11:52:46 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/%E4%BD%BF%E7%94%A8hugo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/%E4%BD%BF%E7%94%A8hugo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/featured-image.png" alt="使用hugo&#43;github搭建博客" title="使用hugo&#43;github搭建博客" referrerpolicy="no-referrer"/></div><p>使用 Hugo + Github 搭建个人博客系统，并托管在 <code>Github Page</code> 服务。</p>]]></description>
-</item>
-<item>
-  <title>nvim 配置 markdown 实时渲染</title>
-  <link>https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/</link>
-  <pubDate>Wed, 13 Mar 2024 17:55:03 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2024-03-13-nvim-%E9%85%8D%E7%BD%AE-markdown-%E5%AE%9E%E6%97%B6%E6%B8%B2%E6%9F%93/nvim-markdown.png" alt="nvim 配置 markdown 实时渲染" title="nvim 配置 markdown 实时渲染" referrerpolicy="no-referrer"/></div><p>我现在基本上都是使用nvim做笔记，大部分的时间都是写 markdown 格式的文档。因此，需要一款能够在终端实时渲染的插件。</p>]]></description>
-</item>
-<item>
-  <title>bat: better than cat</title>
-  <link>https://williamlfang.github.io/2023-11-17-bat--better-than-cat/</link>
-  <pubDate>Fri, 17 Nov 2023 22:18:28 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-11-17-bat--better-than-cat/</guid>
-  <description><![CDATA[<h2 id="安装" class="heading-element">
-  <a href="#%e5%ae%89%e8%a3%85" class="heading-mark"></a>安装</h2><div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">## CentOS</span>
-</span></span><span class="line"><span class="cl">wget https://github.com/sharkdp/bat/releases/download/v0.24.0/bat-v0.24.0-x86_64-unknown-linux-gnu.tar.gz
-</span></span><span class="line"><span class="cl">tar -xvf bat-v0.24.0-x86_64-unknown-linux-gnu.tar.gz
-</span></span><span class="line"><span class="cl"><span class="nb">cd</span> bat-v0.24.0-x86_64-unknown-linux-gnu
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">cp ./bat ~/local/bin</span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>nethogs</title>
-  <link>https://williamlfang.github.io/2023-11-17-nethogs/</link>
-  <pubDate>Fri, 17 Nov 2023 10:22:52 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-11-17-nethogs/</guid>
-  <description><![CDATA[<p><code>nethogs</code> 可以针对 <code>Linux</code> 操作系统下单独的进程监控网络带宽，可以十分方便地排查当前占用流量过多的进程。</p>]]></description>
-</item>
-<item>
-  <title>zsh compinit: insecure directories, run compaudit for list</title>
-  <link>https://williamlfang.github.io/2023-11-06-zsh-compinit--insecure-directories-run-compaudit-for-list/</link>
-  <pubDate>Mon, 06 Nov 2023 15:24:46 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-11-06-zsh-compinit--insecure-directories-run-compaudit-for-list/</guid>
-  <description><![CDATA[<p>zsh 出现错误提示</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">zsh compinit: insecure directories, run compaudit <span class="k">for</span> list</span></span></code></pre></td></tr></table>
-</div>
-</div><p>先进入 zsh 环境(选择 n)，然后执行</p>
-<div class="highlight" id="id-2"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">compaudit  <span class="p">|</span>xargs chmod g-w</span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>nerd font</title>
-  <link>https://williamlfang.github.io/2023-11-04-nerd-font/</link>
-  <pubDate>Sat, 04 Nov 2023 12:12:26 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-11-04-nerd-font/</guid>
-  <description><![CDATA[<p><code>nerd font</code> 是一款优秀的字体，提供了大量的图标，可以用于 <code>terminal</code>、<code>vim</code> 等终端显示。</p>]]></description>
 </item>
 </channel>
 </rss>

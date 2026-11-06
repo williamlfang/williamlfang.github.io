@@ -3,13 +3,51 @@
     <title>Tmux - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/tmux/</link>
     <description>Tmux - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 02 Oct 2026 22:30:00 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/tmux/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 05 Nov 2026 18:38:39 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/tmux/" rel="self" type="application/rss+xml" /><item>
+  <title>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</title>
+  <link>https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/</link>
+  <pubDate>Thu, 05 Nov 2026 18:38:39 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/featured-image.png" alt="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" referrerpolicy="no-referrer"/></div><p>I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same <a href="/2024-09-08-powerlevel10k-%E9%85%8D%E7%BD%AE/">powerlevel10k</a>
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.</p>
+<p>The fix was a dotted gap computed from <code>$COLUMNS</code> and <strong><code>&quot;padding&quot;: -2</code></strong>, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135.</p>]]></description>
+</item>
+<item>
+  <title>Fixing duplicated tmux status bars and missing icons in Termius on iPhone</title>
+  <link>https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/</link>
+  <pubDate>Fri, 09 Oct 2026 23:10:36 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" alt="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" referrerpolicy="no-referrer"/></div><p>My tmux status bar looked fine on Linux, but connecting to the same session
+from Termius on my iPhone left repeated copies of the bar at the bottom of the
+screen. Moving it to the top was a useful workaround. I wanted to keep it at
+the bottom and keep the desktop&rsquo;s colors and useful widgets.</p>
+<p>The fix was a compact renderer for clients <strong>below 100 columns</strong>, followed by
+a targeted replacement for an icon the phone could not render. This extends
+my <a href="/2026-10-02-tmux-lag-round-2/">one-job status renderer</a>: the
+phone still uses one status job, and a desktop attached to the same session
+keeps its full layout. The app is <strong>Termius</strong>, although I initially called it
+Terminus.</p>]]></description>
+</item>
+<item>
   <title>tmux lag, round 2: every status-bar fork froze the server for 30 ms</title>
   <link>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</link>
   <pubDate>Fri, 02 Oct 2026 22:30:00 &#43;0900</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</guid>
-  <description><![CDATA[<p>Two days after the
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/featured-image.png" alt="tmux lag, round 2: every status-bar fork froze the server for 30 ms" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-10-09:</strong> I extended this renderer for a 71-column iPhone
+client: compact text stopped duplicated bottom status rows while keeping
+the desktop colors and widgets. See the
+<a href="/2026-10-09-tmux-termius-iphone-status-bar/">Termius on iPhone follow-up</a>.</p>
+</blockquote>
+<p>Two days after the
 <a href="/2026-09-30-tmux-status-bar-lag/">last fix</a>, my tmux was laggy
 again, and the server was back at about a quarter of a CPU core. The culprit was
 the same as last time: the status bar&rsquo;s <code>#()</code> jobs. This time, though, the
@@ -161,22 +199,6 @@ which brought the server from <strong>~35% CPU to ~4%</strong> without restartin
   <author>william</author>
   <guid>https://williamlfang.github.io/2023-05-28-tmux-tab-%E4%B8%8E-ctr-i-%E5%BF%AB%E6%8D%B7%E9%94%AE%E5%86%B2%E7%AA%81/</guid>
   <description><![CDATA[<p>最近在整合 <code>tmux-vim</code> 的开发环境，准备把之前的 <code>prefix</code> 从 <code>ctrl-k</code> 更改为 <code>ctrl-i</code>，结果发现无法完成命令行的自动补全功能。在网上查了一下，原来是因为系统把 <code>ctrl-i</code> 与 <code>TAB</code> 键都当做一个操作指令了，从而导致按下 <code>TAB</code> 的时候，实际上是执行 <code>ctrl-i</code>，如果多次敲击，则会产生两条指令：<code>ctr-i ctri-i</code>，这个恰好了显示 <code>tmux</code> 的 <code>sidebar</code> 功能，反而不是完成自动补全了。</p>]]></description>
-</item>
-<item>
-  <title>tmux 导致 vim color scheme 无法显示的问题</title>
-  <link>https://williamlfang.github.io/2023-05-27-tmux-%E5%AF%BC%E8%87%B4-vim-color-scheme-%E6%97%A0%E6%B3%95%E6%98%BE%E7%A4%BA%E7%9A%84%E9%97%AE%E9%A2%98/</link>
-  <pubDate>Sat, 27 May 2023 12:16:18 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-05-27-tmux-%E5%AF%BC%E8%87%B4-vim-color-scheme-%E6%97%A0%E6%B3%95%E6%98%BE%E7%A4%BA%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
-  <description><![CDATA[<p>遇到一个奇怪的现象，对于 <code>vim 9</code> 的配色方案 <code>color-scheme</code>，我在普通的终端是可以显示主题配置。但是一旦通过 <code>tmux</code> 启动，则会失效。查找原因，发现是 <code>tmux</code> 没有使用配置方案，导致这个问题出现。</p>]]></description>
-</item>
-<item>
-  <title>tmux 移动 window</title>
-  <link>https://williamlfang.github.io/2023-05-24-tmux-%E7%A7%BB%E5%8A%A8-window/</link>
-  <pubDate>Wed, 24 May 2023 14:51:57 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-05-24-tmux-%E7%A7%BB%E5%8A%A8-window/</guid>
-  <description><![CDATA[<p>移动 <code>tmux-window</code></p>]]></description>
 </item>
 </channel>
 </rss>

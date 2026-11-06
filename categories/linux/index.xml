@@ -3,13 +3,76 @@
     <title>Linux - 分类 - William</title>
     <link>https://williamlfang.github.io/categories/linux/</link>
     <description>Linux - 分类 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 02 Oct 2026 22:30:00 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/linux/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 09 Oct 2026 23:10:36 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/linux/" rel="self" type="application/rss+xml" /><item>
+  <title>Fixing duplicated tmux status bars and missing icons in Termius on iPhone</title>
+  <link>https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/</link>
+  <pubDate>Fri, 09 Oct 2026 23:10:36 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" alt="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" referrerpolicy="no-referrer"/></div><p>My tmux status bar looked fine on Linux, but connecting to the same session
+from Termius on my iPhone left repeated copies of the bar at the bottom of the
+screen. Moving it to the top was a useful workaround. I wanted to keep it at
+the bottom and keep the desktop&rsquo;s colors and useful widgets.</p>
+<p>The fix was a compact renderer for clients <strong>below 100 columns</strong>, followed by
+a targeted replacement for an icon the phone could not render. This extends
+my <a href="/2026-10-02-tmux-lag-round-2/">one-job status renderer</a>: the
+phone still uses one status job, and a desktop attached to the same session
+keeps its full layout. The app is <strong>Termius</strong>, although I initially called it
+Terminus.</p>]]></description>
+</item>
+<item>
+  <title>Profiling zsh: a Python plugin was adding 190 ms to every command</title>
+  <link>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</link>
+  <pubDate>Fri, 02 Oct 2026 23:15:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/featured-image.png" alt="Profiling zsh: a Python plugin was adding 190 ms to every command" title="Profiling zsh: a Python plugin was adding 190 ms to every command" referrerpolicy="no-referrer"/></div><p>After <a href="/2026-10-02-tmux-lag-round-2/">fixing tmux</a>, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.</p>
+<p>Measured properly, it was slow in three separate ways, each with its own cause:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>startup to a usable shell</td>
+<td style="text-align:right">267 ms</td>
+<td style="text-align:right">101 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every command</strong></td>
+<td style="text-align:right">188 ms</td>
+<td style="text-align:right">3 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every prompt</strong></td>
+<td style="text-align:right">15 ms</td>
+<td style="text-align:right">4 ms</td>
+</tr>
+</tbody>
+</table>
+<p>This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own.</p>]]></description>
+</item>
+<item>
   <title>tmux lag, round 2: every status-bar fork froze the server for 30 ms</title>
   <link>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</link>
   <pubDate>Fri, 02 Oct 2026 22:30:00 &#43;0900</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</guid>
-  <description><![CDATA[<p>Two days after the
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/featured-image.png" alt="tmux lag, round 2: every status-bar fork froze the server for 30 ms" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-10-09:</strong> I extended this renderer for a 71-column iPhone
+client: compact text stopped duplicated bottom status rows while keeping
+the desktop colors and widgets. See the
+<a href="/2026-10-09-tmux-termius-iphone-status-bar/">Termius on iPhone follow-up</a>.</p>
+</blockquote>
+<p>Two days after the
 <a href="/2026-09-30-tmux-status-bar-lag/">last fix</a>, my tmux was laggy
 again, and the server was back at about a quarter of a CPU core. The culprit was
 the same as last time: the status bar&rsquo;s <code>#()</code> jobs. This time, though, the

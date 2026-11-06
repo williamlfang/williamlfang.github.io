@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Profiling zsh: a Python plugin was adding 190 ms to every command - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="After fixing tmux, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.
+Measured properly, it was slow in three separate ways, each with its own cause:
+
+
+
+
+before
+after
+
+
+
+
+startup to a usable shell
+267 ms
+101 ms
+
+
+added to every command
+188 ms
+3 ms
+
+
+added to every prompt
+15 ms
+4 ms
+
+
+
+This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own." /><meta name="keywords" content='Linux, zsh, zinit, performance, profiling, compinit' /><meta itemprop="name" content="Profiling zsh: a Python plugin was adding 190 ms to every command">
+<meta itemprop="description" content="After fixing tmux, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.
+Measured properly, it was slow in three separate ways, each with its own cause:
+
+
+
+
+before
+after
+
+
+
+
+startup to a usable shell
+267 ms
+101 ms
+
+
+added to every command
+188 ms
+3 ms
+
+
+added to every prompt
+15 ms
+4 ms
+
+
+
+This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own."><meta itemprop="datePublished" content="2026-10-02T23:15:00+09:00" />
+<meta itemprop="dateModified" content="2026-10-02T23:15:00+09:00" />
+<meta itemprop="wordCount" content="2398"><meta itemprop="image" content="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/featured-image.png" />
+<meta itemprop="keywords" content="Linux,zsh,zinit,performance,profiling,compinit," /><meta property="og:title" content="Profiling zsh: a Python plugin was adding 190 ms to every command" />
+<meta property="og:description" content="After fixing tmux, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.
+Measured properly, it was slow in three separate ways, each with its own cause:
+
+
+
+
+before
+after
+
+
+
+
+startup to a usable shell
+267 ms
+101 ms
+
+
+added to every command
+188 ms
+3 ms
+
+
+added to every prompt
+15 ms
+4 ms
+
+
+
+This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/" /><meta property="og:image" content="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-10-02T23:15:00+09:00" />
+<meta property="article:modified_time" content="2026-10-02T23:15:00+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/featured-image.png" /><meta name="twitter:title" content="Profiling zsh: a Python plugin was adding 190 ms to every command"/>
+<meta name="twitter:description" content="After fixing tmux, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.
+Measured properly, it was slow in three separate ways, each with its own cause:
+
+
+
+
+before
+after
+
+
+
+
+startup to a usable shell
+267 ms
+101 ms
+
+
+added to every command
+188 ms
+3 ms
+
+
+added to every prompt
+15 ms
+4 ms
+
+
+
+This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/" /><link rel="prev" href="https://williamlfang.github.io/2026-10-02-claude-code-blog-skill-and-agent/" /><link rel="next" href="https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Profiling zsh: a Python plugin was adding 190 ms to every command",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-10-02-zsh-startup-and-command-lag\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-10-02-zsh-startup-and-command-lag\/featured-image.png",
+              "width":  900 ,
+              "height":  420 
+            }],"genre": "posts","keywords": "Linux, zsh, zinit, performance, profiling, compinit","wordcount":  2398 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-10-02-zsh-startup-and-command-lag\/","datePublished": "2026-10-02T23:15:00+09:00","dateModified": "2026-10-02T23:15:00+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Profiling zsh: a Python plugin was adding 190 ms to every command</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-10-02 23:15:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-10-02">2026-10-02</time></span>&nbsp;<span title="2398 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 12 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-10-02-zsh-startup-and-command-lag/featured-image.png" alt="/2026-10-02-zsh-startup-and-command-lag/featured-image.png" data-title="/2026-10-02-zsh-startup-and-command-lag/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#startup-the-easy-number-is-misleading">Startup: the easy number is misleading</a></li>
+        <li><a href="#profile-every-line-with-xtrace-timestamps">Profile every line with xtrace timestamps</a></li>
+        <li><a href="#measure-the-shell-you-actually-use">Measure the shell you actually use</a></li>
+        <li><a href="#every-command-alias-tips-ran-python">Every command: alias-tips ran Python</a></li>
+        <li><a href="#every-prompt-settings-that-never-took-effect">Every prompt: settings that never took effect</a></li>
+        <li><a href="#every-start-two-compinits-fighting-over-one-cache">Every start: two compinits fighting over one cache</a>
+          <ol>
+            <li><a href="#which-exposed-lost-completions">…which exposed lost completions</a></li>
+          </ol>
+        </li>
+        <li><a href="#proving-nothing-else-changed">Proving nothing else changed</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#what-i-left-alone">What I left alone</a></li>
+        <li><a href="#traps">Traps</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>After <a href="/2026-10-02-tmux-lag-round-2/">fixing tmux</a>, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.</p>
+<p>Measured properly, it was slow in three separate ways, each with its own cause:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>startup to a usable shell</td>
+<td style="text-align:right">267 ms</td>
+<td style="text-align:right">101 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every command</strong></td>
+<td style="text-align:right">188 ms</td>
+<td style="text-align:right">3 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every prompt</strong></td>
+<td style="text-align:right">15 ms</td>
+<td style="text-align:right">4 ms</td>
+</tr>
+</tbody>
+</table>
+<p>This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own.</p>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li>zsh 5.8 on Linux Mint 20.3</li>
+<li><a href="https://github.com/zdharma-continuum/zinit"target="_blank" rel="external nofollow noopener noreferrer">zinit<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>, with many plugins in
+turbo mode (<code>wait</code>), which loads them just <em>after</em> the first prompt</li>
+<li>Powerlevel10k with instant prompt</li>
+<li>zsh-vi-mode, fzf-tab, zsh-autosuggestions, fast-syntax-highlighting, and
+three directory jumpers (zoxide, autojump, zsh-z)</li>
+</ul>
+<h2 id="startup-the-easy-number-is-misleading" class="heading-element">
+  <a href="#startup-the-easy-number-is-misleading" class="heading-mark"></a>Startup: the easy number is misleading</h2><p>The usual first measurement:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> i in <span class="k">$(</span>seq <span class="m">1</span> 12<span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">s</span><span class="o">=</span><span class="k">$(</span>date +%s%N<span class="k">)</span><span class="p">;</span> zsh -i -c exit<span class="p">;</span> <span class="nv">e</span><span class="o">=</span><span class="k">$(</span>date +%s%N<span class="k">)</span><span class="p">;</span> <span class="nb">echo</span> <span class="k">$((</span> <span class="o">(</span>e-s<span class="o">)/</span><span class="m">1000000</span> <span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span> <span class="p">|</span> sort -n</span></span></code></pre></td></tr></table>
+</div>
+</div><p>That gave a median of <strong>148 ms</strong>, against 2 ms for <code>zsh -f</code>. Not great, but
+not alarming either. It turned out to be the optimistic number, for two
+reasons:</p>
+<ol>
+<li><code>zsh -i -c exit</code> exits before zinit&rsquo;s turbo plugins load, so it never sees
+them. They still cost time in a real shell: right after the prompt appears,
+anything you type waits until they&rsquo;ve finished.</li>
+<li>Running it back to back leaves a cache in a state that real use never does.
+More on that under compinit below.</li>
+</ol>
+<p>Powerlevel10k&rsquo;s instant prompt hides startup time too. It draws the prompt
+before <code>.zshrc</code> has finished, but your keystrokes aren&rsquo;t handled until the
+config is done.</p>
+<h2 id="profile-every-line-with-xtrace-timestamps" class="heading-element">
+  <a href="#profile-every-line-with-xtrace-timestamps" class="heading-mark"></a>Profile every line with xtrace timestamps</h2><p>zsh can timestamp every traced line. <code>%D{%s.%6.}</code> in <code>PS4</code> gives microseconds:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">PS4</span><span class="o">=</span><span class="s1">&#39;+%D{%s.%6.} %N:%i&gt; &#39;</span> zsh -i -x -c <span class="nb">exit</span> 2&gt; trace.txt</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Each trace line shows the file (or function) and line number. To charge
+everything to a top-level line of <code>.zshrc</code>, add up the time from each <code>.zshrc</code>
+line to the next one, which includes everything that line sourced or called:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">re</span>
+</span></span><span class="line"><span class="cl"><span class="n">rx</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\+(\d+\.\d+) (\S+?):(\d+)&gt; ?(.*)$&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cost</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">cur</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{},</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;trace.txt&#39;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">m</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="k">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span> <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">    <span class="n">t</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">ln</span><span class="p">,</span> <span class="n">cmd</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">m</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;/.zshrc&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">cur</span><span class="p">:</span> <span class="n">cost</span><span class="p">[</span><span class="n">cur</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cost</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cur</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span> <span class="o">-</span> <span class="n">cur</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur</span> <span class="o">=</span> <span class="p">(</span><span class="n">ln</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span> <span class="n">text</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">ln</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">ln</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cost</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[:</span><span class="mi">15</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">c</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s2">6.1f</span><span class="si">}</span><span class="s2"> ms  line </span><span class="si">{</span><span class="n">ln</span><span class="si">:</span><span class="s2">&lt;4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">text</span><span class="p">[</span><span class="n">ln</span><span class="p">][:</span><span class="mi">70</span><span class="p">]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Tracing roughly doubles the run time (275 ms traced), so read the ranking
+rather than the absolute numbers. The top of the list was mostly duplication:</p>
+<ul>
+<li><strong><code>ssh-agent</code> loaded twice</strong>, as <code>OMZ::plugins/ssh-agent/...</code> and as
+<code>OMZP::ssh-agent</code>, which is the same file. Each load checked the agent and its
+keys again.</li>
+<li><strong>fzf set up twice.</strong> The Oh My Zsh fzf plugin runs <code>eval &quot;$(fzf --zsh)&quot;</code>
+itself, and my config ran it again a few lines later.</li>
+<li><strong><code>OMZ::lib/history.zsh</code> loaded twice</strong>, once synchronously and once in turbo
+mode.</li>
+<li><strong>A tmux plugin loaded into zsh.</strong> <code>zinit light tmux-plugins/vim-tmux-focus-events</code>
+loads nothing useful into zsh: it&rsquo;s a Vim/tmux plugin. The line after it,
+<code>set -g focus-events on</code>, is tmux syntax. In zsh, <code>set -g</code> turns on an option
+(<code>-g</code> is <code>HIST_IGNORE_SPACE</code>), and the remaining words become the shell&rsquo;s
+arguments. My interactive shell had been running with <code>$1=focus-events</code> and
+<code>$2=on</code> for who knows how long.</li>
+</ul>
+<p>All of that was real but small: a few milliseconds per item. The large costs
+were elsewhere.</p>
+<h2 id="measure-the-shell-you-actually-use" class="heading-element">
+  <a href="#measure-the-shell-you-actually-use" class="heading-mark"></a>Measure the shell you actually use</h2><p>To see turbo plugins and hooks, you need an interactive shell with a terminal.
+Python&rsquo;s <code>pty</code> module provides one:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pty</span><span class="o">,</span> <span class="nn">select</span><span class="o">,</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="n">pid</span><span class="p">,</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">pty</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">execvp</span><span class="p">(</span><span class="s2">&#34;zsh&#34;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&#34;zsh&#34;</span><span class="p">,</span> <span class="s2">&#34;-i&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">pump</span><span class="p">(</span><span class="n">secs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">out</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">secs</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">fd</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="mf">0.05</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">out</span> <span class="o">+=</span> <span class="n">os</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">65536</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">out</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">&#34;replace&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">pump</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>                              <span class="c1"># give the turbo plugins time to load</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&#34; zinit times</span><span class="se">\r</span><span class="s2">&#34;</span><span class="p">)</span>      <span class="c1"># note the leading space, see &#34;Traps&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">pump</span><span class="p">(</span><span class="mf">1.5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&#34; exit</span><span class="se">\r</span><span class="s2">&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>zinit times</code> lists how long each plugin took to load. Three turbo plugins
+stood out:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">  318 ms - zdharma-continuum/fast-syntax-highlighting
+</span></span><span class="line"><span class="cl">   72 ms - zsh-users/zsh-autosuggestions
+</span></span><span class="line"><span class="cl">   50 ms - hlissner/zsh-autopair
+</span></span><span class="line"><span class="cl">Total: 0.545 sec</span></span></code></pre></td></tr></table>
+</div>
+</div><p>fast-syntax-highlighting isn&rsquo;t slow by itself. Its <code>atinit</code> runs <code>compinit</code>,
+the completion system setup, and that&rsquo;s where the 318 ms went.</p>
+<p>The same shell can also show which functions run before every command
+(<code>preexec</code>) and before every prompt (<code>precmd</code>), and time them:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl">zmodload zsh/datetime
+</span></span><span class="line"><span class="cl">t<span class="o">()</span> <span class="o">{</span> <span class="nb">local</span> <span class="nv">s</span><span class="o">=</span><span class="nv">$EPOCHREALTIME</span><span class="p">;</span> <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span> &gt;/dev/null 2&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">printf</span> <span class="s1">&#39;%-30s %6.1f ms\n&#39;</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> <span class="k">$((</span> <span class="o">(</span>EPOCHREALTIME-s<span class="o">)*</span><span class="m">1000</span> <span class="k">))</span><span class="p">;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">print -l <span class="nv">$preexec_functions</span> <span class="nv">$precmd_functions</span>
+</span></span><span class="line"><span class="cl">t _alias_tips__preexec <span class="s2">&#34;ls -la&#34;</span> <span class="s2">&#34;ls -la&#34;</span> <span class="s2">&#34;ls -la&#34;</span>
+</span></span><span class="line"><span class="cl">t _check_aliases <span class="s2">&#34;ls -la&#34;</span> <span class="s2">&#34;ls -la&#34;</span> <span class="s2">&#34;ls -la&#34;</span>
+</span></span><span class="line"><span class="cl">t _zsh_autosuggest_bind_widgets</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">_alias_tips__preexec           161.4 ms   (192.1, 324.8 on other runs)
+</span></span><span class="line"><span class="cl">_check_aliases                   1.5 ms
+</span></span><span class="line"><span class="cl">_zsh_autosuggest_bind_widgets   12.7 ms   (30.8, 13.0)</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="every-command-alias-tips-ran-python" class="heading-element">
+  <a href="#every-command-alias-tips-ran-python" class="heading-mark"></a>Every command: alias-tips ran Python</h2><p><a href="https://github.com/djui/alias-tips"target="_blank" rel="external nofollow noopener noreferrer">alias-tips<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> reminds you when you type a
+command that has an alias. Before <em>every</em> command, its <code>preexec</code> hook:</p>
+<ul>
+<li>runs <code>git config --get-regexp '^alias\.'</code> through four <code>sed</code>s,</li>
+<li>dumps the full source of every function in the shell through <code>grep</code>
+(my shell has 2,552 functions),</li>
+<li>pipes all of that into <code>python3 alias-tips.py</code>.</li>
+</ul>
+<p>The first <code>python3</code> on my PATH is miniconda&rsquo;s, which is slow to start. Together
+that&rsquo;s <strong>160–325 ms of waiting after every Enter</strong>, before the command even
+starts. It&rsquo;s easy to blame the command itself for that delay.</p>
+<p>I already had <a href="https://github.com/MichaelAquilina/zsh-you-should-use"target="_blank" rel="external nofollow noopener noreferrer">zsh-you-should-use<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>,
+which gives the same reminders in pure zsh in 1.5–4 ms. So alias-tips went.</p>
+<h2 id="every-prompt-settings-that-never-took-effect" class="heading-element">
+  <a href="#every-prompt-settings-that-never-took-effect" class="heading-mark"></a>Every prompt: settings that never took effect</h2><p>zsh-autosuggestions has to wrap zle widgets to work. By default it re-wraps
+<em>all</em> of them before every prompt, in case another plugin has replaced one. I
+have 854 widgets, so that took 13–31 ms on every prompt. Setting
+<code>ZSH_AUTOSUGGEST_MANUAL_REBIND</code> turns this off, and my config did set it:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl">zinit <span class="nb">wait</span> lucid light-mode <span class="k">for</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    atload<span class="s2">&#34;_zsh_autosuggest_start; \
+</span></span></span><span class="line"><span class="cl"><span class="s2">        ZSH_AUTOSUGGEST_STRATEGY=(history completion) \
+</span></span></span><span class="line"><span class="cl"><span class="s2">        ZSH_AUTOSUGGEST_MANUAL_REBIND=0 \
+</span></span></span><span class="line"><span class="cl"><span class="s2">        ZSH_AUTOSUGGEST_HISTORY_IGNORE=&#39; *&#39; \
+</span></span></span><span class="line"><span class="cl"><span class="s2">        bindkey &#39;^ &#39; autosuggest-accept;&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    zsh-users/zsh-autosuggestions</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Look at the backslashes. Inside a double-quoted string, backslash-newline is a
+line continuation, so the <code>atload</code> code is a single line:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl">_zsh_autosuggest_start<span class="p">;</span> <span class="nv">ZSH_AUTOSUGGEST_STRATEGY</span><span class="o">=(</span><span class="nb">history</span> completion<span class="o">)</span> <span class="nv">ZSH_AUTOSUGGEST_MANUAL_REBIND</span><span class="o">=</span><span class="m">0</span> <span class="nv">ZSH_AUTOSUGGEST_HISTORY_IGNORE</span><span class="o">=</span><span class="s1">&#39; *&#39;</span> bindkey <span class="s1">&#39;^ &#39;</span> autosuggest-accept<span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Written like that, the three assignments are <strong>prefix assignments to
+<code>bindkey</code></strong>: they only exist while <code>bindkey</code> runs. Only the key binding ever
+took effect. In the running shell, the strategy was still the default
+<code>(history)</code> and <code>MANUAL_REBIND</code> was unset. Note too that the plugin only checks
+whether <code>MANUAL_REBIND</code> is <em>set</em>: <code>0</code> would have enabled it as well.</p>
+<p>The fix sets the variable as a real assignment, before the plugin reads it:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="nv">ZSH_AUTOSUGGEST_MANUAL_REBIND</span><span class="o">=</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">zinit <span class="nb">wait</span> lucid light-mode <span class="k">for</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    atload<span class="s2">&#34;_zsh_autosuggest_start; bindkey &#39;^ &#39; autosuggest-accept&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    zsh-users/zsh-autosuggestions</span></span></code></pre></td></tr></table>
+</div>
+</div><p>I left <code>STRATEGY</code> and <code>HISTORY_IGNORE</code> out on purpose. They had never worked,
+so turning them on now would change how suggestions behave, and the completion
+strategy costs time on every keystroke. That&rsquo;s a separate decision.</p>
+<p>Rebinding once is safe here because every plugin that wraps widgets loads
+before autosuggestions.</p>
+<h2 id="every-start-two-compinits-fighting-over-one-cache" class="heading-element">
+  <a href="#every-start-two-compinits-fighting-over-one-cache" class="heading-mark"></a>Every start: two compinits fighting over one cache</h2><p>Why did compinit take 318 ms? The startup trace had a clue: <code>compinit</code> also
+showed up <em>before</em> <code>.zshrc</code> was read. Ubuntu&rsquo;s <code>/etc/zsh/zshrc</code> runs its own:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="k">if</span> grep -q <span class="s1">&#39;^ID.*=.*ubuntu&#39;</span> /etc/os-release <span class="o">&amp;&amp;</span> <span class="o">[[</span> -z <span class="s2">&#34;</span><span class="nv">$skip_global_compinit</span><span class="s2">&#34;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  autoload -U compinit
+</span></span><span class="line"><span class="cl">  compinit
+</span></span><span class="line"><span class="cl"><span class="k">fi</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>On Mint, that pattern matches the <code>ID_LIKE=ubuntu</code> line, so it runs here too.
+That gives two compinits per shell. The global one runs with only the system
+completion directories, and zinit&rsquo;s runs later with all 36 (<code>fpath</code>). Both use
+<code>~/.zcompdump</code>. compinit only reuses that cache if it was built for the same
+set of files (its first line records the count), so each run found the other&rsquo;s
+cache stale and rebuilt it. Its timestamp changed with every new shell:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">22:47:34.99  ~/.zcompdump
+</span></span><span class="line"><span class="cl">22:48:10.53  ~/.zcompdump   &lt;- after one more shell
+</span></span><span class="line"><span class="cl">22:48:16.57  ~/.zcompdump   &lt;- and another</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This is also why the 148 ms startup number was optimistic. Back-to-back
+<code>zsh -i -c exit</code> runs never reach zinit&rsquo;s compinit, so the cache stayed valid
+for the global one. In real use, every interactive shell leaves a cache built
+for the full <code>fpath</code>. When I restored that state before each run, startup was
+<strong>267 ms</strong>.</p>
+<p>The fix is a single line in <code>~/.zshenv</code>:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="nv">skip_global_compinit</span><span class="o">=</span><span class="m">1</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="which-exposed-lost-completions" class="heading-element">
+  <a href="#which-exposed-lost-completions" class="heading-mark"></a>…which exposed lost completions</h3><p>Plugins call <code>compdef</code> to register completions as they load. Before compinit
+has run, <code>compdef</code> doesn&rsquo;t exist yet, so zinit records those calls in a queue
+for <code>zinit cdreplay</code> to apply later. My config never called <code>cdreplay</code>. The
+queue held 21 entries that had never been applied:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">_tmux _zsh_tmux_plugin_run      &lt;- the `tmux` alias from Oh My Zsh&#39;s tmux plugin
+</span></span><span class="line"><span class="cl">_omz_tmux_alias_ta ta           &lt;- ta, tad, ts, tkss
+</span></span><span class="line"><span class="cl">_pip pipig                      &lt;- pip helper aliases
+</span></span><span class="line"><span class="cl">_git ggp=git-checkout           &lt;- git helper functions
+</span></span><span class="line"><span class="cl">_gitignore gi                   &lt;- gi, gii
+</span></span><span class="line"><span class="cl">...</span></span></code></pre></td></tr></table>
+</div>
+</div><p>With <code>complete_aliases</code> off, <code>tmux &lt;Tab&gt;</code> completes for whatever the alias
+expands to, and <code>_zsh_tmux_plugin_run</code> had no completion registered. So it had
+been offering file names instead of tmux commands. Running the replay right
+after compinit fixed it:</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl">zinit ice lucid <span class="nv">wait</span><span class="o">=</span><span class="s1">&#39;0&#39;</span> <span class="nv">atinit</span><span class="o">=</span><span class="s1">&#39;zpcompinit; zpcdreplay -q&#39;</span>
+</span></span><span class="line"><span class="cl">zinit light zdharma-continuum/fast-syntax-highlighting</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="proving-nothing-else-changed" class="heading-element">
+  <a href="#proving-nothing-else-changed" class="heading-mark"></a>Proving nothing else changed</h2><p>Deleting duplicate plugins sounds harmless, but the order in which plugins load
+matters. Before touching anything, I dumped everything that defines how the
+interactive shell behaves, inside a real interactive shell after the turbo
+plugins had loaded:</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> km in main viins vicmd visual viopp emacs isearch <span class="nb">command</span> menuselect<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    bindkey -M <span class="nv">$km</span> -L<span class="p">;</span> <span class="k">done</span> <span class="p">|</span> sort
+</span></span><span class="line"><span class="cl">  <span class="nb">alias</span> -L <span class="p">|</span> sort
+</span></span><span class="line"><span class="cl">  print -rl -- <span class="si">${</span><span class="p">(ok)functions</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> w in <span class="si">${</span><span class="p">(ok)widgets</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span> print -r -- <span class="s2">&#34;</span><span class="nv">$w</span><span class="s2">=</span><span class="nv">$widgets</span><span class="s2">[</span><span class="nv">$w</span><span class="s2">]&#34;</span><span class="p">;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">set</span> -o <span class="p">|</span> sort<span class="p">;</span> zstyle -L <span class="p">|</span> sort
+</span></span><span class="line"><span class="cl">  print -rl -- <span class="nv">$precmd_functions</span> <span class="nv">$preexec_functions</span> <span class="nv">$chpwd_functions</span> <span class="nv">$fpath</span> <span class="nv">$path</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> k in <span class="si">${</span><span class="p">(ok)_comps</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span> print -r -- <span class="s2">&#34;</span><span class="nv">$k</span><span class="s2">=</span><span class="nv">$_comps</span><span class="s2">[</span><span class="nv">$k</span><span class="s2">]&#34;</span><span class="p">;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl">  <span class="c1"># parameters, with values hashed: my environment holds API keys</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> k in <span class="si">${</span><span class="p">(ok)parameters</span><span class="si">}</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    print -r -- <span class="s2">&#34;</span><span class="nv">$k</span><span class="s2"> </span><span class="si">${</span><span class="nv">parameters</span><span class="p">[</span><span class="nv">$k</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="k">$(</span>print -rn -- <span class="s2">&#34;</span><span class="si">${</span><span class="p">(P)k</span><span class="si">}</span><span class="s2">&#34;</span> <span class="p">|</span> md5sum<span class="k">)</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span> &gt; snapshot.txt</span></span></code></pre></td></tr></table>
+</div>
+</div><p>(The real version also skips parameters that change on their own, such as
+<code>RANDOM</code>, <code>PPID</code> and Powerlevel10k&rsquo;s internal state.)</p>
+<p>I took one snapshot before and one after, and diffed them by section. The diff
+caught two regressions I had introduced:</p>
+<ol>
+<li>
+<p><strong><code>cd</code> lost zoxide&rsquo;s completion.</strong> zoxide only registers it if <code>compdef</code>
+already exists when <code>zoxide init</code> runs. With the global compinit gone, it
+doesn&rsquo;t. The fix queues it for the replay instead:</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="o">((</span> <span class="si">${</span><span class="p">+functions[compdef]</span><span class="si">}</span> <span class="o">))</span> <span class="o">||</span> zicompdef __zoxide_z_complete cd</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Tab quietly changed.</strong> fzf-tab wraps whatever Tab is bound to <em>at the
+moment it loads</em>. The Oh My Zsh fzf plugin I deleted had bound fzf&rsquo;s
+completion widget to Tab earlier in the file, so the old chain was fzf-tab →
+fzf-completion (fzf&rsquo;s <code>**&lt;Tab&gt;</code> trigger) → normal completion. Without it,
+fzf-tab wrapped normal completion directly, so fzf&rsquo;s <code>**&lt;Tab&gt;</code> trigger was
+out of the chain. Running fzf&rsquo;s own setup <em>before</em> fzf-tab restores it:</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="nb">eval</span> <span class="s2">&#34;</span><span class="k">$(</span>fzf --zsh<span class="k">)</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">zinit light Aloxaf/fzf-tab
+</span></span><span class="line"><span class="cl">bindkey -M emacs <span class="s1">&#39;^I&#39;</span> fzf-completion   <span class="c1"># what the old second `fzf --zsh` left there</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<p>After those fixes, key bindings, aliases, all 854 widgets, options, zstyles,
+<code>fpath</code> and <code>PATH</code> were identical. The only differences left were the intended
+ones: the removed plugin, the two hooks I took out, the replayed completions,
+and two new settings. There was also one side effect I accepted: <code>psql</code> and the
+other PostgreSQL tools now complete with zsh-completions&rsquo; <code>_pgsql_utils</code>
+instead of zsh&rsquo;s own <code>_postgresql</code>. Both packages provide completion for those
+commands, and with only one compinit, zsh-completions&rsquo; version wins.</p>
+<h2 id="results" class="heading-element">
+  <a href="#results" class="heading-mark"></a>Results</h2><p>Old and new configs measured the same way (the old one via <code>ZDOTDIR</code>, with its
+completion cache restored to its real-life state before each run):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>startup, <code>zsh -i -c exit</code>, median of 15</td>
+<td style="text-align:right">267 ms</td>
+<td style="text-align:right"><strong>101 ms</strong></td>
+</tr>
+<tr>
+<td><code>preexec</code> hooks, i.e. added to every command</td>
+<td style="text-align:right">188 ms</td>
+<td style="text-align:right"><strong>2.9 ms</strong></td>
+</tr>
+<tr>
+<td><code>precmd</code> hooks, i.e. added to every prompt</td>
+<td style="text-align:right">14.9 ms</td>
+<td style="text-align:right"><strong>3.9 ms</strong></td>
+</tr>
+<tr>
+<td>all plugin loading (<code>zinit times</code> total)</td>
+<td style="text-align:right">0.39–0.42 s</td>
+<td style="text-align:right"><strong>0.13 s</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-i-left-alone" class="heading-element">
+  <a href="#what-i-left-alone" class="heading-mark"></a>What I left alone</h2><ul>
+<li><strong>Caching <code>eval &quot;$(tool init)&quot;</code> output.</strong> This is a common tip, but <code>fzf --zsh</code>
+took 1.3 ms and <code>zoxide init</code> 0.4 ms. Not worth the cache invalidation.</li>
+<li><strong>Compiling <code>~/.p10k.zsh</code>.</strong> It took 2.7 ms to source, or 0.8 ms compiled. Also
+not worth the extra moving part.</li>
+<li><strong>The three directory jumpers.</strong> Counting my last 20,000 commands: zoxide&rsquo;s
+<code>cd</code> 2,187, autojump&rsquo;s <code>j</code> 225, zsh-z&rsquo;s <code>z</code> 16. I use all three.</li>
+<li><strong>The ssh-agent zstyles</strong> (<code>lazy</code>, <code>quiet</code>, <code>identities</code>). They come after the
+plugin in my config, so they have never applied. Moving them up would change
+when keys get added, so I left them and added a note.</li>
+</ul>
+<h2 id="traps" class="heading-element">
+  <a href="#traps" class="heading-mark"></a>Traps</h2><ul>
+<li><strong>Test shells write to your real history.</strong> With <code>share_history</code> and
+<code>inc_append_history</code>, every command typed into a throwaway shell goes straight
+to <code>~/.zsh_history</code>. Start each one with a space: <code>hist_ignore_space</code> keeps it
+out.</li>
+<li><strong><code>grep</code> thinks zsh history is binary.</strong> zsh stores non-ASCII text in its own
+&ldquo;metafied&rdquo; form. Without <code>-a</code>, <code>grep -c</code> quietly counted zero for every command
+I looked for.</li>
+<li><strong><code>zsh -i -c exit</code> only measures part of the startup.</strong> It misses turbo
+plugins, every hook, and, here, the cache rebuilds.</li>
+<li><strong>Backslashes inside quoted plugin settings.</strong> If a zinit <code>atload</code> or
+<code>atinit</code> string spans several lines, check what it looks like as one line.</li>
+</ul>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>Measure all three latencies</strong>: startup, per prompt and per command. The
+biggest cost here was per command, and no startup benchmark would ever show
+it.</li>
+<li><strong>List your hooks.</strong> <code>print -l $preexec_functions $precmd_functions</code> shows
+everything that runs every time you press Enter. Time each one.</li>
+<li><strong>Watch for two compinits.</strong> On Ubuntu and its derivatives,
+<code>/etc/zsh/zshrc</code> runs one unless <code>skip_global_compinit=1</code> is set. If your
+plugin manager runs another, they fight over the cache.</li>
+<li><strong>If compinit runs late, replay the queued compdefs.</strong> Otherwise completions
+disappear without any error.</li>
+<li><strong>Diff the shell&rsquo;s state before and after.</strong> Load order matters, and I&rsquo;d
+have shipped a broken <code>cd</code> completion and Tab chain without the snapshot.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><a href="https://github.com/romkatv/zsh-bench"target="_blank" rel="external nofollow noopener noreferrer">zsh-bench<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>: a proper tool for measuring
+first-prompt, command and input lag</li>
+<li><a href="https://github.com/zdharma-continuum/zinit"target="_blank" rel="external nofollow noopener noreferrer">zinit: turbo mode, <code>zicompinit</code> and <code>zicdreplay</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/zsh-users/zsh-autosuggestions"target="_blank" rel="external nofollow noopener noreferrer">zsh-autosuggestions: <code>ZSH_AUTOSUGGEST_MANUAL_REBIND</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/Aloxaf/fzf-tab"target="_blank" rel="external nofollow noopener noreferrer">fzf-tab<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html"target="_blank" rel="external nofollow noopener noreferrer">zsh manual: prompt expansion (<code>%D{...}</code>, <code>%N</code>, <code>%i</code>) for <code>PS4</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="/2026-10-02-tmux-lag-round-2/">The tmux half of this cleanup</a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-09-30-tmux-status-bar-lag/" title="Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second">Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</a></li><li>
+          <a href="/2023-11-06-zsh-compinit--insecure-directories-run-compaudit-for-list/" title="zsh compinit: insecure directories, run compaudit for list">zsh compinit: insecure directories, run compaudit for list</a></li><li>
+          <a href="/2026-10-02-tmux-lag-round-2/" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms">tmux lag, round 2: every status-bar fork froze the server for 30 ms</a></li><li>
+          <a href="/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/" title="(转)Linux 网络大流量传输优化方法">(转)Linux 网络大流量传输优化方法</a></li><li>
+          <a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/" title="tmux 设置默认 zsh">tmux 设置默认 zsh</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-10-02 23:15:00">更新于 2026-10-02&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-10-02-zsh-startup-and-command-lag/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/" data-title="Profiling zsh: a Python plugin was adding 190 ms to every command" data-hashtags="Linux,zsh,zinit,performance,profiling,compinit"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/" data-title="Profiling zsh: a Python plugin was adding 190 ms to every command" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/" data-title="Profiling zsh: a Python plugin was adding 190 ms to every command"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/" data-title="Profiling zsh: a Python plugin was adding 190 ms to every command"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/zsh/" class="post-tag" title="标签 - Zsh">Zsh</a><a href="/tags/zinit/" class="post-tag" title="标签 - Zinit">Zinit</a><a href="/tags/performance/" class="post-tag" title="标签 - Performance">Performance</a><a href="/tags/profiling/" class="post-tag" title="标签 - Profiling">Profiling</a><a href="/tags/compinit/" class="post-tag" title="标签 - Compinit">Compinit</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-10-02-claude-code-blog-skill-and-agent/" class="post-nav-item" rel="prev" title="A Claude Code skill and subagent that write posts for this blog"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>A Claude Code skill and subagent that write posts for this blog</a>
+      <a href="/2026-10-03-nvim-startup-lazy-loading/" class="post-nav-item" rel="next" title="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy">Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

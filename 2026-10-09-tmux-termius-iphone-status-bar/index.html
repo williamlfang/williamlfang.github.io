@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Fixing duplicated tmux status bars and missing icons in Termius on iPhone - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="My tmux status bar looked fine on Linux, but connecting to the same session
+from Termius on my iPhone left repeated copies of the bar at the bottom of the
+screen. Moving it to the top was a useful workaround. I wanted to keep it at
+the bottom and keep the desktop&rsquo;s colors and useful widgets.
+The fix was a compact renderer for clients below 100 columns, followed by
+a targeted replacement for an icon the phone could not render. This extends
+my one-job status renderer: the
+phone still uses one status job, and a desktop attached to the same session
+keeps its full layout. The app is Termius, although I initially called it
+Terminus." /><meta name="keywords" content='Linux, tmux, Termius, iPhone, NerdFonts, terminal' /><meta itemprop="name" content="Fixing duplicated tmux status bars and missing icons in Termius on iPhone">
+<meta itemprop="description" content="My tmux status bar looked fine on Linux, but connecting to the same session
+from Termius on my iPhone left repeated copies of the bar at the bottom of the
+screen. Moving it to the top was a useful workaround. I wanted to keep it at
+the bottom and keep the desktop&rsquo;s colors and useful widgets.
+The fix was a compact renderer for clients below 100 columns, followed by
+a targeted replacement for an icon the phone could not render. This extends
+my one-job status renderer: the
+phone still uses one status job, and a desktop attached to the same session
+keeps its full layout. The app is Termius, although I initially called it
+Terminus."><meta itemprop="datePublished" content="2026-10-09T23:10:36+09:00" />
+<meta itemprop="dateModified" content="2026-10-09T23:10:36+09:00" />
+<meta itemprop="wordCount" content="1989"><meta itemprop="image" content="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" />
+<meta itemprop="keywords" content="Linux,tmux,Termius,iPhone,NerdFonts,terminal," /><meta property="og:title" content="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" />
+<meta property="og:description" content="My tmux status bar looked fine on Linux, but connecting to the same session
+from Termius on my iPhone left repeated copies of the bar at the bottom of the
+screen. Moving it to the top was a useful workaround. I wanted to keep it at
+the bottom and keep the desktop&rsquo;s colors and useful widgets.
+The fix was a compact renderer for clients below 100 columns, followed by
+a targeted replacement for an icon the phone could not render. This extends
+my one-job status renderer: the
+phone still uses one status job, and a desktop attached to the same session
+keeps its full layout. The app is Termius, although I initially called it
+Terminus." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/" /><meta property="og:image" content="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-10-09T23:10:36+09:00" />
+<meta property="article:modified_time" content="2026-10-09T23:10:36+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" /><meta name="twitter:title" content="Fixing duplicated tmux status bars and missing icons in Termius on iPhone"/>
+<meta name="twitter:description" content="My tmux status bar looked fine on Linux, but connecting to the same session
+from Termius on my iPhone left repeated copies of the bar at the bottom of the
+screen. Moving it to the top was a useful workaround. I wanted to keep it at
+the bottom and keep the desktop&rsquo;s colors and useful widgets.
+The fix was a compact renderer for clients below 100 columns, followed by
+a targeted replacement for an icon the phone could not render. This extends
+my one-job status renderer: the
+phone still uses one status job, and a desktop attached to the same session
+keeps its full layout. The app is Termius, although I initially called it
+Terminus."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/" /><link rel="prev" href="https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/" /><link rel="next" href="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Fixing duplicated tmux status bars and missing icons in Termius on iPhone",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-10-09-tmux-termius-iphone-status-bar\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-10-09-tmux-termius-iphone-status-bar\/featured-image.png",
+              "width":  1660 ,
+              "height":  480 
+            }],"genre": "posts","keywords": "Linux, tmux, Termius, iPhone, NerdFonts, terminal","wordcount":  1989 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-10-09-tmux-termius-iphone-status-bar\/","datePublished": "2026-10-09T23:10:36+09:00","dateModified": "2026-10-09T23:10:36+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Fixing duplicated tmux status bars and missing icons in Termius on iPhone</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-10-09 23:10:36"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-10-09">2026-10-09</time></span>&nbsp;<span title="1989 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 10 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" alt="/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" data-title="/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#what-i-could-establish">What I could establish</a></li>
+        <li><a href="#first-edit-the-configuration-tmux-actually-uses">First, edit the configuration tmux actually uses</a></li>
+        <li><a href="#treat-duplicate-rows-and-missing-icons-as-separate-failures">Treat duplicate rows and missing icons as separate failures</a></li>
+        <li><a href="#select-the-compact-layout-per-client">Select the compact layout per client</a></li>
+        <li><a href="#keep-the-colors-and-widgets-simplify-the-text">Keep the colors and widgets, simplify the text</a></li>
+        <li><a href="#select-the-font-inside-termius">Select the font inside Termius</a></li>
+        <li><a href="#replace-the-specific-unsupported-tmux-icon">Replace the specific unsupported tmux icon</a></li>
+        <li><a href="#reload-the-changed-options-and-redraw-the-phone">Reload the changed options and redraw the phone</a></li>
+        <li><a href="#what-was-verified">What was verified</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>My tmux status bar looked fine on Linux, but connecting to the same session
+from Termius on my iPhone left repeated copies of the bar at the bottom of the
+screen. Moving it to the top was a useful workaround. I wanted to keep it at
+the bottom and keep the desktop&rsquo;s colors and useful widgets.</p>
+<p>The fix was a compact renderer for clients <strong>below 100 columns</strong>, followed by
+a targeted replacement for an icon the phone could not render. This extends
+my <a href="/2026-10-02-tmux-lag-round-2/">one-job status renderer</a>: the
+phone still uses one status job, and a desktop attached to the same session
+keeps its full layout. The app is <strong>Termius</strong>, although I initially called it
+Terminus.</p>
+<h2 id="what-i-could-establish" class="heading-element">
+  <a href="#what-i-could-establish" class="heading-mark"></a>What I could establish</h2><p>The server was running tmux <strong>3.5a</strong>. The iPhone client had <strong>71 columns</strong>, while
+one desktop client attached to the same <code>ai</code> session had <strong>148 columns</strong>. Both
+reported <code>xterm-256color</code>.</p>
+<p>That ruled out a simple <code>$TERM</code> check as a way to identify the phone. The
+terminal type described capabilities, not which device was attached.</p>
+<p>After loading the first working fix, I checked the client-specific branch:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux list-clients -F <span class="s1">&#39;#{client_name} size=#{client_width}x#{client_height} session=#{session_name} mobile=#{E:@mobile-status-condition}&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Recorded output from that stage of the debugging session:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">/dev/pts/0 size=218x58 session=dev mobile=0
+</span></span><span class="line"><span class="cl">/dev/pts/1 size=165x65 session= mobile=0
+</span></span><span class="line"><span class="cl">/dev/pts/291 size=148x42 session=ai mobile=0
+</span></span><span class="line"><span class="cl">/dev/pts/99 size=71x34 session=ai mobile=1</span></span></code></pre></td></tr></table>
+</div>
+</div><p><img loading="lazy" src="featured-image.png" alt="Recorded tmux client output, with the 71-column phone client highlighted" srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="Recorded tmux client output, with the 71-column phone client highlighted" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><em>This is a terminal illustration rendered from the recorded command output,
+not a screenshot of the iPhone. Client sizes changed during the session.</em></p>
+<p>The phone and desktop selected different renderers even when they shared the
+same tmux session.</p>
+<h2 id="first-edit-the-configuration-tmux-actually-uses" class="heading-element">
+  <a href="#first-edit-the-configuration-tmux-actually-uses" class="heading-mark"></a>First, edit the configuration tmux actually uses</h2><p>My first change went into an old copy under <code>Documents/myConfig/</code>, rather than
+the active <code>~/.tmux.conf</code>. The phone continued to duplicate the bar. Editing a
+backup file does not change the running server.</p>
+<p>I checked the active options and then changed the live configuration:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux show-options -gv status
+</span></span><span class="line"><span class="cl">tmux show-options -gv status-position
+</span></span><span class="line"><span class="cl">tmux show-options -gv status-left
+</span></span><span class="line"><span class="cl">tmux show-options -gv window-status-current-format</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The global status setting was <code>on</code>, and the position was <code>bottom</code>. tmux was
+not configured to intentionally show multiple global status rows. My separate
+<code>pane-border-status bottom</code> setting adds pane labels; those labels are distinct
+from repeated copies of the global bar.</p>
+<h2 id="treat-duplicate-rows-and-missing-icons-as-separate-failures" class="heading-element">
+  <a href="#treat-duplicate-rows-and-missing-icons-as-separate-failures" class="heading-mark"></a>Treat duplicate rows and missing icons as separate failures</h2><p>A terminal draws text into cells. If tmux counts a symbol as one cell but the
+client renders it with a different width, the cursor positions after that
+symbol can disagree. Repainting a full bottom row can then leave artifacts.
+The <a href="https://github.com/gpakosz/.tmux#troubleshooting"target="_blank" rel="external nofollow noopener noreferrer">Oh my tmux troubleshooting guide<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>
+describes duplicated status rows caused by disagreements about Unicode widths.</p>
+<p>That explanation was consistent with my symptom: the bar contained Powerline
+separators, Nerd Font icons, and a long quote. <strong>Switching the phone&rsquo;s status
+text to ASCII stopped the duplication</strong>, and I confirmed that on the phone.
+I did not capture terminal traces that isolate one exact offending glyph, so
+this is a successful workaround for the observed rendering problem, rather
+than proof of a specific Termius implementation bug.</p>
+<p>A missing icon is a different question. The font may not contain the requested
+glyph, even when the terminal positions the rest of the row correctly. Fixing
+width-sensitive output does not automatically add missing glyphs to a font.</p>
+<h2 id="select-the-compact-layout-per-client" class="heading-element">
+  <a href="#select-the-compact-layout-per-client" class="heading-mark"></a>Select the compact layout per client</h2><p>The important setting in <code>~/.tmux.conf</code> is:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">set</span> -g @mobile-status-condition <span class="s1">&#39;#{||:#{==:#{@mobile-status},on},#{e|&lt;:#{client_width},100}}&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status on
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-position bottom</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The condition is true when the client has fewer than 100 columns, or when
+<code>@mobile-status</code> is explicitly <code>on</code>. The format is evaluated for each client
+when the status is rendered. Setting a user option to a format string does not
+itself evaluate that string; <code>#{E:@mobile-status-condition}</code> expands it later
+in the relevant client context.</p>
+<p>There was a small trap here. My first condition used
+<code>#{&lt;:#{client_width},100}</code>. In the isolated test on tmux 3.5a, it returned false
+at <strong>20 columns</strong>: this comparison follows string ordering. The <code>e|&lt;</code> expression
+makes the comparison numeric, and all four narrow test widths then selected
+compact mode.</p>
+<p>Width is a practical heuristic, not a device detector. A narrow desktop also
+gets the compact layout, and a phone widened to 100 columns or more gets the
+full layout. To force compact mode for the current session:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux set-option @mobile-status on</span></span></code></pre></td></tr></table>
+</div>
+</div><p>To remove that override and return to width detection:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux set-option -u @mobile-status</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The explicit override is <strong>session-scoped</strong>. It also affects other clients
+attached to that session; the automatic width branch is what lets my phone
+and desktop differ in the same session. Setting the override to <code>off</code> does
+not disable automatic detection in this particular configuration.</p>
+<h2 id="keep-the-colors-and-widgets-simplify-the-text" class="heading-element">
+  <a href="#keep-the-colors-and-widgets-simplify-the-text" class="heading-mark"></a>Keep the colors and widgets, simplify the text</h2><p>The first working phone bar was too plain: short labels and a clock, with most
+of the desktop information missing. I kept the ASCII protection but restored
+the desktop&rsquo;s blue session block, cyan active window, muted inactive windows,
+and metric colors.</p>
+<p>My existing renderer reads finished widget strings from
+<code>~/.cache/tmux-status/</code>. I added an <code>ascii</code> mode to it, rather than adding
+another tmux <code>#()</code> job for every metric. The relevant options are:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">set</span> -g status-left <span class="s2">&#34;#{?#{E:@mobile-status-condition},#(</span><span class="nv">$HOME</span><span class="s2">/.tmux/scripts/status-line.sh 0 #{q:session_name} ascii #{client_width}),#{?#{E:#{@quote_cond}},#(</span><span class="nv">$HOME</span><span class="s2">/.tmux/scripts/status-line.sh 1 #{q:session_name}),#(</span><span class="nv">$HOME</span><span class="s2">/.tmux/scripts/status-line.sh 0 #{q:session_name})}}&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -g status-right <span class="s2">&#34;&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>These wrap my existing setup: <code>@quote_cond</code> controls the desktop quote, and the
+background daemon supplies the cached widget values. They are not a complete
+replacement for an arbitrary <code>.tmux.conf</code>.</p>
+<p>The mobile call passes <code>0</code> to omit the quote. The desktop keeps its existing
+quote rule. <code>#{q:session_name}</code> quotes the session name for the shell command.
+The renderer still prints both sides of the status line, using
+<code>#[default align=right range=right]</code> before the metrics and clock.</p>
+<p>In ASCII mode, I replace the decorative symbols and metric icons before
+stripping other non-ASCII text:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">render_status <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span> <span class="p">|</span> sed <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -e <span class="s1">&#39;s//|/g&#39;</span> -e <span class="s1">&#39;s//|/g&#39;</span> -e <span class="s1">&#39;s//|/g&#39;</span> -e <span class="s1">&#39;s//|/g&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -e <span class="s1">&#39;s//C/g&#39;</span> -e <span class="s1">&#39;s//M/g&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -e <span class="s1">&#39;s/󰚩/CX/g&#39;</span> -e <span class="s1">&#39;s/󰯉/CL/g&#39;</span> -e <span class="s1">&#39;s/󰖟/J/g&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -e <span class="s1">&#39;s//|/g&#39;</span> -e <span class="s1">&#39;s// /g&#39;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -e <span class="s2">&#34;</span><span class="nv">$compact_filter</span><span class="s2">&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="p">|</span> <span class="nv">LC_ALL</span><span class="o">=</span>C tr -cd <span class="s1">&#39; -~&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>This is an excerpt from the <a href="status-line.sh">full renderer</a>. The ASCII
+<code>#[...]</code> color and alignment tags survive the filter, so the phone can retain
+the same theme without drawing the original decorative characters.</p>
+<table>
+<thead>
+<tr>
+<th>Phone label</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>C</code></td>
+<td>CPU usage</td>
+</tr>
+<tr>
+<td><code>M</code></td>
+<td>Memory usage</td>
+</tr>
+<tr>
+<td><code>CX</code></td>
+<td>Codex remaining quota</td>
+</tr>
+<tr>
+<td><code>CL</code></td>
+<td>Claude remaining quota</td>
+</tr>
+<tr>
+<td><code>J</code></td>
+<td>Traffic value</td>
+</tr>
+</tbody>
+</table>
+<p>Below 100 columns, the script also removes reset countdowns in the form
+<code>(HH:MM)</code> and drops the decimal part of percentages. The clock remains
+<code>HH:MM:SS</code>, but the date is omitted. The blue session block becomes yellow
+while the existing Pomodoro timer is running, just as it does on the desktop.</p>
+<p>This changes what fits on the phone: the quote, non-ASCII session text, and
+some detail in the metrics are intentionally omitted. It does not translate
+Unicode text. The desktop rendering path bypasses the ASCII filter.</p>
+<p>The clock is produced by <code>date</code>, because my long-running tmux server had
+previously retained an old timezone. That is covered in the
+<a href="/2026-09-26-linux-timezone-clock-and-tmux/">timezone post</a>.</p>
+<p>I applied the same client condition to the active and inactive window formats
+and the pane-border label. Cleaning only <code>status-left</code> would have left symbols
+in the other parts of the status display.</p>
+<h2 id="select-the-font-inside-termius" class="heading-element">
+  <a href="#select-the-font-inside-termius" class="heading-mark"></a>Select the font inside Termius</h2><p>Installing a Nerd Font on the Linux server does not select the font used by
+the iPhone SSH client. The client receives characters and renders them with
+its own font.</p>
+<p>Termius already bundles patched fonts. Its
+<a href="https://docs.termius.com/changelog/ios"target="_blank" rel="external nofollow noopener noreferrer">iOS changelog<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> records Nerd Font v3
+support in version <strong>5.8.7, released August 7, 2024</strong>, including Meslo,
+JetBrainsMono, and FiraCode.</p>
+<p>For a current Termius installation:</p>
+<ol>
+<li>Open the SSH terminal and expand the panel above the keyboard.</li>
+<li>Open <strong>Themes</strong> and select the font.</li>
+<li>Try <strong>Meslo</strong> or <strong>JetBrainsMono</strong>.</li>
+</ol>
+<p>The <a href="https://docs.termius.com/terminal/mobile-terminal#themes"target="_blank" rel="external nofollow noopener noreferrer">mobile terminal documentation<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>
+explains that font and theme choices are saved for the host.</p>
+<p>A small test avoids using the whole status bar as a font diagnostic:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">printf</span> <span class="s1">&#39;Powerline:   | Icons:   󰚩\n&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Selecting a font does not disable the ASCII branch in my config. Nor does
+support for some Nerd Font characters guarantee support for every icon used
+by a desktop configuration.</p>
+<h2 id="replace-the-specific-unsupported-tmux-icon" class="heading-element">
+  <a href="#replace-the-specific-unsupported-tmux-icon" class="heading-mark"></a>Replace the specific unsupported tmux icon</h2><p>The next reported problem was <strong><code></code></strong>. My window-name configuration used it both
+for the multiple-pane indicator and for the <code>tmux</code> and <code>screen</code> commands.
+I replaced those three mappings with the older Font Awesome columns icon:</p>
+<table>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Original</th>
+<th>Replacement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Multiple-pane indicator, tmux, screen</td>
+<td><code></code> — U+EBC8</td>
+<td><code></code> — U+F0DB</td>
+</tr>
+</tbody>
+</table>
+<p>The replacement exists in the
+<a href="https://github.com/FortAwesome/Font-Awesome/blob/v4.7.0/scss/_variables.scss"target="_blank" rel="external nofollow noopener noreferrer">Font Awesome 4.7 icon definitions<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>.
+It is a compatibility candidate for older bundled Nerd Fonts; its age alone
+cannot guarantee that a particular phone font renders it correctly.</p>
+<p>I keep overrides in <code>~/.config/tmux/tmux-nerd-font-window-name.yml</code>. These
+settings are merged into its existing <code>config</code> and <code>icons</code> mappings:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">config</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">multi-pane-icon</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">icons</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tmux</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">screen</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>My setup compiles that YAML and the plugin&rsquo;s defaults into a native tmux
+<code>automatic-rename-format</code>. The generated file is <code>~/.tmux/window-icons.conf</code>.
+I changed the YAML source and regenerated it, so the next generation would
+not undo the icon fix:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">bash ~/.tmux/scripts/gen-window-icons.sh
+</span></span><span class="line"><span class="cl">tmux source-file ~/.tmux/window-icons.conf</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The <a href="gen-window-icons.sh">generator</a> is included with this post. It expects
+<code>yq</code> and the defaults from the installed <code>tmux-nerd-font-window-name</code> plugin.
+If your setup reads YAML directly through that plugin, use its reload
+mechanism instead of assuming this generated file exists.</p>
+<p>The compact window format had another problem: its first filter replaced
+Unicode characters with <code>_</code>, and unknown commands such as Codex contributed
+a <code>?</code> placeholder. I changed the displayed-name expression to:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#{s/[^ -~]//;s/[?] //;=8:window_name}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>It keeps printable ASCII <strong>plus the chosen columns icon</strong>, removes the literal
+<code>? </code> placeholder, and limits the result to eight characters. In a shell-only
+window whose original name is just a different icon, this filter can leave an
+empty label; the window index remains available.</p>
+<p>The server-side phone format changed from <code>_ ? code</code> to <code> codex</code>. This was
+the recorded expansion for the 71-column client:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">#[fg=black,bg=cyan,nobold,noitalics,nounderscore] 1|  codex #[fg=cyan,bg=black]</span></span></code></pre></td></tr></table>
+</div>
+</div><p>I verified that the new generated format differed from the old one only in
+those three icon replacements, and that the host&rsquo;s <code>wcwidth()</code> reports one
+cell for <code></code>. <strong>Neither check substitutes for looking at the phone.</strong> The
+duplicated-row fix was confirmed on the device; the final replacement glyph
+still needed visual confirmation there when this post was written.</p>
+<p>Shared automatic window names also use the replacement on the desktop. The
+desktop&rsquo;s status colors, metric renderer, and Powerline layout stay as before.
+Existing manually named windows can retain an old symbol: updating an
+automatic-name format does not rewrite every saved window name.</p>
+<h2 id="reload-the-changed-options-and-redraw-the-phone" class="heading-element">
+  <a href="#reload-the-changed-options-and-redraw-the-phone" class="heading-mark"></a>Reload the changed options and redraw the phone</h2><p>During debugging, I loaded only the changed options from a small config
+fragment, rather than restarting tmux or re-running every plugin. The final
+settings are saved in <code>~/.tmux.conf</code>, so normal config reloads retain them.
+In my config, that binding is <strong>Ctrl+k, then r</strong>. The usual command is:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux source-file ~/.tmux.conf</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then find the phone client and redraw its complete display to clear the old
+artifacts:</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux list-clients -F <span class="s1">&#39;#{client_name} #{client_width}x#{client_height}&#39;</span>
+</span></span><span class="line"><span class="cl">tmux refresh-client -t &lt;phone-client&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Use the actual client name from the first command, such as <code>/dev/pts/99</code>.
+<code>refresh-client -S</code> redraws only the status; I used a full redraw to clear the
+copies left elsewhere on the screen.</p>
+<h2 id="what-was-verified" class="heading-element">
+  <a href="#what-was-verified" class="heading-mark"></a>What was verified</h2><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>iPhone after the compact renderer was loaded</td>
+<td>Duplicate status rows stopped; confirmed on the device</td>
+</tr>
+<tr>
+<td>Isolated clients at 20, 40, 80, and 99 columns</td>
+<td>Compact branch selected</td>
+</tr>
+<tr>
+<td>Isolated clients at 100 and 148 columns</td>
+<td>Desktop branch selected</td>
+</tr>
+<tr>
+<td>Session override, removal, and config reload</td>
+<td>Branches behaved as configured</td>
+</tr>
+<tr>
+<td>Desktop renderer before and after the phone-style change</td>
+<td>Output matched after normalizing the changing clock</td>
+</tr>
+<tr>
+<td>Final generated icon mapping and compact label</td>
+<td><code></code> replaced in three mappings; <code></code> retained in the phone label</td>
+</tr>
+</tbody>
+</table>
+<p>The useful distinction was between <strong>layout, character width, and font
+coverage</strong>. Keeping the desktop colors did not require keeping every desktop
+symbol. I kept a conservative text renderer for the narrow client and allowed
+one explicit replacement icon in its window labels.</p></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF--zsh&#43;tmux&#43;powerline&#43;autojump/" title="配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump">配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump</a></li><li>
+          <a href="/2026-10-02-tmux-lag-round-2/" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms">tmux lag, round 2: every status-bar fork froze the server for 30 ms</a></li><li>
+          <a href="/2026-09-30-tmux-status-bar-lag/" title="Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second">Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</a></li><li>
+          <a href="/2026-09-26-linux-timezone-clock-and-tmux/" title="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查">Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</a></li><li>
+          <a href="/2025-02-20-tmux--error-while-loading-shared-libraries--libevent_core-2.1.so.6/" title="tmux: error while loading shared libraries: libevent_core 2.1.so.6">tmux: error while loading shared libraries: libevent_core 2.1.so.6</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-10-09 23:10:36">更新于 2026-10-09&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-10-09-tmux-termius-iphone-status-bar/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/" data-title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" data-hashtags="Linux,tmux,Termius,iPhone,NerdFonts,terminal"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/" data-title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/" data-title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/" data-title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/tmux/" class="post-tag" title="标签 - Tmux">Tmux</a><a href="/tags/termius/" class="post-tag" title="标签 - Termius">Termius</a><a href="/tags/iphone/" class="post-tag" title="标签 - IPhone">IPhone</a><a href="/tags/nerdfonts/" class="post-tag" title="标签 - NerdFonts">NerdFonts</a><a href="/tags/terminal/" class="post-tag" title="标签 - Terminal">Terminal</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-10-03-nvim-startup-lazy-loading/" class="post-nav-item" rel="prev" title="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy</a>
+      <a href="/2026-10-15-log-full-dataframe-from-fstring/" class="post-nav-item" rel="next" title="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source">Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

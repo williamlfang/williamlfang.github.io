@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="My team&rsquo;s internal portal runs on plain http on the LAN, at http://192.168.1.82:8888. I wanted its
+note editor to grab a screenshot of another window straight from the browser, Flameshot-style, with
+getDisplayMedia(). On that address the API isn&rsquo;t there at all: browsers only offer screen capture
+in a secure context, and an http page on a LAN IP is not one.
+The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
+once. My first attempt, the usual one-line self-signed openssl req -x509, made the wrong kind of
+certificate: a CA certificate with no serverAuth usage, which Apple&rsquo;s rules reject." /><meta name="keywords" content='https, tls, openssl, certificate, getDisplayMedia, tornado, macOS' /><meta itemprop="name" content="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate">
+<meta itemprop="description" content="My team&rsquo;s internal portal runs on plain http on the LAN, at http://192.168.1.82:8888. I wanted its
+note editor to grab a screenshot of another window straight from the browser, Flameshot-style, with
+getDisplayMedia(). On that address the API isn&rsquo;t there at all: browsers only offer screen capture
+in a secure context, and an http page on a LAN IP is not one.
+The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
+once. My first attempt, the usual one-line self-signed openssl req -x509, made the wrong kind of
+certificate: a CA certificate with no serverAuth usage, which Apple&rsquo;s rules reject."><meta itemprop="datePublished" content="2026-10-29T21:55:45+09:00" />
+<meta itemprop="dateModified" content="2026-10-29T21:55:45+09:00" />
+<meta itemprop="wordCount" content="2168"><meta itemprop="image" content="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/featured-image.png" />
+<meta itemprop="keywords" content="https,tls,openssl,certificate,getDisplayMedia,tornado,macOS," /><meta property="og:title" content="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" />
+<meta property="og:description" content="My team&rsquo;s internal portal runs on plain http on the LAN, at http://192.168.1.82:8888. I wanted its
+note editor to grab a screenshot of another window straight from the browser, Flameshot-style, with
+getDisplayMedia(). On that address the API isn&rsquo;t there at all: browsers only offer screen capture
+in a secure context, and an http page on a LAN IP is not one.
+The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
+once. My first attempt, the usual one-line self-signed openssl req -x509, made the wrong kind of
+certificate: a CA certificate with no serverAuth usage, which Apple&rsquo;s rules reject." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/" /><meta property="og:image" content="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-10-29T21:55:45+09:00" />
+<meta property="article:modified_time" content="2026-10-29T21:55:45+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/featured-image.png" /><meta name="twitter:title" content="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate"/>
+<meta name="twitter:description" content="My team&rsquo;s internal portal runs on plain http on the LAN, at http://192.168.1.82:8888. I wanted its
+note editor to grab a screenshot of another window straight from the browser, Flameshot-style, with
+getDisplayMedia(). On that address the API isn&rsquo;t there at all: browsers only offer screen capture
+in a secure context, and an http page on a LAN IP is not one.
+The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
+once. My first attempt, the usual one-line self-signed openssl req -x509, made the wrong kind of
+certificate: a CA certificate with no serverAuth usage, which Apple&rsquo;s rules reject."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/" /><link rel="prev" href="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" /><link rel="next" href="https://williamlfang.github.io/2026-11-01-apple-id/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-10-29-lan-https-local-ca\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-10-29-lan-https-local-ca\/featured-image.png",
+              "width":  1240 ,
+              "height":  680 
+            }],"genre": "posts","keywords": "https, tls, openssl, certificate, getDisplayMedia, tornado, macOS","wordcount":  2168 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-10-29-lan-https-local-ca\/","datePublished": "2026-10-29T21:55:45+09:00","dateModified": "2026-10-29T21:55:45+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-10-29 21:55:45"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-10-29">2026-10-29</time></span>&nbsp;<span title="2168 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 11 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-10-29-lan-https-local-ca/featured-image.png" alt="/2026-10-29-lan-https-local-ca/featured-image.png" data-title="/2026-10-29-lan-https-local-ca/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-wall-no-secure-context-no-getdisplaymedia">The wall: no secure context, no <code>getDisplayMedia</code></a></li>
+        <li><a href="#https-beside-http-in-tornado">https beside http in Tornado</a></li>
+        <li><a href="#first-try-the-one-line-self-signed-certificate">First try: the one-line self-signed certificate</a></li>
+        <li><a href="#a-local-ca-that-can-only-vouch-for-this-address">A local CA that can only vouch for this address</a></li>
+        <li><a href="#check-it-the-way-a-browser-will">Check it the way a browser will</a></li>
+        <li><a href="#trust-the-ca-once-per-computer">Trust the CA once per computer</a></li>
+        <li><a href="#the-browser-side">The browser side</a></li>
+        <li><a href="#testing-it-headless">Testing it headless</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>My team&rsquo;s internal portal runs on plain http on the LAN, at <code>http://192.168.1.82:8888</code>. I wanted its
+note editor to grab a screenshot of another window straight from the browser, Flameshot-style, with
+<code>getDisplayMedia()</code>. On that address the API isn&rsquo;t there at all: <strong>browsers only offer screen capture
+in a secure context, and an http page on a LAN IP is not one.</strong></p>
+<p>The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
+once. My first attempt, the usual one-line self-signed <code>openssl req -x509</code>, made the wrong kind of
+certificate: a CA certificate with no <code>serverAuth</code> usage, which Apple&rsquo;s rules reject.</p>
+<h2 id="the-wall-no-secure-context-no-getdisplaymedia" class="heading-element">
+  <a href="#the-wall-no-secure-context-no-getdisplaymedia" class="heading-mark"></a>The wall: no secure context, no <code>getDisplayMedia</code></h2><p>MDN is blunt about both conditions on
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia"target="_blank" rel="external nofollow noopener noreferrer"><code>getDisplayMedia()</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Secure context: This feature is available only in secure contexts (HTTPS) ...
+</span></span><span class="line"><span class="cl">Transient user activation is required.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>And <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts"target="_blank" rel="external nofollow noopener noreferrer">secure contexts<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> are
+https, <code>127.0.0.0/8</code>, <code>::1</code> and <code>localhost</code>. A LAN IP over http matches none of them. That is also why
+the feature worked when I tested on <code>127.0.0.1</code> and did nothing on the real address: <strong>loopback counts
+as secure, the LAN IP doesn&rsquo;t.</strong></p>
+<p>I checked the http case from a headless Chrome (more on how below). <code>isSecureContext</code> was false and
+<code>navigator.mediaDevices?.getDisplayMedia</code> was missing:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">PASS http page by name is not a secure context, no getDisplayMedia</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Other ways around it, and why I didn&rsquo;t take them:</p>
+<ul>
+<li>Chrome&rsquo;s <code>--unsafely-treat-insecure-origin-as-secure=http://192.168.1.82:8888</code> flag works, but every
+colleague would have to set it in every browser.</li>
+<li>An SSH tunnel to <code>localhost</code> works for me and nobody else.</li>
+</ul>
+<p>So: serve https.</p>
+<h2 id="https-beside-http-in-tornado" class="heading-element">
+  <a href="#https-beside-http-in-tornado" class="heading-mark"></a>https beside http in Tornado</h2><p>The portal is one Tornado process. I kept http on its port, untouched. Scripts and bookmarks use it,
+so there&rsquo;s no redirect and no HSTS. Three new options, off by default:</p>
+<p><code>local.conf</code> (this machine):</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">ssl_port</span> <span class="o">=</span> <span class="mi">8889</span>
+</span></span><span class="line"><span class="cl"><span class="n">certfile</span> <span class="o">=</span> <span class="s2">&#34;/home/william/git/SnailPortal2/run/tls.crt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">keyfile</span> <span class="o">=</span> <span class="s2">&#34;/home/william/git/SnailPortal2/run/tls.key&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The usual 8443 was already taken here by something else:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ss -ltn <span class="p">|</span> grep <span class="s2">&#34;:8443 &#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">LISTEN  0        4096             0.0.0.0:8443           0.0.0.0:*
+</span></span><span class="line"><span class="cl">LISTEN  0        4096                [::]:8443              [::]:*</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>snailportal/__main__.py</code> builds the TLS context once, before anything else starts, so a bad file stops
+startup with the reason instead of failing on the first request:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">tls_context</span><span class="p">(</span><span class="n">certfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">keyfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;The https listener&#39;s TLS context; exits with the reason when a file is missing or bad.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">certfile</span> <span class="ow">and</span> <span class="n">keyfile</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="s2">&#34;--ssl_port needs --certfile and --keyfile&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ctx</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_TLS_SERVER</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ctx</span><span class="o">.</span><span class="n">load_cert_chain</span><span class="p">(</span><span class="n">certfile</span><span class="p">,</span> <span class="n">keyfile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># ssl.SSLError too</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="ne">SystemExit</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;--ssl_port: cannot load </span><span class="si">{</span><span class="n">certfile</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">keyfile</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">ctx</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>and listens twice with the same app:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">app</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">tls</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">ssl_port</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">options</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">ssl_options</span><span class="o">=</span><span class="n">tls</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">SnailPortal listening on http://192.168.1.82:8888
+</span></span><span class="line"><span class="cl">SnailPortal listening on https://192.168.1.82:8889</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Nothing else on the server changed. The cookies have no <code>secure</code> flag, so they work on both. The
+page&rsquo;s WebSocket already picked its scheme from the page:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">proto</span> <span class="o">=</span> <span class="nx">location</span><span class="p">.</span><span class="nx">protocol</span> <span class="o">===</span> <span class="s2">&#34;https:&#34;</span> <span class="o">?</span> <span class="s2">&#34;wss&#34;</span> <span class="o">:</span> <span class="s2">&#34;ws&#34;</span><span class="p">;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="first-try-the-one-line-self-signed-certificate" class="heading-element">
+  <a href="#first-try-the-one-line-self-signed-certificate" class="heading-mark"></a>First try: the one-line self-signed certificate</h2><p>This is the line everyone copies, with the IP in <code>subjectAltName</code> because Chrome ignores the common
+name:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openssl req -x509 -newkey rsa:2048 -nodes -days <span class="m">825</span> -keyout run/tls.key -out run/tls.crt <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -subj <span class="s2">&#34;/CN=snailportal&#34;</span> -addext <span class="s2">&#34;subjectAltName=IP:192.168.1.82,DNS:localhost,IP:127.0.0.1&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>It serves, and any browser shows the &ldquo;not private&rdquo; warning as expected:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">subject=CN = snailportal
+</span></span><span class="line"><span class="cl">Verify return code: 18 (self-signed certificate)</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then I looked at what it actually is:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openssl x509 -in run/tls.crt -noout -text <span class="p">|</span> grep -A1 -E <span class="s2">&#34;Basic Constraints|Key Usage|Extended Key|Subject Alternative&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">            X509v3 Basic Constraints: critical
+</span></span><span class="line"><span class="cl">                CA:TRUE
+</span></span><span class="line"><span class="cl">            X509v3 Subject Alternative Name:
+</span></span><span class="line"><span class="cl">                IP Address:192.168.1.82, DNS:localhost, IP Address:127.0.0.1</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong><code>req -x509</code> with the default config makes a CA certificate</strong>, and there is no key usage or extended
+key usage at all. Apple&rsquo;s
+<a href="https://support.apple.com/en-us/103769"target="_blank" rel="external nofollow noopener noreferrer">Requirements for trusted certificates in iOS 13 and macOS 10.15<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>
+say a TLS server certificate must have the <code>id-kp-serverAuth</code> extended key usage, must be valid for
+825 days or fewer, and must carry the name in <code>subjectAltName</code>, and that &ldquo;connections to TLS servers
+violating these new requirements will fail&rdquo;. I didn&rsquo;t get to watch it fail on a Mac, but a
+certificate that breaks a documented rule isn&rsquo;t worth shipping to find out.</p>
+<h2 id="a-local-ca-that-can-only-vouch-for-this-address" class="heading-element">
+  <a href="#a-local-ca-that-can-only-vouch-for-this-address" class="heading-mark"></a>A local CA that can only vouch for this address</h2><p>What <a href="https://github.com/FiloSottile/mkcert"target="_blank" rel="external nofollow noopener noreferrer">mkcert<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> does, in a dozen lines of openssl. A CA made once,
+and a server certificate it signs, the right shape for a server. Computers trust the CA once. The server
+certificate can be renewed as often as needed without anyone importing anything again.</p>
+<p><code>scripts/tls-cert.sh</code>:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1"># The https listener&#39;s certificate (ssl_port, certfile, keyfile in local.conf): a small local</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># certificate authority, made once, signs a certificate for the portal&#39;s LAN address. Trust the CA</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># once per computer and the https address opens without a warning; it can vouch only for these</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># addresses (nameConstraints), so trusting it can&#39;t be abused for other sites.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   scripts/tls-cert.sh 192.168.1.82   # run/tls-ca.crt (+ .key, kept when present), run/tls.crt + run/tls.key</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -euo pipefail
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">IP</span><span class="o">=</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">1</span><span class="p">:?usage: scripts/tls-cert.sh &lt;LAN IP of the portal&gt;</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">RUN</span><span class="o">=</span><span class="s2">&#34;</span><span class="k">$(</span><span class="nb">cd</span> <span class="s2">&#34;</span><span class="k">$(</span>dirname <span class="s2">&#34;</span><span class="si">${</span><span class="nv">BASH_SOURCE</span><span class="p">[0]</span><span class="si">}</span><span class="s2">&#34;</span><span class="k">)</span><span class="s2">/..&#34;</span> <span class="o">&amp;&amp;</span> <span class="nb">pwd</span><span class="k">)</span><span class="s2">/run&#34;</span>
+</span></span><span class="line"><span class="cl">mkdir -p <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">umask</span> <span class="m">077</span> <span class="c1"># the keys readable by this user only</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[[</span> ! -f <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls-ca.key&#34;</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    openssl req -x509 -newkey rsa:2048 -nodes -days <span class="m">3650</span> -subj <span class="s2">&#34;/CN=SnailPortal local CA&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -keyout <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls-ca.key&#34;</span> -out <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls-ca.crt&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -addext <span class="s2">&#34;keyUsage=critical,keyCertSign,cRLSign&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        -addext <span class="s2">&#34;nameConstraints=permitted;IP:</span><span class="nv">$IP</span><span class="s2">/255.255.255.255,permitted;IP:127.0.0.1/255.255.255.255,permitted;DNS:localhost&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># macOS refuses a server certificate without serverAuth, or valid for over 825 days.</span>
+</span></span><span class="line"><span class="cl">openssl req -newkey rsa:2048 -nodes -subj <span class="s2">&#34;/CN=</span><span class="nv">$IP</span><span class="s2">&#34;</span> -keyout <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls.key&#34;</span> -out <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls.csr&#34;</span>
+</span></span><span class="line"><span class="cl">openssl x509 -req -in <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls.csr&#34;</span> -CA <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls-ca.crt&#34;</span> -CAkey <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls-ca.key&#34;</span> -CAcreateserial -days <span class="m">825</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -out <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls.crt&#34;</span> -extfile &lt;<span class="o">(</span><span class="nb">printf</span> <span class="s1">&#39;%s\n&#39;</span> <span class="s2">&#34;basicConstraints=critical,CA:FALSE&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        <span class="s2">&#34;keyUsage=critical,digitalSignature,keyEncipherment&#34;</span> <span class="s2">&#34;extendedKeyUsage=serverAuth&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        <span class="s2">&#34;subjectAltName=IP:</span><span class="nv">$IP</span><span class="s2">,DNS:localhost,IP:127.0.0.1&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">rm -f <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls.csr&#34;</span>
+</span></span><span class="line"><span class="cl">chmod <span class="m">644</span> <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls-ca.crt&#34;</span> <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls.crt&#34;</span>
+</span></span><span class="line"><span class="cl">openssl verify -CAfile <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls-ca.crt&#34;</span> <span class="s2">&#34;</span><span class="nv">$RUN</span><span class="s2">/tls.crt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;Trust </span><span class="nv">$RUN</span><span class="s2">/tls-ca.crt on each computer, then restart the portal.&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">scripts/tls-cert.sh 192.168.1.82</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Certificate request self-signature ok
+</span></span><span class="line"><span class="cl">subject=CN = 192.168.1.82
+</span></span><span class="line"><span class="cl">/home/william/git/SnailPortal2/run/tls.crt: OK
+</span></span><span class="line"><span class="cl">Trust /home/william/git/SnailPortal2/run/tls-ca.crt on each computer, then restart the portal.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Same <code>grep</code> on the new server certificate: it now has what Apple asks for.</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">            Not After : Jan 31 12:46:43 2029 GMT
+</span></span><span class="line"><span class="cl">        Subject: CN = 192.168.1.82
+</span></span><span class="line"><span class="cl">            X509v3 Basic Constraints: critical
+</span></span><span class="line"><span class="cl">                CA:FALSE
+</span></span><span class="line"><span class="cl">            X509v3 Key Usage: critical
+</span></span><span class="line"><span class="cl">                Digital Signature, Key Encipherment
+</span></span><span class="line"><span class="cl">            X509v3 Extended Key Usage:
+</span></span><span class="line"><span class="cl">                TLS Web Server Authentication
+</span></span><span class="line"><span class="cl">            X509v3 Subject Alternative Name:
+</span></span><span class="line"><span class="cl">                IP Address:192.168.1.82, DNS:localhost, IP Address:127.0.0.1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>And the CA is fenced in:</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">            X509v3 Basic Constraints: critical
+</span></span><span class="line"><span class="cl">                CA:TRUE
+</span></span><span class="line"><span class="cl">            X509v3 Key Usage: critical
+</span></span><span class="line"><span class="cl">                Certificate Sign, CRL Sign
+</span></span><span class="line"><span class="cl">            X509v3 Name Constraints:
+</span></span><span class="line"><span class="cl">                Permitted:
+</span></span><span class="line"><span class="cl">                  IP:192.168.1.82/255.255.255.255
+</span></span><span class="line"><span class="cl">                  IP:127.0.0.1/255.255.255.255
+</span></span><span class="line"><span class="cl">                  ...</span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li><strong><code>nameConstraints</code> is the reason this is safe to hand out.</strong> Asking colleagues to trust a root CA
+normally means trusting its key for every site on the internet. This one can only sign for
+<code>192.168.1.82</code>, <code>127.0.0.1</code> and <code>localhost</code>, so even a stolen <code>tls-ca.key</code> can&rsquo;t forge a bank&rsquo;s
+certificate on a client that enforces the constraint.</li>
+<li>I left <code>nameConstraints</code> non-critical. A client that understands it enforces it either way; marking
+it critical only makes a client that doesn&rsquo;t understand it reject the whole CA.</li>
+<li>The CA lives ten years. The server certificate gets 825 days, the macOS limit. Rerunning the script
+keeps the CA and replaces only the server certificate.</li>
+<li><code>umask 077</code> makes both keys <code>-rw-------</code>. Only the two <code>.crt</code> files are opened up to 644. <code>run/</code> is
+git-ignored.</li>
+</ul>
+<h2 id="check-it-the-way-a-browser-will" class="heading-element">
+  <a href="#check-it-the-way-a-browser-will" class="heading-mark"></a>Check it the way a browser will</h2><p><code>curl</code> with the CA as its only trust root verifies the chain, the IP against <code>subjectAltName</code> and the
+CA&rsquo;s name constraints. That is what a browser does once the CA is trusted:</p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -s --noproxy <span class="s1">&#39;*&#39;</span> --cacert run/tls-ca.crt https://192.168.1.82:8889/api/health</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-20"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">{&#34;status&#34;: &#34;ok&#34;, &#34;version&#34;: &#34;0.1.0&#34;}</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Without it, against the system store, it refuses (exit 60 is &ldquo;peer certificate cannot be
+authenticated&rdquo;):</p>
+<div class="highlight" id="id-21"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -s --noproxy <span class="s1">&#39;*&#39;</span> -o /dev/null https://192.168.1.82:8889/api/health<span class="p">;</span> <span class="nb">echo</span> <span class="nv">$?</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-22"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">60</span></span></code></pre></td></tr></table>
+</div>
+</div><p>(<code>--noproxy '*'</code> because this machine has a proxy in its environment that answers LAN addresses with a
+503.)</p>
+<h2 id="trust-the-ca-once-per-computer" class="heading-element">
+  <a href="#trust-the-ca-once-per-computer" class="heading-mark"></a>Trust the CA once per computer</h2><p>Copy <code>run/tls-ca.crt</code> to the computer (it&rsquo;s public; only the <code>.key</code> files are secret), then:</p>
+<ul>
+<li><strong>macOS</strong> (Chrome and Safari): double-click the file to add it to Keychain Access, open &ldquo;SnailPortal
+local CA&rdquo;, Trust, set &ldquo;When using this certificate&rdquo; to <strong>Always Trust</strong>, close and enter your password.</li>
+<li><strong>Windows</strong> (Chrome, Edge): double-click, Install Certificate, Current User, place it in
+<strong>Trusted Root Certification Authorities</strong>.</li>
+<li><strong>Firefox</strong> (its own store, on every OS): Settings, Privacy &amp; Security, Certificates, View
+Certificates, Authorities, Import, tick &ldquo;Trust this CA to identify websites&rdquo;.</li>
+<li><strong>Chrome on Linux</strong>: Settings, Privacy and security, Security, Manage certificates, Authorities,
+Import, tick &ldquo;Trust for identifying websites&rdquo;.</li>
+</ul>
+<p>Restart the browser. To make sure the file that arrived is the one you made, compare fingerprints:</p>
+<div class="highlight" id="id-23"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openssl x509 -in run/tls-ca.crt -noout -fingerprint -sha256</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="the-browser-side" class="heading-element">
+  <a href="#the-browser-side" class="heading-mark"></a>The browser side</h2><p>With a secure context, the capture itself is short. Two things are easy to get wrong.</p>
+<p><strong>Call it inside the click.</strong> <code>getDisplayMedia()</code> needs transient user activation, so the editor&rsquo;s
+Screenshot button opens the dialog and calls capture in the same click handler, before any <code>await</code>
+that could outlive the gesture. The browser&rsquo;s window/screen picker comes up straight away.</p>
+<p><strong>Wait for a real frame.</strong> A window capture&rsquo;s first frame can still be blank when <code>play()</code> resolves:</p>
+<div class="highlight" id="id-24"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">stream</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">navigator</span><span class="p">.</span><span class="nx">mediaDevices</span><span class="p">.</span><span class="nx">getDisplayMedia</span><span class="p">({</span> <span class="nx">video</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">audio</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">selfBrowserSurface</span><span class="o">:</span> <span class="s2">&#34;exclude&#34;</span><span class="p">,</span> <span class="nx">surfaceSwitching</span><span class="o">:</span> <span class="s2">&#34;exclude&#34;</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">video</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&#34;video&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">video</span><span class="p">.</span><span class="nx">muted</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">video</span><span class="p">.</span><span class="nx">srcObject</span> <span class="o">=</span> <span class="nx">stream</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">await</span> <span class="nx">video</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// A window&#39;s first frame can be blank: wait for one to be presented (0.5 s at most).
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kr">await</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">ok</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="nx">video</span><span class="p">.</span><span class="nx">requestVideoFrameCallback</span><span class="o">?</span><span class="p">.(</span><span class="nx">ok</span><span class="p">);</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">ok</span><span class="p">,</span> <span class="mi">500</span><span class="p">);</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">opened</span><span class="p">)</span> <span class="nx">show</span><span class="p">(</span><span class="kr">await</span> <span class="nx">createImageBitmap</span><span class="p">(</span><span class="nx">video</span><span class="p">));</span> <span class="c1">// dropped if the dialog closed meanwhile
+</span></span></span><span class="line"><span class="cl"><span class="c1">// ...and in finally: stream.getTracks().forEach((t) =&gt; t.stop());
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>selfBrowserSurface: &quot;exclude&quot;</code> keeps the portal&rsquo;s own tab out of the picker. Stopping every track
+right after the grab ends the share, so the capture lasts only as long as one frame takes.</p>
+<p>On the http address the dialog can&rsquo;t capture, so it says why and links to the same page on https
+(<code>https://&lt;host&gt;:&lt;ssl_port&gt;&lt;path&gt;</code>), opened in a new tab so an unsaved note stays where it is.</p>
+<p>One cost of the https address: <strong>an <code>http://</code> picture or embedded page inside a note is mixed content
+there and won&rsquo;t load.</strong> The http address still shows it.</p>
+<h2 id="testing-it-headless" class="heading-element">
+  <a href="#testing-it-headless" class="heading-mark"></a>Testing it headless</h2><p>Three Chrome tricks made this testable without a desktop:</p>
+<div class="highlight" id="id-25"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">google-chrome --headless<span class="o">=</span>new --remote-debugging-port<span class="o">=</span>&lt;port&gt; --user-data-dir<span class="o">=</span>&lt;scratch dir&gt; <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --no-first-run --no-proxy-server <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --ignore-certificate-errors <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --use-fake-ui-for-media-stream --use-fake-device-for-media-stream <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --host-resolver-rules<span class="o">=</span><span class="s2">&#34;MAP snailtest.internal 127.0.0.1&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>--use-fake-ui-for-media-stream --use-fake-device-for-media-stream</code> answer the picker and hand back
+Chrome&rsquo;s fake 800×600 video. A real tab or screen source doesn&rsquo;t start headless
+(<code>NotReadableError: Could not start video source</code>), so this tests the code path, not a real window.</li>
+<li><strong><code>127.0.0.1</code> is a secure context</strong>, so a test portal on loopback can never show the http behaviour.
+<code>--host-resolver-rules</code> gives it a name that isn&rsquo;t loopback: <code>http://snailtest.internal:8898</code> is
+plain http and insecure, while still reaching the local test server.</li>
+<li>My first run hung on that name: Chrome sent <code>snailtest.internal</code> to the proxy in the environment,
+which had never heard of it. <code>--no-proxy-server</code> fixed it.</li>
+</ul>
+<div class="highlight" id="id-26"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Error: timed out waiting for document.readyState === &#34;complete&#34; &amp;&amp; (!!document.querySelector(&#34;#username&#34;) || !!document.querySelector(&#34;#dn-add&#34;))</span></span></code></pre></td></tr></table>
+</div>
+</div><p>With those, against a test instance on http 8898 and https 8453:</p>
+<div class="highlight" id="id-27"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">PASS https page is a secure context with getDisplayMedia
+</span></span><span class="line"><span class="cl">PASS live WebSocket connects over wss
+</span></span><span class="line"><span class="cl">PASS one click on Screenshot opens the annotator with a captured frame: [800,600]
+</span></span><span class="line"><span class="cl">PASS header capture-again button shown
+</span></span><span class="line"><span class="cl">PASS capture again takes a new frame
+</span></span><span class="line"><span class="cl">PASS a box drawn on the capture
+</span></span><span class="line"><span class="cl">PASS Insert uploads and puts a figure in the details
+</span></span><span class="line"><span class="cl">PASS the picture is served as a PNG over https
+</span></span><span class="line"><span class="cl">PASS http page by name is not a secure context, no getDisplayMedia
+</span></span><span class="line"><span class="cl">PASS empty state links to the https address with this path: {&#34;shown&#34;:true,&#34;href&#34;:&#34;https://snailtest.internal:8453/&#34;}
+</span></span><span class="line"><span class="cl">PASS no capture buttons on http
+</span></span><span class="line"><span class="cl">PASS no page errors: []
+</span></span><span class="line"><span class="cl">12/12 passed</span></span></code></pre></td></tr></table>
+</div>
+</div><p>What this doesn&rsquo;t cover: a capture of a real window, importing the CA on a real Mac, and whether port
+8889 gets through to other machines on the LAN.</p>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong><code>getDisplayMedia()</code> needs a secure context.</strong> https, or loopback. A LAN IP over http is neither,
+which is why &ldquo;it works on localhost&rdquo; means nothing here.</li>
+<li><strong>Add https; keep http.</strong> A second <code>listen()</code> with an <code>SSLContext</code>, no redirect. WebSockets that
+follow <code>location.protocol</code> need no change.</li>
+<li><strong>The one-line <code>openssl req -x509</code> makes a CA certificate.</strong> A server certificate wants
+<code>CA:FALSE</code>, <code>extendedKeyUsage=serverAuth</code>, the name in <code>subjectAltName</code>, and 825 days or fewer for
+Apple.</li>
+<li><strong>Use a local CA with <code>nameConstraints</code>.</strong> Trust it once per computer, renew the server certificate
+freely, and nobody is trusting a key that could sign for other sites.</li>
+<li><strong>Test the insecure branch through a hostname.</strong> <code>127.0.0.1</code> is secure by definition;
+<code>--host-resolver-rules</code> gives you an insecure name for the same server.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia"target="_blank" rel="external nofollow noopener noreferrer">MDN: <code>MediaDevices.getDisplayMedia()</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts"target="_blank" rel="external nofollow noopener noreferrer">MDN: Secure contexts<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://support.apple.com/en-us/103769"target="_blank" rel="external nofollow noopener noreferrer">Apple: Requirements for trusted certificates in iOS 13 and macOS 10.15<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-07-09-nagios-%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" title="nagios 安装与使用">nagios 安装与使用</a></li><li>
+          <a href="/2023-05-27-git-%E6%97%A0%E6%B3%95%E8%BF%9E%E6%8E%A5-https-%E7%9A%84%E8%A7%A3%E5%86%B3/" title="git 无法连接 https 的解决">git 无法连接 https 的解决</a></li><li>
+          <a href="/2022-11-22-python3.11-%E6%BA%90%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/" title="Python3.11：源代码编译安装">Python3.11：源代码编译安装</a></li><li>
+          <a href="/2022-09-13-git-%E4%BF%AE%E6%94%B9-https-%E4%B8%BA-ssh/" title="git 修改 https 为 ssh">git 修改 https 为 ssh</a></li><li>
+          <a href="/archives/2020-07-22-hippo--%E7%BC%96%E8%AF%91%E9%A1%B9%E7%9B%AE/" title="Hippo: 编译项目">Hippo: 编译项目</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-10-29 21:55:45">更新于 2026-10-29&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-10-29-lan-https-local-ca/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/" data-title="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" data-hashtags="https,tls,openssl,certificate,getDisplayMedia,tornado,macOS"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/" data-hashtag="https"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/" data-title="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/" data-title="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/" data-title="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/https/" class="post-tag" title="标签 - Https">Https</a><a href="/tags/tls/" class="post-tag" title="标签 - Tls">Tls</a><a href="/tags/openssl/" class="post-tag" title="标签 - Openssl">Openssl</a><a href="/tags/certificate/" class="post-tag" title="标签 - Certificate">Certificate</a><a href="/tags/getdisplaymedia/" class="post-tag" title="标签 - GetDisplayMedia">GetDisplayMedia</a><a href="/tags/tornado/" class="post-tag" title="标签 - Tornado">Tornado</a><a href="/tags/macos/" class="post-tag" title="标签 - MacOS">MacOS</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-10-17-nvim-big-log-files/" class="post-nav-item" rel="prev" title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15</a>
+      <a href="/2026-11-01-apple-id/" class="post-nav-item" rel="next" title="Apple ID">Apple ID<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

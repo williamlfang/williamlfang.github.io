@@ -187,86 +187,90 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-10-02-claude-code-blog-skill-and-agent/">A Claude Code skill and subagent that write posts for this blog</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-02 22:36:58'>发布于 <time datetime="2026-10-02">2026-10-02</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>Most of my recent posts start the same way: I debug something in a Claude Code
-session, then ask it to &ldquo;write this up&rdquo;. Without guidance the result is
-generic: wrong front matter, a made-up category, marketing intros, and
-sometimes output that was never actually printed. So I gave the repo two
-small files that teach Claude Code how this blog works: a <strong>skill</strong>
-(<code>blog-post</code>) and a <strong>subagent</strong> (<code>blog-writer</code>). This post is how they are
-set up. It was written with the skill.</p></div><div class="post-footer">
-    <a href="/2026-10-02-claude-code-blog-skill-and-agent/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/claude/' class="post-tag">Claude</a><a href='/tags/claudecode/' class="post-tag">ClaudeCode</a><a href='/tags/hugo/' class="post-tag">Hugo</a><a href='/tags/blog/' class="post-tag">Blog</a><a href='/tags/skill/' class="post-tag">Skill</a><a href='/tags/agent/' class="post-tag">Agent</a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-11-06-idc-v2raya-proxy-codex/">Use the IDC proxy from XPS and Codex</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-11-06 13:00:00'>发布于 <time datetime="2026-11-06">2026-11-06</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p></div><div class="post-footer">
+    <a href="/2026-11-06-idc-v2raya-proxy-codex/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/proxy/' class="post-tag">Proxy</a><a href='/tags/v2raya/' class="post-tag">V2raya</a><a href='/tags/docker/' class="post-tag">Docker</a><a href='/tags/codex/' class="post-tag">Codex</a></div></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-10-02-tmux-lag-round-2/">tmux lag, round 2: every status-bar fork froze the server for 30 ms</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-02 22:30:00'>发布于 <time datetime="2026-10-02">2026-10-02</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="content"><p>Two days after the
-<a href="/2026-09-30-tmux-status-bar-lag/">last fix</a>, my tmux was laggy
-again, and the server was back at about a quarter of a CPU core. The culprit was
-the same as last time: the status bar&rsquo;s <code>#()</code> jobs. This time, though, the
-number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
-is a fork of the whole tmux server and my server had grown to 1.5 GB.</p>
-<p>This post covers how I measured it, where the 1.5 GB came from (mostly the
-scrollback of three panes), and the fixes. One of them corrects a claim in my
-previous post.</p></div><div class="post-footer">
-    <a href="/2026-10-02-tmux-lag-round-2/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/tmux/' class="post-tag">Tmux</a><a href='/tags/performance/' class="post-tag">Performance</a><a href='/tags/strace/' class="post-tag">Strace</a><a href='/tags/fork/' class="post-tag">Fork</a><a href='/tags/malloc_trim/' class="post-tag">Malloc_trim</a><a href='/tags/scrollback/' class="post-tag">Scrollback</a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2026-11-05-claude-code-statusline-p10k/" aria-label="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh"><img loading="lazy" src="/2026-11-05-claude-code-statusline-p10k/featured-image.png" alt="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" data-title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2026-11-05-claude-code-statusline-p10k/">Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-11-05 18:38:39'>发布于 <time datetime="2026-11-05">2026-11-05</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same <a href="/2024-09-08-powerlevel10k-%E9%85%8D%E7%BD%AE/">powerlevel10k</a>
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.</p>
+<p>The fix was a dotted gap computed from <code>$COLUMNS</code> and <strong><code>&quot;padding&quot;: -2</code></strong>, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135.</p></div><div class="post-footer">
+    <a href="/2026-11-05-claude-code-statusline-p10k/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/claude/' class="post-tag">Claude</a><a href='/tags/claudecode/' class="post-tag">ClaudeCode</a><a href='/tags/zsh/' class="post-tag">Zsh</a><a href='/tags/powerlevel10k/' class="post-tag">Powerlevel10k</a><a href='/tags/tmux/' class="post-tag">Tmux</a><a href='/tags/statusline/' class="post-tag">Statusline</a></div></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-09-30-tmux-status-bar-lag/">Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-09-30 12:00:00'>发布于 <time datetime="2026-09-30">2026-09-30</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="content"><blockquote>
-<p><strong>Update 2026-10-02:</strong> two days later the lag was back. Each fork of the server
-had become slow (~30 ms), and one claim below was wrong: passing
-<code>#{E:#{@quote_cond}}</code> into the job does not work, because tmux does not apply
-strftime inside a <code>#()</code> command. See
-<a href="/2026-10-02-tmux-lag-round-2/">round 2</a>.</p>
-</blockquote>
-<p>My tmux had started to feel sluggish. Nothing was broken, it just felt heavy.
-It turned out the tmux server was using about a third of a CPU core all the time,
-and nearly all of that went on the status bar. Part of the cost came from the
-clock workaround in my
-<a href="/2026-09-26-linux-timezone-clock-and-tmux/">previous post</a>.</p>
-<p>This post covers how I tracked it down, including two wrong guesses, and the fix,
-which brought the server from <strong>~35% CPU to ~4%</strong> without restarting it.</p></div><div class="post-footer">
-    <a href="/2026-09-30-tmux-status-bar-lag/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/tmux/' class="post-tag">Tmux</a><a href='/tags/performance/' class="post-tag">Performance</a><a href='/tags/strace/' class="post-tag">Strace</a><a href='/tags/eu-stack/' class="post-tag">Eu-Stack</a><a href='/tags/profiling/' class="post-tag">Profiling</a><a href='/tags/fork/' class="post-tag">Fork</a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-11-01-apple-id/">Apple ID</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-11-01 18:06:44'>发布于 <time datetime="2026-11-01">2026-11-01</time></span></div><div class="content">https://account.apple.com/ https://account.apple.com/sign-in: 右上角&quot;城建你的 Apple 账户&quot; 使用美国或者日本账户: 可以填写中国的,只是作为验证,不会要求美国</div><div class="post-footer">
+    <a href="/2026-11-01-apple-id/">阅读全文</a></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-09-28-clash-verge-on-mint-20/">Installing Clash Verge Rev on Ubuntu 20.04 / Mint 20 — and upgrading its mihomo core</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-09-28 08:45:00'>发布于 <time datetime="2026-09-28">2026-09-28</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="content"><p><a href="https://github.com/clash-verge-rev/clash-verge-rev"target="_blank" rel="external nofollow noopener noreferrer">Clash Verge Rev<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> is a
-desktop GUI for the <a href="https://github.com/MetaCubeX/mihomo"target="_blank" rel="external nofollow noopener noreferrer">mihomo<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> proxy core
-(formerly Clash Meta). It is the maintained fork of the original Clash Verge,
-which was abandoned in 2023. If a tutorial tells you to use <code>zzzgydi/clash-verge</code>,
-skip it.</p>
-<p>On a modern Ubuntu, installing it takes one command. On my Mint 20.3 (focal,
-glibc 2.31), the latest <code>.deb</code> would not install, and the failed attempt left apt
-in a broken state. Unlike <a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/">Claude Desktop</a>
-and <a href="/2026-09-22-chatgpt-desktop-on-mint-20/">ChatGPT Desktop</a>,
-there is no clean way to patch around it this time. The practical fix is to run
-the last 1.x GUI with an up-to-date core.</p></div><div class="post-footer">
-    <a href="/2026-09-28-clash-verge-on-mint-20/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/mint/' class="post-tag">Mint</a><a href='/tags/ubuntu/' class="post-tag">Ubuntu</a><a href='/tags/glibc/' class="post-tag">Glibc</a><a href='/tags/deb/' class="post-tag">Deb</a><a href='/tags/dpkg/' class="post-tag">Dpkg</a><a href='/tags/clash/' class="post-tag">Clash</a><a href='/tags/mihomo/' class="post-tag">Mihomo</a><a href='/tags/proxy/' class="post-tag">Proxy</a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2026-10-29-lan-https-local-ca/" aria-label="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate"><img loading="lazy" src="/2026-10-29-lan-https-local-ca/featured-image.png" alt="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" data-title="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2026-10-29-lan-https-local-ca/">Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-29 21:55:45'>发布于 <time datetime="2026-10-29">2026-10-29</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>My team&rsquo;s internal portal runs on plain http on the LAN, at <code>http://192.168.1.82:8888</code>. I wanted its
+note editor to grab a screenshot of another window straight from the browser, Flameshot-style, with
+<code>getDisplayMedia()</code>. On that address the API isn&rsquo;t there at all: <strong>browsers only offer screen capture
+in a secure context, and an http page on a LAN IP is not one.</strong></p>
+<p>The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
+once. My first attempt, the usual one-line self-signed <code>openssl req -x509</code>, made the wrong kind of
+certificate: a CA certificate with no <code>serverAuth</code> usage, which Apple&rsquo;s rules reject.</p></div><div class="post-footer">
+    <a href="/2026-10-29-lan-https-local-ca/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/https/' class="post-tag">Https</a><a href='/tags/tls/' class="post-tag">Tls</a><a href='/tags/openssl/' class="post-tag">Openssl</a><a href='/tags/certificate/' class="post-tag">Certificate</a><a href='/tags/getdisplaymedia/' class="post-tag">GetDisplayMedia</a><a href='/tags/tornado/' class="post-tag">Tornado</a><a href='/tags/macos/' class="post-tag">MacOS</a></div></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-09-26-linux-timezone-clock-and-tmux/">Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-09-26 14:45:00'>发布于 <time datetime="2026-09-26">2026-09-26</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="content"><p>我把 Linux 的时区设成 <code>Asia/Tokyo</code>，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 <code>14:37 JST</code>，tmux 却显示 <code>13:37 CST</code>。问题不在 <code>timedatectl set-time</code>：一个早已启动的 tmux server 仍按旧时区格式化状态栏。</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-timezone Asia/Tokyo
-</span></span><span class="line"><span class="cl">sudo timedatectl set-ntp <span class="nb">false</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># aligned to real Asia/Shanghai time</span>
-</span></span><span class="line"><span class="cl">timedatectl set-time <span class="s2">&#34;2026-09-26 15:33:00&#34;</span></span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer">
-    <a href="/2026-09-26-linux-timezone-clock-and-tmux/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/timedatectl/' class="post-tag">Timedatectl</a><a href='/tags/timezone/' class="post-tag">Timezone</a><a href='/tags/tmux/' class="post-tag">Tmux</a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2026-10-17-nvim-big-log-files/" aria-label="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15"><img loading="lazy" src="/2026-10-17-nvim-big-log-files/featured-image.png" alt="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" data-title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2026-10-17-nvim-big-log-files/">Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-17 12:00:00'>发布于 <time datetime="2026-10-17">2026-10-17</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>After the <a href="/2026-10-03-nvim-startup-lazy-loading/">startup pass</a>,
+the slowest thing left in my Neovim was big log files. <code>~/log</code> holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. <code>n</code>, <code>/</code>, typing and <code>&lt;Esc&gt;</code> each stalled.
+Just reading the log while it grew <strong>froze the UI for about 11 of every 15
+seconds</strong>.</p>
+<p>No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed <code>n</code> in every file. Medians of 5 runs in a
+real terminal:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>open the 87 MB log until keys are accepted</td>
+<td style="text-align:right">1857 ms</td>
+<td style="text-align:right"><strong>199 ms</strong></td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td style="text-align:right">523 ms</td>
+<td style="text-align:right"><strong>21 ms</strong></td>
+</tr>
+<tr>
+<td>UI blocked per 15 s while reading the growing log</td>
+<td style="text-align:right">10963 ms</td>
+<td style="text-align:right"><strong>0 ms</strong></td>
+</tr>
+</tbody>
+</table></div><div class="post-footer">
+    <a href="/2026-10-17-nvim-big-log-files/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/nvim/' class="post-tag">Nvim</a><a href='/tags/lazyvim/' class="post-tag">LazyVim</a><a href='/tags/performance/' class="post-tag">Performance</a><a href='/tags/profiling/' class="post-tag">Profiling</a><a href='/tags/pynvim/' class="post-tag">Pynvim</a><a href='/tags/gdb/' class="post-tag">Gdb</a><a href='/tags/undofile/' class="post-tag">Undofile</a></div></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-09-22-chatgpt-desktop-on-mint-20/">Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-09-22 16:16:26'>发布于 <time datetime="2026-09-22">2026-09-22</time></span></div><div class="content"><p>OpenAI shipped an official ChatGPT Desktop for Linux in August 2026 (preview),
-supporting Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 and Arch. Mint 20.3
-(focal, glibc 2.31) is nowhere on that list, so I expected a rerun of the
-<a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/">Claude Desktop surgery</a>.</p>
-<p>It wasn&rsquo;t. The glibc floor was fine all along — the package is blocked by three
-<strong>library renames</strong> and one optional TPM module. The fix is smaller, and the
-audit is worth showing because the conclusion is the opposite of last time.</p></div><div class="post-footer">
-    <a href="/2026-09-22-chatgpt-desktop-on-mint-20/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/mint/' class="post-tag">Mint</a><a href='/tags/ubuntu/' class="post-tag">Ubuntu</a><a href='/tags/glibc/' class="post-tag">Glibc</a><a href='/tags/deb/' class="post-tag">Deb</a><a href='/tags/dpkg/' class="post-tag">Dpkg</a><a href='/tags/chatgpt/' class="post-tag">ChatGPT</a><a href='/tags/openai/' class="post-tag">OpenAI</a><a href='/tags/electron/' class="post-tag">Electron</a><a href='/tags/proxy/' class="post-tag">Proxy</a><a href='/tags/ar/' class="post-tag">Ar</a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-10-16-docker-buildx-anonymous-token-timeout/">docker buildx: the builder had a proxy, the client didn&#39;t</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-16 14:03:28'>发布于 <time datetime="2026-10-16">2026-10-16</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>My image build script started failing on its very first line, <code>FROM python:3.10</code>,
+with <code>failed to fetch anonymous token ... TLS handshake timeout</code>. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.</p>
+<p><strong>The token request is not made by the builder. It is made by the <code>docker buildx</code>
+client in your own shell, using your shell&rsquo;s proxy variables.</strong> My interactive
+zsh exports none, so that one request went direct and timed out. Two <code>export</code>
+lines in the build script fixed it.</p></div><div class="post-footer">
+    <a href="/2026-10-16-docker-buildx-anonymous-token-timeout/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/docker/' class="post-tag">Docker</a><a href='/tags/buildx/' class="post-tag">Buildx</a><a href='/tags/buildkit/' class="post-tag">Buildkit</a><a href='/tags/proxy/' class="post-tag">Proxy</a><a href='/tags/socks5/' class="post-tag">Socks5</a><a href='/tags/network/' class="post-tag">Network</a></div></div>
 </article>
 <ul class="pagination"><li class="page-item active">
           <span class="page-link">
@@ -284,7 +288,7 @@ audit is worth showing because the conclusion is the opposite of last time.</p><
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/77/">77</a>
+            <a href="/page/78/">78</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>

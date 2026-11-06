@@ -3,7 +3,62 @@
     <title>Zsh - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/zsh/</link>
     <description>Zsh - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 06 Nov 2023 15:24:46 &#43;0000</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/zsh/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 05 Nov 2026 18:38:39 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/zsh/" rel="self" type="application/rss+xml" /><item>
+  <title>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</title>
+  <link>https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/</link>
+  <pubDate>Thu, 05 Nov 2026 18:38:39 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/featured-image.png" alt="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" referrerpolicy="no-referrer"/></div><p>I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same <a href="/2024-09-08-powerlevel10k-%E9%85%8D%E7%BD%AE/">powerlevel10k</a>
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.</p>
+<p>The fix was a dotted gap computed from <code>$COLUMNS</code> and <strong><code>&quot;padding&quot;: -2</code></strong>, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135.</p>]]></description>
+</item>
+<item>
+  <title>Profiling zsh: a Python plugin was adding 190 ms to every command</title>
+  <link>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</link>
+  <pubDate>Fri, 02 Oct 2026 23:15:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/featured-image.png" alt="Profiling zsh: a Python plugin was adding 190 ms to every command" title="Profiling zsh: a Python plugin was adding 190 ms to every command" referrerpolicy="no-referrer"/></div><p>After <a href="/2026-10-02-tmux-lag-round-2/">fixing tmux</a>, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.</p>
+<p>Measured properly, it was slow in three separate ways, each with its own cause:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>startup to a usable shell</td>
+<td style="text-align:right">267 ms</td>
+<td style="text-align:right">101 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every command</strong></td>
+<td style="text-align:right">188 ms</td>
+<td style="text-align:right">3 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every prompt</strong></td>
+<td style="text-align:right">15 ms</td>
+<td style="text-align:right">4 ms</td>
+</tr>
+</tbody>
+</table>
+<p>This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own.</p>]]></description>
+</item>
+<item>
   <title>zsh compinit: insecure directories, run compaudit for list</title>
   <link>https://williamlfang.github.io/2023-11-06-zsh-compinit--insecure-directories-run-compaudit-for-list/</link>
   <pubDate>Mon, 06 Nov 2023 15:24:46 &#43;0000</pubDate>
@@ -105,22 +160,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/archives/2021-07-05-git-%E6%98%BE%E7%A4%BA%E4%BF%AE%E6%94%B9%E9%A2%9C%E8%89%B2/</guid>
   <description><![CDATA[1 2 git config --global color.diff auto git config --global color.status auto]]></description>
-</item>
-<item>
-  <title>zsh 报错:zsh compinit: insecure directories, run compaudit for list</title>
-  <link>https://williamlfang.github.io/archives/2021-04-16-zsh-%E6%8A%A5%E9%94%99-zsh-compinit--insecure-directories-run-compaudit-for-list/</link>
-  <pubDate>Fri, 16 Apr 2021 00:00:00 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/archives/2021-04-16-zsh-%E6%8A%A5%E9%94%99-zsh-compinit--insecure-directories-run-compaudit-for-list/</guid>
-  <description><![CDATA[解决方案 1 compaudit | xargs chmod g-w]]></description>
-</item>
-<item>
-  <title>Linux开发环境一键部署</title>
-  <link>https://williamlfang.github.io/archives/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/</link>
-  <pubDate>Fri, 08 Jan 2021 00:00:00 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/archives/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/</guid>
-  <description><![CDATA[套件 zsh 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 ## 可以到主页看一下最]]></description>
 </item>
 </channel>
 </rss>

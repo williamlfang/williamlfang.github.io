@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same powerlevel10k
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.
+The fix was a dotted gap computed from $COLUMNS and &quot;padding&quot;: -2, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135." /><meta name="keywords" content='Claude, ClaudeCode, zsh, powerlevel10k, tmux, statusline' /><meta itemprop="name" content="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh">
+<meta itemprop="description" content="I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same powerlevel10k
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.
+The fix was a dotted gap computed from $COLUMNS and &quot;padding&quot;: -2, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135."><meta itemprop="datePublished" content="2026-11-05T18:38:39+08:00" />
+<meta itemprop="dateModified" content="2026-11-05T18:38:39+08:00" />
+<meta itemprop="wordCount" content="2135"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/featured-image.png" />
+<meta itemprop="keywords" content="Claude,ClaudeCode,zsh,powerlevel10k,tmux,statusline," /><meta property="og:title" content="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" />
+<meta property="og:description" content="I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same powerlevel10k
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.
+The fix was a dotted gap computed from $COLUMNS and &quot;padding&quot;: -2, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" /><meta property="og:image" content="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-11-05T18:38:39+08:00" />
+<meta property="article:modified_time" content="2026-11-05T18:38:39+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/featured-image.png" /><meta name="twitter:title" content="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh"/>
+<meta name="twitter:description" content="I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same powerlevel10k
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.
+The fix was a dotted gap computed from $COLUMNS and &quot;padding&quot;: -2, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-01-apple-id/" /><link rel="next" href="https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-11-05-claude-code-statusline-p10k\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-11-05-claude-code-statusline-p10k\/featured-image.png",
+              "width":  1240 ,
+              "height":  202 
+            }],"genre": "posts","keywords": "Claude, ClaudeCode, zsh, powerlevel10k, tmux, statusline","wordcount":  2135 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-05-claude-code-statusline-p10k\/","datePublished": "2026-11-05T18:38:39+08:00","dateModified": "2026-11-05T18:38:39+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-05 18:38:39"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-05">2026-11-05</time></span>&nbsp;<span title="2135 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-11-05-claude-code-statusline-p10k/featured-image.png" alt="/2026-11-05-claude-code-statusline-p10k/featured-image.png" data-title="/2026-11-05-claude-code-statusline-p10k/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#step-1-what-the-docs-say">Step 1: what the docs say</a></li>
+        <li><a href="#step-2-measure-with-a-ruler-in-a-real-claude-code">Step 2: measure with a ruler in a real Claude Code</a></li>
+        <li><a href="#step-3-copy-the-gap-from-the-real-prompt">Step 3: copy the gap from the real prompt</a></li>
+        <li><a href="#the-fix">The fix</a></li>
+        <li><a href="#two-mistakes-the-real-run-caught">Two mistakes the real run caught</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#what-this-costs">What this costs</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
+above my zsh prompt, and the two almost matched. Both used the same <a href="/2024-09-08-powerlevel10k-%E9%85%8D%E7%BD%AE/">powerlevel10k</a>
+colours and separators, but Claude&rsquo;s line started 2 columns further in and
+stopped wherever its text ran out. The zsh line ran the full width of the
+terminal, so the pair looked misaligned.</p>
+<p>The fix was a dotted gap computed from <code>$COLUMNS</code> and <strong><code>&quot;padding&quot;: -2</code></strong>, a value
+the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
+column, 134 of 135.</p>
+<p>I asked Claude Code to do this. It made the measurements below in that session,
+and it drafted this post from them with the blog skill. I&rsquo;m using &ldquo;I&rdquo; for the session as a
+whole, the same way as in my other <a href="/2026-10-02-claude-code-blog-skill-and-agent/">Claude Code write-ups</a>.</p>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li>Claude Code 2.1.316, Linux, running inside tmux</li>
+<li>zsh with powerlevel10k, <code>POWERLEVEL9K_MODE=nerdfont-v3</code></li>
+<li>A two-line p10k prompt with <code>·</code> as the gap character</li>
+<li>An existing <code>~/.claude/statusline-p10k.sh</code> that already drew p10k-style segments</li>
+</ul>
+<p>The two lines looked like this. Pasting from the terminal lost the Nerd Font
+glyphs, so the separators are missing, and I shortened the dots and rule. The third line
+is the tmux pane border between the two panes:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">  ╭─  .claude   Opus 5.5 · high
+</span></span><span class="line"><span class="cl">  ⏵⏵ auto mode on (shift+tab to cycle) · ← for agents
+</span></span><span class="line"><span class="cl">──2 ✳ Claude Code claude &gt;─────────────────────────────────────────────────────
+</span></span><span class="line"><span class="cl">╭─  .claude ······································ ✔  Nov05 18:30:42  ─╮</span></span></code></pre></td></tr></table>
+</div>
+</div><p>So there were two differences: the 2-column indent, and no gap filling out to
+<code>─╮</code>.</p>
+<h2 id="step-1-what-the-docs-say" class="heading-element">
+  <a href="#step-1-what-the-docs-say" class="heading-mark"></a>Step 1: what the docs say</h2><p>The <a href="https://code.claude.com/docs/en/statusline"target="_blank" rel="external nofollow noopener noreferrer">status line docs<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> answered half
+of it. The script runs with its output captured, so <code>tput cols</code> can&rsquo;t see the
+terminal, but Claude Code sets <code>COLUMNS</code> and <code>LINES</code> before running it. That is
+enough to compute a gap.</p>
+<p>The indent looked worse:</p>
+<blockquote>
+<p>This padding is in addition to the interface&rsquo;s built-in spacing, so it controls
+relative indentation rather than absolute distance from the terminal edge.</p>
+</blockquote>
+<p>Going by that, <code>&quot;padding&quot;: 0</code> would not reach the edge. I also didn&rsquo;t know how
+many of the <code>COLUMNS</code> characters the status line would really display.</p>
+<h2 id="step-2-measure-with-a-ruler-in-a-real-claude-code" class="heading-element">
+  <a href="#step-2-measure-with-a-ruler-in-a-real-claude-code" class="heading-mark"></a>Step 2: measure with a ruler in a real Claude Code</h2><p>Instead of guessing, I started real <code>claude</code> in a throwaway tmux session and used
+a ruler as its status line. <code>--settings</code> makes this a per-run override, so it
+leaves <code>settings.json</code> alone.</p>
+<p><code>probe2.sh</code>:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>cat &gt;/dev/null
+</span></span><span class="line"><span class="cl"><span class="nv">n</span><span class="o">=</span><span class="k">$((</span>COLUMNS <span class="o">-</span> <span class="si">${</span><span class="nv">OFF</span><span class="k">:-</span><span class="nv">0</span><span class="si">}</span><span class="k">))</span>
+</span></span><span class="line"><span class="cl"><span class="nv">s</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">;</span> <span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>1<span class="p">;</span>i&lt;<span class="o">=</span>n<span class="p">;</span>i++<span class="o">))</span><span class="p">;</span> <span class="k">do</span> <span class="nv">s</span><span class="o">+=</span><span class="k">$((</span>i%10<span class="k">))</span><span class="p">;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="nb">printf</span> <span class="s1">&#39;%s\n&#39;</span> <span class="s2">&#34;</span><span class="nv">$s</span><span class="s2">&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Running it and reading the screen back:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux new-session -d -s sltest -x <span class="m">120</span> -y <span class="m">30</span> -c ~/.claude
+</span></span><span class="line"><span class="cl">tmux send-keys -t sltest <span class="s2">&#34;claude --settings &#39;{\&#34;statusLine\&#34;:{\&#34;type\&#34;:\&#34;command\&#34;,\&#34;command\&#34;:\&#34;OFF=0 bash </span><span class="nv">$PWD</span><span class="s2">/probe2.sh\&#34;,\&#34;padding\&#34;:0}}&#39;&#34;</span> Enter
+</span></span><span class="line"><span class="cl"><span class="c1"># wait for the first render, then look at what actually reached the screen</span>
+</span></span><span class="line"><span class="cl">tmux capture-pane -p -t sltest <span class="p">|</span> grep <span class="m">123456789</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The first run confirmed both worries:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">  1234567890123456789012345678901234567890 ... 1234567890…</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The pane came up 135 columns wide rather than the 120 I asked for. I never found
+out why, but <code>COLUMNS</code> reported 135, so all the numbers below use that. Varying
+the offset and the padding gave:</p>
+<table>
+<thead>
+<tr>
+<th><code>padding</code></th>
+<th>Characters printed</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code> or unset</td>
+<td>135</td>
+<td>indented 2, truncated with <code>…</code></td>
+</tr>
+<tr>
+<td><code>0</code> or unset</td>
+<td>133, 132</td>
+<td>indented 2, truncated with <code>…</code></td>
+</tr>
+<tr>
+<td><code>0</code> or unset</td>
+<td><strong>131</strong></td>
+<td>indented 2, fits</td>
+</tr>
+<tr>
+<td><code>-2</code></td>
+<td><strong>135</strong></td>
+<td><strong>starts at column 0, fits</strong></td>
+</tr>
+<tr>
+<td><code>-3</code></td>
+<td>135</td>
+<td>the first character is cut off</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The default padding really does leave only <code>COLUMNS - 4</code> usable characters</strong>: 2
+reserved on each side. A negative value is accepted, and <code>-2</code> cancels the
+reservation exactly. <code>-3</code> goes too far and clips the line.</p>
+<p>I also tried a leading <code>\r</code> and a cursor-left escape to get out of the indent.
+Both runs produced no ruler at all. That was probably my shell quoting rather than
+Claude Code, but I didn&rsquo;t look into it, because <code>-2</code> already worked.</p>
+<h2 id="step-3-copy-the-gap-from-the-real-prompt" class="heading-element">
+  <a href="#step-3-copy-the-gap-from-the-real-prompt" class="heading-mark"></a>Step 3: copy the gap from the real prompt</h2><p>Before writing any drawing code, I captured the actual p10k line with its escape
+codes. Trimmed:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux capture-pane -p -e -t sltest <span class="p">|</span> grep -m1 <span class="s1">&#39;╭─&#39;</span> <span class="p">|</span> sed <span class="s1">&#39;s/\x1b/\\e/g&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">\e[38;5;240m╭─\e[38;5;254m\e[44m  .claude \e[34m\e[49m\e[38;5;240m·········\e[30m\e[32m\e[40m ✔ \e[37m\e[30m\e[47m Nov05 18:33:44  \e[38;5;240m\e[49m─╮\e[39m</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This gave me three details to copy:</p>
+<ul>
+<li>The dots are colour 240 and touch the separators, with no spaces around them.</li>
+<li><code>─╮</code> is also colour 240, and sits directly after the last segment.</li>
+<li>The directory is plain colour 254. My script drew it bold in colour 255, which
+was simply wrong. It&rsquo;s 254 at <code>~</code>, at <code>~/.claude</code> and one level deeper.</li>
+</ul>
+<h2 id="the-fix" class="heading-element">
+  <a href="#the-fix" class="heading-mark"></a>The fix</h2><p><code>~/.claude/settings.json</code>:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;statusLine&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;command&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;command&#34;</span><span class="p">:</span> <span class="s2">&#34;bash ~/.claude/statusline-p10k.sh&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;padding&#34;</span><span class="p">:</span> <span class="mi">-2</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;refreshInterval&#34;</span><span class="p">:</span> <span class="mi">5</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The end of <code>~/.claude/statusline-p10k.sh</code>, after the left segments are in <code>$out</code>
+and <code>draw_right</code> can render the <code>right</code> array (the full script is
+<a href="statusline-p10k.sh">here</a>):</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">width<span class="o">()</span> <span class="o">{</span>  <span class="c1"># visible columns: drop colour codes, count characters</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">local</span> plain
+</span></span><span class="line"><span class="cl">  <span class="nv">plain</span><span class="o">=</span><span class="k">$(</span>sed <span class="s2">&#34;s/</span><span class="nv">$ESC</span><span class="s2">\[[0-9;]*m//g&#34;</span> <span class="o">&lt;&lt;&lt;</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;</span><span class="si">${#</span><span class="nv">plain</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Fill the line like p10k&#39;s gap: ╭─ left ···· right ─╮, ending where the zsh prompt ends.</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Rightmost segments go first when the line does not fit.</span>
+</span></span><span class="line"><span class="cl"><span class="nv">suffix</span><span class="o">=</span><span class="s2">&#34;</span><span class="k">$(</span><span class="nb">fg</span> 240<span class="k">)</span><span class="s2">─╮</span><span class="nv">$RESET</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">cols</span><span class="o">=</span><span class="k">$((</span> <span class="si">${</span><span class="nv">COLUMNS</span><span class="k">:-</span><span class="nv">80</span><span class="si">}</span> <span class="o">-</span> <span class="m">1</span> <span class="k">))</span>   <span class="c1"># zsh leaves the last column free</span>
+</span></span><span class="line"><span class="cl"><span class="nv">left_width</span><span class="o">=</span><span class="k">$(</span>width <span class="s2">&#34;</span><span class="nv">$out</span><span class="s2">&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> :<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">r</span><span class="o">=</span><span class="k">$(</span>draw_right<span class="k">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">gap</span><span class="o">=</span><span class="k">$((</span> cols <span class="o">-</span> left_width <span class="o">-</span> <span class="k">$(</span>width <span class="s2">&#34;</span><span class="nv">$r</span><span class="s2">&#34;</span><span class="k">)</span> <span class="o">-</span> <span class="m">2</span> <span class="k">))</span>
+</span></span><span class="line"><span class="cl">  <span class="o">((</span> gap &gt;<span class="o">=</span> <span class="m">0</span> <span class="o">||</span> <span class="si">${#</span><span class="nv">right</span><span class="p">[@]</span><span class="si">}</span> <span class="o">==</span> <span class="m">0</span> <span class="o">))</span> <span class="o">&amp;&amp;</span> <span class="nb">break</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">unset</span> <span class="s1">&#39;right[-1]&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">dots</span><span class="o">=</span><span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">((</span> gap &gt; <span class="m">0</span> <span class="o">))</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">printf</span> -v dots <span class="s1">&#39;%*s&#39;</span> <span class="s2">&#34;</span><span class="nv">$gap</span><span class="s2">&#34;</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">dots</span><span class="o">=</span><span class="si">${</span><span class="nv">dots</span><span class="p">// /·</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">printf</span> <span class="s1">&#39;%s\n&#39;</span> <span class="s2">&#34;</span><span class="nv">$out</span><span class="k">$(</span><span class="nb">fg</span> 240<span class="k">)</span><span class="nv">$dots$RESET$r$suffix</span><span class="s2">&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li><code>${#plain}</code> counts characters only under a UTF-8 locale. Mine is, the probe
+logged <code>LC_ALL=en_US.UTF-8</code>, but in a <code>C</code> locale it would count bytes and the gap
+would come out wrong.</li>
+<li>The Nerd Font separators count as one column each. The final widths match, so
+that holds here.</li>
+<li>The right segments are ordered by importance, so dropping from the end loses the
+7-day usage first, then the 5-hour usage, then the context bar.</li>
+</ul>
+<h2 id="two-mistakes-the-real-run-caught" class="heading-element">
+  <a href="#two-mistakes-the-real-run-caught" class="heading-mark"></a>Two mistakes the real run caught</h2><p><strong>The line was one column too wide.</strong> With the gap in place, I compared the two
+prompts in real terminals (dots shortened here, widths as measured):</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">ZSH    (134): ╭─  .claude ···························· ✔  Nov05 18:34:44  ─╮
+</span></span><span class="line"><span class="cl">CLAUDE (135): ╭─  .claude ································· Opus 5.5 · high ─╮</span></span></code></pre></td></tr></table>
+</div>
+</div><p>I had read the zsh line as 135 wide, because my first measurement piped <code>grep</code>
+into <code>wc -m</code>, which counted the newline. It&rsquo;s really 134: <strong>zsh leaves the last
+column free</strong>. Hence the <code>- 1</code> in <code>cols</code>.</p>
+<p><strong>Resizing left the line stale.</strong> Claude Code doesn&rsquo;t rerun the script when the
+terminal resizes. Shrinking to 100 columns gave a truncated line:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">╭─  .claude ·····················································································…</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Growing to 150 left it 135 wide, well short of the right edge. <code>refreshInterval</code>
+reruns the script on a timer as well as on events, and after setting it to 5 both
+cases came right within my 7-second wait.</p>
+<h2 id="results" class="heading-element">
+  <a href="#results" class="heading-mark"></a>Results</h2><p><img loading="lazy" src="featured-image.png" alt="Claude Code&amp;rsquo;s status line above the zsh prompt, first and last columns boxed" srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="Claude Code&amp;rsquo;s status line above the zsh prompt, first and last columns boxed" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><em>A terminal illustration rendered from real <code>tmux capture-pane -e</code> output of each
+prompt at 100 columns, not a screenshot. The two captures were taken separately
+and stacked in the order they appear on my screen. The boxes mark the shared
+first and last columns.</em></p>
+<table>
+<thead>
+<tr>
+<th>Check at 135 columns</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start column</td>
+<td>2</td>
+<td><strong>0</strong>, same as zsh</td>
+</tr>
+<tr>
+<td>Line width</td>
+<td>ends with its text</td>
+<td><strong>134</strong>, same as zsh</td>
+</tr>
+<tr>
+<td>After resizing to 100</td>
+<td>truncated with <code>…</code></td>
+<td><strong>99</strong>, no truncation</td>
+</tr>
+<tr>
+<td>After resizing to 150</td>
+<td>stays 135 wide</td>
+<td><strong>149</strong>, no truncation</td>
+</tr>
+</tbody>
+</table>
+<p>The &ldquo;before&rdquo; resize rows were measured with <code>padding: -2</code> and the gap already in
+place, just without <code>refreshInterval</code>.</p>
+<p>The script on its own, with a sample payload that includes context and usage data:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> c in <span class="m">135</span> <span class="m">100</span> <span class="m">60</span> 30<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">l</span><span class="o">=</span><span class="k">$(</span><span class="nv">COLUMNS</span><span class="o">=</span><span class="nv">$c</span> bash ~/.claude/statusline-p10k.sh <span class="o">&lt;&lt;&lt;</span><span class="s2">&#34;</span><span class="nv">$SAMPLE</span><span class="s2">&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">p</span><span class="o">=</span><span class="k">$(</span>sed <span class="s1">&#39;s/\x1b\[[0-9;]*m//g&#39;</span> <span class="o">&lt;&lt;&lt;</span><span class="s2">&#34;</span><span class="nv">$l</span><span class="s2">&#34;</span><span class="k">)</span>   <span class="c1"># strip colours, then measure</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;cols=</span><span class="nv">$c</span><span class="s2"> width=</span><span class="si">${#</span><span class="nv">p</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="nb">printf</span> <span class="s1">&#39;%s\n&#39;</span> <span class="s2">&#34;</span><span class="nv">$p</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">cols=135 width=134
+</span></span><span class="line"><span class="cl">╭─  .claude ··········································· Opus 5.5 · high  ctx ▓▓▓▓░░░░░░ 42%  5h 12% ↻05:20  7d 83% ↻Wed 20:26 ─╮
+</span></span><span class="line"><span class="cl">cols=100 width=99
+</span></span><span class="line"><span class="cl">╭─  .claude ········ Opus 5.5 · high  ctx ▓▓▓▓░░░░░░ 42%  5h 12% ↻05:20  7d 83% ↻Wed 20:26 ─╮
+</span></span><span class="line"><span class="cl">cols=60 width=59
+</span></span><span class="line"><span class="cl">╭─  .claude ···· Opus 5.5 · high  ctx ▓▓▓▓░░░░░░ 42% ─╮
+</span></span><span class="line"><span class="cl">cols=30 width=29
+</span></span><span class="line"><span class="cl">╭─  .claude ·············─╮</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="what-this-costs" class="heading-element">
+  <a href="#what-this-costs" class="heading-mark"></a>What this costs</h2><ul>
+<li><strong><code>padding: -2</code> is undocumented.</strong> It works on 2.1.316, but the docs only
+describe padding as extra space. If a later version rejects it, the indent comes
+back and the line ends in <code>…</code>. The repair is to delete the setting and change
+<code>- 1</code> to <code>- 4</code> in <code>cols</code>, which matches the 131 characters measured above.</li>
+<li><strong><code>refreshInterval</code> runs the script every 5 seconds</strong>, including <code>git status</code>.
+It&rsquo;s cheap in most repos, but a very large one might want a longer interval.</li>
+</ul>
+<p>I kept Claude&rsquo;s model, context and usage segments on the right instead of copying
+zsh&rsquo;s <code>✔</code> and clock. A clock would be easy to add now that the line refreshes.</p>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>Measure a UI with a ruler.</strong> Printing <code>1234567890...</code> through the real program
+settled in a few runs what the docs left open, and turned up a working value
+they don&rsquo;t list.</li>
+<li><strong>Test the real program, not just the script.</strong> Piping JSON into the script gave
+perfect widths. The stale resize only appeared inside a running Claude Code.</li>
+<li><strong>Copy from <code>capture-pane -e</code>.</strong> The real escape codes showed the colours and
+spacing directly, including a bold directory I&rsquo;d been getting wrong.</li>
+<li><strong><code>wc -m</code> counts the newline.</strong> Use <code>printf '%s'</code> when a width has to be exact.
+A similar width-sensitive status bar problem came up with
+<a href="/2026-10-09-tmux-termius-iphone-status-bar/">tmux on my phone</a>.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><a href="https://code.claude.com/docs/en/statusline"target="_blank" rel="external nofollow noopener noreferrer">Claude Code status line docs<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/romkatv/powerlevel10k"target="_blank" rel="external nofollow noopener noreferrer">powerlevel10k<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-10-02-claude-code-blog-skill-and-agent/" title="A Claude Code skill and subagent that write posts for this blog">A Claude Code skill and subagent that write posts for this blog</a></li><li>
+          <a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/" title="tmux 设置默认 zsh">tmux 设置默认 zsh</a></li><li>
+          <a href="/2023-04-16-fzf-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97/" title="fzf 配置指南">fzf 配置指南</a></li><li>
+          <a href="/2022-03-17-vim-%E6%89%93%E6%80%AA%E4%B9%8B%E6%97%85/" title="vim 打怪之旅">vim 打怪之旅</a></li><li>
+          <a href="/archives/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/" title="Linux开发环境一键部署">Linux开发环境一键部署</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-11-05 18:38:39">更新于 2026-11-05&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-11-05-claude-code-statusline-p10k/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" data-title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" data-hashtags="Claude,ClaudeCode,zsh,powerlevel10k,tmux,statusline"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" data-hashtag="Claude"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" data-title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" data-title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" data-title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/claude/" class="post-tag" title="标签 - Claude">Claude</a><a href="/tags/claudecode/" class="post-tag" title="标签 - ClaudeCode">ClaudeCode</a><a href="/tags/zsh/" class="post-tag" title="标签 - Zsh">Zsh</a><a href="/tags/powerlevel10k/" class="post-tag" title="标签 - Powerlevel10k">Powerlevel10k</a><a href="/tags/tmux/" class="post-tag" title="标签 - Tmux">Tmux</a><a href="/tags/statusline/" class="post-tag" title="标签 - Statusline">Statusline</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-11-01-apple-id/" class="post-nav-item" rel="prev" title="Apple ID"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Apple ID</a>
+      <a href="/2026-11-06-idc-v2raya-proxy-codex/" class="post-nav-item" rel="next" title="Use the IDC proxy from XPS and Codex">Use the IDC proxy from XPS and Codex<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

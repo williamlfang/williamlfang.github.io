@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="A daily script of mine logs its intermediate DataFrames with
+log.crt(f&quot;&quot;&quot;...{tgt = }...&quot;&quot;&quot;). The log showed 10 of the 90 rows, with the
+header stuck to the end of tgt = . Switching to tgt.to_string() printed every
+row, but the header ended up two columns left of the data.
+The fix I ended up with keeps the f-string as it is and adds one argument:
+log.crt(f&quot;...{tgt = }...&quot;, full=True). That looks impossible, because the
+f-string is already built when the logger runs. The logger gets around it by
+finding the f-string in the caller&rsquo;s source and evaluating it a second time." /><meta name="keywords" content='Python, pandas, logging, loguru, f-string, ast' /><meta itemprop="name" content="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source">
+<meta itemprop="description" content="A daily script of mine logs its intermediate DataFrames with
+log.crt(f&quot;&quot;&quot;...{tgt = }...&quot;&quot;&quot;). The log showed 10 of the 90 rows, with the
+header stuck to the end of tgt = . Switching to tgt.to_string() printed every
+row, but the header ended up two columns left of the data.
+The fix I ended up with keeps the f-string as it is and adds one argument:
+log.crt(f&quot;...{tgt = }...&quot;, full=True). That looks impossible, because the
+f-string is already built when the logger runs. The logger gets around it by
+finding the f-string in the caller&rsquo;s source and evaluating it a second time."><meta itemprop="datePublished" content="2026-10-15T11:20:12+09:00" />
+<meta itemprop="dateModified" content="2026-10-15T11:20:12+09:00" />
+<meta itemprop="wordCount" content="2332"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="Python,pandas,logging,loguru,f-string,ast," /><meta property="og:title" content="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source" />
+<meta property="og:description" content="A daily script of mine logs its intermediate DataFrames with
+log.crt(f&quot;&quot;&quot;...{tgt = }...&quot;&quot;&quot;). The log showed 10 of the 90 rows, with the
+header stuck to the end of tgt = . Switching to tgt.to_string() printed every
+row, but the header ended up two columns left of the data.
+The fix I ended up with keeps the f-string as it is and adds one argument:
+log.crt(f&quot;...{tgt = }...&quot;, full=True). That looks impossible, because the
+f-string is already built when the logger runs. The logger gets around it by
+finding the f-string in the caller&rsquo;s source and evaluating it a second time." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-10-15T11:20:12+09:00" />
+<meta property="article:modified_time" content="2026-10-15T11:20:12+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source"/>
+<meta name="twitter:description" content="A daily script of mine logs its intermediate DataFrames with
+log.crt(f&quot;&quot;&quot;...{tgt = }...&quot;&quot;&quot;). The log showed 10 of the 90 rows, with the
+header stuck to the end of tgt = . Switching to tgt.to_string() printed every
+row, but the header ended up two columns left of the data.
+The fix I ended up with keeps the f-string as it is and adds one argument:
+log.crt(f&quot;...{tgt = }...&quot;, full=True). That looks impossible, because the
+f-string is already built when the logger runs. The logger gets around it by
+finding the f-string in the caller&rsquo;s source and evaluating it a second time."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" /><link rel="prev" href="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/" /><link rel="next" href="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Logging a full pandas DataFrame from an f-string: rebuild it from the caller's source",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-10-15-log-full-dataframe-from-fstring\/"
+    },"genre": "posts","keywords": "Python, pandas, logging, loguru, f-string, ast","wordcount":  2332 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-10-15-log-full-dataframe-from-fstring\/","datePublished": "2026-10-15T11:20:12+09:00","dateModified": "2026-10-15T11:20:12+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="post-meta-line"><span title="发布于 2026-10-15 11:20:12"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-10-15">2026-10-15</time></span>&nbsp;<span title="2332 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2400 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 11 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#step-1-tgt---is-just-reprtgt">Step 1: <code>{tgt = }</code> is just <code>repr(tgt)</code></a></li>
+        <li><a href="#step-2-to_string-printed-every-row-but-the-header-moved">Step 2: <code>to_string()</code> printed every row, but the header moved</a></li>
+        <li><a href="#step-3-let-the-logger-take-the-dataframe-itself">Step 3: let the logger take the DataFrame itself</a></li>
+        <li><a href="#step-4-a-flag-cant-fix-a-string-thats-already-built">Step 4: a flag can&rsquo;t fix a string that&rsquo;s already built</a>
+          <ol>
+            <li><a href="#wrong-turn-a-global-flag">Wrong turn: a global flag</a></li>
+          </ol>
+        </li>
+        <li><a href="#step-5-rebuild-the-f-string-from-the-callers-source">Step 5: rebuild the f-string from the caller&rsquo;s source</a>
+          <ol>
+            <li><a href="#making-it-safe-to-evaluate-twice">Making it safe to evaluate twice</a></li>
+            <li><a href="#keeping-the-table-aligned-through-the-dedent">Keeping the table aligned through the dedent</a></li>
+          </ol>
+        </li>
+        <li><a href="#the-fix">The fix</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#bonus-picking-up-a-reinstalled-package-in-a-running-ipython">Bonus: picking up a reinstalled package in a running IPython</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>A daily script of mine logs its intermediate DataFrames with
+<code>log.crt(f&quot;&quot;&quot;...{tgt = }...&quot;&quot;&quot;)</code>. The log showed 10 of the 90 rows, with the
+header stuck to the end of <code>tgt = </code>. Switching to <code>tgt.to_string()</code> printed every
+row, but the header ended up two columns left of the data.</p>
+<p>The fix I ended up with keeps the f-string as it is and adds one argument:
+<code>log.crt(f&quot;...{tgt = }...&quot;, full=True)</code>. That looks impossible, because the
+f-string is already built when the logger runs. The logger gets around it by
+finding the f-string in the caller&rsquo;s source and evaluating it a second time.</p>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li><code>log</code> comes from <code>wepy</code>, my utility package. It&rsquo;s a thin wrapper around
+<a href="https://github.com/Delgan/loguru"target="_blank" rel="external nofollow noopener noreferrer">loguru<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>: <code>log.crt/err/wrn/inf/dbg</code>, an
+emoji per level, and a dedent step so triple-quoted messages can be indented
+along with the code.</li>
+<li>Python 3.11.4, pandas, IPython 9.5.</li>
+<li>The call that started it:</li>
+</ul>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">log</span><span class="o">.</span><span class="n">crt</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="s1">&#39;*&#39;</span><span class="o">*</span><span class="mi">40</span><span class="si">}</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">tgt</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>All outputs below come from a 90-row sample frame with neutral account names.</p>
+<h2 id="step-1-tgt---is-just-reprtgt" class="heading-element">
+  <a href="#step-1-tgt---is-just-reprtgt" class="heading-mark"></a>Step 1: <code>{tgt = }</code> is just <code>repr(tgt)</code></h2><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">CRITICAL | 💥
+</span></span><span class="line"><span class="cl">day = &#39;2026-10-15&#39;
+</span></span><span class="line"><span class="cl">****************************************
+</span></span><span class="line"><span class="cl">tgt =    Account           NetAmt
+</span></span><span class="line"><span class="cl">0   FUND_A 1,250,000.500000
+</span></span><span class="line"><span class="cl">1   FUND_B  -830,000.250000
+</span></span><span class="line"><span class="cl">2   FUND_C    47,000.000000
+</span></span><span class="line"><span class="cl">..     ...              ...
+</span></span><span class="line"><span class="cl">87  FUND_A 1,250,000.500000
+</span></span><span class="line"><span class="cl">88  FUND_B  -830,000.250000
+</span></span><span class="line"><span class="cl">89  FUND_C    47,000.000000
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">[90 rows x 2 columns]</span></span></code></pre></td></tr></table>
+</div>
+</div><p>There are two problems here, and neither comes from the logger:</p>
+<ul>
+<li><strong>pandas truncates the repr.</strong> Above <code>display.max_rows</code> (60) it shows only
+<code>display.min_rows</code> (10).</li>
+<li><strong><code>=</code> puts the header on the same line as <code>tgt = </code></strong>, so the header sits 6
+characters to the right of the rows.</li>
+</ul>
+<h2 id="step-2-to_string-printed-every-row-but-the-header-moved" class="heading-element">
+  <a href="#step-2-to_string-printed-every-row-but-the-header-moved" class="heading-mark"></a>Step 2: <code>to_string()</code> printed every row, but the header moved</h2><p>With a 3-row slice, <code>small = tgt.head(3)</code>, to keep the output short:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">log</span><span class="o">.</span><span class="n">crt</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    tgt =
+</span></span></span><span class="line"><span class="cl"><span class="s2"></span><span class="si">{</span><span class="n">small</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="si">}</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">CRITICAL | 💥
+</span></span><span class="line"><span class="cl">  day = &#39;2026-10-15&#39;
+</span></span><span class="line"><span class="cl">  tgt =
+</span></span><span class="line"><span class="cl">Account           NetAmt
+</span></span><span class="line"><span class="cl">0  FUND_A 1,250,000.500000
+</span></span><span class="line"><span class="cl">1  FUND_B  -830,000.250000
+</span></span><span class="line"><span class="cl">2  FUND_C    47,000.000000</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Now <code>Account</code> starts at column 0 when it should start at column 2, and the
+text lines kept 2 of their 4 spaces. This one is the logger&rsquo;s fault. Its dedent
+step looks like this (simplified, comments translated):</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">_RE_LINE_BODY</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&#34;(\n\s+)\S.*&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># reduce every indented line to its indentation, keep the whitespace-only ones</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_RE_LINE_BODY</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">           <span class="k">if</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">k</span><span class="o">.</span><span class="n">isspace</span><span class="p">()]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">tmp</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">space</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>                       <span class="c1"># the shortest indentation</span>
+</span></span><span class="line"><span class="cl">        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="si">{</span><span class="n">space</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1"># strip it from every line</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">msg</span>
+</span></span><span class="line"><span class="cl">    <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>                             <span class="c1"># trailing newline: strip again</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Lines that start at column 0 don&rsquo;t count toward the common indent.</strong> A
+DataFrame&rsquo;s rows start with the index at column 0. Its header starts with spaces
+that pad over the index column. So the header&rsquo;s 2 spaces became the &ldquo;common
+indent&rdquo;, and they were stripped from every line, including the header itself.
+The <code>while</code> loop makes it worse: when the message ends in a newline, it strips a
+second time.</p>
+<p>I didn&rsquo;t change this algorithm. The second-pass flattening is asserted in the
+logger&rsquo;s self-test, and other programs rely on it.</p>
+<p>The call-site workaround is to indent the table to match the text and close the
+quotes on the last line, so the second pass never runs:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">log</span><span class="o">.</span><span class="n">crt</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    tgt =
+</span></span></span><span class="line"><span class="cl"><span class="s2"></span><span class="si">{</span><span class="n">textwrap</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">tgt</span><span class="o">.</span><span class="n">to_string</span><span class="p">(),</span> <span class="s1">&#39; &#39;</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;&#34;&#34;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>It works, but nobody will remember to write it.</p>
+<h2 id="step-3-let-the-logger-take-the-dataframe-itself" class="heading-element">
+  <a href="#step-3-let-the-logger-take-the-dataframe-itself" class="heading-mark"></a>Step 3: let the logger take the DataFrame itself</h2><p>The logger can&rsquo;t tell which lines of a finished string came from a table. If it
+gets the DataFrame object, though, it can print it without dedenting:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">clean_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s1">&#39;to_string&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># DataFrame/Series: all rows, and no dedent (it would misalign the header)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">msg</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="o">...</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>I also made the level methods accept several parts. Text parts are dedented as
+before, and DataFrames are left alone:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">log</span><span class="o">.</span><span class="n">crt</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    tgt =&#34;&#34;&#34;</span><span class="p">,</span> <span class="n">tgt</span><span class="p">,</span> <span class="s2">&#34;cfund =&#34;</span><span class="p">,</span> <span class="n">cfund</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>That gives a full, aligned table. But I still wanted to write <code>{tgt = }</code>.</p>
+<h2 id="step-4-a-flag-cant-fix-a-string-thats-already-built" class="heading-element">
+  <a href="#step-4-a-flag-cant-fix-a-string-thats-already-built" class="heading-mark"></a>Step 4: a flag can&rsquo;t fix a string that&rsquo;s already built</h2><p>My next idea was a <code>full=True</code> argument. It can&rsquo;t work on a plain f-string,
+because <strong>Python builds the f-string before calling the function</strong>. By the time
+<code>log.crt</code> runs, the truncated text is all it has.</p>
+<p>A <code>lambda</code> delays the building:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&#34;</span>           <span class="c1"># built now</span>
+</span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&#34;</span>   <span class="c1"># a recipe, built when called</span>
+</span></span><span class="line"><span class="cl"><span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">f</span><span class="p">())</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">1 2</span></span></code></pre></td></tr></table>
+</div>
+</div><p>So <code>log.crt(lambda: f&quot;...{tgt = }...&quot;, full=True)</code> works. The logger swaps
+<code>DataFrame.__repr__</code> for a full version, calls the lambda, and swaps the repr
+back.</p>
+<h3 id="wrong-turn-a-global-flag" class="heading-element">
+  <a href="#wrong-turn-a-global-flag" class="heading-mark"></a>Wrong turn: a global flag</h3><p>Before the per-call argument I tried <code>log.full_df = True</code>, which patched
+<code>DataFrame.__repr__</code> for the whole process. It worked, but it also changed every
+<code>print(df)</code> in the program. I dropped it: the full repr should exist only while
+the logger builds its message.</p>
+<h2 id="step-5-rebuild-the-f-string-from-the-callers-source" class="heading-element">
+  <a href="#step-5-rebuild-the-f-string-from-the-callers-source" class="heading-mark"></a>Step 5: rebuild the f-string from the caller&rsquo;s source</h2><p>The <code>lambda:</code> still bothered me. My first answer to &ldquo;can <code>full=True</code> turn the
+f-string into a lambda for me?&rdquo; was no. The string is finished, and nothing in
+it says it came from <code>{tgt = }</code>.</p>
+<p>That was too quick. The logger can&rsquo;t recover anything from the string, but it
+can find the f-string in the caller&rsquo;s source code and evaluate it again, the way
+<a href="https://github.com/gruns/icecream"target="_blank" rel="external nofollow noopener noreferrer">icecream<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> prints the expression you passed
+to <code>ic()</code>. On Python 3.11 that takes only the standard library:</p>
+<ul>
+<li><strong><code>frame.f_lasti</code></strong> is the bytecode offset of the instruction the caller is
+running. While <code>log.crt</code> runs, that instruction is the <code>CALL</code>.</li>
+<li><strong><code>code.co_positions()</code></strong>, added by
+<a href="https://peps.python.org/pep-0657/"target="_blank" rel="external nofollow noopener noreferrer">PEP 657<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>, gives the exact source span of
+every instruction: start line, end line, start column, end column.</li>
+<li><strong><code>linecache</code></strong> has the caller&rsquo;s source, including IPython cells.</li>
+<li><strong><code>ast</code></strong> parses that source. The <code>Call</code> node with the same span is our call,
+and its <code>JoinedStr</code> arguments are the f-strings.</li>
+</ul>
+<p>A standalone demo, <code>where.py</code>:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">ast</span><span class="o">,</span> <span class="nn">linecache</span><span class="o">,</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">who_called_me</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">frame</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                       <span class="c1"># the caller</span>
+</span></span><span class="line"><span class="cl">    <span class="n">code</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># (lineno, end_lineno, col, end_col) of the CALL instruction running right now</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">co_positions</span><span class="p">())[</span><span class="n">frame</span><span class="o">.</span><span class="n">f_lasti</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">src</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linecache</span><span class="o">.</span><span class="n">getlines</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">call</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="p">))</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="ow">and</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">end_lineno</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">col_offset</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">end_col_offset</span><span class="p">)</span> <span class="o">==</span> <span class="n">pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">unparse</span><span class="p">(</span><span class="n">call</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;world&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">who_called_me</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;hello </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">              <span class="mi">42</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">(15, 16, 0, 17)
+</span></span><span class="line"><span class="cl">who_called_me(f&#39;hello {name}&#39;, 42)</span></span></code></pre></td></tr></table>
+</div>
+</div><p>From there, <code>compile(ast.Expression(fstring_node), ...)</code> and
+<code>eval(code, frame.f_globals, frame.f_locals)</code> rebuild the f-string with the
+caller&rsquo;s variables, with the full repr switched on.</p>
+<h3 id="making-it-safe-to-evaluate-twice" class="heading-element">
+  <a href="#making-it-safe-to-evaluate-twice" class="heading-mark"></a>Making it safe to evaluate twice</h3><p>Evaluating code a second time is the risky part, so I added three rules:</p>
+<ol>
+<li><strong>Skip f-strings that contain a function call.</strong> <code>{fm.get_tgt() = }</code> would
+run <code>get_tgt()</code> again, and mine changes state. Those arguments keep their
+original, truncated text. Names, attributes, subscripts and operators like
+<code>'*'*40</code> are fine.</li>
+<li><strong>Check before trusting the match.</strong> Rebuild the f-string once with the
+normal repr. If it doesn&rsquo;t equal the string the logger received, the match
+is wrong, for example because the file was edited while the program was
+running. In that case, keep the original.</li>
+<li><strong>Any exception falls back to the original string.</strong> Logging must never crash
+the program, and on Python older than 3.11 <code>co_positions</code> doesn&rsquo;t exist.</li>
+</ol>
+<p>Rule 1 in action. The call runs once, and the output stays truncated:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">get_tgt</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;get_tgt() called&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">tgt</span>
+</span></span><span class="line"><span class="cl"><span class="n">log</span><span class="o">.</span><span class="n">crt</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">get_tgt</span><span class="p">()</span> <span class="si">= }</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">get_tgt() called
+</span></span><span class="line"><span class="cl">CRITICAL | 💥 get_tgt() =    Account           NetAmt
+</span></span><span class="line"><span class="cl">0   FUND_A 1,250,000.500000
+</span></span><span class="line"><span class="cl">..     ...              ...</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="keeping-the-table-aligned-through-the-dedent" class="heading-element">
+  <a href="#keeping-the-table-aligned-through-the-dedent" class="heading-mark"></a>Keeping the table aligned through the dedent</h3><p>The full repr still has to get through the dedent from step 2, and the header
+should start on its own line instead of after <code>tgt = </code>. The replacement repr
+fixes both:</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">_DF_MARK</span> <span class="o">=</span> <span class="s1">&#39;​&#39;</span>   <span class="c1"># zero-width space</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_df_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_DF_MARK</span> <span class="o">+</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>The leading <code>\n</code> moves the header off the <code>tgt = </code> line.</li>
+<li><strong>A zero-width space isn&rsquo;t whitespace to Python.</strong> <code>'​'.isspace()</code> is
+<code>False</code>, and regex <code>\s</code> doesn&rsquo;t match it. So every table line looks like a
+column-0 text line, and the dedent never touches its spaces. After the dedent,
+the logger deletes each <code>\n​</code>, so no invisible characters end up in the
+log file.</li>
+</ul>
+<h2 id="the-fix" class="heading-element">
+  <a href="#the-fix" class="heading-mark"></a>The fix</h2><p>The two helpers in <code>wepy/utils/logger.py</code>:</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_fstring_args</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">msgs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;f-string arguments of the log call running in `frame` that are safe to
+</span></span></span><span class="line"><span class="cl"><span class="s2">    re-evaluate: {argument index: compiled f-string}, or </span><span class="si">{}</span><span class="s2"> if anything is off.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">code</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 3.11+: exact source span of the CALL instruction being executed</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pos</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">co_positions</span><span class="p">())[</span><span class="n">frame</span><span class="o">.</span><span class="n">f_lasti</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># IPython cell sources are in linecache too</span>
+</span></span><span class="line"><span class="cl">        <span class="n">src</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">linecache</span><span class="o">.</span><span class="n">getlines</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">call</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">src</span><span class="p">))</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="ow">and</span> <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">end_lineno</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">col_offset</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">end_col_offset</span><span class="p">)</span> <span class="o">==</span> <span class="n">pos</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">msgs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">msgs</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># f-strings with a function call are not re-evaluated: it would run twice</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">JoinedStr</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">arg</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">            <span class="n">expr</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">Expression</span><span class="p">(</span><span class="n">arg</span><span class="p">),</span> <span class="n">code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># guard: with the normal repr it must reproduce the string we were given</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="nb">eval</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">)</span> <span class="o">==</span> <span class="n">msg</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">expr</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">out</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># best effort only; never let logging crash the program</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_render_full</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">msgs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;full=True: re-evaluate f-string arguments (and call lambda messages)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    with the full DataFrame repr, swapped in only while evaluating.&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fstrings</span> <span class="o">=</span> <span class="n">_fstring_args</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">msgs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">orig</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="fm">__repr__</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="fm">__repr__</span> <span class="o">=</span> <span class="n">_df_repr</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">[</span><span class="nb">eval</span><span class="p">(</span><span class="n">fstrings</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">fstrings</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="n">m</span><span class="p">()</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">else</span> <span class="n">m</span>
+</span></span><span class="line"><span class="cl">                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">msgs</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="fm">__repr__</span> <span class="o">=</span> <span class="n">orig</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>And where they&rsquo;re wired in:</p>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">icon</span><span class="p">,</span> <span class="n">msgs</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">full</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># depth 2: _log &lt;- crt/wrn/... &lt;- the caller&#39;s code</span>
+</span></span><span class="line"><span class="cl">        <span class="n">msgs</span> <span class="o">=</span> <span class="n">_render_full</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">msgs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="n">callable</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">msgs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">msgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">()</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">else</span> <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">msgs</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">text</span> <span class="o">=</span> <span class="n">icon</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean_msg</span><span class="p">(</span><span class="n">msgs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">clean_msg</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">msgs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">text</span> <span class="o">=</span> <span class="n">_RE_WS_ONLY_LINE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">_DF_MARK</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">exception</span><span class="p">)</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">crt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">msg</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="s2">&#34;CRITICAL&#34;</span><span class="p">,</span> <span class="s2">&#34;💥&#34;</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="n">full</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li><code>sys._getframe(2)</code> has to be the caller&rsquo;s frame. <code>_log</code> is always two levels
+below it, the same depth loguru&rsquo;s <code>opt(depth=2)</code> already relies on.</li>
+<li><code>frame.f_lasti // 2</code>: on 3.11, <code>co_positions()</code> yields one entry per 2-byte
+code unit, cache entries included, so the offset divided by 2 is the index.</li>
+<li>The <code>repr</code> swap sits in <code>try/finally</code>, and it covers only the evaluation. For
+that moment it&rsquo;s process-wide, so another thread printing a DataFrame at the
+same instant would get the full version too.</li>
+</ul>
+<h2 id="results" class="heading-element">
+  <a href="#results" class="heading-mark"></a>Results</h2><p>The original call, unchanged except for <code>full=True</code>:</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">log</span><span class="o">.</span><span class="n">crt</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">day</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="s1">&#39;*&#39;</span><span class="o">*</span><span class="mi">40</span><span class="si">}</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{</span><span class="n">tgt</span> <span class="si">= }</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span><span class="p">,</span> <span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">CRITICAL | 💥
+</span></span><span class="line"><span class="cl">day = &#39;2026-10-15&#39;
+</span></span><span class="line"><span class="cl">****************************************
+</span></span><span class="line"><span class="cl">tgt =
+</span></span><span class="line"><span class="cl">   Account           NetAmt
+</span></span><span class="line"><span class="cl">0   FUND_A 1,250,000.500000
+</span></span><span class="line"><span class="cl">1   FUND_B  -830,000.250000
+</span></span><span class="line"><span class="cl">2   FUND_C    47,000.000000
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">88  FUND_B  -830,000.250000
+</span></span><span class="line"><span class="cl">89  FUND_C    47,000.000000</span></span></code></pre></td></tr></table>
+</div>
+</div><table>
+<thead>
+<tr>
+<th>call</th>
+<th>rows logged</th>
+<th>header aligned</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>f&quot;{tgt = }&quot;</code></td>
+<td>10 of 90</td>
+<td>no, glued to <code>tgt = </code></td>
+</tr>
+<tr>
+<td><code>f&quot;{tgt.to_string()}&quot;</code></td>
+<td>90</td>
+<td>no, shifted left</td>
+</tr>
+<tr>
+<td><code>&quot;tgt =&quot;, tgt</code> (multi-part)</td>
+<td>90</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>lambda: f&quot;{tgt = }&quot;</code>, <code>full=True</code></td>
+<td>90</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>f&quot;{tgt = }&quot;</code>, <code>full=True</code></td>
+<td><strong>90</strong></td>
+<td><strong>yes</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Cost: <code>full=True</code> parses the caller&rsquo;s whole file on every call. For my
+1,806-line script, that&rsquo;s <strong>12.5 ms per call</strong>. Calls without <code>full=True</code> don&rsquo;t
+pay anything. The logger&rsquo;s self-test covers a multi-line f-string, a function&rsquo;s
+local variables, an f-string with a call (which must run once), and the repr
+being restored. I also ran the same call inside a real IPython shell
+(<code>IPython.testing.globalipapp</code>), and all 90 rows came out.</p>
+<h2 id="bonus-picking-up-a-reinstalled-package-in-a-running-ipython" class="heading-element">
+  <a href="#bonus-picking-up-a-reinstalled-package-in-a-running-ipython" class="heading-mark"></a>Bonus: picking up a reinstalled package in a running IPython</h2><p>wepy installs as an egg, so every change meant a reinstall. To use the new
+logger in an IPython session that was already open:</p>
+<div class="highlight" id="id-20"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">loguru</span><span class="o">,</span> <span class="nn">wepy.utils.logger</span><span class="o">,</span> <span class="nn">wepy.utils.init</span>
+</span></span><span class="line"><span class="cl"><span class="n">loguru</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>                 <span class="c1"># otherwise every line is logged twice</span>
+</span></span><span class="line"><span class="cl"><span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">wepy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>    <span class="c1"># the new Logger class</span>
+</span></span><span class="line"><span class="cl"><span class="n">importlib</span><span class="o">.</span><span class="n">reload</span><span class="p">(</span><span class="n">wepy</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">init</span><span class="p">)</span>      <span class="c1"># rebuilds `log` with it</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">wepy.utils.init</span> <span class="kn">import</span> <span class="o">*</span>          <span class="c1"># rebind `log` in the session</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The order matters. Reloading only <code>init</code> rebuilds <code>log</code> with the old class.
+<code>loguru.logger</code> is a process-wide singleton, and the reloaded <code>Logger</code> forgets
+which handlers it already added, so without <code>remove()</code> it adds them again.</p>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>An f-string is finished before the function sees it.</strong> No flag on the
+callee can change how it was built. You either delay it (<code>lambda:</code>) or
+rebuild it.</li>
+<li><strong>A dedent and a table don&rsquo;t mix.</strong> If a dedent skips column-0 lines when it
+computes the common indent, it will strip a DataFrame header&rsquo;s padding. Mark
+lines you want left alone with a character that isn&rsquo;t whitespace.</li>
+<li><strong>Python 3.11 knows exactly which call is running.</strong> With <code>f_lasti</code> and
+<code>co_positions()</code>, plus <code>linecache</code> and <code>ast</code>, you can get from a frame to
+the source of the call in about ten lines.</li>
+<li><strong>Re-evaluating code is safe only without calls, and only after a check.</strong>
+Skip anything that contains <code>ast.Call</code>, and confirm the rebuilt string
+matches the one you were given before trusting it.</li>
+<li><strong>The proper fix is Python 3.14&rsquo;s template strings.</strong> With
+<a href="https://peps.python.org/pep-0750/"target="_blank" rel="external nofollow noopener noreferrer">PEP 750<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>, <code>log.crt(t&quot;{tgt = }&quot;)</code> passes
+the DataFrame object itself to the logger, with no source parsing. On 3.11,
+this is the closest I can get.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><a href="https://peps.python.org/pep-0657/"target="_blank" rel="external nofollow noopener noreferrer">PEP 657: fine-grained error locations<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>, which added <code>co_positions()</code></li>
+<li><a href="https://docs.python.org/3/reference/datamodel.html#codeobject.co_positions"target="_blank" rel="external nofollow noopener noreferrer"><code>codeobject.co_positions()</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://peps.python.org/pep-0750/"target="_blank" rel="external nofollow noopener noreferrer">PEP 750: template strings<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://pandas.pydata.org/docs/user_guide/options.html"target="_blank" rel="external nofollow noopener noreferrer">pandas options: <code>display.max_rows</code>, <code>display.min_rows</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://github.com/gruns/icecream"target="_blank" rel="external nofollow noopener noreferrer">icecream<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> and <a href="https://github.com/alexmojaki/executing"target="_blank" rel="external nofollow noopener noreferrer">executing<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>, which use the same source-lookup idea in a general form</li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/archives/2021-06-08-python-%E6%89%93%E5%8C%85-packages/" title="python 打包 packages">python 打包 packages</a></li><li>
+          <a href="/archives/2021-03-19-python-%E8%BD%AC%E6%8D%A2-dataframe-%E4%B8%BA%E5%9B%BE%E7%89%87%E6%A0%BC%E5%BC%8F/" title="Python 转换 DataFrame 为图片格式">Python 转换 DataFrame 为图片格式</a></li><li>
+          <a href="/archives/2020-03-23-c&#43;&#43;%E6%97%A5%E5%BF%97%E6%A8%A1%E5%9D%97-loguru/" title="C&#43;&#43;日志模块:loguru">C&#43;&#43;日志模块:loguru</a></li><li>
+          <a href="/archives/2020-02-04-windows--%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE-sublime-text-3/" title="Windows: 安装与配置 Sublime Text 3">Windows: 安装与配置 Sublime Text 3</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-10-15 11:20:12">更新于 2026-10-15&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-10-15-log-full-dataframe-from-fstring/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" data-title="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source" data-hashtags="Python,pandas,logging,loguru,f-string,ast"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" data-hashtag="Python"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" data-title="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" data-title="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/" data-title="Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/python/" class="post-tag" title="标签 - Python">Python</a><a href="/tags/pandas/" class="post-tag" title="标签 - Pandas">Pandas</a><a href="/tags/logging/" class="post-tag" title="标签 - Logging">Logging</a><a href="/tags/loguru/" class="post-tag" title="标签 - Loguru">Loguru</a><a href="/tags/f-string/" class="post-tag" title="标签 - F-String">F-String</a><a href="/tags/ast/" class="post-tag" title="标签 - Ast">Ast</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-10-09-tmux-termius-iphone-status-bar/" class="post-nav-item" rel="prev" title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Fixing duplicated tmux status bars and missing icons in Termius on iPhone</a>
+      <a href="/2026-10-16-docker-buildx-anonymous-token-timeout/" class="post-nav-item" rel="next" title="docker buildx: the builder had a proxy, the client didn&#39;t">docker buildx: the builder had a proxy, the client didn&#39;t<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

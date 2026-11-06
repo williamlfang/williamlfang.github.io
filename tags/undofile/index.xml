@@ -1,0 +1,50 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Undofile - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/undofile/</link>
+    <description>Undofile - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 17 Oct 2026 12:00:00 &#43;0900</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/undofile/" rel="self" type="application/rss+xml" /><item>
+  <title>Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15</title>
+  <link>https://williamlfang.github.io/2026-10-17-nvim-big-log-files/</link>
+  <pubDate>Sat, 17 Oct 2026 12:00:00 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-17-nvim-big-log-files/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/featured-image.png" alt="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" referrerpolicy="no-referrer"/></div><p>After the <a href="/2026-10-03-nvim-startup-lazy-loading/">startup pass</a>,
+the slowest thing left in my Neovim was big log files. <code>~/log</code> holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. <code>n</code>, <code>/</code>, typing and <code>&lt;Esc&gt;</code> each stalled.
+Just reading the log while it grew <strong>froze the UI for about 11 of every 15
+seconds</strong>.</p>
+<p>No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed <code>n</code> in every file. Medians of 5 runs in a
+real terminal:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>open the 87 MB log until keys are accepted</td>
+<td style="text-align:right">1857 ms</td>
+<td style="text-align:right"><strong>199 ms</strong></td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td style="text-align:right">523 ms</td>
+<td style="text-align:right"><strong>21 ms</strong></td>
+</tr>
+<tr>
+<td>UI blocked per 15 s while reading the growing log</td>
+<td style="text-align:right">10963 ms</td>
+<td style="text-align:right"><strong>0 ms</strong></td>
+</tr>
+</tbody>
+</table>]]></description>
+</item>
+</channel>
+</rss>

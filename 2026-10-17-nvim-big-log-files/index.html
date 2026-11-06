@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15 - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="After the startup pass,
+the slowest thing left in my Neovim was big log files. ~/log holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. n, /, typing and &lt;Esc&gt; each stalled.
+Just reading the log while it grew froze the UI for about 11 of every 15
+seconds.
+No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed n in every file. Medians of 5 runs in a
+real terminal:
+
+
+
+
+before
+after
+
+
+
+
+open the 87 MB log until keys are accepted
+1857 ms
+199 ms
+
+
+n
+523 ms
+21 ms
+
+
+UI blocked per 15 s while reading the growing log
+10963 ms
+0 ms
+
+
+" /><meta name="keywords" content='nvim, LazyVim, performance, profiling, pynvim, gdb, undofile' /><meta itemprop="name" content="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15">
+<meta itemprop="description" content="After the startup pass,
+the slowest thing left in my Neovim was big log files. ~/log holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. n, /, typing and &lt;Esc&gt; each stalled.
+Just reading the log while it grew froze the UI for about 11 of every 15
+seconds.
+No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed n in every file. Medians of 5 runs in a
+real terminal:
+
+
+
+
+before
+after
+
+
+
+
+open the 87 MB log until keys are accepted
+1857 ms
+199 ms
+
+
+n
+523 ms
+21 ms
+
+
+UI blocked per 15 s while reading the growing log
+10963 ms
+0 ms
+
+
+"><meta itemprop="datePublished" content="2026-10-17T12:00:00+09:00" />
+<meta itemprop="dateModified" content="2026-10-17T12:00:00+09:00" />
+<meta itemprop="wordCount" content="4019"><meta itemprop="image" content="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/featured-image.png" />
+<meta itemprop="keywords" content="nvim,LazyVim,performance,profiling,pynvim,gdb,undofile," /><meta property="og:title" content="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" />
+<meta property="og:description" content="After the startup pass,
+the slowest thing left in my Neovim was big log files. ~/log holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. n, /, typing and &lt;Esc&gt; each stalled.
+Just reading the log while it grew froze the UI for about 11 of every 15
+seconds.
+No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed n in every file. Medians of 5 runs in a
+real terminal:
+
+
+
+
+before
+after
+
+
+
+
+open the 87 MB log until keys are accepted
+1857 ms
+199 ms
+
+
+n
+523 ms
+21 ms
+
+
+UI blocked per 15 s while reading the growing log
+10963 ms
+0 ms
+
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" /><meta property="og:image" content="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-10-17T12:00:00+09:00" />
+<meta property="article:modified_time" content="2026-10-17T12:00:00+09:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/featured-image.png" /><meta name="twitter:title" content="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15"/>
+<meta name="twitter:description" content="After the startup pass,
+the slowest thing left in my Neovim was big log files. ~/log holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. n, /, typing and &lt;Esc&gt; each stalled.
+Just reading the log while it grew froze the UI for about 11 of every 15
+seconds.
+No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed n in every file. Medians of 5 runs in a
+real terminal:
+
+
+
+
+before
+after
+
+
+
+
+open the 87 MB log until keys are accepted
+1857 ms
+199 ms
+
+
+n
+523 ms
+21 ms
+
+
+UI blocked per 15 s while reading the growing log
+10963 ms
+0 ms
+
+
+"/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" /><link rel="prev" href="https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/" /><link rel="next" href="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-10-17-nvim-big-log-files\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-10-17-nvim-big-log-files\/featured-image.png",
+              "width":  1017 ,
+              "height":  476 
+            }],"genre": "posts","keywords": "nvim, LazyVim, performance, profiling, pynvim, gdb, undofile","wordcount":  4019 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-10-17-nvim-big-log-files\/","datePublished": "2026-10-17T12:00:00+09:00","dateModified": "2026-10-17T12:00:00+09:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-10-17 12:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-10-17">2026-10-17</time></span>&nbsp;<span title="4019 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 4100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 9 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-10-17-nvim-big-log-files/featured-image.png" alt="/2026-10-17-nvim-big-log-files/featured-image.png" data-title="/2026-10-17-nvim-big-log-files/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#step-1-measure-in-a-real-terminal">Step 1: measure in a real terminal</a>
+          <ol>
+            <li><a href="#finding-the-hot-spots">Finding the hot spots</a></li>
+          </ol>
+        </li>
+        <li><a href="#step-2-what-grew-with-the-file">Step 2: what grew with the file</a>
+          <ol>
+            <li><a href="#undofile-hashed-87-mb-on-every-read">undofile hashed 87 MB on every read</a></li>
+            <li><a href="#the-size-check-has-to-come-before-the-filetype">The size check has to come before the filetype</a></li>
+            <li><a href="#the-treesitter-foldexpr-ran-for-every-line-during-the-read">The treesitter foldexpr ran for every line during the read</a></li>
+            <li><a href="#n-waited-500-ms-in-every-file"><code>n</code> waited 500 ms, in every file</a></li>
+            <li><a href="#plugins-doing-per-key-work-in-big-buffers">Plugins doing per-key work in big buffers</a></li>
+          </ol>
+        </li>
+        <li><a href="#step-3-follow-a-growing-log-without-re-reading-it">Step 3: follow a growing log without re-reading it</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#later-the-same-day-an-org-archive-in-every-startup">Later the same day: an org archive in every startup</a>
+          <ol>
+            <li><a href="#a-fake-home-isnt-isolation">A fake <code>$HOME</code> isn&rsquo;t isolation</a></li>
+          </ol>
+        </li>
+        <li><a href="#what-big-files-lose-and-whats-left">What big files lose, and what&rsquo;s left</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>After the <a href="/2026-10-03-nvim-startup-lazy-loading/">startup pass</a>,
+the slowest thing left in my Neovim was big log files. <code>~/log</code> holds logs from
+0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
+characters, growing by about 2 lines a second while I read it. Opening it took
+1.9 s before Neovim accepted a key. <code>n</code>, <code>/</code>, typing and <code>&lt;Esc&gt;</code> each stalled.
+Just reading the log while it grew <strong>froze the UI for about 11 of every 15
+seconds</strong>.</p>
+<p>No single plugin was to blame. Several separate pieces of work grew with the
+file, and one key mapping slowed <code>n</code> in every file. Medians of 5 runs in a
+real terminal:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>open the 87 MB log until keys are accepted</td>
+<td style="text-align:right">1857 ms</td>
+<td style="text-align:right"><strong>199 ms</strong></td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td style="text-align:right">523 ms</td>
+<td style="text-align:right"><strong>21 ms</strong></td>
+</tr>
+<tr>
+<td>UI blocked per 15 s while reading the growing log</td>
+<td style="text-align:right">10963 ms</td>
+<td style="text-align:right"><strong>0 ms</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li>Neovim v0.12.5, LuaJIT 2.1, LazyVim on lazy.nvim, the same config as in the
+startup post.</li>
+<li>The main test file is that 87 MB log: 176,939 lines, 486 characters per line
+on average. 176,868 of the lines contain tmux color codes like <code>#[fg=...]</code>,
+so they are full of brackets.</li>
+<li>snacks.nvim&rsquo;s <code>bigfile</code> module was already on, with a 1.5 MB threshold.
+Above it, snacks sets <code>filetype=bigfile</code>, and my <code>setup</code> hook turns off
+folds, the status column, completion and mini.animate.</li>
+<li>Every change below applies only to buffers over 1.5 MB, except one key
+mapping that affected every file.</li>
+</ul>
+<h2 id="step-1-measure-in-a-real-terminal" class="heading-element">
+  <a href="#step-1-measure-in-a-real-terminal" class="heading-mark"></a>Step 1: measure in a real terminal</h2><p>In the startup post, headless timing turned out to be too optimistic. Here it
+would have missed most of the problem. The costs were in redraws and in work
+done on each key after the file was open. So I built a harness that runs
+Neovim in a real terminal and times keys the way I feel them:</p>
+<ul>
+<li>Neovim runs inside a private tmux server (<code>tmux -L nvbench -f /dev/null</code>,
+200×50), started with <code>--listen</code> on a socket.</li>
+<li>A Python script attaches with <a href="https://github.com/neovim/pynvim"target="_blank" rel="external nofollow noopener noreferrer">pynvim<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> and
+sends each key with <code>nvim_input</code>. Right after it, the script sends a trivial
+request, <code>eval(&quot;0&quot;)</code>. Neovim only answers once it has processed the key and
+redrawn, so the round trip is the latency of that key. The time the terminal
+takes to render isn&rsquo;t included.</li>
+</ul>
+<p><code>bench.py</code>:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="n">nv</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="mf">0.04</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">nv</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">nv</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="s2">&#34;0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span>
+</span></span><span class="line"><span class="cl">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">gap</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">dt</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The rest of the method:</p>
+<ul>
+<li><strong>Stalls not tied to a key.</strong> The same <code>eval(&quot;0&quot;)</code> ping runs every 5 ms. A
+slow answer means Neovim was busy, and pings slower than 20 ms are added up
+as &ldquo;blocked&rdquo; time. &ldquo;Open until stalls stop&rdquo; is the last ping slower than
+50 ms in the 4 s after opening.</li>
+<li><strong>One editing session per run:</strong> <code>G</code>, <code>gg</code>, <code>&lt;C-d&gt;</code>, <code>j</code>, <code>k</code>, <code>&lt;C-f&gt;</code>,
+<code>o</code>, typing a line, <code>&lt;Esc&gt;</code>, <code>u</code>, <code>dd</code>, <code>p</code>, <code>w</code>, <code>/ERROR&lt;CR&gt;</code>, <code>n</code>.</li>
+<li><strong>The growing log.</strong> A thread appends a copy of the file&rsquo;s last line every
+0.5 s. One scenario reads with a <code>j</code> every second for 15 s. The other runs
+<code>:Tail</code> for 12 s.</li>
+<li><strong>Before and after are two copies of the config.</strong> Each has its own
+<code>XDG_CONFIG_HOME</code>, <code>XDG_STATE_HOME</code> and <code>XDG_CACHE_HOME</code>, and swap and undo
+directories are cleared before every run. Each side gets one warm-up and 5
+measured runs, alternating which side goes first. I report medians with
+min–max, plus 3 runs of <code>nvim --clean</code> as a floor. Load average was 2.5–3 on
+20 cores.</li>
+<li><strong>Every run checks that the keys did their work.</strong> <code>G</code> reached the last
+line, <code>gg</code> line 1, <code>k</code> moved up, the typed text landed, and <code>&lt;Esc&gt;</code> got
+back to normal mode. New lines arrived in the growing log, and <code>:Tail</code> kept the cursor on
+the last line. A fast key that did nothing proves nothing.</li>
+</ul>
+<p>One practical snag: a Unix socket path is limited to 108 bytes, and my scratch
+directory&rsquo;s path was longer than that. tmux starts Neovim in that directory,
+so a relative path works:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">sock</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;./sock-</span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">&#34;</span>  <span class="c1"># relative: the absolute scratch path exceeds the 108-byte socket limit</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="finding-the-hot-spots" class="heading-element">
+  <a href="#finding-the-hot-spots" class="heading-mark"></a>Finding the hot spots</h3><p>The harness shows which key is slow, not why. I used two tools for the why:</p>
+<ul>
+<li>
+<p><strong>Native code.</strong> <code>perf</code> isn&rsquo;t installed on this machine, so I sampled
+stacks with gdb in a loop while a stall was going on. Each call stops the
+process briefly and prints one stack. A dozen samples during a long stall
+make a crude profiler, but it was enough.</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gdb -p &lt;nvim-pid&gt; -batch -ex <span class="s1">&#39;bt 25&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>Lua.</strong> A small <code>prof.lua</code>, loaded with <code>--cmd &quot;luafile prof.lua&quot;</code>, wraps
+every autocmd callback, <code>vim.schedule</code>, <code>vim.defer_fn</code>, libuv timer and
+<code>nvim_buf_attach</code> callback, and adds up the time per source location.
+LuaJIT&rsquo;s sampling profiler (<code>jit.p</code>) covered the rest.</p>
+</li>
+</ul>
+<h2 id="step-2-what-grew-with-the-file" class="heading-element">
+  <a href="#step-2-what-grew-with-the-file" class="heading-mark"></a>Step 2: what grew with the file</h2><h3 id="undofile-hashed-87-mb-on-every-read" class="heading-element">
+  <a href="#undofile-hashed-87-mb-on-every-read" class="heading-mark"></a>undofile hashed 87 MB on every read</h3><p>I keep <code>undofile</code> on. <code>:help undo-persistence</code> explains what that costs when
+a file is read:</p>
+<blockquote>
+<p>Vim will detect if an undo file is no longer synchronized with the file it
+was written for (with a hash of the file contents) and ignore it when the
+file was changed after the undo file was written</p>
+</blockquote>
+<p>So after every read Neovim computes a SHA-256 of the whole buffer. On an
+autoread reload it hashes the buffer twice and rewrites the undo file. That is
+where the gdb samples landed during a reload stall. Measured with
+<code>nvim --clean</code> on the 87 MB log, <strong>turning <code>undofile</code> off took open from 245 to
+42 ms and a reload from 552 to 134 ms</strong>.</p>
+<p>The option has to be off <em>before</em> the read. snacks&rsquo; bigfile <code>setup</code> runs after
+the file is loaded, which is too late. So the snacks spec now registers a
+<code>BufReadPre</code> hook in its <code>init</code>:</p>
+<p><code>lua/plugins/snacks.lua</code>:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">bigfile_size</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl">    <span class="n">init</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_autocmd</span><span class="p">(</span><span class="s2">&#34;BufReadPre&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">group</span> <span class="o">=</span> <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_augroup</span><span class="p">(</span><span class="s2">&#34;bigfile_noundofile&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="n">clear</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">callback</span> <span class="o">=</span> <span class="kr">function</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="kr">if</span> <span class="n">vim.fn</span><span class="p">.</span><span class="n">getfsize</span><span class="p">(</span><span class="n">ev.match</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">bigfile_size</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">vim.bo</span><span class="p">[</span><span class="n">ev.buf</span><span class="p">].</span><span class="n">undofile</span> <span class="o">=</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">vim.b</span><span class="p">[</span><span class="n">ev.buf</span><span class="p">].</span><span class="n">bigfile</span> <span class="o">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">                    <span class="kr">if</span> <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_get_current_buf</span><span class="p">()</span> <span class="o">==</span> <span class="n">ev.buf</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">                        <span class="c1">-- the global treesitter foldexpr runs per line during the read: 44 -&gt; 182 ms</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_set_option_value</span><span class="p">(</span><span class="s2">&#34;foldmethod&#34;</span><span class="p">,</span> <span class="s2">&#34;manual&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="n">scope</span> <span class="o">=</span> <span class="s2">&#34;local&#34;</span><span class="p">,</span> <span class="n">win</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl">                    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">                <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">            <span class="kr">end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span><span class="p">,</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The hook does two more things, covered in the next two sections.</p>
+<h3 id="the-size-check-has-to-come-before-the-filetype" class="heading-element">
+  <a href="#the-size-check-has-to-come-before-the-filetype" class="heading-mark"></a>The size check has to come before the filetype</h3><p><code>b:bigfile</code> exists because <code>filetype=bigfile</code> arrives too late for some
+plugins. baleia, which colorizes ANSI codes in logs
+(<a href="/2026-07-09-nvim-ascii-color/">setup here</a>), loads on
+<code>BufReadPost *.log</code> and colorizes the buffer right away. On the first load the
+filetype isn&rsquo;t <code>bigfile</code> yet, so a filetype check missed it. A flag set in
+<code>BufReadPre</code> from the file size exists before any of that runs:</p>
+<p><code>lua/plugins/baleia.lua</code>:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">colorize</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="n">vim.b</span><span class="p">[</span><span class="n">buf</span><span class="p">].</span><span class="n">bigfile</span> <span class="kr">then</span> <span class="c1">-- set in BufReadPre (plugins/snacks.lua); filetype isn&#39;t bigfile yet on first load</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">return</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="n">vim.g</span><span class="p">.</span><span class="n">baleia.once</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>           <span class="c1">-- colorize existing content</span>
+</span></span><span class="line"><span class="cl">    <span class="n">vim.g</span><span class="p">.</span><span class="n">baleia.automatically</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>  <span class="c1">-- hook new lines (safe to call multiple times)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>once()</code> scanned every line for ANSI codes, on open and again on every
+reload. These logs don&rsquo;t contain any, since the tmux codes are plain text.
+<code>:BaleiaColorize</code> still works on demand.</p>
+<h3 id="the-treesitter-foldexpr-ran-for-every-line-during-the-read" class="heading-element">
+  <a href="#the-treesitter-foldexpr-ran-for-every-line-during-the-read" class="heading-mark"></a>The treesitter foldexpr ran for every line during the read</h3><p><code>post.lua</code> sets <code>foldmethod=expr</code> with <code>vim.treesitter.foldexpr()</code> globally.
+While the file was read, the expression was evaluated for each line: <strong>182 ms,
+against 44 ms with manual folds</strong>. The hook sets window-local <code>foldmethod=manual</code>, but only when
+the buffer being read is in the current window, because the option belongs to
+the window.</p>
+<h3 id="n-waited-500-ms-in-every-file" class="heading-element">
+  <a href="#n-waited-500-ms-in-every-file" class="heading-mark"></a><code>n</code> waited 500 ms, in every file</h3><p>This one had nothing to do with size. <code>n</code> took 523 ms in the 87 MB log, but
+also 532 ms in an 812 KB log and 504 ms in a 110 KB Python file. My
+<code>timeoutlen</code> is 500. When a key costs exactly <code>timeoutlen</code>, Neovim is waiting
+to see whether the key starts a longer mapping. Here the mapping was a
+virt-column toggle:</p>
+<p><code>lua/plugins/virt-column.lua</code>:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-diff" data-lang="diff"><span class="line"><span class="cl"><span class="gd">-        vim.keymap.set(&#34;n&#34;, &#34;nc&#34;, function()
+</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+        -- 2026-10-17: was &#34;nc&#34;; as a prefix of n it made every search-next wait timeoutlen (500 ms).
+</span></span></span><span class="line"><span class="cl"><span class="gi">+        vim.keymap.set(&#34;n&#34;, &#34;&lt;leader&gt;uv&#34;, function()
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>With <code>nc</code> mapped, every <code>n</code> waited <code>timeoutlen</code> for a possible <code>c</code>.</strong>
+<code>&lt;nowait&gt;</code> doesn&rsquo;t fix it cleanly. A quick test with <code>nvim --clean</code> showed
+that a <code>&lt;nowait&gt;</code> <code>n</code> stops the wait only by making <code>nc</code> unreachable. So the
+toggle moved to <code>&lt;leader&gt;uv</code>. Afterwards <code>n</code> took 21 ms in the 87 MB log (the
+same as <code>nvim --clean</code>, so that&rsquo;s Neovim&rsquo;s own search), 6 ms in the 812 KB log
+and 1.4 ms in the Python file.</p>
+<h3 id="plugins-doing-per-key-work-in-big-buffers" class="heading-element">
+  <a href="#plugins-doing-per-key-work-in-big-buffers" class="heading-mark"></a>Plugins doing per-key work in big buffers</h3><p>The rest were plugins doing work proportional to the file size or the line
+length, on every key, jump or reload:</p>
+<table>
+<thead>
+<tr>
+<th>plugin</th>
+<th>what it did</th>
+<th>cost in the 87 MB log</th>
+<th>fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>flash.nvim</td>
+<td>search labels: an unbounded <code>searchpos()</code> per typed character</td>
+<td><code>/ERROR</code> from the top: 1.3 s</td>
+<td>labels off during <code>/</code> and <code>?</code></td>
+</tr>
+<tr>
+<td>hiPairs</td>
+<td><code>synstack()</code> per bracket. The log syntax&rsquo;s <code>.*\&lt;ERROR\&gt;.*</code> patterns re-scan 500-character lines from every column</td>
+<td><code>/ERROR</code>: 374 ms</td>
+<td><code>b:pair_list = {}</code></td>
+</tr>
+<tr>
+<td>ultimate-autopair</td>
+<td>scans the 1000 lines around the cursor for pairs on each key</td>
+<td>~200 ms per typed space</td>
+<td><code>bigfile</code> in the filetype <code>nft</code> list</td>
+</tr>
+<tr>
+<td>smear-cursor.nvim</td>
+<td><code>scroll_buffer_space</code> measures the wrapped height of every line a jump scrolls past</td>
+<td>820 ms per <code>G</code>/<code>gg</code></td>
+<td><code>filetypes_disabled = { &quot;bigfile&quot; }</code></td>
+</tr>
+<tr>
+<td>nvim-ufo</td>
+<td><code>bigfile</code> fell through to the comment-fold provider, which copies every line into Lua on each fold update</td>
+<td>790 ms stall after an edit</td>
+<td><code>bigfile = ''</code></td>
+</tr>
+</tbody>
+</table>
+<p>Most of the fixes are one line each:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- plugins/snacks.lua, in the bigfile setup hook</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.b</span><span class="p">[</span><span class="n">ctx.buf</span><span class="p">].</span><span class="n">pair_list</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- plugins/ultimate-autopair.lua</span>
+</span></span><span class="line"><span class="cl"><span class="n">extensions</span> <span class="o">=</span> <span class="p">{</span> <span class="n">filetype</span> <span class="o">=</span> <span class="p">{</span> <span class="n">nft</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;TelescopePrompt&#39;</span><span class="p">,</span> <span class="s1">&#39;bigfile&#39;</span> <span class="p">}</span> <span class="p">}</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- plugins/smear_cursor.lua</span>
+</span></span><span class="line"><span class="cl"><span class="n">filetypes_disabled</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&#34;bigfile&#34;</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- plugins/ufo.lua, the ftMap in provider_selector</span>
+</span></span><span class="line"><span class="cl"><span class="n">bigfile</span>      <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>flash needs more than one line. Its search labels should stay on in normal
+files, so a <code>CmdlineEnter</code> hook turns them off only while a <code>/</code> or <code>?</code> search
+runs in a big buffer, and a <code>CmdlineLeave</code> hook restores them. It&rsquo;s registered
+in <code>init</code> so that it runs before flash&rsquo;s own <code>CmdlineEnter</code> handler:</p>
+<p><code>lua/plugins/flash.lua</code>:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_autocmd</span><span class="p">(</span><span class="s2">&#34;CmdlineEnter&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">group</span> <span class="o">=</span> <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_create_augroup</span><span class="p">(</span><span class="s2">&#34;flash_bigfile&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="n">clear</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">callback</span> <span class="o">=</span> <span class="kr">function</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">search</span> <span class="o">=</span> <span class="n">package.loaded</span><span class="p">[</span><span class="s2">&#34;flash.plugins.search&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="n">search</span> <span class="ow">and</span> <span class="n">vim.b</span><span class="p">.</span><span class="n">bigfile</span> <span class="ow">and</span> <span class="n">vim.v</span><span class="p">.</span><span class="n">event.cmdtype</span><span class="p">:</span><span class="n">match</span><span class="p">(</span><span class="s2">&#34;[/?]&#34;</span><span class="p">)</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">            <span class="n">saved</span><span class="p">,</span> <span class="n">search.enabled</span> <span class="o">=</span> <span class="n">search.enabled</span><span class="p">,</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li>
+<p><strong>hiPairs skips buffers without pairs</strong>, so an empty <code>b:pair_list</code> turns
+it off for that buffer only.</p>
+</li>
+<li>
+<p><strong>ultimate-autopair&rsquo;s <code>nft</code> replaces the default list.</strong> <code>TelescopePrompt</code>
+is the default, so it has to stay in the list.</p>
+</li>
+<li>
+<p><strong>The smear cost doesn&rsquo;t show in the harness&rsquo;s <code>G</code>/<code>gg</code> row</strong> (30/33 ms
+before). smear does its work in a timer callback after the jump
+(<code>smear_cursor/events.lua</code>). By then Neovim has already answered the
+harness&rsquo;s ping. The callback profile caught it:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">  3329.0 ms  n=7    max=  838.0  schedule_wrap smear-cursor.nvim/lua/smear_cursor/events.lua:55</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>I found autopair late.</strong> My first full after-run still had a typing p95
+of 251 ms, and that turned out to be ultimate-autopair. I re-ran the 87 MB
+scenario after fixing it, and the tables below use that re-run.</p>
+</li>
+</ul>
+<h2 id="step-3-follow-a-growing-log-without-re-reading-it" class="heading-element">
+  <a href="#step-3-follow-a-growing-log-without-re-reading-it" class="heading-mark"></a>Step 3: follow a growing log without re-reading it</h2><p>Two things re-read the whole 87 MB while the log grew:</p>
+<ul>
+<li><strong>An idle check in <code>options.lua</code></strong> ran <code>checktime</code> on <code>BufEnter</code>,
+<code>CursorHold</code> and <code>CursorHoldI</code>. With <code>updatetime=250</code>, every pause of a
+quarter second or more after the file had grown triggered a full reload. Even after the
+<code>undofile</code> fix, each one blocked for 130 ms or more.</li>
+<li><strong>My <code>:Tail</code> command</strong> follows new lines like <code>tail -f</code>. It polls the file
+once a second and ran <code>checktime</code> on every change. When I wrote it two days
+earlier, I marked that as a shortcut: re-read the whole buffer on every
+change, and read only the appended bytes if huge logs ever stutter. They
+did.</li>
+</ul>
+<p>Before the fix, reading the growing log blocked the UI for 10963 ms out of
+15 s, and <code>:Tail</code> blocked it for 17230 ms in a 12 s window. The total is
+longer than the window because the probe waits for its last ping to come back
+after the window ends. In practice Neovim was barely responsive.</p>
+<p>Big buffers now skip the plain idle <code>checktime</code>:</p>
+<p><code>lua/options.lua</code>:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-vim" data-lang="vim"><span class="line"><span class="cl"><span class="k">autocmd</span> <span class="nx">BufEnter</span><span class="p">,</span><span class="nx">CursorHold</span><span class="p">,</span><span class="nx">CursorHoldI</span> * <span class="k">if</span> <span class="nx">mode</span><span class="p">()</span> <span class="p">!=</span> <span class="s1">&#39;c&#39;</span> &amp;&amp; <span class="p">!</span><span class="nx">get</span><span class="p">(</span><span class="nx">b</span>:<span class="p">,</span> <span class="s1">&#39;bigfile&#39;</span><span class="p">)</span> <span class="p">|</span> <span class="k">execute</span> <span class="s1">&#39;checktime &#39;</span> . <span class="nx">expand</span><span class="p">(</span><span class="s1">&#39;&lt;abuf&gt;&#39;</span><span class="p">)</span> <span class="p">|</span> <span class="k">endif</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A new autocmd on the same events, and <code>:Tail</code>, call <code>refresh_appended(buf)</code>
+in <code>commands.lua</code> instead. It reads only the new bytes, and only when it can
+prove the file just grew. Otherwise it falls back to a full <code>checktime</code>:</p>
+<ul>
+<li>buffer modified: plain <code>checktime</code>, which shows the usual W12 warning</li>
+<li>not <code>fileformat=unix</code>, has a BOM, or not utf-8: full reload</li>
+<li>different inode (log rotated or replaced): full reload</li>
+<li>file shorter than what the buffer holds: full reload</li>
+<li>same size but a different mtime (rewritten in place, or touched): full
+reload</li>
+<li>same size, same mtime: nothing to do, one <code>stat</code> and no file read</li>
+</ul>
+<p>If the file grew, the function first re-reads the bytes just before the old
+end and compares them with the buffer&rsquo;s last line. Then it reads the new
+bytes. Comments are translated from the Chinese originals:</p>
+<p><code>lua/commands.lua</code>:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- how many bytes of the file the buffer holds</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">held</span> <span class="o">=</span> <span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_buf_get_offset</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="o">#</span><span class="n">last</span> <span class="o">+</span> <span class="p">(</span><span class="n">eol</span> <span class="ow">and</span> <span class="mi">1</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">last</span> <span class="o">..</span> <span class="p">(</span><span class="n">eol</span> <span class="ow">and</span> <span class="s2">&#34;</span><span class="se">\n</span><span class="s2">&#34;</span> <span class="ow">or</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">before</span> <span class="o">=</span> <span class="n">vim.uv</span><span class="p">.</span><span class="n">fs_read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="o">#</span><span class="n">tail</span><span class="p">,</span> <span class="n">held</span> <span class="o">-</span> <span class="o">#</span><span class="n">tail</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">data</span> <span class="o">=</span> <span class="n">vim.uv</span><span class="p">.</span><span class="n">fs_read</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">st.size</span> <span class="o">-</span> <span class="n">held</span><span class="p">,</span> <span class="n">held</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.uv</span><span class="p">.</span><span class="n">fs_close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="n">before</span> <span class="o">~=</span> <span class="n">tail</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">data</span> <span class="ow">or</span> <span class="o">#</span><span class="n">data</span> <span class="o">~=</span> <span class="n">st.size</span> <span class="o">-</span> <span class="n">held</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span> <span class="n">full</span><span class="p">()</span> <span class="c1">-- rewritten in place / truncated, then grew past the old size</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">lines</span> <span class="o">=</span> <span class="n">vim.split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&#34;</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">,</span> <span class="p">{</span> <span class="n">plain</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">new_eol</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="o">#</span><span class="n">lines</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="n">new_eol</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">table.remove</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="ow">not</span> <span class="n">eol</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">last</span> <span class="o">..</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1">-- finish the line that was half-written last time</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- appended lines are the file&#39;s own content, not an edit: keep them out of undo</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">ul</span> <span class="o">=</span> <span class="n">vim.bo</span><span class="p">[</span><span class="n">buf</span><span class="p">].</span><span class="n">undolevels</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.bo</span><span class="p">[</span><span class="n">buf</span><span class="p">].</span><span class="n">undolevels</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.api</span><span class="p">.</span><span class="n">nvim_buf_set_lines</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">eol</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="n">lines</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.bo</span><span class="p">[</span><span class="n">buf</span><span class="p">].</span><span class="n">undolevels</span> <span class="o">=</span> <span class="n">ul</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.bo</span><span class="p">[</span><span class="n">buf</span><span class="p">].</span><span class="n">eol</span> <span class="o">=</span> <span class="n">new_eol</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.bo</span><span class="p">[</span><span class="n">buf</span><span class="p">].</span><span class="n">modified</span> <span class="o">=</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl"><span class="n">vim.b</span><span class="p">[</span><span class="n">buf</span><span class="p">].</span><span class="n">tail_seen</span> <span class="o">=</span> <span class="n">stamp</span><span class="p">(</span><span class="n">st</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li><strong>A partial last line is completed in place.</strong> A writer can flush half a
+line and finish it later. Without a trailing newline the buffer has
+<code>noeol</code>, and the next append is joined onto that last line.</li>
+<li><strong>Appended lines are not undo steps.</strong> Otherwise <code>u</code> would delete log lines
+and mark the buffer modified, and from then on every refresh would take the
+modified-buffer path and warn. The cost is that an append clears the
+buffer&rsquo;s in-memory undo history.</li>
+<li><strong><code>tail_seen</code> stores the inode and mtime</strong> from the last full read or
+append. That is how a same-size rewrite is told apart from &ldquo;nothing
+happened&rdquo;.</li>
+</ul>
+<p><code>tests/performance_tail.lua</code> covers complete and partial appends, no growth,
+shrinking, rewrites, modified buffers, small files and <code>:Tail</code>. The
+partial-line part:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="n">append</span><span class="p">(</span><span class="n">big</span><span class="p">,</span> <span class="s1">&#39;par&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tick</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">same</span><span class="p">(</span><span class="n">lines</span><span class="p">(),</span> <span class="p">{</span> <span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="s1">&#39;l3&#39;</span><span class="p">,</span> <span class="s1">&#39;par&#39;</span> <span class="p">},</span> <span class="s1">&#39;partial line not shown&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">assert</span><span class="p">(</span><span class="ow">not</span> <span class="n">vim.bo</span><span class="p">[</span><span class="n">buf</span><span class="p">].</span><span class="n">eol</span><span class="p">,</span> <span class="s1">&#39;partial line kept eol on&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">append</span><span class="p">(</span><span class="n">big</span><span class="p">,</span> <span class="s1">&#39;tial</span><span class="se">\n</span><span class="s1">l5</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tick</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">same</span><span class="p">(</span><span class="n">lines</span><span class="p">(),</span> <span class="p">{</span> <span class="s1">&#39;l1&#39;</span><span class="p">,</span> <span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="s1">&#39;l3&#39;</span><span class="p">,</span> <span class="s1">&#39;partial&#39;</span><span class="p">,</span> <span class="s1">&#39;l5&#39;</span> <span class="p">},</span> <span class="s1">&#39;partial line not completed in place&#39;</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> ~/.config/nvim/lua
+</span></span><span class="line"><span class="cl">nvim --headless -u NONE -i NONE <span class="s2">&#34;+luafile tests/performance_tail.lua&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">W12: Warning: File &#34;big.log&#34; has changed and the buffer was changed in Vim as well
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">Tail onTail offPASS: incremental append, partial line, no-growth, shrink/rewrite/modified fallbacks, small file, Tail</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The W12 comes from the modified-buffer case, which is expected to warn. I
+also checked a copy of the 87 MB log headless. After appends that included a
+partial line, its completion and a Chinese line, the buffer&rsquo;s SHA-256 matched
+the file&rsquo;s. <strong>A refresh with no growth costs 0.06 ms, and an append
+0.3–0.4 ms.</strong></p>
+<h2 id="results" class="heading-element">
+  <a href="#results" class="heading-mark"></a>Results</h2><p>The raw numbers come from the harness&rsquo;s summary script:</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python3 report.py final_big.jsonl   <span class="c1"># the 87 MB re-run</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">## big   (runs: before=5, after=5)
+</span></span><span class="line"><span class="cl">  before  ready 1857 (1845-1868) ms | interactive 2884 (2527-2894) ms | ...
+</span></span><span class="line"><span class="cl">          keys ms (median / p95): ... /ERROR 361.3/p95 441  n 523.4/p95 532 ...
+</span></span><span class="line"><span class="cl">  after   ready 199 (196-205) ms | interactive 788 (771-791) ms | ...
+</span></span><span class="line"><span class="cl">          keys ms (median / p95): ... /ERROR 64.3/p95 82  n 21.3/p95 25 ...</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python3 report.py final.jsonl   <span class="c1"># all scenarios, including the growing log</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">## grow   (runs: before=5, after=5)
+</span></span><span class="line"><span class="cl">  before  ...
+</span></span><span class="line"><span class="cl">          reading: blocked 10963 (10922-11211) ms, max stall 1169 (1154-1224) ms, ...
+</span></span><span class="line"><span class="cl">  after   ...
+</span></span><span class="line"><span class="cl">          reading: blocked 0 (0-21) ms, max stall 11 (9-21) ms, ...</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The 87 MB log (176,939 lines), medians with min–max for the open times:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+<th style="text-align:right"><code>nvim --clean</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>open until input is accepted</td>
+<td style="text-align:right">1857 ms (1845–1868)</td>
+<td style="text-align:right"><strong>199 ms</strong> (196–205)</td>
+<td style="text-align:right">89 ms</td>
+</tr>
+<tr>
+<td>open until stalls stop</td>
+<td style="text-align:right">2884 ms (2527–2894)</td>
+<td style="text-align:right"><strong>788 ms</strong> (771–791)</td>
+<td style="text-align:right">89 ms</td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td style="text-align:right">523 ms</td>
+<td style="text-align:right"><strong>21 ms</strong></td>
+<td style="text-align:right">21 ms</td>
+</tr>
+<tr>
+<td><code>/ERROR&lt;CR&gt;</code></td>
+<td style="text-align:right">361 ms</td>
+<td style="text-align:right"><strong>64 ms</strong></td>
+<td style="text-align:right">22 ms</td>
+</tr>
+<tr>
+<td><code>G</code> / <code>gg</code> (without smear&rsquo;s deferred work)</td>
+<td style="text-align:right">30 / 33 ms</td>
+<td style="text-align:right"><strong>9 / 10 ms</strong></td>
+<td style="text-align:right">1 / 2 ms</td>
+</tr>
+<tr>
+<td>typing, p95 per key</td>
+<td style="text-align:right">175 ms</td>
+<td style="text-align:right"><strong>5 ms</strong></td>
+<td style="text-align:right">2 ms</td>
+</tr>
+<tr>
+<td><code>&lt;Esc&gt;</code> after typing</td>
+<td style="text-align:right">272 ms</td>
+<td style="text-align:right"><strong>28 ms</strong></td>
+<td style="text-align:right">1 ms</td>
+</tr>
+<tr>
+<td>longest stall in the 2 s after editing</td>
+<td style="text-align:right">792 ms</td>
+<td style="text-align:right"><strong>23 ms</strong></td>
+<td style="text-align:right">2 ms</td>
+</tr>
+</tbody>
+</table>
+<p>The 1.3 s in the flash row was a <code>/ERROR</code> from the top of the file. Here the
+search runs partway through the editing session, so the two numbers aren&rsquo;t
+comparable.</p>
+<p>The same log while another process appends a line every 0.5 s:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reading with a <code>j</code> each second: UI blocked per 15 s</td>
+<td style="text-align:right">10963 ms (10922–11211)</td>
+<td style="text-align:right"><strong>0 ms</strong> (0–21)</td>
+</tr>
+<tr>
+<td>reading: longest stall</td>
+<td style="text-align:right">1169 ms</td>
+<td style="text-align:right"><strong>11 ms</strong></td>
+</tr>
+<tr>
+<td><code>:Tail</code>: UI blocked per 12 s</td>
+<td style="text-align:right">17230 ms (17189–17493)</td>
+<td style="text-align:right"><strong>0 ms</strong> (0–41)</td>
+</tr>
+<tr>
+<td><code>:Tail</code>: longest stall</td>
+<td style="text-align:right">6238 ms</td>
+<td style="text-align:right"><strong>10 ms</strong></td>
+</tr>
+</tbody>
+</table>
+<p>New lines reached the buffer in every run, and <code>:Tail</code> kept the cursor on the
+last line in 5 of 5 runs.</p>
+<p>For files under 1.5 MB (an 812 KB log and a 110 KB Python file), only <code>n</code>
+changed: 532 → 6 ms and 504 → 1.4 ms. Every other key and the open time
+showed no measurable difference.</p>
+<h2 id="later-the-same-day-an-org-archive-in-every-startup" class="heading-element">
+  <a href="#later-the-same-day-an-org-archive-in-every-startup" class="heading-mark"></a>Later the same day: an org archive in every startup</h2><p>Even after these fixes, the 87 MB log took 788 ms until the stalls stopped.
+About 590 ms of that had nothing to do with size. Small files paid the same:
+716 ms for the 812 KB log and 899 ms for the Python file. The biggest piece was
+orgmode. About 1 s after startup, its reminders parse every agenda file.</p>
+<p>My agenda glob was <code>~/orgfiles/**/*</code>, and that includes <code>archive/</code>. orgmode
+only recognizes <code>*.org_archive</code> files as archives, and
+<a href="/2025-02-11-nvim-orgmode-%E4%BF%AE%E6%94%B9-archive-%E6%96%87%E4%BB%B6%E5%90%8D%E7%A7%B0/">I had renamed mine to <code>.x.org</code></a>.
+So a 520 KB archive file was parsed as an ordinary agenda file at every start:
+305 ms with it, 41 ms without it (headless, 3 runs each). <code>archive/</code> held 506
+of my 619 headlines.</p>
+<p>The agenda now lists the top-level files plus every subdirectory except
+<code>archive/</code>:</p>
+<p><code>lua/plugins/orgmode.lua</code>:</p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">agenda_files</span> <span class="o">=</span> <span class="p">{</span> <span class="n">org_directory.root</span> <span class="o">..</span> <span class="s2">&#34;*&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kr">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">dir</span> <span class="kr">in</span> <span class="n">ipairs</span><span class="p">(</span><span class="n">vim.fn</span><span class="p">.</span><span class="n">glob</span><span class="p">(</span><span class="n">org_directory.root</span> <span class="o">..</span> <span class="s2">&#34;*/&#34;</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">true</span><span class="p">))</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="n">dir</span> <span class="o">~=</span> <span class="n">org_directory.archive</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="n">table.insert</span><span class="p">(</span><span class="n">agenda_files</span><span class="p">,</span> <span class="n">dir</span> <span class="o">..</span> <span class="s2">&#34;**/*&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>Loading the agenda files and starting the reminders went from 415 ms
+(411–431) to 82 ms (80–89).</strong> I measured that with each config&rsquo;s own agenda
+setting, in 6 alternating fresh headless runs per side. The load average was
+about 5, against 2.5–3 earlier, which is likely why both numbers are higher
+than the first 305/41 ms. The files loaded went from 13 to 10. A
+check against the real <code>~/orgfiles</code> found that the new list equals the old
+glob minus <code>archive/</code>. Archiving still writes to <code>archive/&lt;name&gt;.x.org</code>. Unlike the
+big-file changes, <strong>this one speeds up every start</strong>.</p>
+<p>What I lose: agenda views, agenda search, tag completion and refile targets no
+longer include archived entries. The subdirectory list is built when orgmode
+loads, so a new subdirectory joins the agenda after a restart.</p>
+<h3 id="a-fake-home-isnt-isolation" class="heading-element">
+  <a href="#a-fake-home-isnt-isolation" class="heading-mark"></a>A fake <code>$HOME</code> isn&rsquo;t isolation</h3><p>I tested archiving with a throwaway <code>$HOME</code>, so that my real org files were
+safe, while the config was still read from its real location. That mix is
+not safe for lazy.nvim. My lazy.nvim <code>root</code> is built from <code>$HOME</code>:</p>
+<div class="highlight" id="id-20"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="n">root</span> <span class="o">=</span> <span class="n">os.getenv</span><span class="p">(</span><span class="s2">&#34;HOME&#34;</span><span class="p">)</span> <span class="o">..</span> <span class="s2">&#34;/.config/nvim/lazy&#34;</span><span class="p">,</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The lockfile, though, defaults to the config directory. lazy.nvim found no
+plugins under the fake home, cloned them there, and <strong>rewrote my real
+<code>lazy-lock.json</code></strong>: 13 entries were gone and two commits had changed. The
+freshly cloned nvim-treesitter also repointed three query links (<code>ecma</code>,
+<code>html_tags</code>, <code>jsx</code>) in my real <code>~/.local/share/nvim/site/queries</code> at the fake
+home, because <code>XDG_DATA_HOME</code> still pointed at the real data directory. I
+restored the lockfile from a copy taken earlier, byte for byte, and pointed the
+links back. The safe way is to symlink <code>$HOME/.config/nvim</code> in the fake home to
+the real config, so lazy.nvim finds every plugin installed and has nothing to
+clone, and to checksum the lockfile and <code>site/</code> before and after the test.</p>
+<h2 id="what-big-files-lose-and-whats-left" class="heading-element">
+  <a href="#what-big-files-lose-and-whats-left" class="heading-mark"></a>What big files lose, and what&rsquo;s left</h2><p>Buffers over 1.5 MB no longer get persistent undo, ufo folds, autopairs, the
+smear animation, baleia colors, hiPairs or flash search labels. Appended lines
+aren&rsquo;t undo steps, and an append clears the buffer&rsquo;s in-memory undo history.
+<code>:BaleiaColorize</code> still colors a big log on demand.</p>
+<p>Still open:</p>
+<ul>
+<li><code>FocusGained</code> still runs a plain <code>checktime</code> over all buffers. After
+incremental appends, Neovim&rsquo;s stored timestamp for the file is stale, so the
+first focus change does one full reload of a growing big log (about 130 ms).</li>
+<li>smear-cursor&rsquo;s jump cost still grows with distance in files under 1.5 MB:
+<code>G</code>/<code>gg</code> take about 20 ms in the 7,600-line log. Turning off
+<code>scroll_buffer_space</code> would remove that, but it changes the animation.</li>
+</ul>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>A per-key cost equal to <code>timeoutlen</code> means a pending mapping.</strong> Look for
+mappings that start with that key (<code>:nmap n</code>). A two-letter mapping that
+starts with <code>n</code> taxes every <code>n</code>.</li>
+<li><strong>Measure in a real terminal, and know what the harness misses.</strong> The
+tmux + pynvim harness caught the redraw and per-key costs that headless
+timing misses. But smear&rsquo;s stall ran after the harness had its answer, and
+only the callback profile showed it.</li>
+<li><strong>Decide &ldquo;big&rdquo; before the read.</strong> <code>filetype=bigfile</code> comes too late for
+<code>undofile</code>, for <code>foldexpr</code> during the read, and for plugins that act on
+<code>BufReadPost</code>. A <code>BufReadPre</code> size check runs before all of them.</li>
+<li><strong><code>undofile</code> costs a full-buffer hash on every read and reload.</strong> For the
+87 MB log that was about 200 ms per open and over 400 ms per reload.</li>
+<li><strong>Don&rsquo;t re-read a file that only grew, but prove that it only grew.</strong>
+Check the inode, size and mtime, and compare the bytes at the old end.
+Anything else falls back to a full reload. It&rsquo;s better to be slow than to
+show the wrong content.</li>
+<li><strong>Check that the keys did their work, and that every test can fail.</strong> The
+harness checks the cursor and the buffer in every run.
+<code>tests/performance_plugins.lua</code> asserts each per-size change, and removing
+any one of the fixes makes it fail with its own message.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><code>:help undo-persistence</code>, <code>:help 'timeoutlen'</code>, <code>:help :map-&lt;nowait&gt;</code>,
+<code>:help nvim_input()</code>, <code>:help :checktime</code></li>
+<li>snacks.nvim: <a href="https://github.com/folke/snacks.nvim/blob/main/docs/bigfile.md"target="_blank" rel="external nofollow noopener noreferrer">bigfile<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li>smear-cursor.nvim: <code>lua/smear_cursor/events.lua</code> (deferred animation) and
+<code>lua/smear_cursor/animation.lua</code> (<code>scroll_buffer_space</code>)</li>
+<li><a href="https://github.com/neovim/pynvim"target="_blank" rel="external nofollow noopener noreferrer">pynvim<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>, used to drive the TUI over RPC</li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-10-03-nvim-startup-lazy-loading/" title="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy">Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy</a></li><li>
+          <a href="/2026-10-02-zsh-startup-and-command-lag/" title="Profiling zsh: a Python plugin was adding 190 ms to every command">Profiling zsh: a Python plugin was adding 190 ms to every command</a></li><li>
+          <a href="/2026-09-30-tmux-status-bar-lag/" title="Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second">Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</a></li><li>
+          <a href="/2025-02-22-nvim-dap-%E6%98%A0%E5%B0%84-r-%E5%BF%AB%E6%8D%B7%E9%94%AE/" title="nvim dap 映射 r 快捷键">nvim dap 映射 r 快捷键</a></li><li>
+          <a href="/2026-10-02-tmux-lag-round-2/" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms">tmux lag, round 2: every status-bar fork froze the server for 30 ms</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-10-17 12:00:00">更新于 2026-10-17&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-10-17-nvim-big-log-files/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" data-title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" data-hashtags="nvim,LazyVim,performance,profiling,pynvim,gdb,undofile"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" data-hashtag="nvim"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" data-title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" data-title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/" data-title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/nvim/" class="post-tag" title="标签 - Nvim">Nvim</a><a href="/tags/lazyvim/" class="post-tag" title="标签 - LazyVim">LazyVim</a><a href="/tags/performance/" class="post-tag" title="标签 - Performance">Performance</a><a href="/tags/profiling/" class="post-tag" title="标签 - Profiling">Profiling</a><a href="/tags/pynvim/" class="post-tag" title="标签 - Pynvim">Pynvim</a><a href="/tags/gdb/" class="post-tag" title="标签 - Gdb">Gdb</a><a href="/tags/undofile/" class="post-tag" title="标签 - Undofile">Undofile</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-10-16-docker-buildx-anonymous-token-timeout/" class="post-nav-item" rel="prev" title="docker buildx: the builder had a proxy, the client didn&#39;t"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>docker buildx: the builder had a proxy, the client didn&#39;t</a>
+      <a href="/2026-10-29-lan-https-local-ca/" class="post-nav-item" rel="next" title="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate">Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

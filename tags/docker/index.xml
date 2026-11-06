@@ -3,7 +3,30 @@
     <title>Docker - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/docker/</link>
     <description>Docker - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 20 Nov 2025 17:36:31 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
+  <title>Use the IDC proxy from XPS and Codex</title>
+  <link>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</link>
+  <pubDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</guid>
+  <description><![CDATA[<p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>]]></description>
+</item>
+<item>
+  <title>docker buildx: the builder had a proxy, the client didn&#39;t</title>
+  <link>https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/</link>
+  <pubDate>Fri, 16 Oct 2026 14:03:28 &#43;0900</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/</guid>
+  <description><![CDATA[<p>My image build script started failing on its very first line, <code>FROM python:3.10</code>,
+with <code>failed to fetch anonymous token ... TLS handshake timeout</code>. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.</p>
+<p><strong>The token request is not made by the builder. It is made by the <code>docker buildx</code>
+client in your own shell, using your shell&rsquo;s proxy variables.</strong> My interactive
+zsh exports none, so that one request went direct and timed out. Two <code>export</code>
+lines in the build script fixed it.</p>]]></description>
+</item>
+<item>
   <title>docker 更改存储目录</title>
   <link>https://williamlfang.github.io/2025-11-20-docker-%E6%9B%B4%E6%94%B9%E5%AD%98%E5%82%A8%E7%9B%AE%E5%BD%95/</link>
   <pubDate>Thu, 20 Nov 2025 17:36:31 &#43;0800</pubDate>
@@ -133,22 +156,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2022-11-29-docker-%E5%AE%89%E8%A3%85-rabbitmq/</guid>
   <description><![CDATA[<p>在 <code>Docker</code> 环境安装 <code>RabbitMQ</code></p>]]></description>
-</item>
-<item>
-  <title>docker 使用 sytemctl</title>
-  <link>https://williamlfang.github.io/2022-11-25-docker-%E4%BD%BF%E7%94%A8-sytemctl/</link>
-  <pubDate>Fri, 25 Nov 2022 10:43:35 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2022-11-25-docker-%E4%BD%BF%E7%94%A8-sytemctl/</guid>
-  <description><![CDATA[<p>允许一个 <code>Docker container</code> 获取主机的 <code>systemctl</code> 权限。</p>]]></description>
-</item>
-<item>
-  <title>docker compose command 保持容器处于活跃状态alive</title>
-  <link>https://williamlfang.github.io/2022-11-24-docker-compose-command-%E4%BF%9D%E6%8C%81%E5%AE%B9%E5%99%A8%E5%A4%84%E4%BA%8E%E6%B4%BB%E8%B7%83%E7%8A%B6%E6%80%81alive/</link>
-  <pubDate>Thu, 24 Nov 2022 22:12:24 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2022-11-24-docker-compose-command-%E4%BF%9D%E6%8C%81%E5%AE%B9%E5%99%A8%E5%A4%84%E4%BA%8E%E6%B4%BB%E8%B7%83%E7%8A%B6%E6%80%81alive/</guid>
-  <description><![CDATA[<p>通过添加 <code>tail -f /dev/null</code> 保持刷新，使得容器始终处于活跃状态（alive），否则一旦命令执行完成，就会立即停止了。这样对于一些任务，我们往往想要其保持状态，方便进去容器内部进行调试。</p>]]></description>
 </item>
 </channel>
 </rss>
