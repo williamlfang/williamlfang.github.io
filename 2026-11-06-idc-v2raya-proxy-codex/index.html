@@ -7,24 +7,36 @@
     <meta name="robots" content="noodp" />
     <title>Use the IDC proxy from XPS and Codex - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="My XPS uses lfang.idc as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started." /><meta name="keywords" content='linux, proxy, v2raya, docker, codex' /><meta itemprop="name" content="Use the IDC proxy from XPS and Codex">
-<meta itemprop="description" content="My XPS uses lfang.idc as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started."><meta itemprop="datePublished" content="2026-11-06T13:00:00+08:00" />
-<meta itemprop="dateModified" content="2026-11-06T13:00:00+08:00" />
-<meta itemprop="wordCount" content="997"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta name="description" content="
+Update 2026-11-06: a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See Codex startup and the shared model cache.
+
+My XPS uses lfang.idc as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started." /><meta name="keywords" content='linux, proxy, v2raya, docker, codex' /><meta itemprop="name" content="Use the IDC proxy from XPS and Codex">
+<meta itemprop="description" content="
+Update 2026-11-06: a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See Codex startup and the shared model cache.
+
+My XPS uses lfang.idc as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started."><meta itemprop="datePublished" content="2026-11-06T13:00:00+08:00" />
+<meta itemprop="dateModified" content="2026-11-06T18:19:24+08:00" />
+<meta itemprop="wordCount" content="1034"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
 <meta itemprop="keywords" content="linux,proxy,v2raya,docker,codex," /><meta property="og:title" content="Use the IDC proxy from XPS and Codex" />
-<meta property="og:description" content="My XPS uses lfang.idc as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started." />
+<meta property="og:description" content="
+Update 2026-11-06: a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See Codex startup and the shared model cache.
+
+My XPS uses lfang.idc as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2026-11-06T13:00:00+08:00" />
-<meta property="article:modified_time" content="2026-11-06T13:00:00+08:00" />
+<meta property="article:modified_time" content="2026-11-06T18:19:24+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Use the IDC proxy from XPS and Codex"/>
-<meta name="twitter:description" content="My XPS uses lfang.idc as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started."/>
+<meta name="twitter:description" content="
+Update 2026-11-06: a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See Codex startup and the shared model cache.
+
+My XPS uses lfang.idc as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started."/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/" /><link rel="next" href="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
@@ -35,8 +47,8 @@
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https:\/\/williamlfang.github.io\/2026-11-06-idc-v2raya-proxy-codex\/"
-    },"genre": "posts","keywords": "linux, proxy, v2raya, docker, codex","wordcount":  997 ,
-    "url": "https:\/\/williamlfang.github.io\/2026-11-06-idc-v2raya-proxy-codex\/","datePublished": "2026-11-06T13:00:00+08:00","dateModified": "2026-11-06T13:00:00+08:00","publisher": {
+    },"genre": "posts","keywords": "linux, proxy, v2raya, docker, codex","wordcount":  1034 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-06-idc-v2raya-proxy-codex\/","datePublished": "2026-11-06T13:00:00+08:00","dateModified": "2026-11-06T18:19:24+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -197,7 +209,7 @@
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Use the IDC proxy from XPS and Codex</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-06 13:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-06">2026-11-06</time></span>&nbsp;<span title="997 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-06 13:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-06">2026-11-06</time></span>&nbsp;<span title="更新于 2026-11-06 18:19:24"><i class="fa-regular fa-calendar-check fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-06">2026-11-06</time></span>&nbsp;<span title="1034 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1100 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
     </div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
@@ -219,7 +231,10 @@
     </li>
   </ol>
 </nav></div>
-      </div><div class="content" id="content"><p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>
+      </div><div class="content" id="content"><blockquote>
+<p><strong>Update 2026-11-06:</strong> a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See <a href="/2026-11-06-codex-startup-model-cache/">Codex startup and the shared model cache</a>.</p>
+</blockquote>
+<p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>
 <h2 id="the-network" class="heading-element">
   <a href="#the-network" class="heading-mark"></a>The network</h2><div class="mermaid" id="id-1"></div><p>The top path shows the intended route through the selected remote proxy node; responses follow the path back to XPS. Only applications configured to use one of these proxy endpoints take this route. The browser&rsquo;s management connection configures v2rayA and is separate from proxied traffic.</p>
 <p><code>lfang.idc</code> is an SSH alias for <code>10.32.111.107</code>. On November 6, 2026, both proxy endpoints reached <code>https://chatgpt.com/</code> from XPS. The host has a Docker container named <code>v2raya</code>, and also runs a separate V2Ray process. The owner of each proxy listener and the upstream path have not been verified, so check the host before changing ports or removing either process.</p>
@@ -375,7 +390,7 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2026-11-06 13:00:00">更新于 2026-11-06&nbsp;</span>
+        <span title="更新于 2026-11-06 18:19:24">更新于 2026-11-06&nbsp;</span>
       </div><div class="post-info-license">
             <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
           </div></div><div class="post-info-line">
@@ -398,7 +413,8 @@
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2026-11-05-claude-code-statusline-p10k/" class="post-nav-item" rel="prev" title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</a></div>
+  <div class="post-nav"><a href="/2026-11-05-claude-code-statusline-p10k/" class="post-nav-item" rel="prev" title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</a>
+      <a href="/2026-11-06-codex-startup-model-cache/" class="post-nav-item" rel="next" title="Codex startup: a shared model cache and a five-second timeout">Codex startup: a shared model cache and a five-second timeout<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script

@@ -3,15 +3,35 @@
     <title>William</title>
     <link>https://williamlfang.github.io/</link>
     <description>William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</lastBuildDate>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 06 Nov 2026 18:19:24 &#43;0800</lastBuildDate>
       <atom:link href="https://williamlfang.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+  <title>Codex startup: a shared model cache and a five-second timeout</title>
+  <link>https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/</link>
+  <pubDate>Fri, 06 Nov 2026 18:19:24 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/</guid>
+  <description><![CDATA[<p>My Codex CLI sometimes paused for about five seconds when it started. Other
+launches were almost immediate. After checking the
+<a href="/2026-11-06-idc-v2raya-proxy-codex/">proxy setup</a>, I looked at
+the startup logs. They showed <strong>a model-list request consuming five seconds</strong>
+before timing out.</p>
+<p>Three Codex versions were sharing the same model cache. A cache written by one
+version could be rejected by another, which forced another network request.
+I aligned the CLI with the shared server and changed the desktop launcher to
+use the same CLI on its next launch. Five subsequent terminal checks reached
+the model and prompt in a median of 0.80 seconds.</p>]]></description>
+</item>
+<item>
   <title>Use the IDC proxy from XPS and Codex</title>
   <link>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</link>
   <pubDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</guid>
-  <description><![CDATA[<p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>]]></description>
+  <description><![CDATA[<blockquote>
+<p><strong>Update 2026-11-06:</strong> a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See <a href="/2026-11-06-codex-startup-model-cache/">Codex startup and the shared model cache</a>.</p>
+</blockquote>
+<p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>]]></description>
 </item>
 <item>
   <title>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</title>
@@ -184,46 +204,6 @@ up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two r
 </tr>
 </tbody>
 </table>]]></description>
-</item>
-<item>
-  <title>Profiling zsh: a Python plugin was adding 190 ms to every command</title>
-  <link>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</link>
-  <pubDate>Fri, 02 Oct 2026 23:15:00 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-zsh-startup-and-command-lag/featured-image.png" alt="Profiling zsh: a Python plugin was adding 190 ms to every command" title="Profiling zsh: a Python plugin was adding 190 ms to every command" referrerpolicy="no-referrer"/></div><p>After <a href="/2026-10-02-tmux-lag-round-2/">fixing tmux</a>, I looked at
-the shell running inside it. My zsh config had grown over a few years to about
-30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
-little heavy, but nothing stood out.</p>
-<p>Measured properly, it was slow in three separate ways, each with its own cause:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th style="text-align:right">before</th>
-<th style="text-align:right">after</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>startup to a usable shell</td>
-<td style="text-align:right">267 ms</td>
-<td style="text-align:right">101 ms</td>
-</tr>
-<tr>
-<td>added to <strong>every command</strong></td>
-<td style="text-align:right">188 ms</td>
-<td style="text-align:right">3 ms</td>
-</tr>
-<tr>
-<td>added to <strong>every prompt</strong></td>
-<td style="text-align:right">15 ms</td>
-<td style="text-align:right">4 ms</td>
-</tr>
-</tbody>
-</table>
-<p>This post covers how I measured each one, the fixes, and how I checked that the
-fixes didn&rsquo;t change anything else. That check caught two mistakes of my own.</p>]]></description>
 </item>
 </channel>
 </rss>

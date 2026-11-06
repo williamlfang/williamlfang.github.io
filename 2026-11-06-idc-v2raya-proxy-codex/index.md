@@ -1,6 +1,8 @@
 # Use the IDC proxy from XPS and Codex
 
 
+&gt; **Update 2026-11-06:** a later startup investigation found a separate delay. Different Codex versions rejected each other&#39;s shared model cache and triggered model-list refreshes that timed out after five seconds. See [Codex startup and the shared model cache]({{&lt; relref &#34;2026-11-06-codex-startup-model-cache&#34; &gt;}}).
+
 My XPS uses `lfang.idc` as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.
 
 &lt;!--more--&gt;

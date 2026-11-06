@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Codex startup: a shared model cache and a five-second timeout - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="My Codex CLI sometimes paused for about five seconds when it started. Other
+launches were almost immediate. After checking the
+proxy setup, I looked at
+the startup logs. They showed a model-list request consuming five seconds
+before timing out.
+Three Codex versions were sharing the same model cache. A cache written by one
+version could be rejected by another, which forced another network request.
+I aligned the CLI with the shared server and changed the desktop launcher to
+use the same CLI on its next launch. Five subsequent terminal checks reached
+the model and prompt in a median of 0.80 seconds." /><meta name="keywords" content='codex, Linux, performance, cache, troubleshooting' /><meta itemprop="name" content="Codex startup: a shared model cache and a five-second timeout">
+<meta itemprop="description" content="My Codex CLI sometimes paused for about five seconds when it started. Other
+launches were almost immediate. After checking the
+proxy setup, I looked at
+the startup logs. They showed a model-list request consuming five seconds
+before timing out.
+Three Codex versions were sharing the same model cache. A cache written by one
+version could be rejected by another, which forced another network request.
+I aligned the CLI with the shared server and changed the desktop launcher to
+use the same CLI on its next launch. Five subsequent terminal checks reached
+the model and prompt in a median of 0.80 seconds."><meta itemprop="datePublished" content="2026-11-06T18:19:24+08:00" />
+<meta itemprop="dateModified" content="2026-11-06T18:19:24+08:00" />
+<meta itemprop="wordCount" content="1256"><meta itemprop="image" content="https://williamlfang.github.io/logo.png" />
+<meta itemprop="keywords" content="codex,Linux,performance,cache,troubleshooting," /><meta property="og:title" content="Codex startup: a shared model cache and a five-second timeout" />
+<meta property="og:description" content="My Codex CLI sometimes paused for about five seconds when it started. Other
+launches were almost immediate. After checking the
+proxy setup, I looked at
+the startup logs. They showed a model-list request consuming five seconds
+before timing out.
+Three Codex versions were sharing the same model cache. A cache written by one
+version could be rejected by another, which forced another network request.
+I aligned the CLI with the shared server and changed the desktop launcher to
+use the same CLI on its next launch. Five subsequent terminal checks reached
+the model and prompt in a median of 0.80 seconds." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" /><meta property="og:image" content="https://williamlfang.github.io/logo.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-11-06T18:19:24+08:00" />
+<meta property="article:modified_time" content="2026-11-06T18:19:24+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/logo.png" /><meta name="twitter:title" content="Codex startup: a shared model cache and a five-second timeout"/>
+<meta name="twitter:description" content="My Codex CLI sometimes paused for about five seconds when it started. Other
+launches were almost immediate. After checking the
+proxy setup, I looked at
+the startup logs. They showed a model-list request consuming five seconds
+before timing out.
+Three Codex versions were sharing the same model cache. A cache written by one
+version could be rejected by another, which forced another network request.
+I aligned the CLI with the shared server and changed the desktop launcher to
+use the same CLI on its next launch. Five subsequent terminal checks reached
+the model and prompt in a median of 0.80 seconds."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Codex startup: a shared model cache and a five-second timeout",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-11-06-codex-startup-model-cache\/"
+    },"genre": "posts","keywords": "codex, Linux, performance, cache, troubleshooting","wordcount":  1256 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-06-codex-startup-model-cache\/","datePublished": "2026-11-06T18:19:24+08:00","dateModified": "2026-11-06T18:19:24+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Codex startup: a shared model cache and a five-second timeout</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-06 18:19:24"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-06">2026-11-06</time></span>&nbsp;<span title="1256 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1300 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 6 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-versions-behind-one-command">The versions behind one command</a></li>
+        <li><a href="#the-startup-trace-accounted-for-the-pause">The startup trace accounted for the pause</a></li>
+        <li><a href="#a-fresh-cache-could-still-be-unusable">A fresh cache could still be unusable</a></li>
+        <li><a href="#the-proxy-worked-but-the-model-endpoint-was-slow">The proxy worked, but the model endpoint was slow</a></li>
+        <li><a href="#align-the-cli-and-the-desktop-launcher">Align the CLI and the desktop launcher</a></li>
+        <li><a href="#what-the-later-checks-measured">What the later checks measured</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>My Codex CLI sometimes paused for about five seconds when it started. Other
+launches were almost immediate. After checking the
+<a href="/2026-11-06-idc-v2raya-proxy-codex/">proxy setup</a>, I looked at
+the startup logs. They showed <strong>a model-list request consuming five seconds</strong>
+before timing out.</p>
+<p>Three Codex versions were sharing the same model cache. A cache written by one
+version could be rejected by another, which forced another network request.
+I aligned the CLI with the shared server and changed the desktop launcher to
+use the same CLI on its next launch. Five subsequent terminal checks reached
+the model and prompt in a median of 0.80 seconds.</p>
+<h2 id="the-versions-behind-one-command" class="heading-element">
+  <a href="#the-versions-behind-one-command" class="heading-mark"></a>The versions behind one command</h2><p>Running <code>codex --version</code> only checked the terminal executable. It did not
+describe every Codex process on the machine:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Version before the fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standalone CLI in <code>~/.local/bin/codex</code></td>
+<td>0.166.0</td>
+</tr>
+<tr>
+<td>Shared app-server daemon</td>
+<td>0.167.0</td>
+</tr>
+<tr>
+<td>Codex bundled with the desktop app</td>
+<td>0.159.0</td>
+</tr>
+</tbody>
+</table>
+<p>The standalone CLI used the shared daemon by default. The desktop app also had
+a separate server running from its bundled executable. These processes used
+the same <code>~/.codex</code> directory, including <code>models_cache.json</code>.</p>
+<p>The relevant checks were:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> -v codex
+</span></span><span class="line"><span class="cl">readlink -f ~/.local/bin/codex
+</span></span><span class="line"><span class="cl">codex --version
+</span></span><span class="line"><span class="cl">codex app-server daemon version
+</span></span><span class="line"><span class="cl">/usr/lib/chatgpt/resources/codex --version</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The last path belongs to my Linux desktop installation. Other installation
+layouts can put the bundled executable elsewhere. The daemon&rsquo;s <code>version</code>
+command reported both <code>cliVersion</code> and <code>appServerVersion</code>, which exposed the
+0.166.0 versus 0.167.0 mismatch.</p>
+<h2 id="the-startup-trace-accounted-for-the-pause" class="heading-element">
+  <a href="#the-startup-trace-accounted-for-the-pause" class="heading-mark"></a>The startup trace accounted for the pause</h2><p>In this installation, diagnostic logs were stored in
+<code>~/.codex/logs_2.sqlite</code>. I opened the database read-only and selected the
+startup and model-cache messages. This Python snippet prints recent matching
+records without dumping conversation contents:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sqlite3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">database</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&#34;.codex/logs_2.sqlite&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">database</span><span class="o">.</span><span class="n">as_uri</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&#34;?mode=ro&#34;</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">	<span class="n">rows</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">		SELECT feedback_log_body
+</span></span></span><span class="line"><span class="cl"><span class="s2">		FROM logs
+</span></span></span><span class="line"><span class="cl"><span class="s2">		WHERE target = &#39;codex_tui::app::startup&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">		   OR (
+</span></span></span><span class="line"><span class="cl"><span class="s2">		       target LIKE &#39;codex_models_manager%&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">		       AND (
+</span></span></span><span class="line"><span class="cl"><span class="s2">		           feedback_log_body LIKE &#39;</span><span class="si">%c</span><span class="s2">ache version mismatch%&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">		           OR feedback_log_body LIKE &#39;</span><span class="si">%r</span><span class="s2">equest timed out%&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s2">		       )
+</span></span></span><span class="line"><span class="cl"><span class="s2">		   )
+</span></span></span><span class="line"><span class="cl"><span class="s2">		ORDER BY id DESC
+</span></span></span><span class="line"><span class="cl"><span class="s2">		LIMIT 30
+</span></span></span><span class="line"><span class="cl"><span class="s2">	&#34;&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="n">message</span><span class="p">,)</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">		<span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The database name and schema are details of these installed versions, not a
+stable logging API. Check the files in <code>~/.codex</code> before using the query on
+another installation.</p>
+<p>One slow launch recorded:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">tui startup initial frame scheduled duration_ms=5098 bootstrap_ms=5006 thread_and_widget_ms=18 initial_session_ms=0 event_stream_ms=6</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The whole recorded startup stage took 5,098 ms. Bootstrap accounted for
+5,006 ms. The model-list trace explained that interval:</p>
+<table>
+<thead>
+<tr>
+<th>Time, UTC</th>
+<th>Event</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10:04:45.694</td>
+<td>Cache rejected: expected 0.167.0, cached 0.159.0</td>
+</tr>
+<tr>
+<td>10:04:50.695</td>
+<td>Model-list refresh timed out</td>
+</tr>
+<tr>
+<td>10:04:50.736</td>
+<td>Initial frame scheduled</td>
+</tr>
+</tbody>
+</table>
+<p>A second model-list request started immediately afterward and timed out at
+10:04:55.728. There was both a delay before the initial frame and another
+failed refresh during session startup.</p>
+<h2 id="a-fresh-cache-could-still-be-unusable" class="heading-element">
+  <a href="#a-fresh-cache-could-still-be-unusable" class="heading-mark"></a>A fresh cache could still be unusable</h2><p><code>models_cache.json</code> contained a <code>client_version</code> field as well as a fetch
+timestamp and the model list. The logs showed all of these combinations:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">expected_version=&#34;0.167.0&#34; cached_version=Some(&#34;0.166.0&#34;)
+</span></span><span class="line"><span class="cl">expected_version=&#34;0.167.0&#34; cached_version=Some(&#34;0.159.0&#34;)
+</span></span><span class="line"><span class="cl">expected_version=&#34;0.159.0&#34; cached_version=Some(&#34;0.167.0&#34;)
+</span></span><span class="line"><span class="cl">expected_version=&#34;0.166.0&#34; cached_version=Some(&#34;0.167.0&#34;)</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The cache did not have to be old. In the slow launch above, the desktop version
+had fetched it less than a minute earlier. The newer server rejected it
+because the version differed.</p>
+<p>For these versions, the sequence was:</p>
+<ol>
+<li>One process refreshed the shared cache and recorded its own version.</li>
+<li>Another version loaded the file and rejected the entry.</li>
+<li>That process requested the model list over the network.</li>
+<li>A slow request reached the five-second timeout and delayed startup.</li>
+</ol>
+<p>That also explained the inconsistent experience. Some earlier startup traces
+were around 0.1 seconds, while several others were around 5.1 seconds. Which
+version had most recently written the cache mattered.</p>
+<h2 id="the-proxy-worked-but-the-model-endpoint-was-slow" class="heading-element">
+  <a href="#the-proxy-worked-but-the-model-endpoint-was-slow" class="heading-mark"></a>The proxy worked, but the model endpoint was slow</h2><p>The shared daemon already had the HTTP proxy configured in its environment.
+Codex&rsquo;s network diagnostic passed:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">codex doctor --network-only --summary --ascii --no-color</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">4 ok | 0 warn | 0 fail ok</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Those checks established connectivity. They did not establish that every
+authenticated model-list request completed within five seconds.</p>
+<p>An authenticated request to
+<code>https://chatgpt.com/backend-api/codex/models?client_version=0.167.0</code> returned
+HTTP 200 and 11 model records. Through the existing HTTP proxy, one request
+took 4.342 seconds. A separate request through the IDC SOCKS route took
+4.008 seconds.</p>
+<p>These were single diagnostic requests, using different clients. They were
+not enough to rank the routes or explain the network delay. Both responses
+were close to the timeout seen in the Codex logs, so I kept the existing proxy
+route and fixed the repeated cache misses first.</p>
+<h2 id="align-the-cli-and-the-desktop-launcher" class="heading-element">
+  <a href="#align-the-cli-and-the-desktop-launcher" class="heading-mark"></a>Align the CLI and the desktop launcher</h2><p>The first change was to bring the standalone CLI to 0.167.0, matching the
+running daemon. For a normal installation, the built-in update command is:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">codex update</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The download was slow in this session. A complete 0.167.0 package was already
+installed under <code>~/.codex/packages/app-server-daemon</code>, so the local repair
+reused that package in the standalone release directory and switched
+<code>~/.codex/packages/standalone/current</code> to it. The package included its helper
+executables and resources. The running daemon stayed in place.</p>
+<p>Afterward, <code>codex --version</code> returned:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">codex-cli 0.167.0</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>codex app-server daemon version</code> also reported 0.167.0 for both the CLI and
+the app server.</p>
+<p>The desktop launcher needed a separate change. My desktop entry already used
+<code>~/.local/bin/chatgpt-proxy</code>. I added this line before its existing <code>exec</code>
+command:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">CODEX_CLI_PATH</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/.local/bin/codex&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The installed desktop application&rsquo;s code recognized <code>CODEX_CLI_PATH</code> as an
+executable override. This lets the next desktop launch use the updated CLI
+instead of its bundled 0.159.0 binary. This behavior was checked in the local
+application; it should be verified again after a desktop upgrade.</p>
+<p>Changing the wrapper does not change an already-running desktop process.
+I left that process and the active sessions running. Until the desktop app
+restarts, its old server can still write a 0.159.0 cache entry.</p>
+<p>Finally, an explicit catalog refresh populated a 0.167.0 cache:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">codex debug models &gt; /tmp/codex-models.json</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The refresh completed successfully in 4.878 seconds and returned 11 model
+records. I checked the cache metadata without printing credentials:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cache</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">((</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&#34;.codex/models_cache.json&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">cache</span><span class="p">[</span><span class="s2">&#34;client_version&#34;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cache</span><span class="p">[</span><span class="s2">&#34;models&#34;</span><span class="p">]))</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">0.167.0
+</span></span><span class="line"><span class="cl">11</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="what-the-later-checks-measured" class="heading-element">
+  <a href="#what-the-later-checks-measured" class="heading-mark"></a>What the later checks measured</h2><p>After the repair, one startup trace recorded:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">tui startup initial frame scheduled duration_ms=73 bootstrap_ms=4 thread_and_widget_ms=1 initial_session_ms=0 event_stream_ms=0</span></span></code></pre></td></tr></table>
+</div>
+</div><p>That trace showed the five-second bootstrap wait was gone for that launch.
+Five separate checks of server initialization plus <code>model/list</code> completed in
+2 to 4 ms. The requested default model was present in every response.</p>
+<p>I also launched the actual CLI five times in a pseudo-terminal, using the
+normal shared daemon and the same working directory. The check waited until
+both the model name and the input prompt appeared. It did not submit a task
+or wait for a model response.</p>
+<table>
+<thead>
+<tr>
+<th>Launch</th>
+<th style="text-align:right">Time to visible model and prompt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td style="text-align:right">3.705 s</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align:right">0.813 s</td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align:right">0.796 s</td>
+</tr>
+<tr>
+<td>4</td>
+<td style="text-align:right">0.804 s</td>
+</tr>
+<tr>
+<td>5</td>
+<td style="text-align:right">0.791 s</td>
+</tr>
+<tr>
+<td>Median</td>
+<td style="text-align:right"><strong>0.804 s</strong></td>
+</tr>
+</tbody>
+</table>
+<p>These numbers measure different stages. The 73 ms value comes from Codex&rsquo;s
+internal initial-frame trace. The 0.804 s median includes the work needed to
+display the model and prompt in the terminal. Neither is the latency of the
+first answer.</p>
+<p>The earlier 5.1-second traces and the later terminal checks were not an
+alternating before-and-after benchmark, so I would not turn them into a
+speedup ratio. They establish a narrower result: the logs identified a
+five-second model-list timeout, and later launches used a matching cache and
+reached the prompt successfully.</p>
+<p>The endpoint&rsquo;s variable response time remains unexplained. Keeping the local
+versions aligned avoids the cache misses caused by version mismatches; it
+does not make an uncached network request faster.</p></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-10-02-zsh-startup-and-command-lag/" title="Profiling zsh: a Python plugin was adding 190 ms to every command">Profiling zsh: a Python plugin was adding 190 ms to every command</a></li><li>
+          <a href="/2026-10-02-tmux-lag-round-2/" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms">tmux lag, round 2: every status-bar fork froze the server for 30 ms</a></li><li>
+          <a href="/2026-09-30-tmux-status-bar-lag/" title="Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second">Why my tmux was laggy: the status bar was forking a 1.2 GB server 24 times a second</a></li><li>
+          <a href="/2025-04-12-%E8%BD%AClinux-%E7%BD%91%E7%BB%9C%E5%A4%A7%E6%B5%81%E9%87%8F%E4%BC%A0%E8%BE%93%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/" title="(转)Linux 网络大流量传输优化方法">(转)Linux 网络大流量传输优化方法</a></li><li>
+          <a href="/2023-06-18-linux-%E8%AE%BE%E7%BD%AE-cpu-%E9%AB%98%E6%80%A7%E8%83%BDperformance%E6%A8%A1%E5%BC%8F/" title="Linux 设置 cpu 高性能performance模式">Linux 设置 cpu 高性能performance模式</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-11-06 18:19:24">更新于 2026-11-06&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-11-06-codex-startup-model-cache/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" data-title="Codex startup: a shared model cache and a five-second timeout" data-hashtags="codex,Linux,performance,cache,troubleshooting"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" data-hashtag="codex"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" data-title="Codex startup: a shared model cache and a five-second timeout" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" data-title="Codex startup: a shared model cache and a five-second timeout"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" data-title="Codex startup: a shared model cache and a five-second timeout"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/codex/" class="post-tag" title="标签 - Codex">Codex</a><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/performance/" class="post-tag" title="标签 - Performance">Performance</a><a href="/tags/cache/" class="post-tag" title="标签 - Cache">Cache</a><a href="/tags/troubleshooting/" class="post-tag" title="标签 - Troubleshooting">Troubleshooting</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-11-06-idc-v2raya-proxy-codex/" class="post-nav-item" rel="prev" title="Use the IDC proxy from XPS and Codex"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Use the IDC proxy from XPS and Codex</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

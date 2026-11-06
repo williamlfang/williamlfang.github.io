@@ -3,13 +3,33 @@
     <title>Tools - 分类 - William</title>
     <link>https://williamlfang.github.io/categories/tools/</link>
     <description>Tools - 分类 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/tools/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 06 Nov 2026 18:19:24 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/tools/" rel="self" type="application/rss+xml" /><item>
+  <title>Codex startup: a shared model cache and a five-second timeout</title>
+  <link>https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/</link>
+  <pubDate>Fri, 06 Nov 2026 18:19:24 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/</guid>
+  <description><![CDATA[<p>My Codex CLI sometimes paused for about five seconds when it started. Other
+launches were almost immediate. After checking the
+<a href="/2026-11-06-idc-v2raya-proxy-codex/">proxy setup</a>, I looked at
+the startup logs. They showed <strong>a model-list request consuming five seconds</strong>
+before timing out.</p>
+<p>Three Codex versions were sharing the same model cache. A cache written by one
+version could be rejected by another, which forced another network request.
+I aligned the CLI with the shared server and changed the desktop launcher to
+use the same CLI on its next launch. Five subsequent terminal checks reached
+the model and prompt in a median of 0.80 seconds.</p>]]></description>
+</item>
+<item>
   <title>Use the IDC proxy from XPS and Codex</title>
   <link>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</link>
   <pubDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</guid>
-  <description><![CDATA[<p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>]]></description>
+  <description><![CDATA[<blockquote>
+<p><strong>Update 2026-11-06:</strong> a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See <a href="/2026-11-06-codex-startup-model-cache/">Codex startup and the shared model cache</a>.</p>
+</blockquote>
+<p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>]]></description>
 </item>
 <item>
   <title>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</title>
@@ -173,15 +193,6 @@ set up. It was written with the skill.</p>]]></description>
   <guid>https://williamlfang.github.io/2024-03-18-linux-%E9%85%8D%E5%AF%B9%E7%BD%97%E6%8A%80%E8%93%9D%E7%89%99%E9%BC%A0%E6%A0%87/</guid>
   <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2024-03-18-linux-%E9%85%8D%E5%AF%B9%E7%BD%97%E6%8A%80%E8%93%9D%E7%89%99%E9%BC%A0%E6%A0%87/solaar-2.png" alt="Linux 配对罗技蓝牙鼠标" title="Linux 配对罗技蓝牙鼠标" referrerpolicy="no-referrer"/></div><p>我在多年前购买了一款罗技无线蓝牙鼠标 <code>Master 3S</code>，使用感觉是相当得丝滑。不过非常遗憾，我这次过年回家，不小心把鼠标的蓝牙适配器弄丢了，导致最近办公只能使用戴尔赠送的有线鼠标。体验感不是特别好。</p>
 <p>今天突发奇想，我原先也有一个旧的罗技蓝牙鼠标（初代Master），何不利用旧的蓝牙适配器来配对这款 <code>Master 3s</code> ？</p>]]></description>
-</item>
-<item>
-  <title>nvim 直接打开当前光标下的文件</title>
-  <link>https://williamlfang.github.io/2024-03-18-nvim-%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</link>
-  <pubDate>Mon, 18 Mar 2024 10:22:47 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2024-03-18-nvim-%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2024-03-18-nvim-%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%E5%BD%93%E5%89%8D%E5%85%89%E6%A0%87%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6/gf.gif" alt="nvim 直接打开当前光标下的文件" title="nvim 直接打开当前光标下的文件" referrerpolicy="no-referrer"/></div><p><code>nvim</code> 可以利用跳转功能，直接在当前光标下打开文件。如果该文件不存在，则新建一个。</p>
-<p>我配置的快捷键是 <code>gf</code>(go file)。</p>]]></description>
 </item>
 </channel>
 </rss>

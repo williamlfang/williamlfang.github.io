@@ -187,6 +187,17 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-10-16-docker-buildx-anonymous-token-timeout/">docker buildx: the builder had a proxy, the client didn&#39;t</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-16 14:03:28'>发布于 <time datetime="2026-10-16">2026-10-16</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>My image build script started failing on its very first line, <code>FROM python:3.10</code>,
+with <code>failed to fetch anonymous token ... TLS handshake timeout</code>. The odd part:
+the buildx builder I use is created with a proxy for exactly this reason, and
+from another shell the same build worked.</p>
+<p><strong>The token request is not made by the builder. It is made by the <code>docker buildx</code>
+client in your own shell, using your shell&rsquo;s proxy variables.</strong> My interactive
+zsh exports none, so that one request went direct and timed out. Two <code>export</code>
+lines in the build script fixed it.</p></div><div class="post-footer">
+    <a href="/2026-10-16-docker-buildx-anonymous-token-timeout/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/docker/' class="post-tag">Docker</a><a href='/tags/buildx/' class="post-tag">Buildx</a><a href='/tags/buildkit/' class="post-tag">Buildkit</a><a href='/tags/proxy/' class="post-tag">Proxy</a><a href='/tags/socks5/' class="post-tag">Socks5</a><a href='/tags/network/' class="post-tag">Network</a></div></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-10-15-log-full-dataframe-from-fstring/">Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-15 11:20:12'>发布于 <time datetime="2026-10-15">2026-10-15</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/programming/" class="post-category" title="分类 - Programming"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Programming</a></span></div><div class="content"><p>A daily script of mine logs its intermediate DataFrames with
 <code>log.crt(f&quot;&quot;&quot;...{tgt = }...&quot;&quot;&quot;)</code>. The log showed 10 of the 90 rows, with the
@@ -304,26 +315,6 @@ small files that teach Claude Code how this blog works: a <strong>skill</strong>
 set up. It was written with the skill.</p></div><div class="post-footer">
     <a href="/2026-10-02-claude-code-blog-skill-and-agent/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/claude/' class="post-tag">Claude</a><a href='/tags/claudecode/' class="post-tag">ClaudeCode</a><a href='/tags/hugo/' class="post-tag">Hugo</a><a href='/tags/blog/' class="post-tag">Blog</a><a href='/tags/skill/' class="post-tag">Skill</a><a href='/tags/agent/' class="post-tag">Agent</a></div></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
-      <a href="/2026-10-02-tmux-lag-round-2/" aria-label="tmux lag, round 2: every status-bar fork froze the server for 30 ms"><img loading="lazy" src="/2026-10-02-tmux-lag-round-2/featured-image.png" alt="tmux lag, round 2: every status-bar fork froze the server for 30 ms" data-title="tmux lag, round 2: every status-bar fork froze the server for 30 ms" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
-    </div><h2 class="single-title" itemprop="name headline"><a href="/2026-10-02-tmux-lag-round-2/">tmux lag, round 2: every status-bar fork froze the server for 30 ms</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-02 22:30:00'>发布于 <time datetime="2026-10-02">2026-10-02</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="content"><blockquote>
-<p><strong>Update 2026-10-09:</strong> I extended this renderer for a 71-column iPhone
-client: compact text stopped duplicated bottom status rows while keeping
-the desktop colors and widgets. See the
-<a href="/2026-10-09-tmux-termius-iphone-status-bar/">Termius on iPhone follow-up</a>.</p>
-</blockquote>
-<p>Two days after the
-<a href="/2026-09-30-tmux-status-bar-lag/">last fix</a>, my tmux was laggy
-again, and the server was back at about a quarter of a CPU core. The culprit was
-the same as last time: the status bar&rsquo;s <code>#()</code> jobs. This time, though, the
-number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
-is a fork of the whole tmux server and my server had grown to 1.5 GB.</p>
-<p>This post covers how I measured it, where the 1.5 GB came from (mostly the
-scrollback of three panes), and the fixes. One of them corrects a claim in my
-previous post.</p></div><div class="post-footer">
-    <a href="/2026-10-02-tmux-lag-round-2/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/tmux/' class="post-tag">Tmux</a><a href='/tags/performance/' class="post-tag">Performance</a><a href='/tags/strace/' class="post-tag">Strace</a><a href='/tags/fork/' class="post-tag">Fork</a><a href='/tags/malloc_trim/' class="post-tag">Malloc_trim</a><a href='/tags/scrollback/' class="post-tag">Scrollback</a></div></div>
-</article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
             <a href="/">1</a>
@@ -344,7 +335,7 @@ previous post.</p></div><div class="post-footer">
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/78/">78</a>
+            <a href="/page/79/">79</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
