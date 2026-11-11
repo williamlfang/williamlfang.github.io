@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>One night, one dead disk: an Airflow trading-host outage and what it taught me - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into five separate incidents by 09:30 the next morning: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.
+Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again." /><meta name="keywords" content='Linux, airflow, docker, rabbitmq, postmortem, incident' /><meta itemprop="name" content="One night, one dead disk: an Airflow trading-host outage and what it taught me">
+<meta itemprop="description" content="At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into five separate incidents by 09:30 the next morning: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.
+Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again."><meta itemprop="datePublished" content="2026-11-11T10:48:10+08:00" />
+<meta itemprop="dateModified" content="2026-11-11T10:48:10+08:00" />
+<meta itemprop="wordCount" content="3172"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" />
+<meta itemprop="keywords" content="Linux,airflow,docker,rabbitmq,postmortem,incident," /><meta property="og:title" content="One night, one dead disk: an Airflow trading-host outage and what it taught me" />
+<meta property="og:description" content="At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into five separate incidents by 09:30 the next morning: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.
+Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/" /><meta property="og:image" content="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-11-11T10:48:10+08:00" />
+<meta property="article:modified_time" content="2026-11-11T10:48:10+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" /><meta name="twitter:title" content="One night, one dead disk: an Airflow trading-host outage and what it taught me"/>
+<meta name="twitter:description" content="At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into five separate incidents by 09:30 the next morning: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.
+Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "One night, one dead disk: an Airflow trading-host outage and what it taught me",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-outage-postmortem\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-outage-postmortem\/featured-image.png",
+              "width":  1400 ,
+              "height":  396 
+            }],"genre": "posts","keywords": "Linux, airflow, docker, rabbitmq, postmortem, incident","wordcount":  3172 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-outage-postmortem\/","datePublished": "2026-11-11T10:48:10+08:00","dateModified": "2026-11-11T10:48:10+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>One night, one dead disk: an Airflow trading-host outage and what it taught me</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-11 10:48:10"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-11">2026-11-11</time></span>&nbsp;<span title="3172 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 3200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 7 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="/2026-11-11-airflow-outage-postmortem/featured-image.png" data-title="/2026-11-11-airflow-outage-postmortem/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#what-happened">What happened</a></li>
+        <li><a href="#why-it-happened">Why it happened</a></li>
+        <li><a href="#problem-1-the-yaml-relink-task-couldnt-see-data">Problem 1: the yaml relink task couldn&rsquo;t see /data</a></li>
+        <li><a href="#problem-2-rabbitmq-disappeared">Problem 2: RabbitMQ &ldquo;disappeared&rdquo;</a></li>
+        <li><a href="#problem-3-only-16-of-34-live-trades-could-start">Problem 3: only 16 of 34 live trades could start</a></li>
+        <li><a href="#problem-4-16-accounts-trading-from-a-midnight-process">Problem 4: 16 accounts trading from a midnight process</a></li>
+        <li><a href="#problem-5-two-restarts-and-the-kill-i-caused">Problem 5: two restarts, and the kill I caused</a></li>
+        <li><a href="#what-i-fixed-in-one-table">What I fixed, in one table</a></li>
+        <li><a href="#how-to-improve-the-cheap-things-first">How to improve: the cheap things first</a>
+          <ol>
+            <li><a href="#1-one-file-describes-the-host-and-ci-checks-it">1. One file describes the host, and CI checks it</a></li>
+            <li><a href="#2-stateful-services-get-volumes-and-their-config-gets-exported">2. Stateful services get volumes, and their config gets exported</a></li>
+            <li><a href="#3-watch-the-disk-and-keep-dockers-root-off-it">3. Watch the disk, and keep docker&rsquo;s root off it</a></li>
+            <li><a href="#4-a-restart-is-a-procedure-not-a-command">4. A restart is a procedure, not a command</a></li>
+            <li><a href="#5-live-trades-must-refuse-to-run-from-a-manual-run-outside-the-session">5. Live trades must refuse to run from a manual run outside the session</a></li>
+          </ol>
+        </li>
+        <li><a href="#better-solutions-to-the-current-design">Better solutions to the current design</a>
+          <ol>
+            <li><a href="#option-a-make-the-operator-adopt-its-own-container-smallest-change">Option A: make the operator adopt its own container (smallest change)</a></li>
+            <li><a href="#option-b-trading-processes-become-services-airflow-becomes-the-conductor">Option B: trading processes become services, Airflow becomes the conductor</a></li>
+            <li><a href="#option-c-a-different-executor">Option C: a different executor</a></li>
+          </ol>
+        </li>
+        <li><a href="#takeaways">Takeaways</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
+<p>Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again.</p>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li>One host runs <strong>Airflow 2.7.3</strong> in a Docker container, using <code>LocalExecutor</code> and a MySQL metadata DB.</li>
+<li>Almost every task is a <code>DockerOperator</code>. Through the host&rsquo;s docker socket, Airflow starts a sibling container named <code>task_&lt;task_id&gt;</code>. Our in-house subclass, <code>CleanStartDockerOperator</code>, removes a <em>stopped</em> leftover container with that name before starting, and <strong>refuses to start if one is still running</strong>.</li>
+<li>The trading DAG starts one <strong>live-trade task per account</strong>: 34 stock accounts plus 9 futures accounts. Each task holds its Airflow slot for the whole session, <strong>about 330 minutes</strong>.</li>
+<li>RabbitMQ also runs on the same host, as a container listening on 5672/15672.</li>
+<li>There is a <code>docker-compose.yaml</code> describing all of this. It is out of date; the Airflow container had been started by hand with <code>docker run</code>.</li>
+</ul>
+<p>For older notes on this setup, see <a href="/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/">airflow 运维</a>, <a href="/2022-11-29-docker-%E5%AE%89%E8%A3%85-rabbitmq/">docker 安装 RabbitMQ</a> and <a href="/2025-11-20-docker-%E6%9B%B4%E6%94%B9%E5%AD%98%E5%82%A8%E7%9B%AE%E5%BD%95/">docker 更改存储目录</a>. The last one describes exactly the knob that started all this.</p>
+<h2 id="what-happened" class="heading-element">
+  <a href="#what-happened" class="heading-mark"></a>What happened</h2><p><figure><a class="lightgallery" href="timeline.svg?size=large" data-thumbnail="timeline.svg?size=small" data-sub-html="<h2>Timeline of the incident</h2><p>Timeline, CST. Purple = trading impact, pink = caused by my own fix.</p>"><img loading="lazy" src="timeline.svg" alt="Timeline of the incident" srcset="timeline.svg?size=small, timeline.svg?size=medium 1.5x, timeline.svg?size=large 2x" data-title="Timeline, CST. Purple = trading impact, pink = caused by my own fix." class="suffix-invalid suffix-invalid__small suffix-invalid__large" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Timeline of the incident</figcaption>
+  </figure></p>
+<p>In short:</p>
+<table>
+<thead>
+<tr>
+<th>When (CST)</th>
+<th>Event</th>
+<th>Trading impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nov 10 19:56</td>
+<td>data disk I/O errors begin</td>
+<td>none yet</td>
+</tr>
+<tr>
+<td>Nov 10 21:37</td>
+<td>Docker switched to an empty data-root</td>
+<td>old containers invisible</td>
+</tr>
+<tr>
+<td>Nov 10 night</td>
+<td>Airflow container rebuilt by hand, several times</td>
+<td>config drift starts</td>
+</tr>
+<tr>
+<td>Nov 11 00:25</td>
+<td>a manual DAG run starts 16 live-trade containers, then Airflow loses track of them</td>
+<td>16 accounts trading from a midnight process</td>
+</tr>
+<tr>
+<td>08:06–08:51</td>
+<td>yaml relink and pre-trading checks fail: no <code>/data</code></td>
+<td>yaml symlinks still on yesterday&rsquo;s files</td>
+</tr>
+<tr>
+<td>09:29</td>
+<td>RabbitMQ found missing</td>
+<td>message clients can&rsquo;t connect</td>
+</tr>
+<tr>
+<td>09:33</td>
+<td>only 16 of 34 live stock trades can start</td>
+<td><strong>18 accounts not trading</strong></td>
+</tr>
+<tr>
+<td>09:54</td>
+<td>someone runs <code>docker restart airflow</code></td>
+<td><strong>every trade orphaned</strong></td>
+</tr>
+<tr>
+<td>10:03</td>
+<td>my re-adopted trades are killed by the scheduler</td>
+<td><strong>43 accounts down ~1.5 min</strong></td>
+</tr>
+<tr>
+<td>10:08</td>
+<td>stable</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<h2 id="why-it-happened" class="heading-element">
+  <a href="#why-it-happened" class="heading-mark"></a>Why it happened</h2><p><figure><a class="lightgallery" href="cause-chain.svg?size=large" data-thumbnail="cause-chain.svg?size=small" data-sub-html="<h2>Cause chain</h2><p>Every problem traces back to the data-root switch plus a container rebuilt from memory.</p>"><img loading="lazy" src="cause-chain.svg" alt="Cause chain" srcset="cause-chain.svg?size=small, cause-chain.svg?size=medium 1.5x, cause-chain.svg?size=large 2x" data-title="Every problem traces back to the data-root switch plus a container rebuilt from memory." class="suffix-invalid suffix-invalid__small suffix-invalid__large" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Cause chain</figcaption>
+  </figure></p>
+<p>The root cause is not &ldquo;a disk failed&rdquo;. Disks fail. The failure became an outage because <strong>the running system existed only as state inside Docker</strong>, not as a description anywhere:</p>
+<ol>
+<li>The Docker data-root held everything: container definitions, images, RabbitMQ&rsquo;s data (no volume), and Airflow&rsquo;s tuned <code>airflow.cfg</code>, which lived in the container&rsquo;s writable layer. Switching to an empty data-root deleted all of it in one move.</li>
+<li>Airflow was rebuilt <strong>from memory</strong> with <code>docker run</code>. Each rebuild dropped something: first the <code>/shared</code> mount and a plugin (fixed the night before), then <code>/data</code>, then the concurrency settings, which nobody knew had been tuned.</li>
+<li>Live-trading processes are Airflow tasks, and with <code>LocalExecutor</code> every task runner is a child of the scheduler. <strong>Any restart orphans every running trade.</strong> The duplicate guard in <code>CleanStartDockerOperator</code> then turns each orphan into a <code>failed</code> task.</li>
+<li>Several people were working on the same box at the same time, with no lock and no announcements.</li>
+</ol>
+<p>The sections below take each problem in turn.</p>
+<h2 id="problem-1-the-yaml-relink-task-couldnt-see-data" class="heading-element">
+  <a href="#problem-1-the-yaml-relink-task-couldnt-see-data" class="heading-mark"></a>Problem 1: the yaml relink task couldn&rsquo;t see /data</h2><p><strong>Symptom.</strong> The morning task that points the <code>*.yaml</code> symlinks at today&rsquo;s model files failed at 08:06 and again at 08:51. The colos were still on yesterday&rsquo;s files, 40 minutes before the open.</p>
+<p><figure><a class="lightgallery" href="shot-data-missing.png?size=large" data-thumbnail="shot-data-missing.png?size=small" data-sub-html="<h2>/data is empty inside the container</h2><p>The task ran inside the Airflow container, where /data is an empty directory.</p>"><img loading="lazy" src="shot-data-missing.png" alt="/data is empty inside the container" srcset="shot-data-missing.png?size=small, shot-data-missing.png?size=medium 1.5x, shot-data-missing.png?size=large 2x" data-title="The task ran inside the Airflow container, where /data is an empty directory." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">/data is empty inside the container</figcaption>
+  </figure></p>
+<p><strong>Cause.</strong> This task is a <code>BashOperator</code>, so unlike the <code>DockerOperator</code> tasks it runs <em>inside</em> the Airflow container. The old compose file mounts <code>/data:/data</code>. None of the containers rebuilt overnight did, so <code>/data</code> inside the container was the empty directory baked into the image.</p>
+<p><strong>Fix.</strong></p>
+<ul>
+<li><strong>Unblock trading first:</strong> I ran the task&rsquo;s exact relinking logic on the host, where <code>/data</code> is real. Then I marked the task <code>success</code> and cleared everything after it, so Airflow itself ran the rsync to the trading servers. All 73 tasks were green by 09:02.</li>
+<li><strong>Fix properly later:</strong> I added the mount when recreating the container at 09:58. The same missing mount had also failed three read-only <code>pretrading.*</code> check DAGs, which passed once rerun at 10:12.</li>
+</ul>
+<h2 id="problem-2-rabbitmq-disappeared" class="heading-element">
+  <a href="#problem-2-rabbitmq-disappeared" class="heading-mark"></a>Problem 2: RabbitMQ &ldquo;disappeared&rdquo;</h2><p><strong>Symptom.</strong> <code>docker ps -a</code> showed no <code>rabbitmq</code> container at all, not even a stopped one, and no image either. Clients kept retrying against port 5672.</p>
+<p><figure><a class="lightgallery" href="shot-docker-root.png?size=large" data-thumbnail="shot-docker-root.png?size=small" data-sub-html="<h2>Docker data-root moved to an empty directory</h2><p>The daemon was restarted at 21:37 with a new data-root; the old one is gone and the disk behind /Clickhouse is unreadable.</p>"><img loading="lazy" src="shot-docker-root.png" alt="Docker data-root moved to an empty directory" srcset="shot-docker-root.png?size=small, shot-docker-root.png?size=medium 1.5x, shot-docker-root.png?size=large 2x" data-title="The daemon was restarted at 21:37 with a new data-root; the old one is gone and the disk behind /Clickhouse is unreadable." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Docker data-root moved to an empty directory</figcaption>
+  </figure></p>
+<p><strong>Cause.</strong> Nothing deleted it. At 21:37, <code>/etc/docker/daemon.json</code> gained <code>&quot;data-root&quot;: &quot;/var/lib/docker-recovery&quot;</code> and dockerd was restarted. <strong>Every container and image created before that lives in the old root</strong>, so to the running daemon they don&rsquo;t exist. I couldn&rsquo;t prove where the old root lived without root access, but <code>/var/lib/docker</code> no longer exists and the failing disk is unreadable. Six <code>br-*</code> bridges left from the old daemon&rsquo;s networks, all <code>down</code>, were the other clue.</p>
+<p><strong>Fix.</strong> I recreated the container with the same settings as the compose file, plus the thing it never had: a named volume for <code>/var/lib/rabbitmq</code>. Then I added the user that clients log in as.</p>
+<p><figure><a class="lightgallery" href="shot-rabbitmq.png?size=large" data-thumbnail="shot-rabbitmq.png?size=small" data-sub-html="<h2>RabbitMQ before and after</h2><p>Including my own mistake: the first add_user set an empty password.</p>"><img loading="lazy" src="shot-rabbitmq.png" alt="RabbitMQ before and after" srcset="shot-rabbitmq.png?size=small, shot-rabbitmq.png?size=medium 1.5x, shot-rabbitmq.png?size=large 2x" data-title="Including my own mistake: the first add_user set an empty password." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">RabbitMQ before and after</figcaption>
+  </figure></p>
+<p><strong>My mistake:</strong> I passed the password through stdin, <code>rabbitmqctl add_user u &quot;$(cat)&quot;</code>, but ran <code>docker exec</code> without <code>-i</code>. Stdin never reached the container, so <strong>the password was silently set to empty</strong>, and every login was refused for about a minute until I used <code>change_password</code>. Pass secrets as arguments or with <code>-i</code>, then check with a real login, as <code>mqtest.py</code> does above.</p>
+<p>Everything the old instance held that clients don&rsquo;t declare themselves is gone for good: queues, exchanges, bindings and extra users.</p>
+<h2 id="problem-3-only-16-of-34-live-trades-could-start" class="heading-element">
+  <a href="#problem-3-only-16-of-34-live-trades-could-start" class="heading-mark"></a>Problem 3: only 16 of 34 live trades could start</h2><p><strong>Symptom.</strong> At 09:40, a short pre-trade task had been sitting in <code>scheduled</code> since 09:38. On normal days it starts at about 09:33. Nothing was failing; it was just never picked up.</p>
+<p><figure><a class="lightgallery" href="shot-concurrency.png?size=large" data-thumbnail="shot-concurrency.png?size=small" data-sub-html="<h2>Concurrency limits back at defaults</h2><p>The rebuilt image has Airflow&#39;s defaults; yesterday this DAG ran 61 tasks at once.</p>"><img loading="lazy" src="shot-concurrency.png" alt="Concurrency limits back at defaults" srcset="shot-concurrency.png?size=small, shot-concurrency.png?size=medium 1.5x, shot-concurrency.png?size=large 2x" data-title="The rebuilt image has Airflow&#39;s defaults; yesterday this DAG ran 61 tasks at once." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Concurrency limits back at defaults</figcaption>
+  </figure></p>
+<p><strong>Cause.</strong> The original <code>airflow.cfg</code> raised <code>parallelism</code> (global) and <code>max_active_tasks_per_dag</code> well above the defaults. It lived in the container layer, so it was lost with the old data-root, and every rebuilt image shipped the defaults, <strong>32 and 16</strong>. At 09:33 the first 16 live-trade tasks grabbed all 16 slots and held them, and each one runs for 5.5 hours. The other 18 accounts, and everything else in the DAG, would have waited until about 15:00.</p>
+<p><strong>Fix</strong>, in two steps because the second needs a restart:</p>
+<ol>
+<li>Without a restart: add <code>max_active_tasks = 128,</code> to the <code>DAG(...)</code> call. The scheduler picked it up on its next parse at 09:47, and 11 more accounts started trading. The global limit of 32 then capped it at 27/34. The pre-trade task I was originally asked about I simply ran by hand with <code>airflow tasks run ... --local -A</code>, which bypasses the slot limit.</li>
+<li>With a restart (09:58): <code>AIRFLOW__CORE__PARALLELISM=128</code> and <code>AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG=128</code> as environment variables, so the settings now live in the container definition instead of a file inside the image.</li>
+</ol>
+<h2 id="problem-4-16-accounts-trading-from-a-midnight-process" class="heading-element">
+  <a href="#problem-4-16-accounts-trading-from-a-midnight-process" class="heading-mark"></a>Problem 4: 16 accounts trading from a midnight process</h2><p><strong>Symptom.</strong> Some live-trade tasks kept failing with this, every time Airflow retried them:</p>
+<p><figure><a class="lightgallery" href="shot-cleanstart.png?size=large" data-thumbnail="shot-cleanstart.png?size=small" data-sub-html="<h2>CleanStart refusing a duplicate</h2><p>The duplicate guard doing its job, against a container Airflow had forgotten about.</p>"><img loading="lazy" src="shot-cleanstart.png" alt="CleanStart refusing a duplicate" srcset="shot-cleanstart.png?size=small, shot-cleanstart.png?size=medium 1.5x, shot-cleanstart.png?size=large 2x" data-title="The duplicate guard doing its job, against a container Airflow had forgotten about." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">CleanStart refusing a duplicate</figcaption>
+  </figure></p>
+<p>When I joined task states against <code>docker ps</code>, there were two kinds of rows:</p>
+<p><figure><a class="lightgallery" href="shot-stale-containers.png?size=large" data-thumbnail="shot-stale-containers.png?size=small" data-sub-html="<h2>Airflow and docker disagree</h2><p>Account names replaced. The failing ones all had containers created around 00:25.</p>"><img loading="lazy" src="shot-stale-containers.png" alt="Airflow and docker disagree" srcset="shot-stale-containers.png?size=small, shot-stale-containers.png?size=medium 1.5x, shot-stale-containers.png?size=large 2x" data-title="Account names replaced. The failing ones all had containers created around 00:25." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Airflow and docker disagree</figcaption>
+  </figure></p>
+<p><strong>Cause.</strong> At 00:19 someone triggered the trading DAG by hand, probably to test the rebuilt Airflow. Its live-trade containers started at 00:25–00:28. The run then failed, Airflow stopped tracking them, and <strong>they kept trading</strong>: 7 stock and 9 futures accounts, on a process started nine hours before the open, possibly with targets from before that morning&rsquo;s pre-trade step. Today&rsquo;s tasks for those accounts couldn&rsquo;t start because <code>task_&lt;id&gt;</code> was already taken.</p>
+<p><strong>Fix.</strong> Account by account: <code>docker stop</code> the old container, then start the task under today&rsquo;s run:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker stop task_&lt;task_id&gt;   <span class="c1"># graceful, ~10 s</span>
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -d airflow bash -c <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s2">&#34;airflow tasks run &lt;dag_id&gt; &lt;task_id&gt; &lt;run_id&gt; --local -A &gt;&gt; /tmp/manual_&lt;task_id&gt;.log 2&gt;&amp;1&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Each account was offline for about 20 seconds; the new container logged today&rsquo;s <code>init_time</code>. <code>--local -A</code> runs the task outside the executor, so it doesn&rsquo;t need a free slot, yet Airflow still records it as <code>running</code> and keeps a heartbeat. Remember that last part, because problem 5 is about exactly that.</p>
+<h2 id="problem-5-two-restarts-and-the-kill-i-caused" class="heading-element">
+  <a href="#problem-5-two-restarts-and-the-kill-i-caused" class="heading-mark"></a>Problem 5: two restarts, and the kill I caused</h2><p><strong>09:54, a restart by someone else.</strong> While I was waiting for an answer about when to restart, someone opened a shell in the container and restarted it:</p>
+<p><figure><a class="lightgallery" href="shot-restart-events.png?size=large" data-thumbnail="shot-restart-events.png?size=small" data-sub-html="<h2>docker events around the restart</h2><p>An interactive zsh at 09:54:36, a restart at 09:54:40. Not a crash: exit 0, no OOM.</p>"><img loading="lazy" src="shot-restart-events.png" alt="docker events around the restart" srcset="shot-restart-events.png?size=small, shot-restart-events.png?size=medium 1.5x, shot-restart-events.png?size=large 2x" data-title="An interactive zsh at 09:54:36, a restart at 09:54:40. Not a crash: exit 0, no OOM." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">docker events around the restart</figcaption>
+  </figure></p>
+<p>With <code>LocalExecutor</code>, the task runners died with the scheduler, but their trade containers kept running. The new scheduler retried the tasks, <code>CleanStartDockerOperator</code> refused each one, and <strong>all 34 stock trades were marked <code>failed</code> while still trading.</strong></p>
+<p><strong>09:58, my recreate.</strong> Every trade was orphaned already, so I recreated the container right away with <code>/data</code> and the new limits. I stopped the old one with <code>docker kill</code> (SIGKILL), not <code>docker stop</code>. A graceful stop gives the task runners time to run <code>DockerOperator.on_kill()</code>, which stops the very containers I wanted to keep alive. At 10:01 I re-adopted all 46 orphans (34 stock, 9 futures, one fund task, two pulse tasks) using the problem 4 method.</p>
+<p><strong>10:03, my re-adopt blew up.</strong> Five minutes later, every live-trade container got SIGTERM and was removed:</p>
+<p><figure><a class="lightgallery" href="featured-image.png?size=large" data-thumbnail="featured-image.png?size=small" data-sub-html="<h2>The scheduler reset 43 tasks and their runners killed the containers</h2><p>Reset by the orphan check, then each runner saw its state change and terminated.</p>"><img loading="lazy" src="featured-image.png" alt="The scheduler reset 43 tasks and their runners killed the containers" srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="Reset by the orphan check, then each runner saw its state change and terminated." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">The scheduler reset 43 tasks and their runners killed the containers</figcaption>
+  </figure></p>
+<p><figure><a class="lightgallery" href="orphan-kill.svg?size=large" data-thumbnail="orphan-kill.svg?size=small" data-sub-html="<h2>Sequence of the 10:03 kill</h2><p>The manual runs were invisible to the new scheduler&#39;s orphan check.</p>"><img loading="lazy" src="orphan-kill.svg" alt="Sequence of the 10:03 kill" srcset="orphan-kill.svg?size=small, orphan-kill.svg?size=medium 1.5x, orphan-kill.svg?size=large 2x" data-title="The manual runs were invisible to the new scheduler&#39;s orphan check." class="suffix-invalid suffix-invalid__small suffix-invalid__large" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Sequence of the 10:03 kill</figcaption>
+  </figure></p>
+<p>Here&rsquo;s why. Every 5 minutes, the scheduler runs <code>adopt_or_reset_orphaned_tasks</code>, which selects running and queued task instances like this (Airflow 2.7, <code>scheduler_job_runner.py</code>):</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">TI</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">State</span><span class="o">.</span><span class="n">adoptable_states</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="o">.</span><span class="n">outerjoin</span><span class="p">(</span><span class="n">TI</span><span class="o">.</span><span class="n">queued_by_job</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">or_</span><span class="p">(</span><span class="n">TI</span><span class="o">.</span><span class="n">queued_by_job_id</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">Job</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="n">JobState</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">))</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>airflow tasks run --local</code> <strong>does not update <code>queued_by_job_id</code></strong>. My 43 re-adopted tasks still pointed at the old container&rsquo;s scheduler job, which the new scheduler had just marked <code>failed</code>. So at 10:03:25 (scheduler start 09:58:25 plus 300 s), the orphan check reset all 43 and queued new attempts. Each new attempt hit <code>CleanStartDockerOperator</code>, refused, and marked the task <code>failed</code>. My original attempt&rsquo;s heartbeat saw &ldquo;state externally set to failed&rdquo;, sent itself SIGTERM, and <code>on_kill()</code> stopped the trade container. <strong>43 accounts stopped trading at 10:03:40.</strong></p>
+<p><strong>Fix.</strong></p>
+<ol>
+<li><strong>Restart all 43 at once:</strong> the same command as above. Everything was trading again at 10:05.</li>
+<li><strong>Point the stragglers at the live scheduler:</strong> the re-queue at 10:03 had pointed those 43 at the live scheduler, which made them safe. The 3 tasks that were never reset still pointed at the dead one and would have been killed at 10:08:25, so I fixed them by hand:</li>
+</ol>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">airflow.utils.session</span> <span class="kn">import</span> <span class="n">create_session</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">airflow.models</span> <span class="kn">import</span> <span class="n">TaskInstance</span> <span class="k">as</span> <span class="n">TI</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">airflow.jobs.job</span> <span class="kn">import</span> <span class="n">Job</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="n">create_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">live</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Job</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Job</span><span class="o">.</span><span class="n">job_type</span> <span class="o">==</span> <span class="s2">&#34;SchedulerJob&#34;</span><span class="p">,</span> <span class="n">Job</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&#34;running&#34;</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">live</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">live</span>
+</span></span><span class="line"><span class="cl">    <span class="n">bad</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">TI</span><span class="p">)</span><span class="o">.</span><span class="n">outerjoin</span><span class="p">(</span><span class="n">TI</span><span class="o">.</span><span class="n">queued_by_job</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">             <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">TI</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">in_</span><span class="p">([</span><span class="s2">&#34;running&#34;</span><span class="p">,</span> <span class="s2">&#34;queued&#34;</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">                     <span class="n">TI</span><span class="o">.</span><span class="n">queued_by_job_id</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">Job</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&#34;running&#34;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">bad</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">t</span><span class="o">.</span><span class="n">queued_by_job_id</span> <span class="o">=</span> <span class="n">live</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="shot-queued-by.png?size=large" data-thumbnail="shot-queued-by.png?size=small" data-sub-html="<h2>queued_by_job_id fix and the clean 10:08 check</h2><p>After the fix, the 10:08:25 orphan check reset nothing.</p>"><img loading="lazy" src="shot-queued-by.png" alt="queued_by_job_id fix and the clean 10:08 check" srcset="shot-queued-by.png?size=small, shot-queued-by.png?size=medium 1.5x, shot-queued-by.png?size=large 2x" data-title="After the fix, the 10:08:25 orphan check reset nothing." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">queued_by_job_id fix and the clean 10:08 check</figcaption>
+  </figure></p>
+<p>The 10:08:25 check reset nothing, and all 34 stock and 9 futures trades stayed up. The trading DAG&rsquo;s final task, which runs after all the live trades, had been knocked to <code>upstream_failed</code> twice; I cleared it again so it runs at the close.</p>
+<h2 id="what-i-fixed-in-one-table" class="heading-element">
+  <a href="#what-i-fixed-in-one-table" class="heading-mark"></a>What I fixed, in one table</h2><table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Root cause</th>
+<th>Fix</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>yaml relink fails</td>
+<td>no <code>/data</code> mount after hand rebuild</td>
+<td>ran relink on host, cleared downstream; mount added at recreate</td>
+<td>08:57 / 09:58</td>
+</tr>
+<tr>
+<td>RabbitMQ missing</td>
+<td>lived in the abandoned docker data-root</td>
+<td>recreated with a named data volume + client user</td>
+<td>09:35</td>
+</tr>
+<tr>
+<td>18 live trades queued</td>
+<td>tuned <code>airflow.cfg</code> lost, defaults 16/32</td>
+<td><code>max_active_tasks=128</code> in DAG, then env vars 128/128</td>
+<td>09:47 / 09:58</td>
+</tr>
+<tr>
+<td>16 stale live trades</td>
+<td>midnight manual run, containers outlived Airflow&rsquo;s tracking</td>
+<td>stop + <code>tasks run --local -A</code> under today&rsquo;s run</td>
+<td>09:50–10:01</td>
+</tr>
+<tr>
+<td>everything orphaned</td>
+<td><code>docker restart</code> mid-session; LocalExecutor</td>
+<td>recreate, re-adopt 46 tasks</td>
+<td>10:01</td>
+</tr>
+<tr>
+<td>43 trades killed (mine)</td>
+<td>manual runs keep a dead <code>queued_by_job_id</code></td>
+<td>restart all, repoint stragglers to live scheduler</td>
+<td>10:05 / 10:06</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-to-improve-the-cheap-things-first" class="heading-element">
+  <a href="#how-to-improve-the-cheap-things-first" class="heading-mark"></a>How to improve: the cheap things first</h2><h3 id="1-one-file-describes-the-host-and-ci-checks-it" class="heading-element">
+  <a href="#1-one-file-describes-the-host-and-ci-checks-it" class="heading-mark"></a>1. One file describes the host, and CI checks it</h3><p>The fastest fix to every &ldquo;the rebuilt container is missing X&rdquo; problem is to stop rebuilding from memory. Put the real Airflow service in the compose file, with every setting as an environment variable instead of in a file inside the image:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="w">  </span><span class="nt">airflow</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">&lt;registry&gt;/airflow:v1.3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">airflow</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">unless-stopped</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">entrypoint</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;/bin/bash&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;-c&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="s2">&#34;rm -f /app/airflow-*.pid; airflow scheduler &gt;&gt; /app/airflow-scheduler.out 2&gt;&amp;1 &amp; exec airflow webserver --port 8080&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">env_file</span><span class="p">:</span><span class="w"> </span><span class="l">/etc/airflow/airflow.env       </span><span class="w"> </span><span class="c"># secrets, root-only, NOT in git</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">AIRFLOW__CORE__EXECUTOR</span><span class="p">:</span><span class="w"> </span><span class="l">LocalExecutor</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">AIRFLOW__CORE__PARALLELISM</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;128&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;128&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">~/git/jobs/dags:/app/dags:ro</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">/data/airflow/logs:/app/logs</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">/shared:/shared:ro</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">/data:/data</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">/var/run/docker.sock:/var/run/docker.sock</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">~/.docker/config.json:/root/.docker/config.json:ro</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;18080:8080&#34;</span><span class="p">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then add a drift check, run from cron or CI, that fails loudly when the live container stops matching:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/usr/bin/env bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="c1"># check-airflow-drift.sh: exit 1 if the live container lacks a required mount or setting</span>
+</span></span><span class="line"><span class="cl"><span class="nb">set</span> -euo pipefail
+</span></span><span class="line"><span class="cl"><span class="nv">want_mounts</span><span class="o">=(</span>/app/dags /app/logs /shared /data /var/run/docker.sock<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">have</span><span class="o">=</span><span class="k">$(</span>docker inspect -f <span class="s1">&#39;{{range .Mounts}}{{.Destination}} {{end}}&#39;</span> airflow<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> m in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">want_mounts</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="o">[[</span> <span class="s2">&#34; </span><span class="nv">$have</span><span class="s2"> &#34;</span> <span class="o">==</span> *<span class="s2">&#34; </span><span class="nv">$m</span><span class="s2"> &#34;</span>* <span class="o">]]</span> <span class="o">||</span> <span class="o">{</span> <span class="nb">echo</span> <span class="s2">&#34;MISSING mount </span><span class="nv">$m</span><span class="s2">&#34;</span><span class="p">;</span> <span class="nb">exit</span> 1<span class="p">;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> k in PARALLELISM MAX_ACTIVE_TASKS_PER_DAG<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">v</span><span class="o">=</span><span class="k">$(</span>docker <span class="nb">exec</span> airflow airflow config get-value core <span class="s2">&#34;</span><span class="si">${</span><span class="nv">k</span><span class="p">,,</span><span class="si">}</span><span class="s2">&#34;</span> 2&gt;/dev/null <span class="p">|</span> tail -1<span class="k">)</span>
+</span></span><span class="line"><span class="cl">  <span class="o">[[</span> <span class="s2">&#34;</span><span class="nv">$v</span><span class="s2">&#34;</span> -ge <span class="m">64</span> <span class="o">]]</span> <span class="o">||</span> <span class="o">{</span> <span class="nb">echo</span> <span class="s2">&#34;LOW core.</span><span class="si">${</span><span class="nv">k</span><span class="p">,,</span><span class="si">}</span><span class="s2"> = </span><span class="nv">$v</span><span class="s2">&#34;</span><span class="p">;</span> <span class="nb">exit</span> 1<span class="p">;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> ok</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The compose file also held plaintext passwords, and the base image keeps a registry password in its shell history. Both belong in a root-only env file.</p>
+<h3 id="2-stateful-services-get-volumes-and-their-config-gets-exported" class="heading-element">
+  <a href="#2-stateful-services-get-volumes-and-their-config-gets-exported" class="heading-mark"></a>2. Stateful services get volumes, and their config gets exported</h3><p>RabbitMQ is easy: use a named volume, and keep a definitions export in git so a fresh broker comes back with its users, vhosts and queues:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> rabbitmq rabbitmqctl export_definitions /var/lib/rabbitmq/definitions.json
+</span></span><span class="line"><span class="cl"><span class="c1"># and in rabbitmq.conf:  load_definitions = /etc/rabbitmq/definitions.json</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="3-watch-the-disk-and-keep-dockers-root-off-it" class="heading-element">
+  <a href="#3-watch-the-disk-and-keep-dockers-root-off-it" class="heading-mark"></a>3. Watch the disk, and keep docker&rsquo;s root off it</h3><p><code>dmesg</code> had I/O errors from 19:56, ninety minutes before anyone touched Docker. A tiny check like <code>dmesg -T --level=err | grep -c 'I/O error'</code> feeding the existing WeChat alert would have turned a midnight scramble into a planned move. Keep the docker data-root on the SSD with the OS, not on a big data array. And whenever the data-root changes, write it down: a one-line note in the host&rsquo;s README would have saved me an hour.</p>
+<h3 id="4-a-restart-is-a-procedure-not-a-command" class="heading-element">
+  <a href="#4-a-restart-is-a-procedure-not-a-command" class="heading-mark"></a>4. A restart is a procedure, not a command</h3><p>Most of the trading impact came from restarts, including mine. So:</p>
+<ul>
+<li><strong>Freeze 09:00–15:00.</strong> Outside a real emergency, nobody restarts Airflow during the session. If you must, announce it in the ops channel first.</li>
+<li><strong>Use a pre-restart script that refuses</strong> when live tasks are running, and lists them:</li>
+</ul>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> airflow airflow tasks states-for-dag-run &lt;dag_id&gt; &lt;run_id&gt; <span class="p">|</span> grep -c running</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>Use a post-restart script</strong> that does what took me two tries: for each running container without a running task, stop it and <code>tasks run --local -A</code>, then point every running or queued task at the live scheduler job (the snippet above). Run it immediately, not 5 minutes later.</li>
+<li><strong>Stop the old container with <code>docker kill</code>.</strong> Graceful stops let <code>on_kill()</code> stop your trades.</li>
+</ul>
+<h3 id="5-live-trades-must-refuse-to-run-from-a-manual-run-outside-the-session" class="heading-element">
+  <a href="#5-live-trades-must-refuse-to-run-from-a-manual-run-outside-the-session" class="heading-mark"></a>5. Live trades must refuse to run from a manual run outside the session</h3><p>The 00:25 containers came from a manual test of the trading DAG. A three-line guard in the live-trade operator would have stopped it:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">run</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s2">&#34;dag_run&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">run_type</span> <span class="o">!=</span> <span class="s2">&#34;scheduled&#34;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">in_trading_window</span><span class="p">(</span><span class="n">pendulum</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="s2">&#34;Asia/Shanghai&#34;</span><span class="p">)):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">raise</span> <span class="n">AirflowSkipException</span><span class="p">(</span><span class="s2">&#34;live trade only runs from scheduled runs, or inside the session&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">...</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="better-solutions-to-the-current-design" class="heading-element">
+  <a href="#better-solutions-to-the-current-design" class="heading-mark"></a>Better solutions to the current design</h2><p>The cheap fixes stop the same thing happening twice. The real problem is architectural: <strong>we use Airflow as a process supervisor for 43 five-hour trading processes.</strong> Airflow is good at &ldquo;run this, then that, retry on failure&rdquo;. It is bad at &ldquo;keep this alive all day, across my own restarts&rdquo;.</p>
+<p><figure><a class="lightgallery" href="proposed.svg?size=large" data-thumbnail="proposed.svg?size=small" data-sub-html="<h2>Today versus proposed</h2><p>Move the long-running processes out of Airflow&#39;s task slots.</p>"><img loading="lazy" src="proposed.svg" alt="Today versus proposed" srcset="proposed.svg?size=small, proposed.svg?size=medium 1.5x, proposed.svg?size=large 2x" data-title="Move the long-running processes out of Airflow&#39;s task slots." class="suffix-invalid suffix-invalid__small suffix-invalid__large" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">Today versus proposed</figcaption>
+  </figure></p>
+<h3 id="option-a-make-the-operator-adopt-its-own-container-smallest-change" class="heading-element">
+  <a href="#option-a-make-the-operator-adopt-its-own-container-smallest-change" class="heading-mark"></a>Option A: make the operator adopt its own container (smallest change)</h3><p><code>CleanStartDockerOperator</code> already finds the leftover container; it just gives up. Label each container with the run that owns it, and <strong>reattach</strong> when the label matches instead of refusing. Then any restart, and any orphan reset, becomes a non-event. An untested sketch:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">AdoptingDockerOperator</span><span class="p">(</span><span class="n">DockerOperator</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ti</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="s2">&#34;ti&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">owner</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">ti</span><span class="o">.</span><span class="n">dag_id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ti</span><span class="o">.</span><span class="n">task_id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ti</span><span class="o">.</span><span class="n">run_id</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="ow">or</span> <span class="p">{}),</span> <span class="s2">&#34;airflow.owner&#34;</span><span class="p">:</span> <span class="n">owner</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_existing</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;task_</span><span class="si">{</span><span class="n">ti</span><span class="o">.</span><span class="n">task_id</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">c</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&#34;running&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&#34;airflow.owner&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="n">owner</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&#34;re-adopting </span><span class="si">%s</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">[:</span><span class="mi">12</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_and_stream</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>          <span class="c1"># docker wait + logs(follow=True)</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&#34;stopping stale container from </span><span class="si">%s</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&#34;airflow.owner&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">c</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>With this, the stale 00:25 containers would have been stopped automatically (different owner label), and the 09:54 restart and the 10:03 reset would have simply reattached.</p>
+<h3 id="option-b-trading-processes-become-services-airflow-becomes-the-conductor" class="heading-element">
+  <a href="#option-b-trading-processes-become-services-airflow-becomes-the-conductor" class="heading-mark"></a>Option B: trading processes become services, Airflow becomes the conductor</h3><p>Run each account&rsquo;s trader as a long-lived service (compose with <code>restart: unless-stopped</code>, or systemd), started and stopped by short Airflow tasks, with a <strong>sensor in <code>mode=&quot;reschedule&quot;</code></strong> to watch its health. A reschedule-mode sensor gives its slot back between pokes, so the DAG no longer needs 43 slots for 5.5 hours, and a scheduler restart does nothing to the traders at all. This is the shape I&rsquo;d go for.</p>
+<h3 id="option-c-a-different-executor" class="heading-element">
+  <a href="#option-c-a-different-executor" class="heading-mark"></a>Option C: a different executor</h3><p><code>CeleryExecutor</code>, with workers in their own containers, decouples task runners from the scheduler, so restarting the scheduler no longer kills them. It&rsquo;s more moving parts (a broker, workers), and it doesn&rsquo;t fix the &ldquo;five-hour task in a slot&rdquo; problem. I&rsquo;d only do it alongside A or B.</p>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>If you can&rsquo;t rebuild it from a file, you don&rsquo;t have it.</strong> Every lost setting here, including mounts, concurrency, RabbitMQ data and users, existed only inside Docker&rsquo;s data-root.</li>
+<li><strong>Write down emergency changes as you make them.</strong> &ldquo;Switched data-root to <code>/var/lib/docker-recovery</code> because sdb is dying&rdquo; in a README would have answered the RabbitMQ question in one minute.</li>
+<li><strong>Duplicate guards need an adopt path.</strong> Refusing to start a second copy is right; marking the task <code>failed</code> while the first copy is still trading is how a restart becomes an outage.</li>
+<li><strong>Verify the side effects of your own fix, on the timescale of the system&rsquo;s background jobs.</strong> My re-adopt looked perfect at 10:02 and blew up at 10:03:25 because a 5-minute housekeeping loop hadn&rsquo;t run yet. I now wait one full orphan-check interval before calling a restart done.</li>
+<li><strong>One operator at a time during the session.</strong> Two people restarting and repairing the same container ten minutes apart is how 09:54 happened.</li>
+</ol>
+<blockquote>
+<p>All account names, usernames, internal hostnames and addresses in the screenshots were replaced with placeholders (<code>ACCT_01</code>, <code>&lt;team&gt;</code>, <code>&lt;user&gt;</code>, <code>&lt;client-1&gt;</code>). The values themselves are the real output.</p>
+</blockquote></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-06-29-docker-buildx/" title="docker buildx">docker buildx</a></li><li>
+          <a href="/2022-11-23-docker-%E4%BD%BF%E7%94%A8-systemctl/" title="Docker 使用 systemctl">Docker 使用 systemctl</a></li><li>
+          <a href="/2026-11-06-codex-startup-model-cache/" title="Codex startup: a shared model cache and a five-second timeout">Codex startup: a shared model cache and a five-second timeout</a></li><li>
+          <a href="/2026-11-06-idc-v2raya-proxy-codex/" title="Use the IDC proxy from XPS and Codex">Use the IDC proxy from XPS and Codex</a></li><li>
+          <a href="/2026-10-16-docker-buildx-anonymous-token-timeout/" title="docker buildx: the builder had a proxy, the client didn&#39;t">docker buildx: the builder had a proxy, the client didn&#39;t</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-11-11 10:48:10">更新于 2026-11-11&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-11-11-airflow-outage-postmortem/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/" data-title="One night, one dead disk: an Airflow trading-host outage and what it taught me" data-hashtags="Linux,airflow,docker,rabbitmq,postmortem,incident"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/" data-title="One night, one dead disk: an Airflow trading-host outage and what it taught me" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/" data-title="One night, one dead disk: an Airflow trading-host outage and what it taught me"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/" data-title="One night, one dead disk: an Airflow trading-host outage and what it taught me"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/airflow/" class="post-tag" title="标签 - Airflow">Airflow</a><a href="/tags/docker/" class="post-tag" title="标签 - Docker">Docker</a><a href="/tags/rabbitmq/" class="post-tag" title="标签 - Rabbitmq">Rabbitmq</a><a href="/tags/postmortem/" class="post-tag" title="标签 - Postmortem">Postmortem</a><a href="/tags/incident/" class="post-tag" title="标签 - Incident">Incident</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-11-06-codex-startup-model-cache/" class="post-nav-item" rel="prev" title="Codex startup: a shared model cache and a five-second timeout"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Codex startup: a shared model cache and a five-second timeout</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

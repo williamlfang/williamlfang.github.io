@@ -3,7 +3,7 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 06 Nov 2026 18:19:24 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
   <title>Use the IDC proxy from XPS and Codex</title>
   <link>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</link>
   <pubDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</pubDate>
@@ -60,26 +60,13 @@ up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two r
 </table>]]></description>
 </item>
 <item>
-  <title>tmux lag, round 2: every status-bar fork froze the server for 30 ms</title>
-  <link>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</link>
-  <pubDate>Fri, 02 Oct 2026 22:30:00 &#43;0900</pubDate>
+  <title>One night, one dead disk: an Airflow trading-host outage and what it taught me</title>
+  <link>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</link>
+  <pubDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</pubDate>
   <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-02-tmux-lag-round-2/featured-image.png" alt="tmux lag, round 2: every status-bar fork froze the server for 30 ms" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms" referrerpolicy="no-referrer"/></div><blockquote>
-<p><strong>Update 2026-10-09:</strong> I extended this renderer for a 71-column iPhone
-client: compact text stopped duplicated bottom status rows while keeping
-the desktop colors and widgets. See the
-<a href="/2026-10-09-tmux-termius-iphone-status-bar/">Termius on iPhone follow-up</a>.</p>
-</blockquote>
-<p>Two days after the
-<a href="/2026-09-30-tmux-status-bar-lag/">last fix</a>, my tmux was laggy
-again, and the server was back at about a quarter of a CPU core. The culprit was
-the same as last time: the status bar&rsquo;s <code>#()</code> jobs. This time, though, the
-number of jobs wasn&rsquo;t the problem. Each one had become slow, because every job
-is a fork of the whole tmux server and my server had grown to 1.5 GB.</p>
-<p>This post covers how I measured it, where the 1.5 GB came from (mostly the
-scrollback of three panes), and the fixes. One of them corrects a claim in my
-previous post.</p>]]></description>
+  <guid>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" title="One night, one dead disk: an Airflow trading-host outage and what it taught me" referrerpolicy="no-referrer"/></div><p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
+<p>Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again.</p>]]></description>
 </item>
 <item>
   <title>Codex startup: a shared model cache and a five-second timeout</title>
@@ -235,51 +222,6 @@ my <a href="/2026-10-02-tmux-lag-round-2/">one-job status renderer</a>: the
 phone still uses one status job, and a desktop attached to the same session
 keeps its full layout. The app is <strong>Termius</strong>, although I initially called it
 Terminus.</p>]]></description>
-</item>
-<item>
-  <title>Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy</title>
-  <link>https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/</link>
-  <pubDate>Sat, 03 Oct 2026 00:08:03 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/featured-image.png" alt="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" title="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" referrerpolicy="no-referrer"/></div><blockquote>
-<p><strong>Update 2026-10-17:</strong> the next pass looked at big log files, and found an
-<code>nc</code> mapping that made every <code>n</code> wait <code>timeoutlen</code> (500 ms) in every file. See
-<a href="/2026-10-17-nvim-big-log-files/">Profiling Neovim on big logs</a>.</p>
-</blockquote>
-<p>After <a href="/2026-10-02-tmux-lag-round-2/">tmux</a> and
-<a href="/2026-10-02-zsh-startup-and-command-lag/">zsh</a>, I looked at
-Neovim. My config has grown to 138 plugins on lazy.nvim and LazyVim. Almost
-every spec has an <code>event</code>, <code>cmd</code> or <code>keys</code>, so I assumed most of them were lazy.
-They weren&rsquo;t: <strong>89 of the 138 plugins loaded at startup</strong>.</p>
-<p>None of the causes was a slow plugin. They were config mistakes that only show
-up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two rounds:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th style="text-align:right">before</th>
-<th style="text-align:right">after</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CPU time to first screen, opening a new file</td>
-<td style="text-align:right">~150 ms</td>
-<td style="text-align:right"><strong>~120 ms</strong></td>
-</tr>
-<tr>
-<td>CPU time to first screen, no file (dashboard)</td>
-<td style="text-align:right">69 ms</td>
-<td style="text-align:right"><strong>50 ms</strong></td>
-</tr>
-<tr>
-<td>plugins loaded at startup</td>
-<td style="text-align:right">89</td>
-<td style="text-align:right"><strong>73</strong></td>
-</tr>
-</tbody>
-</table>]]></description>
 </item>
 </channel>
 </rss>
