@@ -5,7 +5,7 @@
 ##
 ##   ./run.sh TAG [--from local|tarball|registry] [--force] [--dry-run] [--no-rollback]
 ##
-##   TAG            image tag, e.g. 20261111
+##   TAG            image tag, e.g. 20261111T171500 (run without TAG to list them)
 ##   --from         where the image comes from (default: local image if present,
 ##                  else $TARBALL_DIR/airflow-TAG.tar.gz if present, else the registry)
 ##   --force        recreate even while tasks are running/queued (their runners die;
@@ -35,16 +35,23 @@ while [ $# -gt 0 ]; do
         --force)       FORCE=1 ;;
         --dry-run)     DRY=1 ;;
         --no-rollback) ROLLBACK=0 ;;
-        -h|--help)     sed -n '3,21p' "$0"; exit 0 ;;
+        -h|--help)     awk 'NR>2 && /^## ====/{exit} NR>2' "$0"; exit 0 ;;
         -*)            echo "unknown option $1" >&2; exit 2 ;;
         *)             TAG=$1 ;;
     esac
     shift
 done
-[ -n "$TAG" ] || { sed -n '3,21p' "$0"; exit 2; }
+if [ -z "$TAG" ]; then
+    awk 'NR>2 && /^## ====/{exit} NR>2' "$0"
+    echo "local images:"
+    docker images --format '{{.Tag}}\t{{.CreatedSince}}' "$REPO" | sed 's/^/  /'   # newest first
+    echo "tarballs in $TARBALL_DIR:"
+    ls -1t "$TARBALL_DIR"/airflow-*.tar.gz 2>/dev/null | sed -E 's|.*/airflow-(.*)\.tar\.gz$|  \1|'
+    exit 2
+fi
 IMAGE=$REPO:$TAG
 TARBALL=$TARBALL_DIR/airflow-$TAG.tar.gz
-TS=$(date +%Y%m%d-%H%M%S)
+TS=$(date +%Y%m%dT%H%M%S)
 DIR=$DEPLOY_ROOT/$TS
 PREV=$CONTAINER-prev-$TS
 

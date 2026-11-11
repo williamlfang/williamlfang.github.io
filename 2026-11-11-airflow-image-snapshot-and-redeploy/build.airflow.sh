@@ -5,7 +5,7 @@
 ##
 ##   ./build.airflow.sh [TAG] [--no-push] [--no-tarball] [--force]
 ##
-##   TAG          image tag, default today's date (YYYYMMDD)
+##   TAG          image tag, default the current time as yyyymmddTHHMMSS (e.g. 20261111T171500)
 ##   --no-push    do not push to $REPO
 ##   --no-tarball do not write $TARBALL_DIR/airflow-TAG.tar.gz
 ##   --force      overwrite an existing TAG
@@ -29,13 +29,13 @@ TARBALL_DIR=${TARBALL_DIR:-/data/docker-images/airflow}
 KEEP_TARBALLS=${KEEP_TARBALLS:-7}
 HERE=$(cd "$(dirname "$0")" && pwd)
 
-TAG=$(date +%Y%m%d); PUSH=1; TARBALL=1; FORCE=0
+TAG=$(date +%Y%m%dT%H%M%S); PUSH=1; TARBALL=1; FORCE=0
 for a in "$@"; do
     case $a in
         --no-push)    PUSH=0 ;;
         --no-tarball) TARBALL=0 ;;
         --force)      FORCE=1 ;;
-        -h|--help)    sed -n '3,23p' "$0"; exit 0 ;;
+        -h|--help)    awk 'NR>2 && /^## ====/{exit} NR>2' "$0"; exit 0 ;;
         -*)           echo "unknown option $a" >&2; exit 2 ;;
         *)            TAG=$a ;;
     esac

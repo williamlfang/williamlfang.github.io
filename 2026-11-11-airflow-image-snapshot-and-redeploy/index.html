@@ -7,24 +7,36 @@
     <meta name="robots" content="noodp" />
     <title>Rebuildable Airflow: snapshot the running container, redeploy with a rollback - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
-So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into a dated image (airflow:20261111), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s." /><meta name="keywords" content='Linux, airflow, docker, bash, deployment, supervisor' /><meta itemprop="name" content="Rebuildable Airflow: snapshot the running container, redeploy with a rollback">
-<meta itemprop="description" content="The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
-So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into a dated image (airflow:20261111), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s."><meta itemprop="datePublished" content="2026-11-11T17:04:23+08:00" />
-<meta itemprop="dateModified" content="2026-11-11T17:04:23+08:00" />
-<meta itemprop="wordCount" content="2451"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" />
+<meta name="description" content="
+Update 2026-11-11 17:30: image tags are now the build time, yyyymmddTHHMMSS (e.g. airflow:20261111T172041), so two builds on the same day no longer collide, and ./run.sh with no tag lists what&rsquo;s available. The outputs below are from the first build, which still used a plain date tag, 20261111. The downloadable scripts are the current versions.
+
+The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
+So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into an image tagged with its build time (airflow:20261111T172041), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s." /><meta name="keywords" content='Linux, airflow, docker, bash, deployment, supervisor' /><meta itemprop="name" content="Rebuildable Airflow: snapshot the running container, redeploy with a rollback">
+<meta itemprop="description" content="
+Update 2026-11-11 17:30: image tags are now the build time, yyyymmddTHHMMSS (e.g. airflow:20261111T172041), so two builds on the same day no longer collide, and ./run.sh with no tag lists what&rsquo;s available. The outputs below are from the first build, which still used a plain date tag, 20261111. The downloadable scripts are the current versions.
+
+The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
+So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into an image tagged with its build time (airflow:20261111T172041), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s."><meta itemprop="datePublished" content="2026-11-11T17:04:23+08:00" />
+<meta itemprop="dateModified" content="2026-11-11T17:23:26+08:00" />
+<meta itemprop="wordCount" content="2559"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" />
 <meta itemprop="keywords" content="Linux,airflow,docker,bash,deployment,supervisor," /><meta property="og:title" content="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" />
-<meta property="og:description" content="The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
-So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into a dated image (airflow:20261111), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s." />
+<meta property="og:description" content="
+Update 2026-11-11 17:30: image tags are now the build time, yyyymmddTHHMMSS (e.g. airflow:20261111T172041), so two builds on the same day no longer collide, and ./run.sh with no tag lists what&rsquo;s available. The outputs below are from the first build, which still used a plain date tag, 20261111. The downloadable scripts are the current versions.
+
+The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
+So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into an image tagged with its build time (airflow:20261111T172041), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" /><meta property="og:image" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2026-11-11T17:04:23+08:00" />
-<meta property="article:modified_time" content="2026-11-11T17:04:23+08:00" />
+<meta property="article:modified_time" content="2026-11-11T17:23:26+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" /><meta name="twitter:title" content="Rebuildable Airflow: snapshot the running container, redeploy with a rollback"/>
-<meta name="twitter:description" content="The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
-So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into a dated image (airflow:20261111), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s."/>
+<meta name="twitter:description" content="
+Update 2026-11-11 17:30: image tags are now the build time, yyyymmddTHHMMSS (e.g. airflow:20261111T172041), so two builds on the same day no longer collide, and ./run.sh with no tag lists what&rsquo;s available. The outputs below are from the first build, which still used a plain date tag, 20261111. The downloadable scripts are the current versions.
+
+The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
+So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into an image tagged with its build time (airflow:20261111T172041), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s."/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -44,8 +56,8 @@ So the same afternoon I wrote three small scripts. build.airflow.sh turns the ru
               "url": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-image-snapshot-and-redeploy\/featured-image.png",
               "width":  1119 ,
               "height":  521 
-            }],"genre": "posts","keywords": "Linux, airflow, docker, bash, deployment, supervisor","wordcount":  2451 ,
-    "url": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-image-snapshot-and-redeploy\/","datePublished": "2026-11-11T17:04:23+08:00","dateModified": "2026-11-11T17:04:23+08:00","publisher": {
+            }],"genre": "posts","keywords": "Linux, airflow, docker, bash, deployment, supervisor","wordcount":  2559 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-image-snapshot-and-redeploy\/","datePublished": "2026-11-11T17:04:23+08:00","dateModified": "2026-11-11T17:23:26+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
@@ -206,7 +218,7 @@ So the same afternoon I wrote three small scripts. build.airflow.sh turns the ru
   <article class="page single">
     <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Rebuildable Airflow: snapshot the running container, redeploy with a rollback</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-11 17:04:23"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-11">2026-11-11</time></span>&nbsp;<span title="2451 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2500 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-11 17:04:23"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-11">2026-11-11</time></span>&nbsp;<span title="更新于 2026-11-11 17:23:26"><i class="fa-regular fa-calendar-check fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-11">2026-11-11</time></span>&nbsp;<span title="2559 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2600 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 6 分钟</span>&nbsp;</div>
     </div><div class="featured-image"><img loading="lazy" src="/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" alt="/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" data-title="/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
@@ -235,8 +247,11 @@ So the same afternoon I wrote three small scripts. build.airflow.sh turns the ru
     </li>
   </ol>
 </nav></div>
-      </div><div class="content" id="content"><p>The <a href="/2026-11-11-airflow-outage-postmortem/">outage postmortem</a> had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.</p>
-<p>So the same afternoon I wrote three small scripts. <code>build.airflow.sh</code> turns the running container into a dated image (<code>airflow:20261111</code>), pushes it, and saves a tarball. <code>run.sh</code> recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. <code>restart.sh</code> runs inside the container and keeps the scheduler and webserver up. <strong>From the 170 entries in <code>docker diff</code>, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.</strong></p>
+      </div><div class="content" id="content"><blockquote>
+<p><strong>Update 2026-11-11 17:30:</strong> image tags are now the build time, <code>yyyymmddTHHMMSS</code> (e.g. <code>airflow:20261111T172041</code>), so two builds on the same day no longer collide, and <code>./run.sh</code> with no tag lists what&rsquo;s available. The outputs below are from the first build, which still used a plain date tag, <code>20261111</code>. The downloadable scripts are the current versions.</p>
+</blockquote>
+<p>The <a href="/2026-11-11-airflow-outage-postmortem/">outage postmortem</a> had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.</p>
+<p>So the same afternoon I wrote three small scripts. <code>build.airflow.sh</code> turns the running container into an image tagged with its build time (<code>airflow:20261111T172041</code>), pushes it, and saves a tarball. <code>run.sh</code> recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. <code>restart.sh</code> runs inside the container and keeps the scheduler and webserver up. <strong>From the 170 entries in <code>docker diff</code>, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.</strong></p>
 <p><figure><a class="lightgallery" href="featured-image.png?size=large" data-thumbnail="featured-image.png?size=small" data-sub-html="<h2>run.sh against the stand-in container</h2><p>run.sh swapping a stand-in container and running its health checks</p>"><img loading="lazy" src="featured-image.png" alt="run.sh against the stand-in container" srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="run.sh swapping a stand-in container and running its health checks" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">run.sh against the stand-in container</figcaption>
   </figure></p>
 <h2 id="the-setup" class="heading-element">
@@ -391,6 +406,26 @@ So the same afternoon I wrote three small scripts. build.airflow.sh turns the ru
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">./run.sh TAG [--from local|tarball|registry] [--force] [--dry-run] [--no-rollback]</span></span></code></pre></td></tr></table>
 </div>
+</div><p>Second-precision tags are tedious to type, so <code>./run.sh</code> with no tag prints its usage and what it can deploy, newest first:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">local images:
+</span></span><span class="line"><span class="cl">  20261111	31 minutes ago
+</span></span><span class="line"><span class="cl">  v1.3	17 hours ago
+</span></span><span class="line"><span class="cl">  v1.2	19 hours ago
+</span></span><span class="line"><span class="cl">  v1.1	2 years ago
+</span></span><span class="line"><span class="cl">tarballs in /data/docker-images/airflow:
+</span></span><span class="line"><span class="cl">  20261111</span></span></code></pre></td></tr></table>
+</div>
 </div><ol>
 <li><strong>Get the image.</strong> By default it uses the local image if there is one, then the tarball (after checking its sha256), then the registry.</li>
 <li><strong>Copy the current container&rsquo;s settings.</strong> It reads binds, ports, hostname, restart policy, privileged, shm-size, network and extra hosts with <code>jq</code> from <code>docker inspect</code>. The <code>AIRFLOW*</code>/<code>TZ</code>/<code>LANG</code> env goes into a mode-600 env file under <code>~/airflow-deploy/&lt;time&gt;/</code>. If the container is gone, it uses the last saved copy. <strong>It refuses if any of the five required mounts is missing.</strong></li>
@@ -402,7 +437,7 @@ So the same afternoon I wrote three small scripts. build.airflow.sh turns the ru
 <p>To test it without touching production, I made a stand-in: a container called <code>airflow-rt</code> started exactly the way the current one was, but with a sqlite DB, one placeholder DAG and UI port 18081. Then I ran <code>run.sh</code> against it with <code>CONTAINER=airflow-rt</code>. The featured image at the top is one of those runs.</p>
 <h2 id="three-things-the-tests-caught" class="heading-element">
   <a href="#three-things-the-tests-caught" class="heading-mark"></a>Three things the tests caught</h2><p><strong>1. <code>airflow jobs check --allow-multiple</code> fails on its own.</strong> <code>status</code> reported the scheduler as down while <code>/health</code> said it was healthy. Running the command by hand:</p>
-<div class="highlight" id="id-8"><div class="chroma">
+<div class="highlight" id="id-9"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
@@ -411,7 +446,7 @@ So the same afternoon I wrote three small scripts. build.airflow.sh turns the ru
 </div>
 </div><p>The fix is <code>airflow jobs check --job-type SchedulerJob --local --limit 5 --allow-multiple</code>.</p>
 <p><strong>2. <code>set -e</code> skipped the rollback.</strong> To test the rollback I forced a failed health check with <code>HEALTH_TIMEOUT=0</code>. The script exited 1, and the new, unchecked container stayed in place. With zero loop iterations, <code>status.txt</code> never existed, so <code>cat status.txt | sed</code> failed under <code>set -euo pipefail</code> and the script ended before reaching the rollback code. Fixing that one line isn&rsquo;t enough, because the next unexpected failure would do the same. <strong>The real fix is an <code>EXIT</code> trap: once the old container is stopped, any non-zero exit rolls back.</strong></p>
-<div class="highlight" id="id-9"><div class="chroma">
+<div class="highlight" id="id-10"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -515,7 +550,7 @@ So the same afternoon I wrote three small scripts. build.airflow.sh turns the ru
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2026-11-11 17:04:23">更新于 2026-11-11&nbsp;</span>
+        <span title="更新于 2026-11-11 17:23:26">更新于 2026-11-11&nbsp;</span>
       </div></div><div class="post-info-line">
         <div class="post-info-md"><span><a href="/2026-11-11-airflow-image-snapshot-and-redeploy/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">

@@ -1,9 +1,11 @@
 # Rebuildable Airflow: snapshot the running container, redeploy with a rollback
 
 
+&gt; **Update 2026-11-11 17:30:** image tags are now the build time, `yyyymmddTHHMMSS` (e.g. `airflow:20261111T172041`), so two builds on the same day no longer collide, and `./run.sh` with no tag lists what&#39;s available. The outputs below are from the first build, which still used a plain date tag, `20261111`. The downloadable scripts are the current versions.
+
 The [outage postmortem]({{&lt; relref &#34;2026-11-11-airflow-outage-postmortem&#34; &gt;}}) had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
 
-So the same afternoon I wrote three small scripts. `build.airflow.sh` turns the running container into a dated image (`airflow:20261111`), pushes it, and saves a tarball. `run.sh` recreates the container from that tag and checks it&#39;s actually healthy, or puts the old one back. `restart.sh` runs inside the container and keeps the scheduler and webserver up. **From the 170 entries in `docker diff`, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.**
+So the same afternoon I wrote three small scripts. `build.airflow.sh` turns the running container into an image tagged with its build time (`airflow:20261111T172041`), pushes it, and saves a tarball. `run.sh` recreates the container from that tag and checks it&#39;s actually healthy, or puts the old one back. `restart.sh` runs inside the container and keeps the scheduler and webserver up. **From the 170 entries in `docker diff`, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.**
 
 &lt;!--more--&gt;
 
@@ -136,6 +138,18 @@ I tested it in a sandbox container: killed the scheduler with `SIGKILL`, restart
 
 ```text
 ./run.sh TAG [--from local|tarball|registry] [--force] [--dry-run] [--no-rollback]
+```
+
+Second-precision tags are tedious to type, so `./run.sh` with no tag prints its usage and what it can deploy, newest first:
+
+```text
+local images:
+  20261111	31 minutes ago
+  v1.3	17 hours ago
+  v1.2	19 hours ago
+  v1.1	2 years ago
+tarballs in /data/docker-images/airflow:
+  20261111
 ```
 
 1. **Get the image.** By default it uses the local image if there is one, then the tarball (after checking its sha256), then the registry.
