@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>Deployment - 标签 - William</title>
+    <link>https://williamlfang.github.io/tags/deployment/</link>
+    <description>Deployment - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/deployment/" rel="self" type="application/rss+xml" /><item>
+  <title>Rebuildable Airflow: snapshot the running container, redeploy with a rollback</title>
+  <link>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</link>
+  <pubDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" alt="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" referrerpolicy="no-referrer"/></div><p>The <a href="/2026-11-11-airflow-outage-postmortem/">outage postmortem</a> had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.</p>
+<p>So the same afternoon I wrote three small scripts. <code>build.airflow.sh</code> turns the running container into a dated image (<code>airflow:20261111</code>), pushes it, and saves a tarball. <code>run.sh</code> recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. <code>restart.sh</code> runs inside the container and keeps the scheduler and webserver up. <strong>From the 170 entries in <code>docker diff</code>, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.</strong></p>]]></description>
+</item>
+</channel>
+</rss>

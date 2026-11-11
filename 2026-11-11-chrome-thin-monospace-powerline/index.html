@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Two pages I look at every day had the same problem: monospace text that was too
+thin and pale to read comfortably. One was the log viewer in our Airflow 2.7 web
+UI, the other the dark theme of an internal Tabler dashboard. In both, Chrome was
+drawing the text in Courier New, a hairline font, even though both pages list
+four or five better fonts before it.
+The cause was a fontconfig file from the fonts-powerline package, installed in
+2019. It puts the symbols-only &ldquo;PowerlineSymbols&rdquo; font in front of most
+monospace families, and Chrome then refuses every one of them. A one-rule
+fontconfig file fixed it." /><meta name="keywords" content='Linux, Chrome, fontconfig, fonts, Powerline, CSS, Airflow' /><meta itemprop="name" content="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font">
+<meta itemprop="description" content="Two pages I look at every day had the same problem: monospace text that was too
+thin and pale to read comfortably. One was the log viewer in our Airflow 2.7 web
+UI, the other the dark theme of an internal Tabler dashboard. In both, Chrome was
+drawing the text in Courier New, a hairline font, even though both pages list
+four or five better fonts before it.
+The cause was a fontconfig file from the fonts-powerline package, installed in
+2019. It puts the symbols-only &ldquo;PowerlineSymbols&rdquo; font in front of most
+monospace families, and Chrome then refuses every one of them. A one-rule
+fontconfig file fixed it."><meta itemprop="datePublished" content="2026-11-11T13:47:39+08:00" />
+<meta itemprop="dateModified" content="2026-11-11T13:47:39+08:00" />
+<meta itemprop="wordCount" content="1533"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/featured-image.png" />
+<meta itemprop="keywords" content="Linux,Chrome,fontconfig,fonts,Powerline,CSS,Airflow," /><meta property="og:title" content="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font" />
+<meta property="og:description" content="Two pages I look at every day had the same problem: monospace text that was too
+thin and pale to read comfortably. One was the log viewer in our Airflow 2.7 web
+UI, the other the dark theme of an internal Tabler dashboard. In both, Chrome was
+drawing the text in Courier New, a hairline font, even though both pages list
+four or five better fonts before it.
+The cause was a fontconfig file from the fonts-powerline package, installed in
+2019. It puts the symbols-only &ldquo;PowerlineSymbols&rdquo; font in front of most
+monospace families, and Chrome then refuses every one of them. A one-rule
+fontconfig file fixed it." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/" /><meta property="og:image" content="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-11-11T13:47:39+08:00" />
+<meta property="article:modified_time" content="2026-11-11T13:47:39+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/featured-image.png" /><meta name="twitter:title" content="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font"/>
+<meta name="twitter:description" content="Two pages I look at every day had the same problem: monospace text that was too
+thin and pale to read comfortably. One was the log viewer in our Airflow 2.7 web
+UI, the other the dark theme of an internal Tabler dashboard. In both, Chrome was
+drawing the text in Courier New, a hairline font, even though both pages list
+four or five better fonts before it.
+The cause was a fontconfig file from the fonts-powerline package, installed in
+2019. It puts the symbols-only &ldquo;PowerlineSymbols&rdquo; font in front of most
+monospace families, and Chrome then refuses every one of them. A one-rule
+fontconfig file fixed it."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/" /><link rel="next" href="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-11-11-chrome-thin-monospace-powerline\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-11-11-chrome-thin-monospace-powerline\/featured-image.png",
+              "width":  1740 ,
+              "height":  408 
+            }],"genre": "posts","keywords": "Linux, Chrome, fontconfig, fonts, Powerline, CSS, Airflow","wordcount":  1533 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-11-chrome-thin-monospace-powerline\/","datePublished": "2026-11-11T13:47:39+08:00","dateModified": "2026-11-11T13:47:39+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-11 13:47:39"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-11">2026-11-11</time></span>&nbsp;<span title="1533 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1600 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 8 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-11-11-chrome-thin-monospace-powerline/featured-image.png" alt="/2026-11-11-chrome-thin-monospace-powerline/featured-image.png" data-title="/2026-11-11-chrome-thin-monospace-powerline/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#step-1-ask-chrome-which-font-it-actually-used">Step 1: ask Chrome which font it actually used</a></li>
+        <li><a href="#step-2-fix-the-page-i-own">Step 2: fix the page I own</a></li>
+        <li><a href="#step-3-wrong-turns-in-fontconfig">Step 3: wrong turns in fontconfig</a>
+          <ol>
+            <li><a href="#hide-courier-new">Hide Courier New</a></li>
+            <li><a href="#teach-jetbrains-mono-to-answer-to-menlo">Teach JetBrains Mono to answer to &ldquo;Menlo&rdquo;</a></li>
+            <li><a href="#woff-files-in-the-font-folder">WOFF files in the font folder</a></li>
+          </ol>
+        </li>
+        <li><a href="#step-4-watch-chromes-own-fontconfig-queries">Step 4: watch Chrome&rsquo;s own fontconfig queries</a></li>
+        <li><a href="#why-chrome-ends-up-on-courier-new">Why Chrome ends up on Courier New</a></li>
+        <li><a href="#the-fix">The fix</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>Two pages I look at every day had the same problem: monospace text that was too
+thin and pale to read comfortably. One was the log viewer in our Airflow 2.7 web
+UI, the other the dark theme of an internal Tabler dashboard. In both, Chrome was
+drawing the text in <strong>Courier New</strong>, a hairline font, even though both pages list
+four or five better fonts before it.</p>
+<p>The cause was a fontconfig file from the <code>fonts-powerline</code> package, installed in
+2019. It puts the symbols-only &ldquo;PowerlineSymbols&rdquo; font <strong>in front of</strong> most
+monospace families, and Chrome then refuses every one of them. A one-rule
+fontconfig file fixed it.</p>
+<p><img loading="lazy" src="featured-image.png" alt="FC_DEBUG output: fontconfig puts PowerlineSymbols ahead of the font Chrome asked for" srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="FC_DEBUG output: fontconfig puts PowerlineSymbols ahead of the font Chrome asked for" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li>Linux Mint 20.3, Google Chrome 129.0.6668.100, fontconfig 2.13.1</li>
+<li><code>fonts-powerline</code> 2.7-3 (for the terminal&rsquo;s status line) and the Microsoft core
+fonts (which bring Courier New)</li>
+<li>Two pages with the same symptom:
+<ul>
+<li>Airflow 2.7.3&rsquo;s log viewer. Its Chakra UI theme asks for
+<code>SFMono-Regular,Menlo,Monaco,Consolas,&quot;Liberation Mono&quot;,&quot;Courier New&quot;,monospace</code>.</li>
+<li>A Tabler 1.6 dashboard. Tabler&rsquo;s <code>--tblr-font-monospace</code> is
+<code>ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace</code>.</li>
+</ul>
+</li>
+</ul>
+<h2 id="step-1-ask-chrome-which-font-it-actually-used" class="heading-element">
+  <a href="#step-1-ask-chrome-which-font-it-actually-used" class="heading-mark"></a>Step 1: ask Chrome which font it actually used</h2><p><code>fc-match</code> is not the answer to &ldquo;what does Chrome draw&rdquo;. It said every font in
+the list was there:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> f in Consolas <span class="s2">&#34;Liberation Mono&#34;</span> <span class="s2">&#34;Courier New&#34;</span> monospace<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">printf</span> <span class="s1">&#39;%-16s -&gt; &#39;</span> <span class="s2">&#34;</span><span class="nv">$f</span><span class="s2">&#34;</span><span class="p">;</span> fc-match <span class="s2">&#34;</span><span class="nv">$f</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Consolas         -&gt; consolas-regular.ttf: &#34;Consolas&#34; &#34;Regular&#34;
+</span></span><span class="line"><span class="cl">Liberation Mono  -&gt; LiberationMono-Regular.ttf: &#34;Liberation Mono&#34; &#34;Regular&#34;
+</span></span><span class="line"><span class="cl">Courier New      -&gt; Courier_New.ttf: &#34;Courier New&#34; &#34;Regular&#34;
+</span></span><span class="line"><span class="cl">monospace        -&gt; DejaVuSansMono.ttf: &#34;DejaVu Sans Mono&#34; &#34;Book&#34;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Chrome can tell you what it really used. In DevTools, the Computed tab lists
+&ldquo;Rendered Fonts&rdquo; at the bottom. From a script, the DevTools protocol call
+<code>CSS.getPlatformFontsForNode</code> gives the same answer. For the dashboard&rsquo;s
+monospace text it said:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">font-monospace: [(&#39;Courier New&#39;, &#39;CourierNewPSMT&#39;, 20)]</span></span></code></pre></td></tr></table>
+</div>
+</div><p>I then gave each candidate font its own line of text and asked again:</p>
+<table>
+<thead>
+<tr>
+<th><code>font-family</code> asked for</th>
+<th>Chrome drew it in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Consolas</code></td>
+<td>Times New Roman</td>
+</tr>
+<tr>
+<td><code>Liberation Mono</code></td>
+<td>Times New Roman</td>
+</tr>
+<tr>
+<td><code>DejaVu Sans Mono</code></td>
+<td>Times New Roman</td>
+</tr>
+<tr>
+<td><code>monospace</code></td>
+<td>Times New Roman</td>
+</tr>
+<tr>
+<td><code>JetBrains Mono</code></td>
+<td><strong>JetBrains Mono</strong></td>
+</tr>
+<tr>
+<td><code>SF Mono</code></td>
+<td><strong>SF Mono</strong></td>
+</tr>
+<tr>
+<td><code>Fira Code</code></td>
+<td><strong>Fira Code Medium</strong></td>
+</tr>
+</tbody>
+</table>
+<p>All of these are installed, and fontconfig finds every one. Chrome treated half
+of them as missing. With Menlo, Monaco, Consolas and Liberation Mono all
+&ldquo;missing&rdquo;, the first name left in either stack is Courier New.</p>
+<h2 id="step-2-fix-the-page-i-own" class="heading-element">
+  <a href="#step-2-fix-the-page-i-own" class="heading-mark"></a>Step 2: fix the page I own</h2><p>For the dashboard I don&rsquo;t have to depend on what each computer has installed. It
+now ships its own font: JetBrains Mono from <code>@fontsource</code> (regular and bold,
+264 KB including every script subset; the browser downloads only the subsets a
+page uses), placed first in the stack:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-css" data-lang="css"><span class="line"><span class="cl"><span class="p">:</span><span class="nd">root</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">--tblr-font-monospace</span><span class="p">:</span> <span class="s2">&#34;JetBrains Mono&#34;</span><span class="p">,</span> <span class="n">ui-monospace</span><span class="p">,</span> <span class="n">SFMono-Regular</span><span class="p">,</span> <span class="n">Menlo</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                          <span class="n">Monaco</span><span class="p">,</span> <span class="n">Consolas</span><span class="p">,</span> <span class="s2">&#34;Liberation Mono&#34;</span><span class="p">,</span> <span class="kc">monospace</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>One detail that matters: the dashboard&rsquo;s &ldquo;export as picture&rdquo; button draws through
+an SVG, which can&rsquo;t load web fonts, so the font has to be embedded by hand. The
+code that works out which fonts to embed was reading the computed font of a
+<em>detached</em> copy of the card, which has none, so the picture dropped back to a
+fallback font. Working out the fonts after the copy is attached fixed it.</p>
+<p>That fixes one site. Airflow is someone else&rsquo;s bundle, and the real problem is in
+Chrome on this machine.</p>
+<h2 id="step-3-wrong-turns-in-fontconfig" class="heading-element">
+  <a href="#step-3-wrong-turns-in-fontconfig" class="heading-mark"></a>Step 3: wrong turns in fontconfig</h2><h3 id="hide-courier-new" class="heading-element">
+  <a href="#hide-courier-new" class="heading-mark"></a>Hide Courier New</h3><p>A user-level <code>&lt;rejectfont&gt;</code> for the Microsoft Courier New files. If Courier New
+is gone, the stack should land on Liberation Mono. It didn&rsquo;t: Chrome drew the log
+line in <strong>Times New Roman</strong>, a proportional serif. That was worse, so I removed
+the rule. It was also the first hint that Chrome couldn&rsquo;t use Liberation Mono at
+all:</p>
+<p><img loading="lazy" src="times-fallback.png" alt="Chrome asked for Liberation Mono and DejaVu Sans Mono, drew Times New Roman" srcset="times-fallback.png?size=small, times-fallback.png?size=medium 1.5x, times-fallback.png?size=large 2x" data-title="Chrome asked for Liberation Mono and DejaVu Sans Mono, drew Times New Roman" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<h3 id="teach-jetbrains-mono-to-answer-to-menlo" class="heading-element">
+  <a href="#teach-jetbrains-mono-to-answer-to-menlo" class="heading-mark"></a>Teach JetBrains Mono to answer to &ldquo;Menlo&rdquo;</h3><p>Chrome does use JetBrains Mono, and both stacks name Menlo early. So I gave
+JetBrains Mono a second family name, &ldquo;Menlo&rdquo;, with a <code>&lt;match target=&quot;scan&quot;&gt;</code>
+rule. That had no effect on the system copy, because system font folders are
+cached by root and a user scan rule never reaches them. On copies in
+<code>~/.local/share/fonts</code>, <code>fc-match Menlo</code> did return JetBrains Mono, but Chrome
+still drew Courier New. That stayed true even with &ldquo;Menlo&rdquo; listed first. That
+looked like nonsense at the time; Step 4 explains it.</p>
+<h3 id="woff-files-in-the-font-folder" class="heading-element">
+  <a href="#woff-files-in-the-font-folder" class="heading-mark"></a>WOFF files in the font folder</h3><p>Some of the debug output pointed at Source Code Pro <code>.woff</code> files in
+<code>~/.local/share/fonts</code>. Rejecting every <code>*.woff</code> and <code>*.woff2</code> changed nothing.</p>
+<h2 id="step-4-watch-chromes-own-fontconfig-queries" class="heading-element">
+  <a href="#step-4-watch-chromes-own-fontconfig-queries" class="heading-mark"></a>Step 4: watch Chrome&rsquo;s own fontconfig queries</h2><p>fontconfig prints every query it handles when <code>FC_DEBUG=1</code> is set. Chrome uses
+the system <code>libfontconfig.so.1</code>, so this works on Chrome too. The test page,
+<code>t.html</code>, has one line each in <code>'Liberation Mono'</code>, <code>'DejaVu Sans Mono'</code>,
+<code>monospace</code> and <code>'Courier New'</code>:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">FC_DEBUG</span><span class="o">=</span><span class="m">1</span> /opt/google/chrome/chrome --headless<span class="o">=</span>new --screenshot<span class="o">=</span>shot.png <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    file://<span class="nv">$PWD</span>/t.html &gt; fc.log 2&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></span><span class="line"><span class="cl">grep -A1 <span class="s1">&#39;Sort Pattern&#39;</span> fc.log <span class="p">|</span> grep -B1 PowerlineSymbols</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Sort Pattern has 28 elts (size 32)
+</span></span><span class="line"><span class="cl">	family: &#34;PowerlineSymbols&#34;(w) &#34;Liberation Mono&#34;(s) &#34;Courier New&#34;(w) &#34;Cousine&#34;(w) ...</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Chrome asked for Liberation Mono, but by the time the query reaches fontconfig&rsquo;s
+sort, <strong><code>PowerlineSymbols</code> is in front of it</strong>. Something in the config was
+prepending it:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ls -l /etc/fonts/conf.d/ <span class="p">|</span> grep -i powerline</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">lrwxrwxrwx 1 root root 39 Sep 14  2019 10-powerline-symbols.conf -&gt; ../conf.avail/10-powerline-symbols.conf</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>/etc/fonts/conf.avail/10-powerline-symbols.conf</code> (from <code>fonts-powerline</code>) is 25
+of these:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;alias&gt;</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&lt;family&gt;</span>Liberation Mono<span class="nt">&lt;/family&gt;</span>
+</span></span><span class="line"><span class="cl">	<span class="nt">&lt;prefer&gt;&lt;family&gt;</span>PowerlineSymbols<span class="nt">&lt;/family&gt;&lt;/prefer&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/alias&gt;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>one each for <code>monospace</code>, Droid Sans Mono, DejaVu Sans Mono, Inconsolata, Lucida
+Console, <strong>Monaco, Menlo</strong>, Source Code Pro, <strong>Consolas</strong>, Bitstream Vera Sans
+Mono, <strong>Liberation Mono</strong>, Ubuntu Mono, the Meslo variants and a few more.</p>
+<h2 id="why-chrome-ends-up-on-courier-new" class="heading-element">
+  <a href="#why-chrome-ends-up-on-courier-new" class="heading-mark"></a>Why Chrome ends up on Courier New</h2><p>The idea behind the file is fallback: if your terminal font lacks the Powerline
+arrow glyphs, take them from PowerlineSymbols. Terminals build a chain of fonts,
+so it works there. But <code>&lt;prefer&gt;</code> puts PowerlineSymbols <strong>first</strong>, and the best
+match fontconfig returns is then a symbols-only font, not the one asked for.</p>
+<p>As far as I can tell from how it behaves, Chrome checks that the family it gets
+back is the family it asked for. When it isn&rsquo;t, Chrome acts as if the font isn&rsquo;t
+installed and moves to the next name in the CSS list. That explains every row of
+the Step 1 table:</p>
+<table>
+<thead>
+<tr>
+<th>Font</th>
+<th>In the Powerline list?</th>
+<th>Chrome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Menlo, Monaco, Consolas, Liberation Mono, DejaVu Sans Mono, <code>monospace</code></td>
+<td>yes</td>
+<td>dropped</td>
+</tr>
+<tr>
+<td>Courier New</td>
+<td><strong>no</strong></td>
+<td>used</td>
+</tr>
+<tr>
+<td>JetBrains Mono, SF Mono, Fira Code</td>
+<td>no</td>
+<td>used</td>
+</tr>
+</tbody>
+</table>
+<p>It also explains the &ldquo;Menlo&rdquo; attempt in Step 3: Menlo is in the list, so a font
+named Menlo got PowerlineSymbols put in front of it too.</p>
+<p>So for both stacks, every font up to Courier New was vetoed, and Courier New
+won. Nothing else showed the problem. Terminals use their own font lists,
+fc-match reports the right font, and other browsers&rsquo; and toolkits&rsquo; matching
+differ.</p>
+<h2 id="the-fix" class="heading-element">
+  <a href="#the-fix" class="heading-mark"></a>The fix</h2><p>Remove the link (the package keeps the file in <code>conf.avail</code>, so reinstalling can
+bring the link back):</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo rm /etc/fonts/conf.d/10-powerline-symbols.conf</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Or, without sudo, undo it for your user. User config is loaded later
+(<code>50-user.conf</code>), so a rule there can delete PowerlineSymbols from every request
+again. I keep this one as well, in case a package upgrade restores the link.</p>
+<p><code>~/.config/fontconfig/conf.d/60-chrome-mono-powerline.conf</code>:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="cp">&lt;!DOCTYPE fontconfig SYSTEM &#34;urn:fontconfig:fonts.dtd&#34;&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;fontconfig&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;match</span> <span class="na">target=</span><span class="s">&#34;pattern&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;test</span> <span class="na">qual=</span><span class="s">&#34;any&#34;</span> <span class="na">name=</span><span class="s">&#34;family&#34;</span><span class="nt">&gt;&lt;string&gt;</span>PowerlineSymbols<span class="nt">&lt;/string&gt;&lt;/test&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;edit</span> <span class="na">name=</span><span class="s">&#34;family&#34;</span> <span class="na">mode=</span><span class="s">&#34;delete&#34;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/match&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/fontconfig&gt;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li>
+<p><strong>Chrome reads fontconfig once, at startup.</strong> Closing a window isn&rsquo;t enough:
+quit it completely (Ctrl+Shift+Q) and reopen it.</p>
+</li>
+<li>
+<p>A quick check before and after: paste this into the address bar. When the fix
+is active, the first line is clearly heavier than the second.</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">data:text/html,&lt;div style=&#34;font:20px Menlo,&#39;Courier New&#39;&#34;&gt;Menlo 0O1l [docker.py:429] INFO&lt;/div&gt;&lt;div style=&#34;font:20px &#39;Courier New&#39;&#34;&gt;Courier 0O1l [docker.py:429] INFO&lt;/div&gt;</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>Check <code>chrome://settings/fonts</code> too. My <strong>Fixed-width font</strong> was set to
+<code>JetBrainsMonoNL Nerd Font Propo</code>, which is a <em>proportional</em> variant, so
+anything styled as plain <code>monospace</code> was not monospaced. I set it to JetBrains
+Mono.</p>
+</li>
+</ul>
+<h2 id="results" class="heading-element">
+  <a href="#results" class="heading-mark"></a>Results</h2><p>From <code>CSS.getPlatformFontsForNode</code> in a fresh Chrome process (same binary, same
+user):</p>
+<table>
+<thead>
+<tr>
+<th>Text</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Airflow&rsquo;s log stack</td>
+<td>Courier New</td>
+<td><strong>Consolas</strong></td>
+</tr>
+<tr>
+<td>Tabler&rsquo;s stack</td>
+<td>Courier New</td>
+<td><strong>Consolas</strong></td>
+</tr>
+<tr>
+<td>The dashboard (own web font)</td>
+<td>Courier New</td>
+<td><strong>JetBrains Mono</strong></td>
+</tr>
+</tbody>
+</table>
+<p><img loading="lazy" src="before-after.png" alt="Before and after, as Chrome draws them" srcset="before-after.png?size=small, before-after.png?size=medium 1.5x, before-after.png?size=large 2x" data-title="Before and after, as Chrome draws them" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p>One thing I didn&rsquo;t settle: in a fresh headless profile, plain <code>monospace</code> still
+came out as Times New Roman after the fix. A fresh profile has no fixed-width
+font chosen, so this may be a headless default. In my real profile the
+fixed-width setting above covers it.</p>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong><code>fc-match</code> is not what the browser does.</strong> It reported the right font for
+every name, while Chrome dropped half of them. Ask Chrome itself: DevTools'
+Rendered Fonts, or <code>CSS.getPlatformFontsForNode</code>.</li>
+<li><strong><code>FC_DEBUG=1</code> works on any program that uses fontconfig, Chrome included.</strong>
+The &ldquo;Sort Pattern&rdquo; lines show the request after every config file has
+rewritten it. That is where the bad family showed up.</li>
+<li><strong><code>&lt;prefer&gt;</code> is not &ldquo;fall back to&rdquo;.</strong> It puts the font first. For a
+symbols-only font that&rsquo;s wrong everywhere except a terminal.</li>
+<li><strong>If you control the page, ship the font.</strong> A font stack that only names
+system fonts looks different on every machine. A 264 KB web font removes the
+question.</li>
+<li><strong>Don&rsquo;t stack fixes you can&rsquo;t explain.</strong> I tried three fontconfig changes that
+didn&rsquo;t help, and removed each one before trying the next. In the end, one
+debug flag gave the answer.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li>fontconfig user documentation, <code>&lt;alias&gt;</code>, <code>&lt;prefer&gt;</code>, <code>&lt;match&gt;</code> and <code>FC_DEBUG</code>:
+<a href="https://www.freedesktop.org/software/fontconfig/fontconfig-user.html"target="_blank" rel="external nofollow noopener noreferrer">https://www.freedesktop.org/software/fontconfig/fontconfig-user.html<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li>The Powerline fonts config: <code>dpkg -L fonts-powerline</code>,
+<code>/etc/fonts/conf.avail/10-powerline-symbols.conf</code></li>
+<li>Chrome DevTools Protocol, <code>CSS.getPlatformFontsForNode</code>:
+<a href="https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-getPlatformFontsForNode"target="_blank" rel="external nofollow noopener noreferrer">https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-getPlatformFontsForNode<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-11-11-airflow-outage-postmortem/" title="One night, one dead disk: an Airflow trading-host outage and what it taught me">One night, one dead disk: an Airflow trading-host outage and what it taught me</a></li><li>
+          <a href="/2026-11-06-codex-startup-model-cache/" title="Codex startup: a shared model cache and a five-second timeout">Codex startup: a shared model cache and a five-second timeout</a></li><li>
+          <a href="/2026-10-09-tmux-termius-iphone-status-bar/" title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone">Fixing duplicated tmux status bars and missing icons in Termius on iPhone</a></li><li>
+          <a href="/2026-10-02-zsh-startup-and-command-lag/" title="Profiling zsh: a Python plugin was adding 190 ms to every command">Profiling zsh: a Python plugin was adding 190 ms to every command</a></li><li>
+          <a href="/2026-10-02-tmux-lag-round-2/" title="tmux lag, round 2: every status-bar fork froze the server for 30 ms">tmux lag, round 2: every status-bar fork froze the server for 30 ms</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-11-11 13:47:39">更新于 2026-11-11&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-11-11-chrome-thin-monospace-powerline/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/" data-title="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font" data-hashtags="Linux,Chrome,fontconfig,fonts,Powerline,CSS,Airflow"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/" data-title="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/" data-title="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/" data-title="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/chrome/" class="post-tag" title="标签 - Chrome">Chrome</a><a href="/tags/fontconfig/" class="post-tag" title="标签 - Fontconfig">Fontconfig</a><a href="/tags/fonts/" class="post-tag" title="标签 - Fonts">Fonts</a><a href="/tags/powerline/" class="post-tag" title="标签 - Powerline">Powerline</a><a href="/tags/css/" class="post-tag" title="标签 - CSS">CSS</a><a href="/tags/airflow/" class="post-tag" title="标签 - Airflow">Airflow</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-11-11-airflow-outage-postmortem/" class="post-nav-item" rel="prev" title="One night, one dead disk: an Airflow trading-host outage and what it taught me"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>One night, one dead disk: an Airflow trading-host outage and what it taught me</a>
+      <a href="/2026-11-11-airflow-image-snapshot-and-redeploy/" class="post-nav-item" rel="next" title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback">Rebuildable Airflow: snapshot the running container, redeploy with a rollback<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

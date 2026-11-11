@@ -187,6 +187,87 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2026-10-03-nvim-startup-lazy-loading/" aria-label="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy"><img loading="lazy" src="/2026-10-03-nvim-startup-lazy-loading/featured-image.png" alt="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" data-title="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2026-10-03-nvim-startup-lazy-loading/">Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-03 00:08:03'>发布于 <time datetime="2026-10-03">2026-10-03</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><blockquote>
+<p><strong>Update 2026-10-17:</strong> the next pass looked at big log files, and found an
+<code>nc</code> mapping that made every <code>n</code> wait <code>timeoutlen</code> (500 ms) in every file. See
+<a href="/2026-10-17-nvim-big-log-files/">Profiling Neovim on big logs</a>.</p>
+</blockquote>
+<p>After <a href="/2026-10-02-tmux-lag-round-2/">tmux</a> and
+<a href="/2026-10-02-zsh-startup-and-command-lag/">zsh</a>, I looked at
+Neovim. My config has grown to 138 plugins on lazy.nvim and LazyVim. Almost
+every spec has an <code>event</code>, <code>cmd</code> or <code>keys</code>, so I assumed most of them were lazy.
+They weren&rsquo;t: <strong>89 of the 138 plugins loaded at startup</strong>.</p>
+<p>None of the causes was a slow plugin. They were config mistakes that only show
+up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two rounds:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU time to first screen, opening a new file</td>
+<td style="text-align:right">~150 ms</td>
+<td style="text-align:right"><strong>~120 ms</strong></td>
+</tr>
+<tr>
+<td>CPU time to first screen, no file (dashboard)</td>
+<td style="text-align:right">69 ms</td>
+<td style="text-align:right"><strong>50 ms</strong></td>
+</tr>
+<tr>
+<td>plugins loaded at startup</td>
+<td style="text-align:right">89</td>
+<td style="text-align:right"><strong>73</strong></td>
+</tr>
+</tbody>
+</table></div><div class="post-footer">
+    <a href="/2026-10-03-nvim-startup-lazy-loading/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/nvim/' class="post-tag">Nvim</a><a href='/tags/lazy.nvim/' class="post-tag">Lazy.nvim</a><a href='/tags/lazyvim/' class="post-tag">LazyVim</a><a href='/tags/performance/' class="post-tag">Performance</a><a href='/tags/profiling/' class="post-tag">Profiling</a><a href='/tags/startuptime/' class="post-tag">Startuptime</a></div></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2026-10-02-zsh-startup-and-command-lag/" aria-label="Profiling zsh: a Python plugin was adding 190 ms to every command"><img loading="lazy" src="/2026-10-02-zsh-startup-and-command-lag/featured-image.png" alt="Profiling zsh: a Python plugin was adding 190 ms to every command" data-title="Profiling zsh: a Python plugin was adding 190 ms to every command" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2026-10-02-zsh-startup-and-command-lag/">Profiling zsh: a Python plugin was adding 190 ms to every command</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-02 23:15:00'>发布于 <time datetime="2026-10-02">2026-10-02</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="content"><p>After <a href="/2026-10-02-tmux-lag-round-2/">fixing tmux</a>, I looked at
+the shell running inside it. My zsh config had grown over a few years to about
+30 plugins and Oh My Zsh snippets on top of zinit and Powerlevel10k. It felt a
+little heavy, but nothing stood out.</p>
+<p>Measured properly, it was slow in three separate ways, each with its own cause:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:right">before</th>
+<th style="text-align:right">after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>startup to a usable shell</td>
+<td style="text-align:right">267 ms</td>
+<td style="text-align:right">101 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every command</strong></td>
+<td style="text-align:right">188 ms</td>
+<td style="text-align:right">3 ms</td>
+</tr>
+<tr>
+<td>added to <strong>every prompt</strong></td>
+<td style="text-align:right">15 ms</td>
+<td style="text-align:right">4 ms</td>
+</tr>
+</tbody>
+</table>
+<p>This post covers how I measured each one, the fixes, and how I checked that the
+fixes didn&rsquo;t change anything else. That check caught two mistakes of my own.</p></div><div class="post-footer">
+    <a href="/2026-10-02-zsh-startup-and-command-lag/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/zsh/' class="post-tag">Zsh</a><a href='/tags/zinit/' class="post-tag">Zinit</a><a href='/tags/performance/' class="post-tag">Performance</a><a href='/tags/profiling/' class="post-tag">Profiling</a><a href='/tags/compinit/' class="post-tag">Compinit</a></div></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-10-02-claude-code-blog-skill-and-agent/">A Claude Code skill and subagent that write posts for this blog</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-02 22:36:58'>发布于 <time datetime="2026-10-02">2026-10-02</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>Most of my recent posts start the same way: I debug something in a Claude Code
 session, then ask it to &ldquo;write this up&rdquo;. Without guidance the result is
@@ -247,34 +328,6 @@ and <a href="/2026-09-22-chatgpt-desktop-on-mint-20/">ChatGPT Desktop</a>,
 there is no clean way to patch around it this time. The practical fix is to run
 the last 1.x GUI with an up-to-date core.</p></div><div class="post-footer">
     <a href="/2026-09-28-clash-verge-on-mint-20/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/mint/' class="post-tag">Mint</a><a href='/tags/ubuntu/' class="post-tag">Ubuntu</a><a href='/tags/glibc/' class="post-tag">Glibc</a><a href='/tags/deb/' class="post-tag">Deb</a><a href='/tags/dpkg/' class="post-tag">Dpkg</a><a href='/tags/clash/' class="post-tag">Clash</a><a href='/tags/mihomo/' class="post-tag">Mihomo</a><a href='/tags/proxy/' class="post-tag">Proxy</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-09-26-linux-timezone-clock-and-tmux/">Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-09-26 14:45:00'>发布于 <time datetime="2026-09-26">2026-09-26</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="content"><p>我把 Linux 的时区设成 <code>Asia/Tokyo</code>，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 <code>14:37 JST</code>，tmux 却显示 <code>13:37 CST</code>。问题不在 <code>timedatectl set-time</code>：一个早已启动的 tmux server 仍按旧时区格式化状态栏。</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-timezone Asia/Tokyo
-</span></span><span class="line"><span class="cl">sudo timedatectl set-ntp <span class="nb">false</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># aligned to real Asia/Shanghai time</span>
-</span></span><span class="line"><span class="cl">timedatectl set-time <span class="s2">&#34;2026-09-26 15:33:00&#34;</span></span></span></code></pre></td></tr></table>
-</div>
-</div></div><div class="post-footer">
-    <a href="/2026-09-26-linux-timezone-clock-and-tmux/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/timedatectl/' class="post-tag">Timedatectl</a><a href='/tags/timezone/' class="post-tag">Timezone</a><a href='/tags/tmux/' class="post-tag">Tmux</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-09-22-chatgpt-desktop-on-mint-20/">Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-09-22 16:16:26'>发布于 <time datetime="2026-09-22">2026-09-22</time></span></div><div class="content"><p>OpenAI shipped an official ChatGPT Desktop for Linux in August 2026 (preview),
-supporting Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 and Arch. Mint 20.3
-(focal, glibc 2.31) is nowhere on that list, so I expected a rerun of the
-<a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/">Claude Desktop surgery</a>.</p>
-<p>It wasn&rsquo;t. The glibc floor was fine all along — the package is blocked by three
-<strong>library renames</strong> and one optional TPM module. The fix is smaller, and the
-audit is worth showing because the conclusion is the opposite of last time.</p></div><div class="post-footer">
-    <a href="/2026-09-22-chatgpt-desktop-on-mint-20/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/mint/' class="post-tag">Mint</a><a href='/tags/ubuntu/' class="post-tag">Ubuntu</a><a href='/tags/glibc/' class="post-tag">Glibc</a><a href='/tags/deb/' class="post-tag">Deb</a><a href='/tags/dpkg/' class="post-tag">Dpkg</a><a href='/tags/chatgpt/' class="post-tag">ChatGPT</a><a href='/tags/openai/' class="post-tag">OpenAI</a><a href='/tags/electron/' class="post-tag">Electron</a><a href='/tags/proxy/' class="post-tag">Proxy</a><a href='/tags/ar/' class="post-tag">Ar</a></div></div>
 </article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">

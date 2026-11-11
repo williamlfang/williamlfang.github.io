@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Rebuildable Airflow: snapshot the running container, redeploy with a rollback - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
+So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into a dated image (airflow:20261111), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s." /><meta name="keywords" content='Linux, airflow, docker, bash, deployment, supervisor' /><meta itemprop="name" content="Rebuildable Airflow: snapshot the running container, redeploy with a rollback">
+<meta itemprop="description" content="The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
+So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into a dated image (airflow:20261111), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s."><meta itemprop="datePublished" content="2026-11-11T17:04:23+08:00" />
+<meta itemprop="dateModified" content="2026-11-11T17:04:23+08:00" />
+<meta itemprop="wordCount" content="2451"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" />
+<meta itemprop="keywords" content="Linux,airflow,docker,bash,deployment,supervisor," /><meta property="og:title" content="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" />
+<meta property="og:description" content="The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
+So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into a dated image (airflow:20261111), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" /><meta property="og:image" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-11-11T17:04:23+08:00" />
+<meta property="article:modified_time" content="2026-11-11T17:04:23+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" /><meta name="twitter:title" content="Rebuildable Airflow: snapshot the running container, redeploy with a rollback"/>
+<meta name="twitter:description" content="The outage postmortem had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.
+So the same afternoon I wrote three small scripts. build.airflow.sh turns the running container into a dated image (airflow:20261111), pushes it, and saves a tarball. run.sh recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. restart.sh runs inside the container and keeps the scheduler and webserver up. From the 170 entries in docker diff, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Rebuildable Airflow: snapshot the running container, redeploy with a rollback",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-image-snapshot-and-redeploy\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-image-snapshot-and-redeploy\/featured-image.png",
+              "width":  1119 ,
+              "height":  521 
+            }],"genre": "posts","keywords": "Linux, airflow, docker, bash, deployment, supervisor","wordcount":  2451 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-11-airflow-image-snapshot-and-redeploy\/","datePublished": "2026-11-11T17:04:23+08:00","dateModified": "2026-11-11T17:04:23+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Rebuildable Airflow: snapshot the running container, redeploy with a rollback</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-11 17:04:23"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-11">2026-11-11</time></span>&nbsp;<span title="2451 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 2500 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 5 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" alt="/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" data-title="/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup">The setup</a></li>
+        <li><a href="#why-not-just-docker-commit">Why not just <code>docker commit</code></a></li>
+        <li><a href="#buildairflowsh-keep-what-changed-drop-the-rest">build.airflow.sh: keep what changed, drop the rest</a>
+          <ol>
+            <li><a href="#which-files">Which files</a></li>
+            <li><a href="#the-generated-dockerfile">The generated Dockerfile</a></li>
+            <li><a href="#checks-before-anything-leaves-the-host">Checks before anything leaves the host</a></li>
+          </ol>
+        </li>
+        <li><a href="#restartsh-a-supervisor-instead-of--exec">restart.sh: a supervisor instead of <code>&amp; exec</code></a></li>
+        <li><a href="#runsh-recreate-from-local-registry-or-tarball">run.sh: recreate from local, registry or tarball</a></li>
+        <li><a href="#three-things-the-tests-caught">Three things the tests caught</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#takeaways">Takeaways</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>The <a href="/2026-11-11-airflow-outage-postmortem/">outage postmortem</a> had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.</p>
+<p>So the same afternoon I wrote three small scripts. <code>build.airflow.sh</code> turns the running container into a dated image (<code>airflow:20261111</code>), pushes it, and saves a tarball. <code>run.sh</code> recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. <code>restart.sh</code> runs inside the container and keeps the scheduler and webserver up. <strong>From the 170 entries in <code>docker diff</code>, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.</strong></p>
+<p><figure><a class="lightgallery" href="featured-image.png?size=large" data-thumbnail="featured-image.png?size=small" data-sub-html="<h2>run.sh against the stand-in container</h2><p>run.sh swapping a stand-in container and running its health checks</p>"><img loading="lazy" src="featured-image.png" alt="run.sh against the stand-in container" srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="run.sh swapping a stand-in container and running its health checks" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">run.sh against the stand-in container</figcaption>
+  </figure></p>
+<h2 id="the-setup" class="heading-element">
+  <a href="#the-setup" class="heading-mark"></a>The setup</h2><ul>
+<li>One host runs Airflow 2.7.3 in a single container: LocalExecutor, MySQL metadata DB, about 66 DAGs. Most tasks are <code>DockerOperator</code>s that start containers through the host&rsquo;s docker socket.</li>
+<li>The container needs five mounts or things break: <code>/app/dags</code>, <code>/app/logs</code>, <code>/shared</code> (the trading calendar), <code>/data</code>, and <code>/var/run/docker.sock</code>. It also needs a read-only registry login.</li>
+<li>Images live in a LAN registry, <code>192.168.1.162:5000/airflow</code>. Before today the tags were <code>v1.1</code>, <code>v1.2</code> and <code>v1.3</code>, each made by hand the night before.</li>
+<li>The host has <code>docker</code>, <code>jq</code> and <code>curl</code>, but no <code>python3</code>. Inside the container it&rsquo;s CentOS 7 with bash 4.2.</li>
+</ul>
+<p>The scripts are in this post&rsquo;s folder: <a href="build.airflow.sh">build.airflow.sh</a>, <a href="run.sh">run.sh</a>, <a href="restart.sh">restart.sh</a>. Both host scripts run on the Airflow host itself, as the deploy user.</p>
+<p><figure><a class="lightgallery" href="flow.svg?size=large" data-thumbnail="flow.svg?size=small" data-sub-html="<h2>build → three image sources → run.sh → healthy or rollback</h2><p>The whole flow</p>"><img loading="lazy" src="flow.svg" alt="build → three image sources → run.sh → healthy or rollback" srcset="flow.svg?size=small, flow.svg?size=medium 1.5x, flow.svg?size=large 2x" data-title="The whole flow" class="suffix-invalid suffix-invalid__small suffix-invalid__large" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">build → three image sources → run.sh → healthy or rollback</figcaption>
+  </figure></p>
+<h2 id="why-not-just-docker-commit" class="heading-element">
+  <a href="#why-not-just-docker-commit" class="heading-mark"></a>Why not just <code>docker commit</code></h2><p>My first thought was <code>docker commit airflow airflow:20261111</code>. Two things in the container made that a bad idea.</p>
+<p><strong>The container layer is mostly junk.</strong> <code>docker diff airflow</code> listed 170 entries: 92 of them were <code>/tmp/manual_*.log</code> files from the morning&rsquo;s manual task runs. The rest included SSH agent sockets, a <code>/tmp/root_*_access_token.conf</code>, root&rsquo;s <code>.zsh_history</code>, vim state, the scheduler&rsquo;s 4.7 MB <code>airflow-scheduler.out</code>, and <code>__pycache__</code>. A commit would ship all of it, history included.</p>
+<p><strong>The env holds secrets.</strong> <code>docker commit</code> copies the container&rsquo;s <code>Config.Env</code> into the image. Counting secret env vars per image:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> t in v1.1 v1.2 v1.3<span class="p">;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$t</span><span class="s2">: </span><span class="k">$(</span>docker inspect -f <span class="s1">&#39;{{range .Config.Env}}{{println .}}{{end}}&#39;</span> 192.168.1.162:5000/airflow:<span class="nv">$t</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="p">|</span> grep -cE <span class="s1">&#39;SQL_ALCHEMY_CONN=mysql|FERNET_KEY=|WEBSERVER__SECRET_KEY=&#39;</span><span class="k">)</span><span class="s2"> secret env vars&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">v1.1: 0 secret env vars
+</span></span><span class="line"><span class="cl">v1.2: 3 secret env vars
+</span></span><span class="line"><span class="cl">v1.3: 3 secret env vars</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>v1.2</code> was itself a commit, so since last night anyone who could pull the image could read the DB password with <code>docker inspect</code>. I also checked <code>docker history --no-trunc</code> for the password and found 0 hits, so the secrets are only in the image config, not in a layer. That matters: a new image can override them.</p>
+<p>A fair question while writing this: shouldn&rsquo;t the snapshot skip <code>/app/logs</code>, since it&rsquo;s large and irrelevant? It already does. <code>/app/logs</code> is a bind mount, and <strong>Docker never puts a mounted path into an image</strong>, whether by <code>commit</code> or <code>build</code>. The same goes for <code>/app/dags</code>, <code>/shared</code>, <code>/data</code> and the socket.</p>
+<h2 id="buildairflowsh-keep-what-changed-drop-the-rest" class="heading-element">
+  <a href="#buildairflowsh-keep-what-changed-drop-the-rest" class="heading-mark"></a>build.airflow.sh: keep what changed, drop the rest</h2><p>Instead of committing, the script builds a normal image on top of the container&rsquo;s own image, adding only the files the container really changed.</p>
+<h3 id="which-files" class="heading-element">
+  <a href="#which-files" class="heading-mark"></a>Which files</h3><p>The script reads <code>docker diff</code>, then removes every mounted path (taken from <code>.Mounts[].Destination</code>) and a fixed list of noise. What survives goes into a tar, copied out of the container with <code>docker exec tar</code>:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker <span class="nb">exec</span> -i <span class="s2">&#34;</span><span class="nv">$CONTAINER</span><span class="s2">&#34;</span> tar -C / --no-recursion --ignore-failed-read -cf - -T - <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    &lt; <span class="s2">&#34;</span><span class="nv">$DIR</span><span class="s2">/changed.txt&#34;</span> &gt; <span class="s2">&#34;</span><span class="nv">$DIR</span><span class="s2">/changes.tar&#34;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details that matter:</p>
+<ul>
+<li><strong><code>-i</code> on <code>docker exec</code>.</strong> Without it the file list never reaches tar&rsquo;s stdin. The same mistake gave a RabbitMQ user an empty password that morning.</li>
+<li><strong><code>--no-recursion</code>.</strong> <code>docker diff</code> lists <code>C /usr</code>, <code>C /usr/local</code> and so on for every changed parent directory. With recursion, a <code>C /usr</code> entry would tar the whole of <code>/usr</code>.</li>
+<li><strong><code>--ignore-failed-read</code>.</strong> A file can vanish between <code>diff</code> and <code>tar</code>, for example a rotated log. That shouldn&rsquo;t fail the build.</li>
+<li><strong>Deleted files</strong> (<code>D</code> entries) go into <code>deleted.txt</code>, and the image runs <code>xargs rm -rf</code> on them.</li>
+</ul>
+<p>On the live container this kept 13 entries, and the only real file changes were in <code>/app/airflow.cfg</code>. One was <code>parallelism = 128</code>. The other was an edit someone had made in vim at 10:59 that day, adding <code>basic_auth</code> to the API <code>auth_backends</code>. That one would have been lost on the next rebuild, because it existed nowhere else. <strong>This is the point of building from the container: hand edits made under pressure get carried forward instead of silently dropped.</strong></p>
+<h3 id="the-generated-dockerfile" class="heading-element">
+  <a href="#the-generated-dockerfile" class="heading-mark"></a>The generated Dockerfile</h3><div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> 192.168.1.162:5000/airflow:v1.3</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">## files changed in container airflow (see changed.txt / deleted.txt)</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ADD</span> changes.tar /<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> deleted.txt /tmp/airflow-deleted.txt<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> xargs -r -d <span class="s1">&#39;\n&#39;</span> rm -rf &lt; /tmp/airflow-deleted.txt<span class="p">;</span> rm -f /tmp/airflow-deleted.txt<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> restart.sh /app/restart.sh<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> chmod <span class="m">755</span> /app/restart.sh<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">## runtime settings of the running container</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG</span><span class="o">=</span><span class="s2">&#34;128&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">AIRFLOW__CORE__PARALLELISM</span><span class="o">=</span><span class="s2">&#34;128&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">## secrets come from run.sh&#39;s --env-file, never from the image</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">AIRFLOW__CORE__FERNET_KEY</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">AIRFLOW__DATABASE__SQL_ALCHEMY_CONN</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span> <span class="nv">AIRFLOW__WEBSERVER__SECRET_KEY</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;/app/restart.sh&#34;</span><span class="p">,</span> <span class="s2">&#34;run&#34;</span><span class="p">]</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>Non-secret runtime settings get baked in.</strong> These are <code>AIRFLOW__*</code> variables the container had but its image didn&rsquo;t. That&rsquo;s how the two concurrency settings, lost twice the night before, become part of the image.</li>
+<li><strong>Secrets get blanked.</strong> Docker can&rsquo;t unset an inherited <code>ENV</code>, but it can override it with an empty value. <code>run.sh</code> passes the real values with <code>--env-file</code> at runtime. After building, the script checks the new image&rsquo;s env and fails if any secret variable still has a value.</li>
+<li><strong>The base is pinned.</strong> If the container&rsquo;s tag has since moved to another image, the script tags the exact image the container runs as <code>base-TAG</code>, so the snapshot is of what&rsquo;s actually running.</li>
+</ul>
+<h3 id="checks-before-anything-leaves-the-host" class="heading-element">
+  <a href="#checks-before-anything-leaves-the-host" class="heading-mark"></a>Checks before anything leaves the host</h3><p>The requirement is that whatever the build produces must work, because the next rebuild starts from it. So there are three gates, and nothing is pushed or saved unless all three pass:</p>
+<ol>
+<li><strong>Source health.</strong> It refuses to build if the running container&rsquo;s own <code>/health</code> doesn&rsquo;t report a healthy metadatabase and scheduler. A broken container never becomes the next base.</li>
+<li><strong>Static checks</strong> in a throwaway container. It mounts the real binds read-only, with no docker socket, and checks the airflow version, the concurrency values, that <code>restart.sh</code> is present, and that no registry login is in the image. It imports wepy&rsquo;s <code>CleanStartDockerOperator</code> and <strong>parses every DAG with <code>DagBag</code>: 66 DAGs, 0 import errors.</strong></li>
+<li><strong>Boot test</strong> in a sandbox. It starts the image through its real entrypoint, <code>/app/restart.sh run</code>, with sqlite, SequentialExecutor, an empty DAG folder, no mounts and no published ports, and requires <code>restart.sh status</code> to pass. This can&rsquo;t touch production.</li>
+</ol>
+<p><figure><a class="lightgallery" href="shot-build.png?size=large" data-thumbnail="shot-build.png?size=small" data-sub-html="<h2>build.airflow.sh output</h2><p>The build (then still named build.sh): 170 diff entries down to 13, DAGs parsed, boot test, push, tarball</p>"><img loading="lazy" src="shot-build.png" alt="build.airflow.sh output" srcset="shot-build.png?size=small, shot-build.png?size=medium 1.5x, shot-build.png?size=large 2x" data-title="The build (then still named build.sh): 170 diff entries down to 13, DAGs parsed, boot test, push, tarball" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">build.airflow.sh output</figcaption>
+  </figure></p>
+<p>One thing in the DagBag output made me stop and check: a CRITICAL line from a DAG&rsquo;s <code>check_cmd</code> saying a model update had &ldquo;failed&rdquo;. DAG files run their top-level code at parse time, and this one is part of an alerting path. I read the source. <code>check_cmd</code> only logs and returns a shell string; the WeChat send is inside that string and only runs if the task runs. The production scheduler parses the same file every 30 seconds. Still, <strong>&ldquo;parse all DAGs&rdquo; is not free of side effects, and it&rsquo;s worth checking what yours do at import.</strong></p>
+<p>Then it pushes to the registry and saves <code>docker save | gzip</code> to <code>/data/docker-images/airflow/airflow-20261111.tar.gz</code>, with a <code>.sha256</code> next to it and mode 600. The newest 7 are kept.</p>
+<h2 id="restartsh-a-supervisor-instead-of--exec" class="heading-element">
+  <a href="#restartsh-a-supervisor-instead-of--exec" class="heading-mark"></a>restart.sh: a supervisor instead of <code>&amp; exec</code></h2><p>The old entrypoint was:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">rm -f /app/airflow-*.pid<span class="p">;</span> airflow scheduler &gt;&gt; /app/airflow-scheduler.out 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">&amp;</span> <span class="nb">exec</span> airflow webserver --port <span class="m">8080</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The webserver is PID 1, so if it dies the container restarts. <strong>If the scheduler dies, nothing notices.</strong> The UI keeps working, and nothing gets scheduled. The 2023 version in <a href="/2023-04-25-airflow-%E8%BF%90%E7%BB%B4/">airflow 运维</a> used <code>airflow scheduler -D</code>, which has its own trap when used in an entrypoint: python-daemon won&rsquo;t detach when its parent is PID 1, so the command never gets past the first <code>-D</code>.</p>
+<p>The new <code>/app/restart.sh</code> has three modes:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">/app/restart.sh run       # entrypoint: start scheduler + webserver, restart either if it exits
+</span></span><span class="line"><span class="cl">/app/restart.sh status    # exit 0 if the scheduler has a live SchedulerJob and /health is healthy
+</span></span><span class="line"><span class="cl">/app/restart.sh           # restart both under the running supervisor (refuses while tasks run)</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>The container runs with <code>--init</code>.</strong> <code>docker-init</code> is PID 1, so zombies get reaped and signals reach the script.</li>
+<li><strong>The container&rsquo;s bash is 4.2, which has no <code>wait -n</code>.</strong> So the loop polls every 5 s with <code>sleep 5 &amp; wait $!</code> rather than a plain <code>sleep</code>, so a <code>SIGTERM</code> or <code>SIGHUP</code> trap fires immediately instead of after the sleep.</li>
+<li><strong>A service that dies within 60 s of starting</strong> gets a 30 s pause before the next start, so a broken config can&rsquo;t spin.</li>
+<li><strong><code>docker exec airflow /app/restart.sh</code> with no argument</strong> is how people restarted Airflow before, so I kept that meaning. It finds the supervisor (pid file plus a <code>/proc/&lt;pid&gt;/cmdline</code> check, because the pid file survives container restarts) and sends it <code>SIGHUP</code>. It refuses while task instances are running or queued, because LocalExecutor task runners are children of the scheduler.</li>
+</ul>
+<p>I tested it in a sandbox container: killed the scheduler with <code>SIGKILL</code>, restarted through <code>docker exec</code>, tried to start a second supervisor, and stopped the container.</p>
+<p><figure><a class="lightgallery" href="shot-supervisor.png?size=large" data-thumbnail="shot-supervisor.png?size=small" data-sub-html="<h2>restart.sh tests</h2><p>Scheduler killed and restarted in the same second; the in-container restart; a second supervisor refused; docker stop in 3.3 s</p>"><img loading="lazy" src="shot-supervisor.png" alt="restart.sh tests" srcset="shot-supervisor.png?size=small, shot-supervisor.png?size=medium 1.5x, shot-supervisor.png?size=large 2x" data-title="Scheduler killed and restarted in the same second; the in-container restart; a second supervisor refused; docker stop in 3.3 s" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">restart.sh tests</figcaption>
+  </figure></p>
+<h2 id="runsh-recreate-from-local-registry-or-tarball" class="heading-element">
+  <a href="#runsh-recreate-from-local-registry-or-tarball" class="heading-mark"></a>run.sh: recreate from local, registry or tarball</h2><div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">./run.sh TAG [--from local|tarball|registry] [--force] [--dry-run] [--no-rollback]</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li><strong>Get the image.</strong> By default it uses the local image if there is one, then the tarball (after checking its sha256), then the registry.</li>
+<li><strong>Copy the current container&rsquo;s settings.</strong> It reads binds, ports, hostname, restart policy, privileged, shm-size, network and extra hosts with <code>jq</code> from <code>docker inspect</code>. The <code>AIRFLOW*</code>/<code>TZ</code>/<code>LANG</code> env goes into a mode-600 env file under <code>~/airflow-deploy/&lt;time&gt;/</code>. If the container is gone, it uses the last saved copy. <strong>It refuses if any of the five required mounts is missing.</strong></li>
+<li><strong>Refuse while tasks run.</strong> It lists running and queued task instances. A <code>--dry-run</code> against production at 17:01 showed two of them, so a real run would have stopped there. With <code>--force</code> it uses <code>docker kill</code> rather than <code>docker stop</code>: a graceful stop sends <code>SIGTERM</code> to the task runners, and their <code>on_kill</code> stops the live trading containers. That was the <a href="/2026-11-11-airflow-outage-postmortem/">10:03 outage</a> in the postmortem.</li>
+<li><strong>Swap.</strong> The old container becomes <code>airflow-prev-&lt;time&gt;</code> with <code>restart=no</code>, and the new one starts with <code>--init</code> and <code>/app/restart.sh run</code>.</li>
+<li><strong>Check health.</strong> The new container passes only if all of these hold: <code>restart.sh status</code>, a SchedulerJob that started <em>after</em> the new container, the trading calendar, <code>/data</code>, DAG files present, the docker socket, the registry login, both concurrency values at 128 or more, the <code>MultiCronTimetable</code> plugin, and the UI&rsquo;s <code>/health</code> on the host port.</li>
+<li><strong>Roll back</strong> on any failure.</li>
+</ol>
+<p>To test it without touching production, I made a stand-in: a container called <code>airflow-rt</code> started exactly the way the current one was, but with a sqlite DB, one placeholder DAG and UI port 18081. Then I ran <code>run.sh</code> against it with <code>CONTAINER=airflow-rt</code>. The featured image at the top is one of those runs.</p>
+<h2 id="three-things-the-tests-caught" class="heading-element">
+  <a href="#three-things-the-tests-caught" class="heading-mark"></a>Three things the tests caught</h2><p><strong>1. <code>airflow jobs check --allow-multiple</code> fails on its own.</strong> <code>status</code> reported the scheduler as down while <code>/health</code> said it was healthy. Running the command by hand:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">To use option --allow-multiple, you must set the limit to a value greater than 1.</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The fix is <code>airflow jobs check --job-type SchedulerJob --local --limit 5 --allow-multiple</code>.</p>
+<p><strong>2. <code>set -e</code> skipped the rollback.</strong> To test the rollback I forced a failed health check with <code>HEALTH_TIMEOUT=0</code>. The script exited 1, and the new, unchecked container stayed in place. With zero loop iterations, <code>status.txt</code> never existed, so <code>cat status.txt | sed</code> failed under <code>set -euo pipefail</code> and the script ended before reaching the rollback code. Fixing that one line isn&rsquo;t enough, because the next unexpected failure would do the same. <strong>The real fix is an <code>EXIT</code> trap: once the old container is stopped, any non-zero exit rolls back.</strong></p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">on_exit<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">local</span> <span class="nv">rc</span><span class="o">=</span><span class="nv">$?</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[</span> <span class="nv">$rc</span> -ne <span class="m">0</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="nv">$SWAPPED</span> <span class="o">=</span> <span class="m">1</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="nv">$DONE</span> <span class="o">=</span> <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="o">[</span> <span class="nv">$ROLLBACK</span> <span class="o">=</span> <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> rollback<span class="p">;</span> <span class="k">else</span> log <span class="s2">&#34;--no-rollback: leaving </span><span class="nv">$CONTAINER</span><span class="s2"> as it is&#34;</span><span class="p">;</span> <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="nv">$rc</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="nb">trap</span> on_exit EXIT</span></span></code></pre></td></tr></table>
+</div>
+</div><p><figure><a class="lightgallery" href="shot-rollback.png?size=large" data-thumbnail="shot-rollback.png?size=small" data-sub-html="<h2>rollback before and after</h2><p>The same forced failure, before and after the EXIT trap</p>"><img loading="lazy" src="shot-rollback.png" alt="rollback before and after" srcset="shot-rollback.png?size=small, shot-rollback.png?size=medium 1.5x, shot-rollback.png?size=large 2x" data-title="The same forced failure, before and after the EXIT trap" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a><figcaption class="image-caption">rollback before and after</figcaption>
+  </figure></p>
+<p><strong>3. <code>/health</code> can vouch for a dead scheduler.</strong> The tests didn&rsquo;t hit this one; I found it reading the first successful run&rsquo;s output. <code>/health</code> calls the scheduler healthy if <em>any</em> SchedulerJob heartbeat is less than 30 s old. After a <code>docker kill</code>, the old scheduler&rsquo;s last heartbeat stays fresh for up to 30 s, and the first health probe runs 10 s after the start. So <code>run.sh</code> also requires a running SchedulerJob whose <code>start_date</code> is after the new container&rsquo;s <code>StartedAt</code>, and prints its id. You need that id anyway if any <code>queued_by_job_id</code> has to be repointed.</p>
+<h2 id="results" class="heading-element">
+  <a href="#results" class="heading-mark"></a>Results</h2><p>All deploy times are against the stand-in. Production is still on <code>v1.3</code> and will move when nothing is running.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>build: diff, tar, image</td>
+<td>6 s</td>
+</tr>
+<tr>
+<td>build: DagBag parse of 66 DAGs</td>
+<td>7 s</td>
+</tr>
+<tr>
+<td>build: sandbox boot test</td>
+<td>27 s</td>
+</tr>
+<tr>
+<td>build: push (new layers only)</td>
+<td>38 s</td>
+</tr>
+<tr>
+<td>build: <code>docker save | gzip</code>, 2.1G tarball</td>
+<td>5 min 33 s</td>
+</tr>
+<tr>
+<td>deploy from local image, start to healthy</td>
+<td><strong>16 s</strong></td>
+</tr>
+<tr>
+<td>deploy from registry (already up to date), whole script</td>
+<td>22 s</td>
+</tr>
+<tr>
+<td>deploy from tarball, checksum + load + healthy</td>
+<td>69 s</td>
+</tr>
+<tr>
+<td>forced failure → old container running again</td>
+<td><strong>1 s</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="takeaways" class="heading-element">
+  <a href="#takeaways" class="heading-mark"></a>Takeaways</h2><ol>
+<li><strong>Build from what&rsquo;s running, not from memory.</strong> The <code>auth_backends</code> edit from 10:59 existed only in the container. A diff-based build keeps hand fixes like that; a clean rebuild from an old Dockerfile would have dropped it.</li>
+<li><strong>Mounts are never in an image, so don&rsquo;t snapshot them, but check them on every deploy.</strong> Logs and DAGs never needed excluding. What kept breaking was containers recreated <em>without</em> those mounts, which is why <code>run.sh</code> refuses when one is missing.</li>
+<li><strong><code>docker commit</code> copies the env, and the env is where secrets go.</strong> Check <code>docker inspect -f '{{.Config.Env}}'</code> on any image you&rsquo;re about to push. Override secrets with empty values and pass the real ones at runtime.</li>
+<li><strong>Test the rollback by forcing a failure.</strong> My rollback looked right and didn&rsquo;t work. Under <code>set -e</code>, rollback belongs in an <code>EXIT</code> trap, not after the step that might fail.</li>
+<li><strong>A health check must prove the <em>new</em> process is healthy.</strong> A heartbeat in a shared database can belong to the process you just killed.</li>
+<li><strong>Supervise both processes.</strong> <code>cmd &amp; exec other</code> only watches <code>other</code>.</li>
+</ol>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li>Postmortem this follows: <a href="/2026-11-11-airflow-outage-postmortem/">One night, one dead disk</a></li>
+<li><a href="https://airflow.apache.org/docs/apache-airflow/2.7.3/cli-and-env-variables-ref.html#check"target="_blank" rel="external nofollow noopener noreferrer"><code>airflow jobs check</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a> and the <a href="https://airflow.apache.org/docs/apache-airflow/2.7.3/administration-and-deployment/logging-monitoring/check-health.html"target="_blank" rel="external nofollow noopener noreferrer"><code>/health</code> endpoint<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://docs.docker.com/reference/cli/docker/container/diff/"target="_blank" rel="external nofollow noopener noreferrer"><code>docker diff</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a>, <a href="https://docs.docker.com/reference/cli/docker/container/run/#init"target="_blank" rel="external nofollow noopener noreferrer"><code>docker run --init</code><i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li>Scripts: <a href="build.airflow.sh">build.airflow.sh</a>, <a href="run.sh">run.sh</a>, <a href="restart.sh">restart.sh</a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-11-11-airflow-outage-postmortem/" title="One night, one dead disk: an Airflow trading-host outage and what it taught me">One night, one dead disk: an Airflow trading-host outage and what it taught me</a></li><li>
+          <a href="/2023-07-25-bash%E5%85%A5%E9%97%A8/" title="bash入门">bash入门</a></li><li>
+          <a href="/2023-06-29-docker-buildx/" title="docker buildx">docker buildx</a></li><li>
+          <a href="/2023-02-15-bashrc-prompt-%E9%A2%9C%E8%89%B2%E8%AE%BE%E7%BD%AE/" title="bashrc prompt 颜色设置">bashrc prompt 颜色设置</a></li><li>
+          <a href="/2022-11-23-docker-%E4%BD%BF%E7%94%A8-systemctl/" title="Docker 使用 systemctl">Docker 使用 systemctl</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-11-11 17:04:23">更新于 2026-11-11&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-11-11-airflow-image-snapshot-and-redeploy/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" data-title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" data-hashtags="Linux,airflow,docker,bash,deployment,supervisor"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" data-title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" data-title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/" data-title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/airflow/" class="post-tag" title="标签 - Airflow">Airflow</a><a href="/tags/docker/" class="post-tag" title="标签 - Docker">Docker</a><a href="/tags/bash/" class="post-tag" title="标签 - Bash">Bash</a><a href="/tags/deployment/" class="post-tag" title="标签 - Deployment">Deployment</a><a href="/tags/supervisor/" class="post-tag" title="标签 - Supervisor">Supervisor</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-11-11-chrome-thin-monospace-powerline/" class="post-nav-item" rel="prev" title="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

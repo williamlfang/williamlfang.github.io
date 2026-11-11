@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="14">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+  </defs>
+  <rect width="900" height="380" fill="#ffffff"/>
+
+  <!-- source -->
+  <rect x="20" y="40" width="170" height="70" rx="8" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="105" y="70" text-anchor="middle" font-weight="bold">running container</text>
+  <text x="105" y="92" text-anchor="middle" fill="#334155">airflow (healthy?)</text>
+
+  <!-- build -->
+  <rect x="250" y="25" width="200" height="100" rx="8" fill="#fef9c3" stroke="#ca8a04"/>
+  <text x="350" y="50" text-anchor="middle" font-weight="bold">build.airflow.sh</text>
+  <text x="350" y="72" text-anchor="middle" fill="#334155">base + docker diff</text>
+  <text x="350" y="90" text-anchor="middle" fill="#334155">+ /app/restart.sh</text>
+  <text x="350" y="108" text-anchor="middle" fill="#334155">DagBag + boot test</text>
+  <line x1="190" y1="75" x2="248" y2="75" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- three sources -->
+  <rect x="520" y="10" width="170" height="40" rx="8" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="605" y="35" text-anchor="middle">local image</text>
+  <rect x="520" y="60" width="170" height="40" rx="8" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="605" y="85" text-anchor="middle">registry :TAG</text>
+  <rect x="520" y="110" width="170" height="40" rx="8" fill="#f1f5f9" stroke="#64748b"/>
+  <text x="605" y="135" text-anchor="middle">airflow-TAG.tar.gz</text>
+  <line x1="450" y1="60" x2="518" y2="30" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="450" y1="75" x2="518" y2="80" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="450" y1="95" x2="518" y2="128" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- run.sh -->
+  <rect x="520" y="200" width="170" height="80" rx="8" fill="#fef9c3" stroke="#ca8a04"/>
+  <text x="605" y="225" text-anchor="middle" font-weight="bold">run.sh TAG</text>
+  <text x="605" y="247" text-anchor="middle" fill="#334155">copy mounts/env</text>
+  <text x="605" y="265" text-anchor="middle" fill="#334155">refuse if tasks run</text>
+  <path d="M690,30 C760,30 760,170 640,198" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+  <path d="M690,80 C740,80 740,170 625,198" fill="none" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="605" y1="150" x2="605" y2="198" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- new container -->
+  <rect x="250" y="200" width="200" height="80" rx="8" fill="#e0f2fe" stroke="#0284c7"/>
+  <text x="350" y="225" text-anchor="middle" font-weight="bold">new container</text>
+  <text x="350" y="247" text-anchor="middle" fill="#334155">docker-init → restart.sh run</text>
+  <text x="350" y="265" text-anchor="middle" fill="#334155">→ scheduler + webserver</text>
+  <line x1="520" y1="240" x2="452" y2="240" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+
+  <!-- health outcome -->
+  <rect x="20" y="170" width="170" height="60" rx="8" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="105" y="195" text-anchor="middle" font-weight="bold">healthy</text>
+  <text x="105" y="215" text-anchor="middle" fill="#334155">old kept as -prev-</text>
+  <rect x="20" y="260" width="170" height="60" rx="8" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="105" y="285" text-anchor="middle" font-weight="bold">any failure</text>
+  <text x="105" y="305" text-anchor="middle" fill="#334155">EXIT trap: roll back</text>
+  <line x1="250" y1="225" x2="192" y2="205" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="250" y1="260" x2="192" y2="285" stroke="#475569" stroke-width="2" marker-end="url(#a)"/>
+
+  <text x="450" y="355" text-anchor="middle" fill="#475569">health = a SchedulerJob newer than the container, /health, mounts, socket, login, concurrency, plugin</text>
+</svg>

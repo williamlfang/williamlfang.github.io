@@ -3,13 +3,41 @@
     <title>Linux - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/linux/</link>
     <description>Linux - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/linux/" rel="self" type="application/rss+xml" /><item>
+  <title>Rebuildable Airflow: snapshot the running container, redeploy with a rollback</title>
+  <link>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</link>
+  <pubDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" alt="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" referrerpolicy="no-referrer"/></div><p>The <a href="/2026-11-11-airflow-outage-postmortem/">outage postmortem</a> had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.</p>
+<p>So the same afternoon I wrote three small scripts. <code>build.airflow.sh</code> turns the running container into a dated image (<code>airflow:20261111</code>), pushes it, and saves a tarball. <code>run.sh</code> recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. <code>restart.sh</code> runs inside the container and keeps the scheduler and webserver up. <strong>From the 170 entries in <code>docker diff</code>, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.</strong></p>]]></description>
+</item>
+<item>
+  <title>Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font</title>
+  <link>https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/</link>
+  <pubDate>Wed, 11 Nov 2026 13:47:39 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/featured-image.png" alt="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font" title="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font" referrerpolicy="no-referrer"/></div><p>Two pages I look at every day had the same problem: monospace text that was too
+thin and pale to read comfortably. One was the log viewer in our Airflow 2.7 web
+UI, the other the dark theme of an internal Tabler dashboard. In both, Chrome was
+drawing the text in <strong>Courier New</strong>, a hairline font, even though both pages list
+four or five better fonts before it.</p>
+<p>The cause was a fontconfig file from the <code>fonts-powerline</code> package, installed in
+2019. It puts the symbols-only &ldquo;PowerlineSymbols&rdquo; font <strong>in front of</strong> most
+monospace families, and Chrome then refuses every one of them. A one-rule
+fontconfig file fixed it.</p>]]></description>
+</item>
+<item>
   <title>One night, one dead disk: an Airflow trading-host outage and what it taught me</title>
   <link>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</link>
   <pubDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" title="One night, one dead disk: an Airflow trading-host outage and what it taught me" referrerpolicy="no-referrer"/></div><p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" title="One night, one dead disk: an Airflow trading-host outage and what it taught me" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-11-11:</strong> the &ldquo;a restart is a procedure, not a command&rdquo; advice below is now three scripts: a dated image built from the running container, a redeploy that refuses while tasks run and rolls back on failure, and a supervisor inside the container. See <a href="/2026-11-11-airflow-image-snapshot-and-redeploy/">Rebuildable Airflow</a>.</p>
+</blockquote>
+<p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
 <p>Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again.</p>]]></description>
 </item>
 <item>
@@ -157,42 +185,6 @@ in a broken state. Unlike <a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/">
 and <a href="/2026-09-22-chatgpt-desktop-on-mint-20/">ChatGPT Desktop</a>,
 there is no clean way to patch around it this time. The practical fix is to run
 the last 1.x GUI with an up-to-date core.</p>]]></description>
-</item>
-<item>
-  <title>Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</title>
-  <link>https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/</link>
-  <pubDate>Sat, 26 Sep 2026 14:45:00 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/</guid>
-  <description><![CDATA[<p>我把 Linux 的时区设成 <code>Asia/Tokyo</code>，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 <code>14:37 JST</code>，tmux 却显示 <code>13:37 CST</code>。问题不在 <code>timedatectl set-time</code>：一个早已启动的 tmux server 仍按旧时区格式化状态栏。</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-timezone Asia/Tokyo
-</span></span><span class="line"><span class="cl">sudo timedatectl set-ntp <span class="nb">false</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># aligned to real Asia/Shanghai time</span>
-</span></span><span class="line"><span class="cl">timedatectl set-time <span class="s2">&#34;2026-09-26 15:33:00&#34;</span></span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>Installing ChatGPT Desktop on Mint 20 / Ubuntu 20.04 — when the blocker isn&#39;t glibc</title>
-  <link>https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/</link>
-  <pubDate>Tue, 22 Sep 2026 16:16:26 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-09-22-chatgpt-desktop-on-mint-20/</guid>
-  <description><![CDATA[<p>OpenAI shipped an official ChatGPT Desktop for Linux in August 2026 (preview),
-supporting Ubuntu 24.04/26.04, Debian 13, Fedora 43/44 and Arch. Mint 20.3
-(focal, glibc 2.31) is nowhere on that list, so I expected a rerun of the
-<a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/">Claude Desktop surgery</a>.</p>
-<p>It wasn&rsquo;t. The glibc floor was fine all along — the package is blocked by three
-<strong>library renames</strong> and one optional TPM module. The fix is smaller, and the
-audit is worth showing because the conclusion is the opposite of last time.</p>]]></description>
 </item>
 </channel>
 </rss>

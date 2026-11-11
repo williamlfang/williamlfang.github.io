@@ -3,7 +3,19 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+  <title>One night, one dead disk: an Airflow trading-host outage and what it taught me</title>
+  <link>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</link>
+  <pubDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" title="One night, one dead disk: an Airflow trading-host outage and what it taught me" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-11-11:</strong> the &ldquo;a restart is a procedure, not a command&rdquo; advice below is now three scripts: a dated image built from the running container, a redeploy that refuses while tasks run and rolls back on failure, and a supervisor inside the container. See <a href="/2026-11-11-airflow-image-snapshot-and-redeploy/">Rebuildable Airflow</a>.</p>
+</blockquote>
+<p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
+<p>Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again.</p>]]></description>
+</item>
+<item>
   <title>Use the IDC proxy from XPS and Codex</title>
   <link>https://williamlfang.github.io/2026-11-06-idc-v2raya-proxy-codex/</link>
   <pubDate>Fri, 06 Nov 2026 13:00:00 &#43;0800</pubDate>
@@ -60,12 +72,40 @@ up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two r
 </table>]]></description>
 </item>
 <item>
+  <title>Rebuildable Airflow: snapshot the running container, redeploy with a rollback</title>
+  <link>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</link>
+  <pubDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" alt="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" referrerpolicy="no-referrer"/></div><p>The <a href="/2026-11-11-airflow-outage-postmortem/">outage postmortem</a> had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.</p>
+<p>So the same afternoon I wrote three small scripts. <code>build.airflow.sh</code> turns the running container into a dated image (<code>airflow:20261111</code>), pushes it, and saves a tarball. <code>run.sh</code> recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. <code>restart.sh</code> runs inside the container and keeps the scheduler and webserver up. <strong>From the 170 entries in <code>docker diff</code>, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.</strong></p>]]></description>
+</item>
+<item>
+  <title>Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font</title>
+  <link>https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/</link>
+  <pubDate>Wed, 11 Nov 2026 13:47:39 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-chrome-thin-monospace-powerline/featured-image.png" alt="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font" title="Thin, pale monospace in Chrome: a Powerline font config was vetoing every good mono font" referrerpolicy="no-referrer"/></div><p>Two pages I look at every day had the same problem: monospace text that was too
+thin and pale to read comfortably. One was the log viewer in our Airflow 2.7 web
+UI, the other the dark theme of an internal Tabler dashboard. In both, Chrome was
+drawing the text in <strong>Courier New</strong>, a hairline font, even though both pages list
+four or five better fonts before it.</p>
+<p>The cause was a fontconfig file from the <code>fonts-powerline</code> package, installed in
+2019. It puts the symbols-only &ldquo;PowerlineSymbols&rdquo; font <strong>in front of</strong> most
+monospace families, and Chrome then refuses every one of them. A one-rule
+fontconfig file fixed it.</p>]]></description>
+</item>
+<item>
   <title>One night, one dead disk: an Airflow trading-host outage and what it taught me</title>
   <link>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</link>
   <pubDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" title="One night, one dead disk: an Airflow trading-host outage and what it taught me" referrerpolicy="no-referrer"/></div><p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" title="One night, one dead disk: an Airflow trading-host outage and what it taught me" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-11-11:</strong> the &ldquo;a restart is a procedure, not a command&rdquo; advice below is now three scripts: a dated image built from the running container, a redeploy that refuses while tasks run and rolls back on failure, and a supervisor inside the container. See <a href="/2026-11-11-airflow-image-snapshot-and-redeploy/">Rebuildable Airflow</a>.</p>
+</blockquote>
+<p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
 <p>Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again.</p>]]></description>
 </item>
 <item>
@@ -190,38 +230,6 @@ from another shell the same build worked.</p>
 client in your own shell, using your shell&rsquo;s proxy variables.</strong> My interactive
 zsh exports none, so that one request went direct and timed out. Two <code>export</code>
 lines in the build script fixed it.</p>]]></description>
-</item>
-<item>
-  <title>Logging a full pandas DataFrame from an f-string: rebuild it from the caller&#39;s source</title>
-  <link>https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/</link>
-  <pubDate>Thu, 15 Oct 2026 11:20:12 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-15-log-full-dataframe-from-fstring/</guid>
-  <description><![CDATA[<p>A daily script of mine logs its intermediate DataFrames with
-<code>log.crt(f&quot;&quot;&quot;...{tgt = }...&quot;&quot;&quot;)</code>. The log showed 10 of the 90 rows, with the
-header stuck to the end of <code>tgt = </code>. Switching to <code>tgt.to_string()</code> printed every
-row, but the header ended up two columns left of the data.</p>
-<p>The fix I ended up with keeps the f-string as it is and adds one argument:
-<code>log.crt(f&quot;...{tgt = }...&quot;, full=True)</code>. That looks impossible, because the
-f-string is already built when the logger runs. The logger gets around it by
-finding the f-string in the caller&rsquo;s source and evaluating it a second time.</p>]]></description>
-</item>
-<item>
-  <title>Fixing duplicated tmux status bars and missing icons in Termius on iPhone</title>
-  <link>https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/</link>
-  <pubDate>Fri, 09 Oct 2026 23:10:36 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-09-tmux-termius-iphone-status-bar/featured-image.png" alt="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" title="Fixing duplicated tmux status bars and missing icons in Termius on iPhone" referrerpolicy="no-referrer"/></div><p>My tmux status bar looked fine on Linux, but connecting to the same session
-from Termius on my iPhone left repeated copies of the bar at the bottom of the
-screen. Moving it to the top was a useful workaround. I wanted to keep it at
-the bottom and keep the desktop&rsquo;s colors and useful widgets.</p>
-<p>The fix was a compact renderer for clients <strong>below 100 columns</strong>, followed by
-a targeted replacement for an icon the phone could not render. This extends
-my <a href="/2026-10-02-tmux-lag-round-2/">one-job status renderer</a>: the
-phone still uses one status job, and a desktop attached to the same session
-keeps its full layout. The app is <strong>Termius</strong>, although I initially called it
-Terminus.</p>]]></description>
 </item>
 </channel>
 </rss>

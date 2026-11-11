@@ -3,13 +3,25 @@
     <title>Docker - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/docker/</link>
     <description>Docker - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/docker/" rel="self" type="application/rss+xml" /><item>
+  <title>Rebuildable Airflow: snapshot the running container, redeploy with a rollback</title>
+  <link>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</link>
+  <pubDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/featured-image.png" alt="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" title="Rebuildable Airflow: snapshot the running container, redeploy with a rollback" referrerpolicy="no-referrer"/></div><p>The <a href="/2026-11-11-airflow-outage-postmortem/">outage postmortem</a> had one recurring theme: every time someone rebuilt the Airflow container by hand, it came back missing something. A mount, the concurrency settings, the plugin, the registry login. The image was whatever someone last typed, and the settings that mattered lived only in a running container.</p>
+<p>So the same afternoon I wrote three small scripts. <code>build.airflow.sh</code> turns the running container into a dated image (<code>airflow:20261111</code>), pushes it, and saves a tarball. <code>run.sh</code> recreates the container from that tag and checks it&rsquo;s actually healthy, or puts the old one back. <code>restart.sh</code> runs inside the container and keeps the scheduler and webserver up. <strong>From the 170 entries in <code>docker diff</code>, the image keeps 13 files (172K). A redeploy is healthy about 15 s after the new container starts, and a failed one rolls back in 1 s.</strong></p>]]></description>
+</item>
+<item>
   <title>One night, one dead disk: an Airflow trading-host outage and what it taught me</title>
   <link>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</link>
   <pubDate>Wed, 11 Nov 2026 10:48:10 &#43;0800</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" title="One night, one dead disk: an Airflow trading-host outage and what it taught me" referrerpolicy="no-referrer"/></div><p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" title="One night, one dead disk: an Airflow trading-host outage and what it taught me" referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-11-11:</strong> the &ldquo;a restart is a procedure, not a command&rdquo; advice below is now three scripts: a dated image built from the running container, a redeploy that refuses while tasks run and rolls back on failure, and a supervisor inside the container. See <a href="/2026-11-11-airflow-image-snapshot-and-redeploy/">Rebuildable Airflow</a>.</p>
+</blockquote>
+<p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
 <p>Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again.</p>]]></description>
 </item>
 <item>
@@ -152,14 +164,6 @@ lines in the build script fixed it.</p>]]></description>
   <author>william</author>
   <guid>https://williamlfang.github.io/2023-05-17-docker-in-docker/</guid>
   <description><![CDATA[airflow-in-docker 千万不能用 previlleged ，这个会导致无法 mount /var/run/docker.socket 1 2 3 4 5 6 7 8 9 ## root 执行 ## 不能用 previlleged，·普通用户也可以 docker run -dit \ -v /var/run/docker.sock:/var/run/docker.sock \ -v /usr/bin/docker:/bin/docker \ --name=airflow \ --pull=always \ -p 18080:8080]]></description>
-</item>
-<item>
-  <title>R 安装 stringi 包</title>
-  <link>https://williamlfang.github.io/2023-01-10-r-%E5%AE%89%E8%A3%85-stringi-%E5%8C%85/</link>
-  <pubDate>Tue, 10 Jan 2023 23:04:33 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2023-01-10-r-%E5%AE%89%E8%A3%85-stringi-%E5%8C%85/</guid>
-  <description><![CDATA[<p>命令行安装 R <code>stringi</code> 软件包</p>]]></description>
 </item>
 </channel>
 </rss>

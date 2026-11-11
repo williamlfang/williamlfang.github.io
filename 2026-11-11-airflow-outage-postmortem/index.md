@@ -1,6 +1,8 @@
 # One night, one dead disk: an Airflow trading-host outage and what it taught me
 
 
+&gt; **Update 2026-11-11:** the &#34;a restart is a procedure, not a command&#34; advice below is now three scripts: a dated image built from the running container, a redeploy that refuses while tasks run and rolls back on failure, and a supervisor inside the container. See [Rebuildable Airflow]({{&lt; relref &#34;2026-11-11-airflow-image-snapshot-and-redeploy&#34; &gt;}}).
+
 At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into **five separate incidents by 09:30 the next morning**: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.
 
 Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&#39;t happen the same way again.
