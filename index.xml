@@ -3,9 +3,27 @@
     <title>William</title>
     <link>https://williamlfang.github.io/</link>
     <description>William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</lastBuildDate>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 13 Nov 2026 17:44:31 &#43;0800</lastBuildDate>
       <atom:link href="https://williamlfang.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
+  <title>ChatGPT models in Claude Code: gptcc setup and troubleshooting</title>
+  <link>https://williamlfang.github.io/2026-11-13-gptcc-chatgpt-models-in-claude-code/</link>
+  <pubDate>Fri, 13 Nov 2026 17:44:31 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-13-gptcc-chatgpt-models-in-claude-code/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-13-gptcc-chatgpt-models-in-claude-code/featured-image.png" alt="ChatGPT models in Claude Code: gptcc setup and troubleshooting" title="ChatGPT models in Claude Code: gptcc setup and troubleshooting" referrerpolicy="no-referrer"/></div><p>I wanted Claude Code&rsquo;s terminal interface and tools to run ChatGPT models. Installing <code>gptcc</code> was only the first step. I could select Sol in <code>/model</code> and still get an account-hold error before the request reached GPT.</p>
+<p>The working setup uses a local authenticated gateway, ChatGPT OAuth, and Claude Code&rsquo;s custom model picker. It lists eight GPT models, makes <strong>Default resolve to GPT-6.1 Sol with medium effort</strong>, and displays Codex&rsquo;s five-hour and weekly usage beside the model. A real Claude Code session completed a file-read tool call in two turns.</p>]]></description>
+</item>
+<item>
+  <title>Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness</title>
+  <link>https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/</link>
+  <pubDate>Thu, 12 Nov 2026 12:00:00 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/morning-timeline.png" alt="Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness" title="Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness" referrerpolicy="no-referrer"/></div><p>I wanted to know which tasks in <code>trading.hyena17</code> make the morning setup run past 09:30. Sorting by duration was misleading. Some tasks deliberately run until 15:00, while a task that takes only five seconds can still start ninety seconds late.</p>
+<p>The Nov 12 run has two main problems. <strong>Stock-weight preparation takes 352.6 seconds and leaves only 4.4 seconds before 09:30.</strong> Downstream, the slowest shared-service startup takes another 167.3 seconds and finishes at 09:35:15. Redis itself takes 4.8 seconds. Its late start comes from its dependencies.</p>]]></description>
+</item>
+<item>
   <title>Rebuildable Airflow: snapshot the running container, redeploy with a rollback</title>
   <link>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</link>
   <pubDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</pubDate>
@@ -109,64 +127,6 @@ in a secure context, and an http page on a LAN IP is not one.</strong></p>
 <p>The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
 once. My first attempt, the usual one-line self-signed <code>openssl req -x509</code>, made the wrong kind of
 certificate: a CA certificate with no <code>serverAuth</code> usage, which Apple&rsquo;s rules reject.</p>]]></description>
-</item>
-<item>
-  <title>Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15</title>
-  <link>https://williamlfang.github.io/2026-10-17-nvim-big-log-files/</link>
-  <pubDate>Sat, 17 Oct 2026 12:00:00 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-17-nvim-big-log-files/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-17-nvim-big-log-files/featured-image.png" alt="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" referrerpolicy="no-referrer"/></div><p>After the <a href="/2026-10-03-nvim-startup-lazy-loading/">startup pass</a>,
-the slowest thing left in my Neovim was big log files. <code>~/log</code> holds logs from
-0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
-characters, growing by about 2 lines a second while I read it. Opening it took
-1.9 s before Neovim accepted a key. <code>n</code>, <code>/</code>, typing and <code>&lt;Esc&gt;</code> each stalled.
-Just reading the log while it grew <strong>froze the UI for about 11 of every 15
-seconds</strong>.</p>
-<p>No single plugin was to blame. Several separate pieces of work grew with the
-file, and one key mapping slowed <code>n</code> in every file. Medians of 5 runs in a
-real terminal:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th style="text-align:right">before</th>
-<th style="text-align:right">after</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>open the 87 MB log until keys are accepted</td>
-<td style="text-align:right">1857 ms</td>
-<td style="text-align:right"><strong>199 ms</strong></td>
-</tr>
-<tr>
-<td><code>n</code></td>
-<td style="text-align:right">523 ms</td>
-<td style="text-align:right"><strong>21 ms</strong></td>
-</tr>
-<tr>
-<td>UI blocked per 15 s while reading the growing log</td>
-<td style="text-align:right">10963 ms</td>
-<td style="text-align:right"><strong>0 ms</strong></td>
-</tr>
-</tbody>
-</table>]]></description>
-</item>
-<item>
-  <title>docker buildx: the builder had a proxy, the client didn&#39;t</title>
-  <link>https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/</link>
-  <pubDate>Fri, 16 Oct 2026 14:03:28 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-16-docker-buildx-anonymous-token-timeout/</guid>
-  <description><![CDATA[<p>My image build script started failing on its very first line, <code>FROM python:3.10</code>,
-with <code>failed to fetch anonymous token ... TLS handshake timeout</code>. The odd part:
-the buildx builder I use is created with a proxy for exactly this reason, and
-from another shell the same build worked.</p>
-<p><strong>The token request is not made by the builder. It is made by the <code>docker buildx</code>
-client in your own shell, using your shell&rsquo;s proxy variables.</strong> My interactive
-zsh exports none, so that one request went direct and timed out. Two <code>export</code>
-lines in the build script fixed it.</p>]]></description>
 </item>
 </channel>
 </rss>

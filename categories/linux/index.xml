@@ -3,7 +3,16 @@
     <title>Linux - 分类 - William</title>
     <link>https://williamlfang.github.io/categories/linux/</link>
     <description>Linux - 分类 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/linux/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 12 Nov 2026 12:00:00 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/linux/" rel="self" type="application/rss+xml" /><item>
+  <title>Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness</title>
+  <link>https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/</link>
+  <pubDate>Thu, 12 Nov 2026 12:00:00 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/morning-timeline.png" alt="Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness" title="Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness" referrerpolicy="no-referrer"/></div><p>I wanted to know which tasks in <code>trading.hyena17</code> make the morning setup run past 09:30. Sorting by duration was misleading. Some tasks deliberately run until 15:00, while a task that takes only five seconds can still start ninety seconds late.</p>
+<p>The Nov 12 run has two main problems. <strong>Stock-weight preparation takes 352.6 seconds and leaves only 4.4 seconds before 09:30.</strong> Downstream, the slowest shared-service startup takes another 167.3 seconds and finishes at 09:35:15. Redis itself takes 4.8 seconds. Its late start comes from its dependencies.</p>]]></description>
+</item>
+<item>
   <title>Rebuildable Airflow: snapshot the running container, redeploy with a rollback</title>
   <link>https://williamlfang.github.io/2026-11-11-airflow-image-snapshot-and-redeploy/</link>
   <pubDate>Wed, 11 Nov 2026 17:04:23 &#43;0800</pubDate>
@@ -182,14 +191,6 @@ the last 1.x GUI with an up-to-date core.</p>]]></description>
 </span></span><span class="line"><span class="cl">timedatectl set-time <span class="s2">&#34;2026-09-26 15:33:00&#34;</span></span></span></code></pre></td></tr></table>
 </div>
 </div>]]></description>
-</item>
-<item>
-  <title>设置 coredump 文件路径</title>
-  <link>https://williamlfang.github.io/2022-03-10-%E8%AE%BE%E7%BD%AE-coredump-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/</link>
-  <pubDate>Thu, 10 Mar 2022 13:21:02 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2022-03-10-%E8%AE%BE%E7%BD%AE-coredump-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/</guid>
-  <description><![CDATA[<p>设置 <code>coredump</code> 保存的文件路径。</p>]]></description>
 </item>
 </channel>
 </rss>

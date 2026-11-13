@@ -3,7 +3,16 @@
     <title>Performance - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/performance/</link>
     <description>Performance - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 06 Nov 2026 18:19:24 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/performance/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 12 Nov 2026 12:00:00 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/performance/" rel="self" type="application/rss+xml" /><item>
+  <title>Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness</title>
+  <link>https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/</link>
+  <pubDate>Thu, 12 Nov 2026 12:00:00 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/morning-timeline.png" alt="Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness" title="Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness" referrerpolicy="no-referrer"/></div><p>I wanted to know which tasks in <code>trading.hyena17</code> make the morning setup run past 09:30. Sorting by duration was misleading. Some tasks deliberately run until 15:00, while a task that takes only five seconds can still start ninety seconds late.</p>
+<p>The Nov 12 run has two main problems. <strong>Stock-weight preparation takes 352.6 seconds and leaves only 4.4 seconds before 09:30.</strong> Downstream, the slowest shared-service startup takes another 167.3 seconds and finishes at 09:35:15. Redis itself takes 4.8 seconds. Its late start comes from its dependencies.</p>]]></description>
+</item>
+<item>
   <title>Codex startup: a shared model cache and a five-second timeout</title>
   <link>https://williamlfang.github.io/2026-11-06-codex-startup-model-cache/</link>
   <pubDate>Fri, 06 Nov 2026 18:19:24 &#43;0800</pubDate>
@@ -214,14 +223,6 @@ which brought the server from <strong>~35% CPU to ~4%</strong> without restartin
   <author>william</author>
   <guid>https://williamlfang.github.io/2023-02-24-%E8%AF%81%E5%88%B8%E8%A1%8C%E6%83%85%E8%B0%83%E4%BC%98%E6%94%BB%E7%95%A5/</guid>
   <description><![CDATA[<p>行情调优</p>]]></description>
-</item>
-<item>
-  <title>Rcpp Basics</title>
-  <link>https://williamlfang.github.io/archives/2019-08-28-rcpp-basics/</link>
-  <pubDate>Wed, 28 Aug 2019 00:00:00 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/archives/2019-08-28-rcpp-basics/</guid>
-  <description><![CDATA[R 是一款面向统计与数据分析的编程语言．]]></description>
 </item>
 </channel>
 </rss>
