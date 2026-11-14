@@ -1,9 +1,34 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
   <channel>
-    <title>Ssh - 标签 - William</title>
+    <title>SSH - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/ssh/</link>
-    <description>Ssh - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 19 May 2023 15:44:37 &#43;0000</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/ssh/" rel="self" type="application/rss+xml" /><item>
+    <description>SSH - 标签 | William</description>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/ssh/" rel="self" type="application/rss+xml" /><item>
+  <title>Nested tmux over SSH: automatically route Ctrl-k to the remote</title>
+  <link>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</link>
+  <pubDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="Nested tmux over SSH: automatically route Ctrl-k to the remote" title="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." referrerpolicy="no-referrer"/></div><p>My local tmux and one remote tmux both used <code>Ctrl-k</code> as their prefix. After connecting over SSH, <code>Ctrl-k c</code> still created a <strong>local</strong> window. The local tmux consumed the prefix before SSH could send it to the server.</p>
+<p>I wanted <code>Ctrl-k</code> to control the remote when its tmux also accepted <code>Ctrl-k</code>, but stay local for other servers. The working solution uses a pane-local flag and one SSH probe per login. <code>Ctrl-b</code> remains an always-local escape hatch.</p>]]></description>
+</item>
+<item>
+  <title>Keep SSH reachable with a closed lid on Linux Mint</title>
+  <link>https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/</link>
+  <pubDate>Sat, 14 Nov 2026 15:14:18 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" alt="Keep SSH reachable with a closed lid on Linux Mint" title="Keep SSH reachable with a closed lid on Linux Mint" referrerpolicy="no-referrer"/></div><p>My Linux Mint notebook accepted SSH connections while its lid was open, but became unreachable when I shut it. The connection command was unchanged:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh william@127.0.0.1 -p <span class="m">62223</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The relevant setting was not in <code>sshd_config</code>. <strong>Cinnamon was configured to suspend the notebook when the lid closed, even on AC power.</strong> I changed just the AC lid action, leaving the battery policies alone.</p>]]></description>
+</item>
+<item>
   <title>git bare 项目</title>
   <link>https://williamlfang.github.io/2023-05-19-git-bare-%E9%A1%B9%E7%9B%AE/</link>
   <pubDate>Fri, 19 May 2023 15:44:37 &#43;0000</pubDate>
@@ -74,88 +99,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2022-04-16-systemd-%E5%AE%9E%E7%8E%B0%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</guid>
   <description><![CDATA[<p>基于 <code>Linux</code> 守护进程服务 <code>systemd</code> 实现了端口转发功能，这里有一个小坑，为了保证系统监控到 <code>ssh</code>，需要程序驻留在主进程，也就是不能添加 <code>-f</code> 这个参数选项。</p>]]></description>
-</item>
-<item>
-  <title>autossh 的几个小技巧</title>
-  <link>https://williamlfang.github.io/archives/2021-05-07-autossh-%E7%9A%84%E5%87%A0%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
-  <pubDate>Fri, 07 May 2021 00:00:00 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/archives/2021-05-07-autossh-%E7%9A%84%E5%87%A0%E4%B8%AA%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
-  <description><![CDATA[<h2 id="查看帮助设置环境变量" class="heading-element">
-  <a href="#%e6%9f%a5%e7%9c%8b%e5%b8%ae%e5%8a%a9%e8%ae%be%e7%bd%ae%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" class="heading-mark"></a>查看帮助，设置环境变量</h2><div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">autossh --help
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">usage: autossh <span class="o">[</span>-V<span class="o">]</span> <span class="o">[</span>-M monitor_port<span class="o">[</span>:echo_port<span class="o">]]</span> <span class="o">[</span>-f<span class="o">]</span> <span class="o">[</span>SSH_OPTIONS<span class="o">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    -M specifies monitor port. May be overridden by environment
-</span></span><span class="line"><span class="cl">       variable AUTOSSH_PORT. <span class="m">0</span> turns monitoring loop off.
-</span></span><span class="line"><span class="cl">       Alternatively, a port <span class="k">for</span> an <span class="nb">echo</span> service on the remote
-</span></span><span class="line"><span class="cl">       machine may be specified. <span class="o">(</span>Normally port 7.<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    -f run in background <span class="o">(</span>autossh handles this, and does not
-</span></span><span class="line"><span class="cl">       pass it to ssh.<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    -V print autossh version and exit.
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Environment variables are:
-</span></span><span class="line"><span class="cl">    AUTOSSH_GATETIME    - how long must an ssh session be established
-</span></span><span class="line"><span class="cl">                          before we decide it really was established
-</span></span><span class="line"><span class="cl">                          <span class="o">(</span>in seconds<span class="o">)</span>. Default is <span class="m">30</span> seconds<span class="p">;</span> use of -f
-</span></span><span class="line"><span class="cl">                          flag sets this to 0.
-</span></span><span class="line"><span class="cl">    AUTOSSH_LOGFILE     - file to log to <span class="o">(</span>default is to use the syslog
-</span></span><span class="line"><span class="cl">                          facility<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    AUTOSSH_LOGLEVEL    - level of log verbosity
-</span></span><span class="line"><span class="cl">    AUTOSSH_MAXLIFETIME - <span class="nb">set</span> the maximum <span class="nb">time</span> to live <span class="o">(</span>seconds<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    AUTOSSH_MAXSTART    - max <span class="nb">times</span> to restart <span class="o">(</span>default is no limit<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    AUTOSSH_MESSAGE     - message to append to <span class="nb">echo</span> string <span class="o">(</span>max <span class="m">64</span> bytes<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    AUTOSSH_PATH        - path to ssh <span class="k">if</span> not default
-</span></span><span class="line"><span class="cl">    AUTOSSH_PIDFILE     - write pid to this file
-</span></span><span class="line"><span class="cl">    AUTOSSH_POLL        - how often to check the connection <span class="o">(</span>seconds<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    AUTOSSH_FIRST_POLL  - <span class="nb">time</span> before first connection check <span class="o">(</span>seconds<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    AUTOSSH_PORT        - port to use <span class="k">for</span> monitor connection
-</span></span><span class="line"><span class="cl">    AUTOSSH_DEBUG       - turn logging to maximum verbosity and log to
-</span></span><span class="line"><span class="cl">                          stderr</span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
-</item>
-<item>
-  <title>.ssh config 保持连接不断</title>
-  <link>https://williamlfang.github.io/archives/ssh-config-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E6%96%AD/</link>
-  <pubDate>Fri, 23 Apr 2021 00:00:00 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/archives/ssh-config-%E4%BF%9D%E6%8C%81%E8%BF%9E%E6%8E%A5%E4%B8%8D%E6%96%AD/</guid>
-  <description><![CDATA[在 ~/.ssh/config 添加 1 2 Host * ServerAliveInterval 60]]></description>
 </item>
 </channel>
 </rss>

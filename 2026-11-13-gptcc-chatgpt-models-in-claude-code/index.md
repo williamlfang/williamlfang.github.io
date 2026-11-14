@@ -7,7 +7,7 @@ The working setup uses a local authenticated gateway, ChatGPT OAuth, and Claude 
 
 &lt;!--more--&gt;
 
-The featured image reproduces the live `/model` menu. The red boxes mark the Default model and medium effort. Terminal pictures in this post are rendered from captured output for readability, not photographs of a terminal window. [Open the full-size picker image](featured-image.png).
+The featured image reproduces the live `/model` menu. The red boxes mark the Default model and medium effort. Terminal pictures in this post are rendered from captured output for readability, except the status-line figure, which illustrates the updated layout. [Open the full-size picker image](featured-image.png).
 
 ## The configuration I tested
 
@@ -460,15 +460,17 @@ status_line_use_colors = true
 
 I kept the existing Powerlevel10k-style Claude bar, added the session name and reported token count, and fetched quota through Codex&#39;s `account/rateLimits/read` RPC. The [Codex app-server documentation](https://learn.chatgpt.com/docs/app-server) describes that read operation. It does not require a model inference request.
 
-![Claude Code model, medium effort, five-hour usage, weekly usage, and reset times on one status-bar row](statusline.png &#34;Captured startup and status-line text. Percentages are quota consumed, not quota remaining. The reset times use this machine&#39;s local timezone. This capture is a point-in-time observation, not a fixed quota value.&#34;)
+![Claude Code model and effort, context bar, tokens, and Codex quota in the updated status-line order](statusline.png &#34;Layout example using session counters and previously observed quota values. Percentages are quota consumed, not quota remaining. Reset times use the machine&#39;s local timezone.&#34;)
 
-The final row included:
+&gt; **Update 2026-11-13:** I moved the context bar and token count immediately after the model and effort, before the Codex quota.
+
+The updated layout looks like this:
 
 ```text
-GPT-6.1-Sol · medium | Codex 5h 73% ↻19:10 | 7d 11% ↻Fri 14:10 | tok 0
+GPT-6.1-Sol · medium | ctx ░░░░░░░░░░ 0% | tok 115 | Codex 5h 73% ↻19:10 | 7d 11% ↻Fri 14:10
 ```
 
-The screenshot reproduces the observed text with plain separators for readability. The live bar uses Powerline separators and colors.
+The figure shows the updated order with plain separators for readability. Its counters and quota values illustrate the layout; they are not a single live capture. The live bar uses Powerline separators and colors.
 
 ### Keep account quota separate from session token counts
 
@@ -491,7 +493,7 @@ The quota helper reads the `codex` bucket, checks that the windows are 300 and 1
 
 A `~` after the window label means the last successful quota read is more than two minutes old. `--` means the window is unavailable or its reset time has passed. The helper does not turn an expired cached percentage into a fabricated zero.
 
-Both windows and reset times stay on the **same row as the model and effort**. At narrower widths, the bar abbreviates effort and drops lower-priority details before quota. I checked 80-column and 140-column output. A terminal too narrow for the model and both quota windows cannot display all of them at once.
+Context and tokens appear immediately after the model and effort, followed by the five-hour and weekly quota windows on the same row. At narrower widths, the bar shortens the context bar and abbreviates effort, then drops segments from the right until the row fits. In the 80-column test, the weekly quota is hidden; at 140 columns, both windows and reset times fit.
 
 ### Install the optional status bar
 

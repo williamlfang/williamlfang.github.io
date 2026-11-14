@@ -13,7 +13,8 @@ ACCENT = '#79dcc2'
 RED = '#f77f89'
 
 
-def terminal(filename, title, lines, highlights=(), size=20):
+def terminal(filename, title, lines, highlights=(), size=20,
+             footer='Captured terminal text, rendered for readability | 2026-11-13'):
     font = ImageFont.truetype(FONT, size)
     small = ImageFont.truetype(SANS, 17)
     line_height = size + 14
@@ -33,7 +34,7 @@ def terminal(filename, title, lines, highlights=(), size=20):
                                    outline=RED, width=2, fill='#202637')
         color = ACCENT if index in highlights else INK
         draw.text((43, y), line, font=font, fill=color)
-    draw.text((43, height-47), 'Captured terminal text, rendered for readability | 2026-11-13', font=small, fill=MUTED)
+    draw.text((43, height-47), footer, font=small, fill=MUTED)
     image.save(ROOT / filename)
     assert width >= 1280 and height > 200
 
@@ -55,13 +56,13 @@ picker = [
     '  Medium effort',
 ]
 terminal('featured-image.png', 'Claude Code /model | v2.1.316 | gptcc 2.5.3', picker, (2, 13), 20)
-terminal('statusline.png', 'Claude Code | startup header and status-line excerpt', [
+terminal('statusline.png', 'Claude Code | updated status-line layout example', [
     'GPT-6.1-Sol with medium effort',
     '',
-    'GPT-6.1-Sol · medium | Codex 5h 73% ↻19:10 | 7d 11% ↻Fri 14:10 | tok 0',
+    'GPT-6.1-Sol · medium | ctx ░░░░░░░░░░ 0% | tok 115 | Codex 5h 73% ↻19:10 | 7d 11% ↻Fri 14:10',
     '',
     'auto mode on (shift+tab to cycle)',
-], (2,), 23)
+], (2,), 23, footer='Layout example, rendered for readability | 2026-11-13')
 terminal('verification.png', 'python3 verify-gptcc.py | actual verification output',
          (ROOT / 'verification.txt').read_text().splitlines(), (5,), 22)
 

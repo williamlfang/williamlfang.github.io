@@ -187,6 +187,29 @@
         <span id="typeit-profile-subtitle" class="typeit"></span></p><div class="links"><a href="https://github.com/williamlfang" title="GitHub"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-brands fa-github-alt fa-fw" aria-hidden="true"></i>
     </a><a href="/index.xml" title="RSS"target="_blank" rel="external nofollow noopener noreferrer me"><i class="fa-solid fa-rss fa-fw" aria-hidden="true"></i>
     </a></div></div>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
+      <a href="/2026-11-11-airflow-outage-postmortem/" aria-label="One night, one dead disk: an Airflow trading-host outage and what it taught me"><img loading="lazy" src="/2026-11-11-airflow-outage-postmortem/featured-image.png" alt="One night, one dead disk: an Airflow trading-host outage and what it taught me" data-title="One night, one dead disk: an Airflow trading-host outage and what it taught me" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
+    </div><h2 class="single-title" itemprop="name headline"><a href="/2026-11-11-airflow-outage-postmortem/">One night, one dead disk: an Airflow trading-host outage and what it taught me</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-11-11 10:48:10'>发布于 <time datetime="2026-11-11">2026-11-11</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="content"><blockquote>
+<p><strong>Update 2026-11-11:</strong> the &ldquo;a restart is a procedure, not a command&rdquo; advice below is now three scripts: a dated image built from the running container, a redeploy that refuses while tasks run and rolls back on failure, and a supervisor inside the container. See <a href="/2026-11-11-airflow-image-snapshot-and-redeploy/">Rebuildable Airflow</a>.</p>
+</blockquote>
+<p>At 19:56 one evening, a 21.8 TB data disk on our Airflow host started throwing I/O errors. By 21:37 someone had pointed Docker at a fresh, empty data directory to get things running again. That one change, made under pressure and never written down, turned into <strong>five separate incidents by 09:30 the next morning</strong>: a message broker that vanished, a missing mount, concurrency limits back at their defaults, live-trading processes Airflow no longer knew about, and two restarts that orphaned every live trade.</p>
+<p>Everything was back by 10:08. This post is the timeline, the root cause of each problem, how each was fixed (including the 1.5-minute outage I caused myself while fixing it), and what I would change so this can&rsquo;t happen the same way again.</p></div><div class="post-footer">
+    <a href="/2026-11-11-airflow-outage-postmortem/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/airflow/' class="post-tag">Airflow</a><a href='/tags/docker/' class="post-tag">Docker</a><a href='/tags/rabbitmq/' class="post-tag">Rabbitmq</a><a href='/tags/postmortem/' class="post-tag">Postmortem</a><a href='/tags/incident/' class="post-tag">Incident</a></div></div>
+</article>
+<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-11-06-codex-startup-model-cache/">Codex startup: a shared model cache and a five-second timeout</a>
+  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-11-06 18:19:24'>发布于 <time datetime="2026-11-06">2026-11-06</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>My Codex CLI sometimes paused for about five seconds when it started. Other
+launches were almost immediate. After checking the
+<a href="/2026-11-06-idc-v2raya-proxy-codex/">proxy setup</a>, I looked at
+the startup logs. They showed <strong>a model-list request consuming five seconds</strong>
+before timing out.</p>
+<p>Three Codex versions were sharing the same model cache. A cache written by one
+version could be rejected by another, which forced another network request.
+I aligned the CLI with the shared server and changed the desktop launcher to
+use the same CLI on its next launch. Five subsequent terminal checks reached
+the model and prompt in a median of 0.80 seconds.</p></div><div class="post-footer">
+    <a href="/2026-11-06-codex-startup-model-cache/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/codex/' class="post-tag">Codex</a><a href='/tags/linux/' class="post-tag">Linux</a><a href='/tags/performance/' class="post-tag">Performance</a><a href='/tags/cache/' class="post-tag">Cache</a><a href='/tags/troubleshooting/' class="post-tag">Troubleshooting</a></div></div>
+</article>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-11-06-idc-v2raya-proxy-codex/">Use the IDC proxy from XPS and Codex</a>
   </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-11-06 13:00:00'>发布于 <time datetime="2026-11-06">2026-11-06</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><blockquote>
 <p><strong>Update 2026-11-06:</strong> a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See <a href="/2026-11-06-codex-startup-model-cache/">Codex startup and the shared model cache</a>.</p>
@@ -223,58 +246,6 @@ once. My first attempt, the usual one-line self-signed <code>openssl req -x509</
 certificate: a CA certificate with no <code>serverAuth</code> usage, which Apple&rsquo;s rules reject.</p></div><div class="post-footer">
     <a href="/2026-10-29-lan-https-local-ca/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/https/' class="post-tag">Https</a><a href='/tags/tls/' class="post-tag">Tls</a><a href='/tags/openssl/' class="post-tag">Openssl</a><a href='/tags/certificate/' class="post-tag">Certificate</a><a href='/tags/getdisplaymedia/' class="post-tag">GetDisplayMedia</a><a href='/tags/tornado/' class="post-tag">Tornado</a><a href='/tags/macos/' class="post-tag">MacOS</a></div></div>
 </article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
-      <a href="/2026-10-17-nvim-big-log-files/" aria-label="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15"><img loading="lazy" src="/2026-10-17-nvim-big-log-files/featured-image.png" alt="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" data-title="Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></a>
-    </div><h2 class="single-title" itemprop="name headline"><a href="/2026-10-17-nvim-big-log-files/">Profiling Neovim on big logs: a growing 87 MB log froze the UI 11 s out of every 15</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-17 12:00:00'>发布于 <time datetime="2026-10-17">2026-10-17</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>After the <a href="/2026-10-03-nvim-startup-lazy-loading/">startup pass</a>,
-the slowest thing left in my Neovim was big log files. <code>~/log</code> holds logs from
-0.5 MB to 136 MB. The one I read most is 87 MB: 176,939 lines of about 500
-characters, growing by about 2 lines a second while I read it. Opening it took
-1.9 s before Neovim accepted a key. <code>n</code>, <code>/</code>, typing and <code>&lt;Esc&gt;</code> each stalled.
-Just reading the log while it grew <strong>froze the UI for about 11 of every 15
-seconds</strong>.</p>
-<p>No single plugin was to blame. Several separate pieces of work grew with the
-file, and one key mapping slowed <code>n</code> in every file. Medians of 5 runs in a
-real terminal:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th style="text-align:right">before</th>
-<th style="text-align:right">after</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>open the 87 MB log until keys are accepted</td>
-<td style="text-align:right">1857 ms</td>
-<td style="text-align:right"><strong>199 ms</strong></td>
-</tr>
-<tr>
-<td><code>n</code></td>
-<td style="text-align:right">523 ms</td>
-<td style="text-align:right"><strong>21 ms</strong></td>
-</tr>
-<tr>
-<td>UI blocked per 15 s while reading the growing log</td>
-<td style="text-align:right">10963 ms</td>
-<td style="text-align:right"><strong>0 ms</strong></td>
-</tr>
-</tbody>
-</table></div><div class="post-footer">
-    <a href="/2026-10-17-nvim-big-log-files/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/nvim/' class="post-tag">Nvim</a><a href='/tags/lazyvim/' class="post-tag">LazyVim</a><a href='/tags/performance/' class="post-tag">Performance</a><a href='/tags/profiling/' class="post-tag">Profiling</a><a href='/tags/pynvim/' class="post-tag">Pynvim</a><a href='/tags/gdb/' class="post-tag">Gdb</a><a href='/tags/undofile/' class="post-tag">Undofile</a></div></div>
-</article>
-<article class="single summary" itemscope itemtype="http://schema.org/Article"><h2 class="single-title" itemprop="name headline"><a href="/2026-10-16-docker-buildx-anonymous-token-timeout/">docker buildx: the builder had a proxy, the client didn&#39;t</a>
-  </h2><div class="post-meta"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span>&nbsp;<span class="post-publish" title='2026-10-16 14:03:28'>发布于 <time datetime="2026-10-16">2026-10-16</time></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="content"><p>My image build script started failing on its very first line, <code>FROM python:3.10</code>,
-with <code>failed to fetch anonymous token ... TLS handshake timeout</code>. The odd part:
-the buildx builder I use is created with a proxy for exactly this reason, and
-from another shell the same build worked.</p>
-<p><strong>The token request is not made by the builder. It is made by the <code>docker buildx</code>
-client in your own shell, using your shell&rsquo;s proxy variables.</strong> My interactive
-zsh exports none, so that one request went direct and timed out. Two <code>export</code>
-lines in the build script fixed it.</p></div><div class="post-footer">
-    <a href="/2026-10-16-docker-buildx-anonymous-token-timeout/">阅读全文</a><div class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href='/tags/docker/' class="post-tag">Docker</a><a href='/tags/buildx/' class="post-tag">Buildx</a><a href='/tags/buildkit/' class="post-tag">Buildkit</a><a href='/tags/proxy/' class="post-tag">Proxy</a><a href='/tags/socks5/' class="post-tag">Socks5</a><a href='/tags/network/' class="post-tag">Network</a></div></div>
-</article>
 <ul class="pagination"><li class="page-item">
           <span class="page-link">
             <a href="/">1</a>
@@ -295,7 +266,7 @@ lines in the build script fixed it.</p></div><div class="post-footer">
           <span class="page-link" aria-hidden="true">&hellip;</span>
         </li><li class="page-item">
           <span class="page-link">
-            <a href="/page/79/">79</a>
+            <a href="/page/80/">80</a>
           </span>
         </li></ul></div></main><footer class="footer">
     <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>

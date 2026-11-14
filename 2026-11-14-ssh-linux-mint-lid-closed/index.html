@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Keep SSH reachable with a closed lid on Linux Mint - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="My Linux Mint notebook accepted SSH connections while its lid was open, but became unreachable when I shut it. The connection command was unchanged:
+
+
+1
+
+
+ssh william@127.0.0.1 -p 62223
+
+The relevant setting was not in sshd_config. Cinnamon was configured to suspend the notebook when the lid closed, even on AC power. I changed just the AC lid action, leaving the battery policies alone." /><meta name="keywords" content='Linux, SSH, LinuxMint, Cinnamon, power-management' /><meta itemprop="name" content="Keep SSH reachable with a closed lid on Linux Mint">
+<meta itemprop="description" content="My Linux Mint notebook accepted SSH connections while its lid was open, but became unreachable when I shut it. The connection command was unchanged:
+
+
+1
+
+
+ssh william@127.0.0.1 -p 62223
+
+The relevant setting was not in sshd_config. Cinnamon was configured to suspend the notebook when the lid closed, even on AC power. I changed just the AC lid action, leaving the battery policies alone."><meta itemprop="datePublished" content="2026-11-14T15:14:18+08:00" />
+<meta itemprop="dateModified" content="2026-11-14T15:14:18+08:00" />
+<meta itemprop="wordCount" content="997"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" />
+<meta itemprop="keywords" content="Linux,SSH,LinuxMint,Cinnamon,power-management," /><meta property="og:title" content="Keep SSH reachable with a closed lid on Linux Mint" />
+<meta property="og:description" content="My Linux Mint notebook accepted SSH connections while its lid was open, but became unreachable when I shut it. The connection command was unchanged:
+
+
+1
+
+
+ssh william@127.0.0.1 -p 62223
+
+The relevant setting was not in sshd_config. Cinnamon was configured to suspend the notebook when the lid closed, even on AC power. I changed just the AC lid action, leaving the battery policies alone." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" /><meta property="og:image" content="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-11-14T15:14:18+08:00" />
+<meta property="article:modified_time" content="2026-11-14T15:14:18+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" /><meta name="twitter:title" content="Keep SSH reachable with a closed lid on Linux Mint"/>
+<meta name="twitter:description" content="My Linux Mint notebook accepted SSH connections while its lid was open, but became unreachable when I shut it. The connection command was unchanged:
+
+
+1
+
+
+ssh william@127.0.0.1 -p 62223
+
+The relevant setting was not in sshd_config. Cinnamon was configured to suspend the notebook when the lid closed, even on AC power. I changed just the AC lid action, leaving the battery policies alone."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-13-gptcc-chatgpt-models-in-claude-code/" /><link rel="next" href="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Keep SSH reachable with a closed lid on Linux Mint",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-11-14-ssh-linux-mint-lid-closed\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-11-14-ssh-linux-mint-lid-closed\/featured-image.png",
+              "width":  1400 ,
+              "height":  460 
+            }],"genre": "posts","keywords": "Linux, SSH, LinuxMint, Cinnamon, power-management","wordcount":  997 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-14-ssh-linux-mint-lid-closed\/","datePublished": "2026-11-14T15:14:18+08:00","dateModified": "2026-11-14T15:14:18+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": ""
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Keep SSH reachable with a closed lid on Linux Mint</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/linux/" class="post-category" title="分类 - Linux"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Linux</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-14 15:14:18"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-14">2026-11-14</time></span>&nbsp;<span title="997 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1000 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 2 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" alt="/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" data-title="/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup-change-the-destination-not-the-forwarding-machine">The setup: change the destination, not the forwarding machine</a></li>
+        <li><a href="#check-the-lid-state-and-desktop-power-manager">Check the lid state and desktop power manager</a></li>
+        <li><a href="#read-the-current-policy-before-changing-it">Read the current policy before changing it</a></li>
+        <li><a href="#the-fix-one-per-user-setting">The fix: one per-user setting</a></li>
+        <li><a href="#verify-the-policy-separately-from-the-closed-lid-test">Verify the policy separately from the closed-lid test</a></li>
+        <li><a href="#why-i-did-not-change-systemd-logind-or-ssh-keepalives">Why I did not change systemd-logind or SSH keepalives</a></li>
+        <li><a href="#undo-the-change">Undo the change</a></li>
+        <li><a href="#takeaway">Takeaway</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>My Linux Mint notebook accepted SSH connections while its lid was open, but became unreachable when I shut it. The connection command was unchanged:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh william@127.0.0.1 -p <span class="m">62223</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The relevant setting was not in <code>sshd_config</code>. <strong>Cinnamon was configured to suspend the notebook when the lid closed, even on AC power.</strong> I changed just the AC lid action, leaving the battery policies alone.</p>
+<h2 id="the-setup-change-the-destination-not-the-forwarding-machine" class="heading-element">
+  <a href="#the-setup-change-the-destination-not-the-forwarding-machine" class="heading-mark"></a>The setup: change the destination, not the forwarding machine</h2><p>In this setup, <code>127.0.0.1:62223</code> was the local entry point for reaching the notebook. A listening local port did not establish that the destination notebook was awake or that its SSH server could respond.</p>
+<p>The initial check on the connecting machine was:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ss -ltnp <span class="s1">&#39;sport = :62223&#39;</span>
+</span></span><span class="line"><span class="cl">ssh -o <span class="nv">BatchMode</span><span class="o">=</span>yes -o <span class="nv">ConnectTimeout</span><span class="o">=</span><span class="m">8</span> -p <span class="m">62223</span> william@127.0.0.1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The port was listening, but the SSH attempt reported:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Connection timed out during banner exchange</span></span></code></pre></td></tr></table>
+</div>
+</div><p>That meant the client had not received the SSH server&rsquo;s greeting in time. It was consistent with an unavailable destination behind the local forwarding endpoint, but <strong>the timeout alone did not prove that the notebook was asleep</strong>. Forwarding problems can produce similar symptoms.</p>
+<p>Once the notebook was accessible again, I connected and checked the destination OS:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -o <span class="nv">BatchMode</span><span class="o">=</span>yes -o <span class="nv">ConnectTimeout</span><span class="o">=</span><span class="m">8</span> -p <span class="m">62223</span> william@127.0.0.1 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s1">&#39;cat /etc/os-release&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The relevant output was:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">NAME=&#34;Linux Mint&#34;
+</span></span><span class="line"><span class="cl">VERSION=&#34;20.1 (Ulyssa)&#34;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The important distinction was where the next commands ran: on the notebook, not on the machine exposing port <code>62223</code>. Hostnames are omitted from this write-up.</p>
+<h2 id="check-the-lid-state-and-desktop-power-manager" class="heading-element">
+  <a href="#check-the-lid-state-and-desktop-power-manager" class="heading-mark"></a>Check the lid state and desktop power manager</h2><p>On the notebook:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">grep -H . /proc/acpi/button/lid/*/state
+</span></span><span class="line"><span class="cl">ps -eo comm <span class="p">|</span> grep -E <span class="s1">&#39;csd-power|gsd-power|xfce4-power|powerdevil|mate-power&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The output included:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">/proc/acpi/button/lid/LID0/state:state:      open
+</span></span><span class="line"><span class="cl">csd-power</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The lid was open during inspection. The <code>csd-power</code> process identified Cinnamon&rsquo;s power manager, which made its power settings the next place to look.</p>
+<p>These commands are specific to systems exposing this ACPI lid path and these desktop processes. Other Linux desktops may manage lid events differently.</p>
+<h2 id="read-the-current-policy-before-changing-it" class="heading-element">
+  <a href="#read-the-current-policy-before-changing-it" class="heading-mark"></a>Read the current policy before changing it</h2><p>On the notebook:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gsettings list-recursively org.cinnamon.settings-daemon.plugins.power</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The relevant settings were:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">org.cinnamon.settings-daemon.plugins.power lid-close-ac-action &#39;suspend&#39;
+</span></span><span class="line"><span class="cl">org.cinnamon.settings-daemon.plugins.power lid-close-battery-action &#39;suspend&#39;
+</span></span><span class="line"><span class="cl">org.cinnamon.settings-daemon.plugins.power critical-battery-action &#39;hibernate&#39;
+</span></span><span class="line"><span class="cl">org.cinnamon.settings-daemon.plugins.power sleep-inactive-ac-timeout 0</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Both lid-close actions were <code>suspend</code>. The AC idle timeout was already <code>0</code>, meaning automatic idle suspend was disabled for that policy. <strong>Idle sleep and lid-close sleep are separate settings.</strong> Disabling one does not necessarily disable the other.</p>
+<p>I also checked the values accepted by the lid setting:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gsettings range org.cinnamon.settings-daemon.plugins.power lid-close-ac-action</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">enum
+</span></span><span class="line"><span class="cl">&#39;blank&#39;
+</span></span><span class="line"><span class="cl">&#39;suspend&#39;
+</span></span><span class="line"><span class="cl">&#39;shutdown&#39;
+</span></span><span class="line"><span class="cl">&#39;hibernate&#39;
+</span></span><span class="line"><span class="cl">&#39;interactive&#39;
+</span></span><span class="line"><span class="cl">&#39;nothing&#39;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The notebook was connected to AC power; its power-supply status included:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">/sys/class/power_supply/AC/online: 1</span></span></code></pre></td></tr></table>
+</div>
+</div><p>That made an AC-only change a reasonable default: keep the notebook reachable on the desk without making it stay awake on battery inside a bag.</p>
+<h2 id="the-fix-one-per-user-setting" class="heading-element">
+  <a href="#the-fix-one-per-user-setting" class="heading-mark"></a>The fix: one per-user setting</h2><p>This was the actual change, executed remotely on the notebook:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -o <span class="nv">BatchMode</span><span class="o">=</span>yes -o <span class="nv">ConnectTimeout</span><span class="o">=</span><span class="m">8</span> -p <span class="m">62223</span> william@127.0.0.1 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s1">&#39;gsettings set org.cinnamon.settings-daemon.plugins.power lid-close-ac-action &#34;nothing&#34;&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Equivalently, from a terminal on the notebook itself:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gsettings <span class="nb">set</span> org.cinnamon.settings-daemon.plugins.power lid-close-ac-action <span class="s1">&#39;nothing&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>This changes the current user&rsquo;s persistent Cinnamon preference. It does not edit SSH configuration, require <code>sudo</code>, or require a reboot. In this session, the remote <code>gsettings</code> command succeeded and the value read back correctly.</p>
+<p>Run it as the user whose Cinnamon desktop session controls power management. If a remote command reports a D-Bus or dconf error, use a terminal in that user&rsquo;s active graphical session instead; do not switch to <code>sudo gsettings</code>, which targets the wrong user&rsquo;s settings.</p>
+<h2 id="verify-the-policy-separately-from-the-closed-lid-test" class="heading-element">
+  <a href="#verify-the-policy-separately-from-the-closed-lid-test" class="heading-mark"></a>Verify the policy separately from the closed-lid test</h2><p>On the notebook, I read back all four relevant values:</p>
+<div class="highlight" id="id-15"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gsettings get org.cinnamon.settings-daemon.plugins.power lid-close-ac-action
+</span></span><span class="line"><span class="cl">gsettings get org.cinnamon.settings-daemon.plugins.power lid-close-battery-action
+</span></span><span class="line"><span class="cl">gsettings get org.cinnamon.settings-daemon.plugins.power sleep-inactive-ac-timeout
+</span></span><span class="line"><span class="cl">gsettings get org.cinnamon.settings-daemon.plugins.power critical-battery-action</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The actual output, in that order, was:</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">&#39;nothing&#39;
+</span></span><span class="line"><span class="cl">&#39;suspend&#39;
+</span></span><span class="line"><span class="cl">0
+</span></span><span class="line"><span class="cl">&#39;hibernate&#39;</span></span></code></pre></td></tr></table>
+</div>
+</div><table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lid closed on AC power</td>
+<td>Suspend</td>
+<td><strong>Do nothing</strong></td>
+</tr>
+<tr>
+<td>Lid closed on battery</td>
+<td>Suspend</td>
+<td>Suspend</td>
+</tr>
+<tr>
+<td>AC idle-suspend timeout</td>
+<td>Disabled (<code>0</code>)</td>
+<td>Unchanged</td>
+</tr>
+<tr>
+<td>Critical-battery action</td>
+<td>Hibernate</td>
+<td>Hibernate</td>
+</tr>
+</tbody>
+</table>
+<p>This verified that the configuration change succeeded. It did <strong>not</strong> yet verify the complete closed-lid connection path.</p>
+<p>The final test is physical:</p>
+<ol>
+<li>Keep the notebook plugged into power and leave its Cinnamon session logged in.</li>
+<li>Close the lid and wait long enough for the usual failure to occur.</li>
+<li>From the connecting machine, open a fresh SSH connection:</li>
+</ol>
+<div class="highlight" id="id-17"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh -o <span class="nv">ConnectTimeout</span><span class="o">=</span><span class="m">10</span> william@127.0.0.1 -p <span class="m">62223</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>At the time of writing, that closed-lid test had not yet been confirmed. The verified result is the updated power policy, not a measured end-to-end success with the lid shut.</p>
+<h2 id="why-i-did-not-change-systemd-logind-or-ssh-keepalives" class="heading-element">
+  <a href="#why-i-did-not-change-systemd-logind-or-ssh-keepalives" class="heading-mark"></a>Why I did not change systemd-logind or SSH keepalives</h2><p>Linux can have more than one layer handling lid events. <code>systemd-logind</code> has system-wide lid policies, while a desktop power manager can take responsibility for lid handling.</p>
+<p>I checked:</p>
+<div class="highlight" id="id-18"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemd-inhibit --list --no-pager</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The notebook had a <code>csd-power</code> inhibitor for <code>handle-lid-switch</code>. That supported changing Cinnamon&rsquo;s policy first rather than immediately editing <code>/etc/systemd/logind.conf</code>.</p>
+<p>This fix is scoped to the active Cinnamon user session. If the problem persists at the login screen, after logging out, or under a different desktop, inspect the effective logind configuration and that desktop&rsquo;s power manager separately. I did not modify logind or disable suspend system-wide.</p>
+<p>SSH keepalives are also not a substitute for keeping the destination awake. They can detect a dead connection or help with some idle-network timeouts; they cannot make a suspended notebook process SSH traffic. This is a different failure mode from <a href="/2022-12-16-%E8%A7%A3%E5%86%B3ssh%E7%BB%8F%E5%B8%B8%E6%96%AD%E7%BA%BF%E5%87%BA%E7%8E%B0timeout%E7%9A%84%E9%97%AE%E9%A2%98/">ordinary SSH disconnects and timeouts</a>.</p>
+<h2 id="undo-the-change" class="heading-element">
+  <a href="#undo-the-change" class="heading-mark"></a>Undo the change</h2><p>To restore the notebook&rsquo;s original AC lid action:</p>
+<div class="highlight" id="id-19"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">gsettings <span class="nb">set</span> org.cinnamon.settings-daemon.plugins.power lid-close-ac-action <span class="s1">&#39;suspend&#39;</span>
+</span></span><span class="line"><span class="cl">gsettings get org.cinnamon.settings-daemon.plugins.power lid-close-ac-action</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Keep a running notebook ventilated when its lid is shut. With this AC-only change, unplugging it restores the battery lid policy; do not expect closed-lid SSH access on battery.</p>
+<h2 id="takeaway" class="heading-element">
+  <a href="#takeaway" class="heading-mark"></a>Takeaway</h2><p>When SSH stops responding specifically after a laptop lid closes, check power management before changing <code>sshd</code>. In this case, the smallest change was one Cinnamon preference: <strong>do nothing on lid close while plugged in, and preserve the existing battery protections</strong>.</p></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2026-11-13-gptcc-chatgpt-models-in-claude-code/" title="ChatGPT models in Claude Code: gptcc setup and troubleshooting">ChatGPT models in Claude Code: gptcc setup and troubleshooting</a></li><li>
+          <a href="/2026-09-26-linux-timezone-clock-and-tmux/" title="Linux 时区、系统时间与 tmux 状态栏时间不一致的排查">Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</a></li><li>
+          <a href="/2023-11-06-zsh-compinit--insecure-directories-run-compaudit-for-list/" title="zsh compinit: insecure directories, run compaudit for list">zsh compinit: insecure directories, run compaudit for list</a></li><li>
+          <a href="/2023-10-22-c-%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/" title="c&#43;&#43; 内存对齐">c&#43;&#43; 内存对齐</a></li><li>
+          <a href="/2023-10-14-neovim-%E5%85%A5%E5%9D%91/" title="neovim 入坑">neovim 入坑</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-11-14 15:14:18">更新于 2026-11-14&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-11-14-ssh-linux-mint-lid-closed/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" data-title="Keep SSH reachable with a closed lid on Linux Mint" data-hashtags="Linux,SSH,LinuxMint,Cinnamon,power-management"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" data-hashtag="Linux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" data-title="Keep SSH reachable with a closed lid on Linux Mint" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" data-title="Keep SSH reachable with a closed lid on Linux Mint"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" data-title="Keep SSH reachable with a closed lid on Linux Mint"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/ssh/" class="post-tag" title="标签 - SSH">SSH</a><a href="/tags/linuxmint/" class="post-tag" title="标签 - LinuxMint">LinuxMint</a><a href="/tags/cinnamon/" class="post-tag" title="标签 - Cinnamon">Cinnamon</a><a href="/tags/power-management/" class="post-tag" title="标签 - Power-Management">Power-Management</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-11-13-gptcc-chatgpt-models-in-claude-code/" class="post-nav-item" rel="prev" title="ChatGPT models in Claude Code: gptcc setup and troubleshooting"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>ChatGPT models in Claude Code: gptcc setup and troubleshooting</a>
+      <a href="/2026-11-14-tmux-ssh-auto-prefix/" class="post-nav-item" rel="next" title="Nested tmux over SSH: automatically route Ctrl-k to the remote">Nested tmux over SSH: automatically route Ctrl-k to the remote<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

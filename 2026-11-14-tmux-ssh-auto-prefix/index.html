@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>Nested tmux over SSH: automatically route Ctrl-k to the remote - William</title><meta name="author" content="william">
+<meta name="author-link" content="">
+<meta name="description" content="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." /><meta name="keywords" content='tmux, SSH, zsh, Linux, keybindings' /><meta itemprop="name" content="Nested tmux over SSH: automatically route Ctrl-k to the remote">
+<meta itemprop="description" content="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control."><meta itemprop="datePublished" content="2026-11-14T18:49:28+08:00" />
+<meta itemprop="dateModified" content="2026-11-14T18:49:28+08:00" />
+<meta itemprop="wordCount" content="1878"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" />
+<meta itemprop="keywords" content="tmux,SSH,zsh,Linux,keybindings," /><meta property="og:title" content="Nested tmux over SSH: automatically route Ctrl-k to the remote" />
+<meta property="og:description" content="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" /><meta property="og:image" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2026-11-14T18:49:28+08:00" />
+<meta property="article:modified_time" content="2026-11-14T18:49:28+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" /><meta name="twitter:title" content="Nested tmux over SSH: automatically route Ctrl-k to the remote"/>
+<meta name="twitter:description" content="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control."/>
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Nested tmux over SSH: automatically route Ctrl-k to the remote",
+    "inLanguage": "zh-CN",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https:\/\/williamlfang.github.io\/2026-11-14-tmux-ssh-auto-prefix\/"
+    },"image": [{
+              "@type": "ImageObject",
+              "url": "https:\/\/williamlfang.github.io\/2026-11-14-tmux-ssh-auto-prefix\/featured-image.png",
+              "width":  1200 ,
+              "height":  800 
+            }],"genre": "posts","keywords": "tmux, SSH, zsh, Linux, keybindings","wordcount":  1878 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-14-tmux-ssh-auto-prefix\/","datePublished": "2026-11-14T18:49:28+08:00","dateModified": "2026-11-14T18:49:28+08:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "william"
+      },"description": "Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control."
+  }
+  </script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="William" data-title="William" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/posts/"
+                
+                
+              ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/archives/"
+                
+                
+              ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/categories/"
+                
+                
+              ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/tags/"
+                
+                
+              ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/friends/"
+                title="友情链接"
+                
+              ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/about/"
+                
+                
+              ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li class="menu-item">
+              <a
+                class="menu-link"
+                href="/calendar/"
+                
+                
+              ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item delimiter"></li><li class="menu-item search" id="search-desktop">
+            <input type="text" placeholder="搜索文章标题或内容……" id="search-input-desktop">
+            <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+              <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+            </a>
+            <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+              <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+            </a>
+            <span class="search-button search-loading" id="search-loading-desktop">
+              <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+            </span>
+          </li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="William"><img loading="lazy" src="/images/wuya-logo.png" alt="/images/wuya-logo.png" data-title="/images/wuya-logo.png" class="logo" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span class="header-title-text">William</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="search-wrapper">
+            <div class="search mobile" id="search-mobile">
+              <input type="text" placeholder="搜索文章标题或内容……" id="search-input-mobile">
+              <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                <i class="fa-solid fa-search fa-fw" aria-hidden="true"></i>
+              </a>
+              <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                <i class="fa-solid fa-times-circle fa-fw" aria-hidden="true"></i>
+              </a>
+              <span class="search-button search-loading" id="search-loading-mobile">
+                <i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+              </span>
+            </div>
+            <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+              取消
+            </a>
+          </li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/posts/"
+                  
+                  
+                ><i class="fa-regular fa-newspaper fa-fw fa-sm" aria-hidden="true"></i> 文章</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/archives/"
+                  
+                  
+                ><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> 归档</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/categories/"
+                  
+                  
+                ><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> 分类</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/tags/"
+                  
+                  
+                ><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> 标签</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/friends/"
+                  title="友情链接"
+                  
+                ><i class="fa-solid fa-users-viewfinder fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 友链</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/about/"
+                  
+                  
+                ><i class="fa-solid fa-signature fa-fw fa-sm" aria-hidden="true"></i> 关于</a></li><li
+              class="menu-item"
+            ><a
+                  class="menu-link"
+                  href="/calendar/"
+                  
+                  
+                ><i class="fa-regular fa-calendar fa-fw fa-sm fa-fw fa-sm" aria-hidden="true"></i> 月历</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+  </div>
+  <div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+  </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Nested tmux over SSH: automatically route Ctrl-k to the remote</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-14 18:49:28"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-14">2026-11-14</time></span>&nbsp;<span title="1878 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1900 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 9 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" data-title="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#the-setup-and-the-behavior-i-wanted">The setup and the behavior I wanted</a></li>
+        <li><a href="#why-sending-the-prefix-twice-was-not-enough">Why sending the prefix twice was not enough</a></li>
+        <li><a href="#local-tmux-cannot-discover-a-remote-prefix-by-itself">Local tmux cannot discover a remote prefix by itself</a></li>
+        <li><a href="#step-1-dispatch-ctrl-k-in-the-local-root-table">Step 1: dispatch Ctrl-k in the local root table</a></li>
+        <li><a href="#step-2-probe-before-an-interactive-ssh-login">Step 2: probe before an interactive SSH login</a></li>
+        <li><a href="#step-3-wrap-ssh-in-the-local-zsh-configuration">Step 3: wrap ssh in the local zsh configuration</a></li>
+        <li><a href="#checking-the-result">Checking the result</a></li>
+        <li><a href="#limits-worth-keeping-visible">Limits worth keeping visible</a></li>
+        <li><a href="#takeaway">Takeaway</a></li>
+        <li><a href="#references">References</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav></div>
+      </div><div class="content" id="content"><p>My local tmux and one remote tmux both used <code>Ctrl-k</code> as their prefix. After connecting over SSH, <code>Ctrl-k c</code> still created a <strong>local</strong> window. The local tmux consumed the prefix before SSH could send it to the server.</p>
+<p>I wanted <code>Ctrl-k</code> to control the remote when its tmux also accepted <code>Ctrl-k</code>, but stay local for other servers. The working solution uses a pane-local flag and one SSH probe per login. <code>Ctrl-b</code> remains an always-local escape hatch.</p>
+<h2 id="the-setup-and-the-behavior-i-wanted" class="heading-element">
+  <a href="#the-setup-and-the-behavior-i-wanted" class="heading-mark"></a>The setup and the behavior I wanted</h2><p>My local setup runs tmux 3.5a with zsh. The connection in question is:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh william@127.0.0.1 -p62222</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The loopback address and port are simply this connection&rsquo;s endpoint. Nothing in the solution hard-codes them; it should also work with an SSH host alias or a normal hostname.</p>
+<p>Before the change, both tmux instances had the equivalent of:</p>
+<div class="highlight" id="id-2"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">set -g prefix C-k</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The desired routing was:</p>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th><code>Ctrl-k</code></th>
+<th><code>Ctrl-b</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local shell</td>
+<td>Local prefix</td>
+<td>Local prefix</td>
+</tr>
+<tr>
+<td>SSH login; running remote sessions all accept <code>Ctrl-k</code></td>
+<td>Forward to remote</td>
+<td>Local prefix</td>
+</tr>
+<tr>
+<td>SSH login; remote uses another prefix</td>
+<td>Local prefix</td>
+<td>Local prefix</td>
+</tr>
+<tr>
+<td>Probe fails or finds no running tmux</td>
+<td>Local prefix</td>
+<td>Local prefix</td>
+</tr>
+</tbody>
+</table>
+<p>Here, “accept” means either the remote session&rsquo;s <code>prefix</code> or <code>prefix2</code> is <code>C-k</code>.</p>
+<p><img loading="lazy" src="featured-image.png" alt="Conceptual routing: Ctrl-k selects local tmux or passes through SSH according to a pane flag; Ctrl-b always stays local." srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="Conceptual routing: Ctrl-k selects local tmux or passes through SSH according to a pane flag; Ctrl-b always stays local." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><em>Conceptual illustration, not a captured terminal trace. The SSH check sets the flag once; pressing a key does not launch another probe.</em></p>
+<h2 id="why-sending-the-prefix-twice-was-not-enough" class="heading-element">
+  <a href="#why-sending-the-prefix-twice-was-not-enough" class="heading-mark"></a>Why sending the prefix twice was not enough</h2><p>A conventional nested-tmux setup provides a <code>send-prefix</code> binding. The first prefix addresses local tmux; a second key sends a prefix through to the inner tmux.</p>
+<p>That is useful, but it was not the behavior I wanted. I wanted the same single <code>Ctrl-k</code> press to choose the right layer automatically.</p>
+<p>There was another constraint: my existing <code>Ctrl-k Ctrl-k</code> binding resizes a pane upward:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">bind -r C-k resize-pane -U 5</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Replacing that with <code>send-prefix</code> would silently remove an existing shortcut. The solution needed to preserve the prefix table, not rebuild it.</p>
+<h2 id="local-tmux-cannot-discover-a-remote-prefix-by-itself" class="heading-element">
+  <a href="#local-tmux-cannot-discover-a-remote-prefix-by-itself" class="heading-mark"></a>Local tmux cannot discover a remote prefix by itself</h2><p>SSH carries terminal input and output. It does not advertise the remote tmux configuration to the local tmux.</p>
+<p>Looking at the local pane&rsquo;s process name only tells me that it is running <code>ssh</code>. It does not tell me whether a remote tmux exists, which session I will attach to, or what that session&rsquo;s prefix is.</p>
+<p><strong>Auto-detection therefore needs a remote query.</strong> The useful query is:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux list-sessions -F <span class="s1">&#39;#{prefix} #{prefix2}&#39;</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>It reads the effective prefix settings of running sessions on the default remote tmux socket. It does not start a tmux server or parse a configuration file.</p>
+<p>The conservative policy is:</p>
+<ul>
+<li>At least one session must be returned.</li>
+<li>Every returned session must accept <code>C-k</code> in either prefix slot.</li>
+<li>Any failure or ambiguous mixture keeps <code>Ctrl-k</code> local.</li>
+</ul>
+<p>Checking every session avoids guessing which one a later <code>tmux attach</code> will choose. It still cannot identify the active application inside the remote terminal; that limitation matters later.</p>
+<h2 id="step-1-dispatch-ctrl-k-in-the-local-root-table" class="heading-element">
+  <a href="#step-1-dispatch-ctrl-k-in-the-local-root-table" class="heading-mark"></a>Step 1: dispatch Ctrl-k in the local root table</h2><p>Add this block at the <strong>end of the local <code>~/.tmux.conf</code></strong>, after earlier prefix settings and plugin initialization:</p>
+<div class="highlight" id="id-5"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">## Local and remote tmux: Ctrl-b is always local.
+</span></span><span class="line"><span class="cl">set -g prefix C-b
+</span></span><span class="line"><span class="cl">set -g prefix2 None
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">## Ctrl-k forwards only in a pane marked by the SSH helper.
+</span></span><span class="line"><span class="cl">bind-key -T root C-k if-shell -F &#39;#{==:#{@remote_ctrl_k},1}&#39; \
+</span></span><span class="line"><span class="cl">    &#39;send-keys C-k&#39; \
+</span></span><span class="line"><span class="cl">    &#39;switch-client -T prefix&#39;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">## Manual override when the probe cannot determine the desired behavior.
+</span></span><span class="line"><span class="cl">bind-key -T prefix F12 if-shell -F &#39;#{==:#{@remote_ctrl_k},1}&#39; \
+</span></span><span class="line"><span class="cl">    &#39;set-option -pu @remote_ctrl_k; display-message &#34;Ctrl-k controls LOCAL tmux&#34;&#39; \
+</span></span><span class="line"><span class="cl">    &#39;set-option -p @remote_ctrl_k 1; display-message &#34;Ctrl-k controls REMOTE tmux; Ctrl-b stays local&#34;&#39;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The actual tmux <code>prefix</code> becomes <code>C-b</code>. <code>Ctrl-k</code> instead becomes a normal key binding in the <code>root</code> table:</p>
+<ol>
+<li>With <code>@remote_ctrl_k</code> equal to <code>1</code>, <code>send-keys C-k</code> writes the key into the pane. SSH then carries it to the remote.</li>
+<li>Otherwise, <code>switch-client -T prefix</code> makes the next key use the existing local prefix table.</li>
+</ol>
+<p>Keeping <code>prefix C-k</code> and merely adding a root-table binding would not work: tmux would recognize its prefix first instead of dispatching that root binding.</p>
+<p>The <code>-F</code> option is important. The condition is evaluated as a tmux format; <strong>it does not spawn a shell for each key press</strong>. This follows the same keep-forks-out-of-the-input-path principle from my <a href="/2026-10-02-tmux-lag-round-2/">tmux latency investigation</a>.</p>
+<p>The routing flag is pane-local, not global. Two panes connected to different servers can therefore make different decisions.</p>
+<p>Existing prefix-table commands are untouched. In an ordinary local pane, <code>Ctrl-k Ctrl-k</code> still runs the resize binding. In a forwarding pane, <code>Ctrl-b Ctrl-k</code> addresses that same local resize command.</p>
+<p>Do not copy this block to the remote configuration. The remote can keep its normal <code>prefix C-k</code>.</p>
+<h2 id="step-2-probe-before-an-interactive-ssh-login" class="heading-element">
+  <a href="#step-2-probe-before-an-interactive-ssh-login" class="heading-mark"></a>Step 2: probe before an interactive SSH login</h2><p>The helper is available as a <a href="ssh-auto-prefix.sh">downloadable Bash script</a>. Save it locally as <code>~/.tmux/scripts/ssh-auto-prefix.sh</code>. It is invoked with <code>bash</code>, so an executable bit is not required.</p>
+<p>The central probe is:</p>
+<div class="highlight" id="id-6"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">prefixes</span><span class="o">=</span><span class="k">$(</span><span class="nb">command</span> ssh <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -o <span class="nv">BatchMode</span><span class="o">=</span>yes -o <span class="nv">ConnectTimeout</span><span class="o">=</span><span class="m">4</span> -o <span class="nv">ConnectionAttempts</span><span class="o">=</span><span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -o <span class="nv">ClearAllForwardings</span><span class="o">=</span>yes -o <span class="nv">PermitLocalCommand</span><span class="o">=</span>no <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -o <span class="nv">RemoteCommand</span><span class="o">=</span>none -o <span class="nv">RequestTTY</span><span class="o">=</span>no -o <span class="nv">ControlMaster</span><span class="o">=</span>no <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span> <span class="s2">&#34;tmux list-sessions -F &#39;#{prefix} #{prefix2}&#39; 2&gt;/dev/null&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    2&gt;/dev/null<span class="k">)</span> <span class="o">||</span> <span class="nv">prefixes</span><span class="o">=</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>A few details matter:</p>
+<ul>
+<li><strong>No second password prompt.</strong> <code>BatchMode=yes</code> makes the probe noninteractive. It needs an identity or an existing connection that can authenticate without prompting. If that is unavailable, the regular SSH login still runs normally, with local key routing.</li>
+<li><strong>Reuse connection settings.</strong> The original arguments carry the host, port, identity, config file, and jump-host options. The probe&rsquo;s protective options come first because OpenSSH generally uses the first obtained value for each option.</li>
+<li><strong>Avoid login side effects where possible.</strong> The probe requests no terminal, clears configured forwarding, disables <code>LocalCommand</code>, and overrides <code>RemoteCommand</code>. It is still a real SSH command: remote shell startup and server-side SSH policy can affect it.</li>
+<li><strong>Do not probe on every key press.</strong> The query runs once before the login. There is no periodic remote polling.</li>
+<li><strong>Preserve ordinary command invocations.</strong> The argument scanner skips detection for explicit remote commands and noninteractive modes such as <code>-N</code>, <code>-T</code>, and <code>-W</code>. It is a small scanner, not a complete replacement for OpenSSH&rsquo;s parser; unusual invocations should bypass the wrapper.</li>
+</ul>
+<p>After a successful match, the helper sets:</p>
+<div class="highlight" id="id-7"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> tmux set-option -p -t <span class="s2">&#34;</span><span class="nv">$TMUX_PANE</span><span class="s2">&#34;</span> @remote_ctrl_k <span class="m">1</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>For an eligible login whose probe fails or does not match, it sets the flag to <code>0</code>. That prevents an old manual forwarding flag from accidentally carrying over into a different connection.</p>
+<p>The helper saves the previous pane value and uses an <code>EXIT</code> trap to restore it after SSH exits. If there was no previous value, it unsets the pane option. Normal disconnects therefore return the pane to its previous behavior.</p>
+<p>It also prints this notice when forwarding is enabled:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">[tmux] Remote uses Ctrl-k: forwarding Ctrl-k; Ctrl-b controls local tmux.</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="step-3-wrap-ssh-in-the-local-zsh-configuration" class="heading-element">
+  <a href="#step-3-wrap-ssh-in-the-local-zsh-configuration" class="heading-mark"></a>Step 3: wrap ssh in the local zsh configuration</h2><p>Add this function to the <strong>local <code>~/.zshrc</code></strong>:</p>
+<div class="highlight" id="id-9"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="c1">## SSH: automatically give Ctrl-k to remote tmux when its prefix matches.</span>
+</span></span><span class="line"><span class="cl"><span class="c1">## Use `command ssh ...` to bypass detection; Ctrl-b F12 toggles it manually.</span>
+</span></span><span class="line"><span class="cl">ssh<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[[</span> -n <span class="nv">$TMUX</span> <span class="o">&amp;&amp;</span> -n <span class="nv">$TMUX_PANE</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        bash <span class="s2">&#34;</span><span class="nv">$HOME</span><span class="s2">/.tmux/scripts/ssh-auto-prefix.sh&#34;</span> <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">command</span> ssh <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>command ssh</code> calls the real SSH executable rather than recursively invoking the function. The helper also uses <code>command tmux</code>, which avoids my local oh-my-zsh tmux alias.</p>
+<p>Load the configuration from a local terminal:</p>
+<div class="highlight" id="id-10"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> tmux source-file ~/.tmux.conf
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> ~/.zshrc</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then connect with the usual command:</p>
+<div class="highlight" id="id-11"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh william@127.0.0.1 -p62222</span></span></code></pre></td></tr></table>
+</div>
+</div><p>There is no special host-specific function to remember. Outside tmux, the wrapper simply calls SSH without a probe.</p>
+<h2 id="checking-the-result" class="heading-element">
+  <a href="#checking-the-result" class="heading-mark"></a>Checking the result</h2><p>These local commands inspect the installed configuration:</p>
+<div class="highlight" id="id-12"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> tmux show-options -g prefix
+</span></span><span class="line"><span class="cl"><span class="nb">command</span> tmux list-keys -T root C-k
+</span></span><span class="line"><span class="cl"><span class="nb">command</span> tmux list-keys -T prefix C-k</span></span></code></pre></td></tr></table>
+</div>
+</div><p>In my setup, the checks returned:</p>
+<div class="highlight" id="id-13"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">prefix C-b
+</span></span><span class="line"><span class="cl">bind-key -T root C-k if-shell -F &#34;#{==:#{@remote_ctrl_k},1}&#34; &#34;send-keys C-k&#34; &#34;switch-client -T prefix&#34;
+</span></span><span class="line"><span class="cl">bind-key -r -T prefix C-k resize-pane -U 5</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The important combination is <code>prefix C-b</code>, a conditional root binding for <code>C-k</code>, and the original resize binding still present.</p>
+<p>I checked the helper with <code>bash -n</code> and ShellCheck. Mocked SSH tests covered matching prefixes, different prefixes, a matching secondary prefix, mixed sessions, no tmux, probe failure, remote commands, a tunnel invocation, and SSH config options. A throwaway tmux server verified that the bindings loaded, the resize binding survived, and the manual toggle worked in both directions.</p>
+<p>Those checks were followed by the actual SSH connection: automatic routing worked in that connection. The mocked tests are not evidence that every possible SSH option combination works.</p>
+<p>When forwarding is active:</p>
+<table>
+<thead>
+<tr>
+<th>Keys</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl-k</code>, then <code>c</code></td>
+<td>Create a remote tmux window</td>
+</tr>
+<tr>
+<td><code>Ctrl-b</code>, then <code>c</code></td>
+<td>Create a local tmux window</td>
+</tr>
+<tr>
+<td><code>Ctrl-b</code>, then <code>F12</code></td>
+<td>Toggle Ctrl-k routing manually</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>c</code> actions assume the usual tmux binding for creating a window.</p>
+<h2 id="limits-worth-keeping-visible" class="heading-element">
+  <a href="#limits-worth-keeping-visible" class="heading-mark"></a>Limits worth keeping visible</h2><p>This is <strong>connection-time prefix detection</strong>, not continuous detection of the foreground remote application.</p>
+<ul>
+<li><strong>Forwarding covers the entire SSH login.</strong> If I detach from remote tmux but keep the SSH connection open, <code>Ctrl-k</code> still goes to the remote shell. <code>Ctrl-b F12</code> switches it back manually.</li>
+<li><strong>No running remote server means no match.</strong> If I start tmux only after logging in, the earlier probe cannot know its prefix. I can use the manual toggle rather than guessing from an unexecuted config file.</li>
+<li><strong>Mixed session prefixes deliberately fall back.</strong> Even if I intend to attach to a matching session, another nonmatching session makes the result ambiguous.</li>
+<li><strong>Custom sockets are not discovered.</strong> Sessions started with <code>tmux -L ...</code> or <code>tmux -S ...</code> need a correspondingly targeted query.</li>
+<li><strong>The remote noninteractive PATH matters.</strong> A tmux binary available only after an interactive shell setup may not be found by the probe.</li>
+<li><strong>There is an extra SSH command before login.</strong> <code>ConnectTimeout=4</code> limits connection establishment, not the complete remote command. Slow jump hosts or shell startup can still add delay.</li>
+<li><strong>Remote policy and output can interfere.</strong> Restricted accounts, forced commands, or shell startup text may prevent a clean prefix result. This helper is for ordinary, trusted login accounts, not a universal SSH frontend.</li>
+<li><strong>Cleanup is best effort.</strong> Normal exits restore the flag. An uncatchable termination such as <code>SIGKILL</code> can leave it set; the manual toggle is the recovery path.</li>
+<li><strong>Copy mode is separate.</strong> These bindings govern normal pane input, not every key table used by local tmux copy mode.</li>
+</ul>
+<p>To skip all detection for a particular invocation:</p>
+<div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> ssh william@127.0.0.1 -p62222</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Bypassing the wrapper does not itself clear a manually enabled pane flag; use <code>Ctrl-b F12</code> if necessary.</p>
+<p>One more detail: because the actual local <code>prefix</code> is now <code>C-b</code>, plugins or custom bindings that inspect <code>#{prefix}</code> or run <code>send-prefix</code> see <code>C-b</code>, not the synthetic <code>Ctrl-k</code> dispatcher. Check those separately if the configuration relies on them.</p>
+<h2 id="takeaway" class="heading-element">
+  <a href="#takeaway" class="heading-mark"></a>Takeaway</h2><p>The fix was to separate <strong>the key I press</strong> from <strong>tmux&rsquo;s actual prefix setting</strong>. <code>Ctrl-k</code> becomes a conditional dispatcher, while <code>Ctrl-b</code> remains a reliable route to the outer tmux.</p>
+<p>The remote query only decides a pane flag. Keeping that network operation out of the key path makes the behavior simple: unknown means local, a confirmed matching prefix means remote, and the manual override is always reachable.</p>
+<h2 id="references" class="heading-element">
+  <a href="#references" class="heading-mark"></a>References</h2><ul>
+<li><a href="https://man.openbsd.org/tmux"target="_blank" rel="external nofollow noopener noreferrer">tmux manual: key bindings, formats, and options<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://man.openbsd.org/ssh"target="_blank" rel="external nofollow noopener noreferrer">ssh manual<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+<li><a href="https://man.openbsd.org/ssh_config"target="_blank" rel="external nofollow noopener noreferrer">ssh_config manual: BatchMode, RemoteCommand, and connection options<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
+</ul></div><h2 id="see-also">相关内容</h2>
+    <ul><li>
+          <a href="/2023-09-20-tmux-%E8%AE%BE%E7%BD%AE%E9%BB%98%E8%AE%A4-zsh/" title="tmux 设置默认 zsh">tmux 设置默认 zsh</a></li><li>
+          <a href="/archives/2021-01-08-linux%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2/" title="Linux开发环境一键部署">Linux开发环境一键部署</a></li><li>
+          <a href="/archives/2019-01-16-%E9%85%8D%E7%BD%AE%E5%BC%BA%E5%A4%A7%E7%BB%88%E7%AB%AF--zsh&#43;tmux&#43;powerline&#43;autojump/" title="配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump">配置强大终端: zsh&#43;tmux&#43;powerline&#43;autojump</a></li><li>
+          <a href="/2026-11-14-ssh-linux-mint-lid-closed/" title="Keep SSH reachable with a closed lid on Linux Mint">Keep SSH reachable with a closed lid on Linux Mint</a></li><li>
+          <a href="/2026-11-05-claude-code-statusline-p10k/" title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh">Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</a></li></ul><div class="post-reward">
+    <div class="comment"></div>
+    <input type="checkbox" class="reward-input" name="reward" id="fi-reward" hidden />
+    <label class="reward-button" for="fi-reward">赞赏</label>
+    <div class="reward-ways" data-mode="static"><div><img loading="lazy" src="/images/reward/alipay.png" alt="william 支付宝" data-title="william 支付宝" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>支付宝</span>
+          </div><div><img loading="lazy" src="/images/reward/wechat.png" alt="william 微信" data-title="william 微信" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/><span data-animation>微信</span>
+          </div></div>
+  </div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2026-11-14 18:49:28">更新于 2026-11-14&nbsp;</span>
+      </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/2026-11-14-tmux-ssh-auto-prefix/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: automatically route Ctrl-k to the remote" data-hashtags="tmux,SSH,zsh,Linux,keybindings"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-hashtag="tmux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: automatically route Ctrl-k to the remote" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: automatically route Ctrl-k to the remote"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: automatically route Ctrl-k to the remote"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/tmux/" class="post-tag" title="标签 - Tmux">Tmux</a><a href="/tags/ssh/" class="post-tag" title="标签 - SSH">SSH</a><a href="/tags/zsh/" class="post-tag" title="标签 - Zsh">Zsh</a><a href="/tags/linux/" class="post-tag" title="标签 - Linux">Linux</a><a href="/tags/keybindings/" class="post-tag" title="标签 - Keybindings">Keybindings</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div>
+
+  <div class="post-nav"><a href="/2026-11-14-ssh-linux-mint-lid-closed/" class="post-nav-item" rel="prev" title="Keep SSH reachable with a closed lid on Linux Mint"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Keep SSH reachable with a closed lid on Linux Mint</a></div>
+</div>
+<div id="comments"><div id="giscus">
+          <script
+            src="https://giscus.app/client.js"
+            data-repo="williamlfang/williamlfang.github.io"
+            data-repo-id="R_kgDOLj_4ng"
+            data-category="Announcements"
+            data-category-id="DIC_kwDOLj_4ns4CeKG0"
+            data-mapping="pathname"
+            data-strict="0"
+            
+            data-theme="preferred_color_scheme"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-lang="zh-CN"
+            data-loading="lazy"
+            crossorigin="anonymous"
+            async
+            defer
+          ></script>
+        </div>
+        <noscript>
+          Please enable JavaScript to view the comments powered by <a href="https://giscus.app/" rel="external nofollow noopener noreferrer">giscus</a>.
+        </noscript></div></article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.123.8"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.2"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2013 - 2026</span><span class="author" itemprop="copyrightHolder">
+              <a href="/">william</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line visitor">
+          <span id="busuanzi_container_site_uv" title='总访客数'><i class="fa-regular fa-user fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span><span id="busuanzi_container_site_pv" class="footer-divider" title='总访问量'><i class="fa-regular fa-eye fa-fw" aria-hidden="true"></i>&nbsp;<span id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span></span>
+        </div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric">0%</span>
+        </div><div class="fixed-button view-comments d-none" role="button" aria-label="查看评论"><i class="fa-solid fa-comment fa-fw" aria-hidden="true"></i></div></div><div id="mask"></div><div class="reading-progress-bar" style="left: 0;top: 0;"></div><noscript>
+    <div class="noscript-warning">FixIt 主题在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="stylesheet" href="/lib/lightgallery/css/lightgallery-bundle.min.css"><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><link rel="stylesheet" href="/lib/pace/themes/blue/pace-theme-minimal.css"><script src="/lib/autocomplete/autocomplete.min.js" defer></script><script src="/lib/fuse/fuse.min.js" defer></script><script src="/lib/twemoji/twemoji.min.js" defer></script><script src="/lib/lightgallery/lightgallery.min.js" defer></script><script src="/lib/lightgallery/plugins/thumbnail/lg-thumbnail.min.js" defer></script><script src="/lib/lightgallery/plugins/zoom/lg-zoom.min.js" defer></script><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async defer></script><script src="/lib/pace/pace.min.js" async defer></script><script>window.config={"autoBookmark":true,"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":200},"comment":{"enable":true,"expired":false,"giscus":{"darkTheme":"dark","lightTheme":"light"}},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"enablePWA":true,"lightgallery":true,"search":{"distance":100,"findAllMatches":false,"fuseIndexURL":"/index.json","highlightTag":"em","ignoreFieldNorm":false,"ignoreLocation":false,"isCaseSensitive":false,"location":0,"maxResultLength":10,"minMatchCharLength":2,"noResultsFound":"没有找到结果","snippetLength":50,"threshold":0.3,"type":"fuse","useExtendedSearch":false},"twemoji":true};</script><script src="/js/theme.min.js" defer></script></body>
+</html>

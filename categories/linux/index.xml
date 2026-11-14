@@ -3,7 +3,23 @@
     <title>Linux - 分类 - William</title>
     <link>https://williamlfang.github.io/categories/linux/</link>
     <description>Linux - 分类 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 12 Nov 2026 12:00:00 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/linux/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 14 Nov 2026 15:14:18 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/categories/linux/" rel="self" type="application/rss+xml" /><item>
+  <title>Keep SSH reachable with a closed lid on Linux Mint</title>
+  <link>https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/</link>
+  <pubDate>Sat, 14 Nov 2026 15:14:18 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" alt="Keep SSH reachable with a closed lid on Linux Mint" title="Keep SSH reachable with a closed lid on Linux Mint" referrerpolicy="no-referrer"/></div><p>My Linux Mint notebook accepted SSH connections while its lid was open, but became unreachable when I shut it. The connection command was unchanged:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh william@127.0.0.1 -p <span class="m">62223</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The relevant setting was not in <code>sshd_config</code>. <strong>Cinnamon was configured to suspend the notebook when the lid closed, even on AC power.</strong> I changed just the AC lid action, leaving the battery policies alone.</p>]]></description>
+</item>
+<item>
   <title>Why trading.hyena17 runs past 09:30: request timeouts and slow service readiness</title>
   <link>https://williamlfang.github.io/2026-11-12-airflow-trading-hyena17-task-timing/</link>
   <pubDate>Thu, 12 Nov 2026 12:00:00 &#43;0800</pubDate>
@@ -169,28 +185,6 @@ in a broken state. Unlike <a href="/2026-09-22-claude-desktop-on-ubuntu-20.04/">
 and <a href="/2026-09-22-chatgpt-desktop-on-mint-20/">ChatGPT Desktop</a>,
 there is no clean way to patch around it this time. The practical fix is to run
 the last 1.x GUI with an up-to-date core.</p>]]></description>
-</item>
-<item>
-  <title>Linux 时区、系统时间与 tmux 状态栏时间不一致的排查</title>
-  <link>https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/</link>
-  <pubDate>Sat, 26 Sep 2026 14:45:00 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-09-26-linux-timezone-clock-and-tmux/</guid>
-  <description><![CDATA[<p>我把 Linux 的时区设成 <code>Asia/Tokyo</code>，又手动设置了系统时间，但 tmux 右侧状态栏仍慢一个小时。例如，系统显示 <code>14:37 JST</code>，tmux 却显示 <code>13:37 CST</code>。问题不在 <code>timedatectl set-time</code>：一个早已启动的 tmux server 仍按旧时区格式化状态栏。</p>
-<div class="highlight" id="id-1"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo timedatectl set-timezone Asia/Tokyo
-</span></span><span class="line"><span class="cl">sudo timedatectl set-ntp <span class="nb">false</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># aligned to real Asia/Shanghai time</span>
-</span></span><span class="line"><span class="cl">timedatectl set-time <span class="s2">&#34;2026-09-26 15:33:00&#34;</span></span></span></code></pre></td></tr></table>
-</div>
-</div>]]></description>
 </item>
 </channel>
 </rss>

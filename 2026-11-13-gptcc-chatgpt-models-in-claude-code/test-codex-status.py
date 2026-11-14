@@ -48,10 +48,12 @@ class StatusTests(unittest.TestCase):
                                              'COLUMNS': str(columns)}, check=True)
                 plain = re.sub(r'\x1b\[[0-9;]*m', '', result.stdout).strip()
                 self.assertIn('Codex 5h 71%', plain)
-                self.assertIn('7d 12%', plain)
+                self.assertLess(plain.index('GPT-6.1-Sol'), plain.index('ctx '))
+                self.assertLess(plain.index('ctx '), plain.index('tok 25500'))
+                self.assertLess(plain.index('tok 25500'), plain.index('Codex 5h'))
                 if columns == 140:
-                    self.assertIn('25500', plain)
-                self.assertEqual(plain.count('↻'), 2)
+                    self.assertIn('7d 12%', plain)
+                self.assertEqual(plain.count('↻'), 2 if columns == 140 else 1)
                 self.assertEqual(len(plain.splitlines()), 1)
                 self.assertLessEqual(len(plain), columns)
 

@@ -3,7 +3,7 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 13 Nov 2026 17:44:31 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
   <title>ChatGPT models in Claude Code: gptcc setup and troubleshooting</title>
   <link>https://williamlfang.github.io/2026-11-13-gptcc-chatgpt-models-in-claude-code/</link>
   <pubDate>Fri, 13 Nov 2026 17:44:31 &#43;0800</pubDate>
@@ -100,6 +100,31 @@ up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two r
 </tr>
 </tbody>
 </table>]]></description>
+</item>
+<item>
+  <title>Nested tmux over SSH: automatically route Ctrl-k to the remote</title>
+  <link>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</link>
+  <pubDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="Nested tmux over SSH: automatically route Ctrl-k to the remote" title="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." referrerpolicy="no-referrer"/></div><p>My local tmux and one remote tmux both used <code>Ctrl-k</code> as their prefix. After connecting over SSH, <code>Ctrl-k c</code> still created a <strong>local</strong> window. The local tmux consumed the prefix before SSH could send it to the server.</p>
+<p>I wanted <code>Ctrl-k</code> to control the remote when its tmux also accepted <code>Ctrl-k</code>, but stay local for other servers. The working solution uses a pane-local flag and one SSH probe per login. <code>Ctrl-b</code> remains an always-local escape hatch.</p>]]></description>
+</item>
+<item>
+  <title>Keep SSH reachable with a closed lid on Linux Mint</title>
+  <link>https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/</link>
+  <pubDate>Sat, 14 Nov 2026 15:14:18 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/featured-image.png" alt="Keep SSH reachable with a closed lid on Linux Mint" title="Keep SSH reachable with a closed lid on Linux Mint" referrerpolicy="no-referrer"/></div><p>My Linux Mint notebook accepted SSH connections while its lid was open, but became unreachable when I shut it. The connection command was unchanged:</p>
+<div class="highlight" id="id-1"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh william@127.0.0.1 -p <span class="m">62223</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>The relevant setting was not in <code>sshd_config</code>. <strong>Cinnamon was configured to suspend the notebook when the lid closed, even on AC power.</strong> I changed just the AC lid action, leaving the battery policies alone.</p>]]></description>
 </item>
 <item>
   <title>ChatGPT models in Claude Code: gptcc setup and troubleshooting</title>
@@ -201,28 +226,6 @@ terminal, so the pair looked misaligned.</p>
 <p>The fix was a dotted gap computed from <code>$COLUMNS</code> and <strong><code>&quot;padding&quot;: -2</code></strong>, a value
 the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
 column, 134 of 135.</p>]]></description>
-</item>
-<item>
-  <title>Apple ID</title>
-  <link>https://williamlfang.github.io/2026-11-01-apple-id/</link>
-  <pubDate>Sun, 01 Nov 2026 18:06:44 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-11-01-apple-id/</guid>
-  <description><![CDATA[https://account.apple.com/ https://account.apple.com/sign-in: 右上角&quot;城建你的 Apple 账户&quot; 使用美国或者日本账户: 可以填写中国的,只是作为验证,不会要求美国]]></description>
-</item>
-<item>
-  <title>Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate</title>
-  <link>https://williamlfang.github.io/2026-10-29-lan-https-local-ca/</link>
-  <pubDate>Thu, 29 Oct 2026 21:55:45 &#43;0900</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-29-lan-https-local-ca/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-29-lan-https-local-ca/featured-image.png" alt="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" title="Screen capture on a LAN web app needs https, and macOS refuses a lazy self-signed certificate" referrerpolicy="no-referrer"/></div><p>My team&rsquo;s internal portal runs on plain http on the LAN, at <code>http://192.168.1.82:8888</code>. I wanted its
-note editor to grab a screenshot of another window straight from the browser, Flameshot-style, with
-<code>getDisplayMedia()</code>. On that address the API isn&rsquo;t there at all: <strong>browsers only offer screen capture
-in a secure context, and an http page on a LAN IP is not one.</strong></p>
-<p>The fix is https next to http, with a certificate signed by a small local CA that each computer trusts
-once. My first attempt, the usual one-line self-signed <code>openssl req -x509</code>, made the wrong kind of
-certificate: a CA certificate with no <code>serverAuth</code> usage, which Apple&rsquo;s rules reject.</p>]]></description>
 </item>
 </channel>
 </rss>

@@ -127,13 +127,6 @@ build() {
     fi
   fi
 
-  if [ -n "$codex_model" ]; then
-    usage "Codex 5h$quota_stale" "$u5_pct" "$u5_at" +%H:%M 0
-    [ -z "$u5_pct" ] && right+=("0;244;Codex 5h --")
-    usage "7d$quota_stale" "$u7_pct" "$u7_at" "+%a %H:%M" 0
-    [ -z "$u7_pct" ] && right+=("0;244;7d --")
-  fi
-
   if [ -n "$ctx" ]; then
     c=2; (( ctx >= 50 )) && c=3; (( ctx >= 80 )) && c=1
     if (( lvl >= 2 )); then
@@ -147,6 +140,12 @@ build() {
   fi
 
   [ -n "$tokens" ] && right+=("0;250;tok $tokens")
+  if [ -n "$codex_model" ]; then
+    usage "Codex 5h$quota_stale" "$u5_pct" "$u5_at" +%H:%M 0
+    [ -z "$u5_pct" ] && right+=("0;244;Codex 5h --")
+    usage "7d$quota_stale" "$u7_pct" "$u7_at" "+%a %H:%M" 0
+    [ -z "$u7_pct" ] && right+=("0;244;7d --")
+  fi
   if [ -z "$codex_model" ]; then
     usage 5h "$u5_pct" "$u5_at" +%H:%M "$lvl"
     usage 7d "$u7_pct" "$u7_at" "+%a %H:%M" "$lvl"
