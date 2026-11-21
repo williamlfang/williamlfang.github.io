@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Called by the local zsh ssh() wrapper. Probe only interactive SSH logins;
 # remote commands, tunnels and unusual invocations retain ordinary SSH behavior.
-# No remote files are changed. A failed/ambiguous probe leaves Ctrl-k local.
-
-forward=0
+# No remote files are changed. A read-only observer tracks active remote tmux
+# clients: Ctrl-j alone keeps Ctrl-k local; foreground ssh forwards to the next
+# hop. Failed/ambiguous detection stays local. Ctrl-b F12 overrides until the
+# route changes. Restore the pane's previous setting when the login exits.
 probe=1
 host_seen=0
 expect_value=0
@@ -46,33 +47,13 @@ done
 
 if [[ -n ${TMUX:-} && -n ${TMUX_PANE:-} ]] &&
     (( probe && host_seen && ! expect_value )); then
-    # Options are placed first because OpenSSH uses the first obtained value.
-    # Reuse SSH config/identity/ProxyJump, but never prompt during the probe,
-    # start forwards, run LocalCommand/RemoteCommand, or allocate a terminal.
-    prefixes=$(command ssh \
-        -o BatchMode=yes -o ConnectTimeout=4 -o ConnectionAttempts=1 \
-        -o ClearAllForwardings=yes -o PermitLocalCommand=no \
-        -o RemoteCommand=none -o RequestTTY=no -o ControlMaster=no \
-        "$@" "tmux list-sessions -F '#{prefix} #{prefix2}' 2>/dev/null" \
-        2>/dev/null) || prefixes=
-
-    # Only forward when every running session on the default remote tmux
-    # socket accepts Ctrl-k. Mixed prefixes are ambiguous: stay local.
-    if [[ -n $prefixes ]]; then
-        forward=1
-        while IFS= read -r line; do
-            case " $line " in
-                *' C-k '*) ;;
-                *) forward=0; break ;;
-            esac
-        done <<< "$prefixes"
-    fi
-fi
-
-if [[ -n ${TMUX:-} && -n ${TMUX_PANE:-} ]] &&
-    (( probe && host_seen && ! expect_value )); then
     previous=$(command tmux show-options -pqv -t "$TMUX_PANE" @remote_ctrl_k 2>/dev/null)
+    watcher=
     restore_prefix() {
+        if [[ -n $watcher ]]; then
+            kill "$watcher" 2>/dev/null
+            wait "$watcher" 2>/dev/null
+        fi
         if [[ -n $previous ]]; then
             command tmux set-option -p -t "$TMUX_PANE" @remote_ctrl_k "$previous" 2>/dev/null
         else
@@ -80,10 +61,10 @@ if [[ -n ${TMUX:-} && -n ${TMUX_PANE:-} ]] &&
         fi
     }
     trap restore_prefix EXIT
-    command tmux set-option -p -t "$TMUX_PANE" @remote_ctrl_k "$forward"
-    if (( forward )); then
-        printf '%s\n' '[tmux] Remote uses Ctrl-k: forwarding Ctrl-k; Ctrl-b controls local tmux.' >&2
-    fi
+    command tmux set-option -p -t "$TMUX_PANE" @remote_ctrl_k 0
+    command python3 "$HOME/.tmux/scripts/ssh-prefix-watch.py" "$TMUX_PANE" "$@" \
+        </dev/null >/dev/null 2>&1 &
+    watcher=$!
 fi
 
 command ssh "$@"

@@ -3,7 +3,22 @@
     <title>所有文章 - William</title>
     <link>https://williamlfang.github.io/posts/</link>
     <description>所有文章 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 21 Nov 2026 16:09:03 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/posts/" rel="self" type="application/rss+xml" /><item>
+  <title>Nested tmux over SSH: dynamically route Ctrl-k across two hops</title>
+  <link>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</link>
+  <pubDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="Nested tmux over SSH: dynamically route Ctrl-k across two hops" title="Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux." referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-11-21:</strong> I tested real keystrokes through the two-hop login, including the return to the relay shell. Direct logins through my forwarded ports exposed a separate problem: the TCP source port changes in transit, so the observer cannot match the login terminal. See <a href="/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/">the forwarded-port fix for <code>nb</code> and <code>nbx</code></a> for the updated helper and test results.</p>
+</blockquote>
+<blockquote>
+<p><strong>Update 2026-11-15:</strong> there were two corrections. Always forwarding for a relay hostname broke local <code>Ctrl-k</code> when no second hop was active. Watching only remote tmux panes then missed my actual <code>ssh → zsh → nb → ta zsh</code> path: the first hop was a plain shell, not a tmux client. The observer now correlates the interactive SSH connection with its remote login terminal and inspects that terminal&rsquo;s foreground job. Both downloads below are required; reconnect the first SSH login after updating the observer. Hostnames are anonymized.</p>
+</blockquote>
+<p>My local tmux and the tmux behind a second SSH hop both use <code>Ctrl-k</code>. The first remote uses <code>Ctrl-j</code>. I wanted the prefixes to coexist without an extra escape sequence before every command.</p>
+<p>The intended mapping is: <strong><code>Ctrl-k</code> stays local until the first remote&rsquo;s login terminal, or its active tmux pane, runs another SSH connection.</strong> Then <code>Ctrl-b</code> controls local tmux and <code>Ctrl-k</code> goes downstream. If a first-remote tmux is attached, <code>Ctrl-j</code> still controls it. Leaving the second connection returns <code>Ctrl-k</code> to local tmux. The live check verified detection of my nested SSH; it was not a complete keyboard test of every transition.</p>]]></description>
+</item>
+<item>
   <title>ChatGPT models in Claude Code: gptcc setup and troubleshooting</title>
   <link>https://williamlfang.github.io/2026-11-13-gptcc-chatgpt-models-in-claude-code/</link>
   <pubDate>Fri, 13 Nov 2026 17:44:31 &#43;0800</pubDate>
@@ -57,58 +72,28 @@
 <p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>]]></description>
 </item>
 <item>
-  <title>Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy</title>
-  <link>https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/</link>
-  <pubDate>Sat, 03 Oct 2026 00:08:03 &#43;0900</pubDate>
+  <title>Nested tmux over SSH: why Ctrl-k worked through a relay but not directly</title>
+  <link>https://williamlfang.github.io/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/</link>
+  <pubDate>Sat, 21 Nov 2026 16:09:03 &#43;0800</pubDate>
   <author>william</author>
-  <guid>https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-10-03-nvim-startup-lazy-loading/featured-image.png" alt="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" title="Profiling Neovim startup: lazy-loaded plugins that weren&#39;t lazy" referrerpolicy="no-referrer"/></div><blockquote>
-<p><strong>Update 2026-10-17:</strong> the next pass looked at big log files, and found an
-<code>nc</code> mapping that made every <code>n</code> wait <code>timeoutlen</code> (500 ms) in every file. See
-<a href="/2026-10-17-nvim-big-log-files/">Profiling Neovim on big logs</a>.</p>
-</blockquote>
-<p>After <a href="/2026-10-02-tmux-lag-round-2/">tmux</a> and
-<a href="/2026-10-02-zsh-startup-and-command-lag/">zsh</a>, I looked at
-Neovim. My config has grown to 138 plugins on lazy.nvim and LazyVim. Almost
-every spec has an <code>event</code>, <code>cmd</code> or <code>keys</code>, so I assumed most of them were lazy.
-They weren&rsquo;t: <strong>89 of the 138 plugins loaded at startup</strong>.</p>
-<p>None of the causes was a slow plugin. They were config mistakes that only show
-up once you ask lazy.nvim <em>why</em> each plugin loaded. I fixed them in two rounds:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th style="text-align:right">before</th>
-<th style="text-align:right">after</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CPU time to first screen, opening a new file</td>
-<td style="text-align:right">~150 ms</td>
-<td style="text-align:right"><strong>~120 ms</strong></td>
-</tr>
-<tr>
-<td>CPU time to first screen, no file (dashboard)</td>
-<td style="text-align:right">69 ms</td>
-<td style="text-align:right"><strong>50 ms</strong></td>
-</tr>
-<tr>
-<td>plugins loaded at startup</td>
-<td style="text-align:right">89</td>
-<td style="text-align:right"><strong>73</strong></td>
-</tr>
-</tbody>
-</table>]]></description>
+  <guid>https://williamlfang.github.io/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/featured-image.png" alt="Nested tmux over SSH: why Ctrl-k worked through a relay but not directly" title="How forwarded SSH ports broke per-pane Ctrl-k routing in tmux, and how to handle direct logins without breaking the two-hop route." referrerpolicy="no-referrer"/></div><p><code>Ctrl-k</code> reached my remote tmux when I logged in through a relay, but the same key went to <strong>local</strong> tmux when I connected directly. The loopback login, <code>nb</code>, and <code>nbx</code> all reached the intended SSH server. The problem was how my local helper decided where to send the key.</p>
+<p>The fix was to treat known forwarded endpoints differently from a relay. For ports <code>62222</code> and <code>62223</code>, I already knew the destination used <code>Ctrl-k</code>, so I could skip detection. For a relay, I still needed to detect when the second SSH connection started and ended. This follows up on my <a href="/2026-11-14-tmux-ssh-auto-prefix/">two-hop tmux setup</a>.</p>]]></description>
 </item>
 <item>
-  <title>Nested tmux over SSH: automatically route Ctrl-k to the remote</title>
+  <title>Nested tmux over SSH: dynamically route Ctrl-k across two hops</title>
   <link>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</link>
   <pubDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="Nested tmux over SSH: automatically route Ctrl-k to the remote" title="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." referrerpolicy="no-referrer"/></div><p>My local tmux and one remote tmux both used <code>Ctrl-k</code> as their prefix. After connecting over SSH, <code>Ctrl-k c</code> still created a <strong>local</strong> window. The local tmux consumed the prefix before SSH could send it to the server.</p>
-<p>I wanted <code>Ctrl-k</code> to control the remote when its tmux also accepted <code>Ctrl-k</code>, but stay local for other servers. The working solution uses a pane-local flag and one SSH probe per login. <code>Ctrl-b</code> remains an always-local escape hatch.</p>]]></description>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="Nested tmux over SSH: dynamically route Ctrl-k across two hops" title="Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux." referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-11-21:</strong> I tested real keystrokes through the two-hop login, including the return to the relay shell. Direct logins through my forwarded ports exposed a separate problem: the TCP source port changes in transit, so the observer cannot match the login terminal. See <a href="/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/">the forwarded-port fix for <code>nb</code> and <code>nbx</code></a> for the updated helper and test results.</p>
+</blockquote>
+<blockquote>
+<p><strong>Update 2026-11-15:</strong> there were two corrections. Always forwarding for a relay hostname broke local <code>Ctrl-k</code> when no second hop was active. Watching only remote tmux panes then missed my actual <code>ssh → zsh → nb → ta zsh</code> path: the first hop was a plain shell, not a tmux client. The observer now correlates the interactive SSH connection with its remote login terminal and inspects that terminal&rsquo;s foreground job. Both downloads below are required; reconnect the first SSH login after updating the observer. Hostnames are anonymized.</p>
+</blockquote>
+<p>My local tmux and the tmux behind a second SSH hop both use <code>Ctrl-k</code>. The first remote uses <code>Ctrl-j</code>. I wanted the prefixes to coexist without an extra escape sequence before every command.</p>
+<p>The intended mapping is: <strong><code>Ctrl-k</code> stays local until the first remote&rsquo;s login terminal, or its active tmux pane, runs another SSH connection.</strong> Then <code>Ctrl-b</code> controls local tmux and <code>Ctrl-k</code> goes downstream. If a first-remote tmux is attached, <code>Ctrl-j</code> still controls it. Leaving the second connection returns <code>Ctrl-k</code> to local tmux. The live check verified detection of my nested SSH; it was not a complete keyboard test of every transition.</p>]]></description>
 </item>
 <item>
   <title>Keep SSH reachable with a closed lid on Linux Mint</title>
@@ -211,21 +196,6 @@ the model and prompt in a median of 0.80 seconds.</p>]]></description>
 <p><strong>Update 2026-11-06:</strong> a later startup investigation found a separate delay. Different Codex versions rejected each other&rsquo;s shared model cache and triggered model-list refreshes that timed out after five seconds. See <a href="/2026-11-06-codex-startup-model-cache/">Codex startup and the shared model cache</a>.</p>
 </blockquote>
 <p>My XPS uses <code>lfang.idc</code> as a proxy gateway. v2rayA runs on the IDC host, and applications on XPS connect to the gateway over the private network. Codex needs one extra check: its shared app-server daemon keeps the environment it received when it started.</p>]]></description>
-</item>
-<item>
-  <title>Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh</title>
-  <link>https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/</link>
-  <pubDate>Thu, 05 Nov 2026 18:38:39 &#43;0800</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-05-claude-code-statusline-p10k/featured-image.png" alt="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" title="Lining up the Claude Code status line with my powerlevel10k prompt: padding -2 and a 5-second refresh" referrerpolicy="no-referrer"/></div><p>I keep Claude Code in a tmux pane above a zsh pane, so its status line sits just
-above my zsh prompt, and the two almost matched. Both used the same <a href="/2024-09-08-powerlevel10k-%E9%85%8D%E7%BD%AE/">powerlevel10k</a>
-colours and separators, but Claude&rsquo;s line started 2 columns further in and
-stopped wherever its text ran out. The zsh line ran the full width of the
-terminal, so the pair looked misaligned.</p>
-<p>The fix was a dotted gap computed from <code>$COLUMNS</code> and <strong><code>&quot;padding&quot;: -2</code></strong>, a value
-the docs don&rsquo;t mention. Now both prompts start at column 0 and close on the same
-column, 134 of 135.</p>]]></description>
 </item>
 </channel>
 </rss>

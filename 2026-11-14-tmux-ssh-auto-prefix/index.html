@@ -5,32 +5,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
     <meta name="robots" content="noodp" />
-    <title>Nested tmux over SSH: automatically route Ctrl-k to the remote - William</title><meta name="author" content="william">
+    <title>Nested tmux over SSH: dynamically route Ctrl-k across two hops - William</title><meta name="author" content="william">
 <meta name="author-link" content="">
-<meta name="description" content="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." /><meta name="keywords" content='tmux, SSH, zsh, Linux, keybindings' /><meta itemprop="name" content="Nested tmux over SSH: automatically route Ctrl-k to the remote">
-<meta itemprop="description" content="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control."><meta itemprop="datePublished" content="2026-11-14T18:49:28+08:00" />
-<meta itemprop="dateModified" content="2026-11-14T18:49:28+08:00" />
-<meta itemprop="wordCount" content="1878"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" />
-<meta itemprop="keywords" content="tmux,SSH,zsh,Linux,keybindings," /><meta property="og:title" content="Nested tmux over SSH: automatically route Ctrl-k to the remote" />
-<meta property="og:description" content="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." />
+<meta name="description" content="Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux." /><meta name="keywords" content='tmux, SSH, zsh, Linux, keybindings' /><meta itemprop="name" content="Nested tmux over SSH: dynamically route Ctrl-k across two hops">
+<meta itemprop="description" content="Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux."><meta itemprop="datePublished" content="2026-11-14T18:49:28+08:00" />
+<meta itemprop="dateModified" content="2026-11-21T16:09:03+08:00" />
+<meta itemprop="wordCount" content="3537"><meta itemprop="image" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" />
+<meta itemprop="keywords" content="tmux,SSH,zsh,Linux,keybindings," /><meta property="og:title" content="Nested tmux over SSH: dynamically route Ctrl-k across two hops" />
+<meta property="og:description" content="Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" /><meta property="og:image" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2026-11-14T18:49:28+08:00" />
-<meta property="article:modified_time" content="2026-11-14T18:49:28+08:00" />
+<meta property="article:modified_time" content="2026-11-21T16:09:03+08:00" />
 
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" /><meta name="twitter:title" content="Nested tmux over SSH: automatically route Ctrl-k to the remote"/>
-<meta name="twitter:description" content="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control."/>
+<meta name="twitter:image" content="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" /><meta name="twitter:title" content="Nested tmux over SSH: dynamically route Ctrl-k across two hops"/>
+<meta name="twitter:description" content="Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux."/>
 <meta name="application-name" content="FixIt">
 <meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" /><link rel="prev" href="https://williamlfang.github.io/2026-11-14-ssh-linux-mint-lid-closed/" /><link rel="next" href="https://williamlfang.github.io/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
   {
     "@context": "http://schema.org",
     "@type": "BlogPosting",
-    "headline": "Nested tmux over SSH: automatically route Ctrl-k to the remote",
+    "headline": "Nested tmux over SSH: dynamically route Ctrl-k across two hops",
     "inLanguage": "zh-CN",
     "mainEntityOfPage": {
       "@type": "WebPage",
@@ -40,13 +40,13 @@
               "url": "https:\/\/williamlfang.github.io\/2026-11-14-tmux-ssh-auto-prefix\/featured-image.png",
               "width":  1200 ,
               "height":  800 
-            }],"genre": "posts","keywords": "tmux, SSH, zsh, Linux, keybindings","wordcount":  1878 ,
-    "url": "https:\/\/williamlfang.github.io\/2026-11-14-tmux-ssh-auto-prefix\/","datePublished": "2026-11-14T18:49:28+08:00","dateModified": "2026-11-14T18:49:28+08:00","publisher": {
+            }],"genre": "posts","keywords": "tmux, SSH, zsh, Linux, keybindings","wordcount":  3537 ,
+    "url": "https:\/\/williamlfang.github.io\/2026-11-14-tmux-ssh-auto-prefix\/","datePublished": "2026-11-14T18:49:28+08:00","dateModified": "2026-11-21T16:09:03+08:00","publisher": {
       "@type": "Organization",
       "name": ""},"author": {
         "@type": "Person",
         "name": "william"
-      },"description": "Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control."
+      },"description": "Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux."
   }
   </script></head>
   <body data-header-desktop="sticky" data-header-mobile="auto"><script>(window.localStorage?.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('data-theme', 'dark');</script><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
@@ -200,10 +200,10 @@
   </div><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
 
   <article class="page single">
-    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Nested tmux over SSH: automatically route Ctrl-k to the remote</span>
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>Nested tmux over SSH: dynamically route Ctrl-k across two hops</span>
       </h1></div><div class="post-meta">
-      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-14 18:49:28"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-14">2026-11-14</time></span>&nbsp;<span title="1878 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 1900 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 9 分钟</span>&nbsp;</div>
-    </div><div class="featured-image"><img loading="lazy" src="/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" data-title="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
+      <div class="post-meta-line"><span class="post-author"><span class="author"><img loading="lazy" src="/images/william.jpg" alt="william" data-title="william" class="avatar" style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/>&nbsp;william</span></span><span class="post-included-in">&nbsp;收录于 <a href="/categories/tools/" class="post-category" title="分类 - Tools"><i class="fa-regular fa-folder fa-fw" aria-hidden="true"></i> Tools</a></span></div><div class="post-meta-line"><span title="发布于 2026-11-14 18:49:28"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-14">2026-11-14</time></span>&nbsp;<span title="更新于 2026-11-21 16:09:03"><i class="fa-regular fa-calendar-check fa-fw me-1" aria-hidden="true"></i><time datetime="2026-11-21">2026-11-21</time></span>&nbsp;<span title="3537 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 3600 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 17 分钟</span>&nbsp;</div>
+    </div><div class="featured-image"><img loading="lazy" src="/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" data-title="Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></div><div class="details toc" id="toc-static" data-kept="false">
         <div class="details-summary toc-title">
           <span>目录</span>
           <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
@@ -214,10 +214,24 @@
       <ol>
         <li><a href="#the-setup-and-the-behavior-i-wanted">The setup and the behavior I wanted</a></li>
         <li><a href="#why-sending-the-prefix-twice-was-not-enough">Why sending the prefix twice was not enough</a></li>
-        <li><a href="#local-tmux-cannot-discover-a-remote-prefix-by-itself">Local tmux cannot discover a remote prefix by itself</a></li>
+        <li><a href="#why-the-static-relay-rule-was-wrong">Why the static relay rule was wrong</a>
+          <ol>
+            <li><a href="#the-remaining-failure-an-unrelated-tmux-client-looked-idle">The remaining failure: an unrelated tmux client looked idle</a></li>
+            <li><a href="#track-the-interactive-ssh-terminal-instead">Track the interactive SSH terminal instead</a></li>
+          </ol>
+        </li>
         <li><a href="#step-1-dispatch-ctrl-k-in-the-local-root-table">Step 1: dispatch Ctrl-k in the local root table</a></li>
-        <li><a href="#step-2-probe-before-an-interactive-ssh-login">Step 2: probe before an interactive SSH login</a></li>
-        <li><a href="#step-3-wrap-ssh-in-the-local-zsh-configuration">Step 3: wrap ssh in the local zsh configuration</a></li>
+        <li><a href="#step-2-install-the-wrapper-helper-and-observer">Step 2: install the wrapper helper and observer</a>
+          <ol>
+            <li><a href="#one-observer-connection-not-a-new-login-every-second">One observer connection, not a new login every second</a></li>
+            <li><a href="#cleanup-and-manual-overrides">Cleanup and manual overrides</a></li>
+          </ol>
+        </li>
+        <li><a href="#step-3-wrap-ssh-in-the-local-zsh-configuration">Step 3: wrap ssh in the local zsh configuration</a>
+          <ol>
+            <li><a href="#do-i-need-to-reload-tmux-and-zsh">Do I need to reload tmux and zsh?</a></li>
+          </ol>
+        </li>
         <li><a href="#checking-the-result">Checking the result</a></li>
         <li><a href="#limits-worth-keeping-visible">Limits worth keeping visible</a></li>
         <li><a href="#takeaway">Takeaway</a></li>
@@ -226,95 +240,166 @@
     </li>
   </ol>
 </nav></div>
-      </div><div class="content" id="content"><p>My local tmux and one remote tmux both used <code>Ctrl-k</code> as their prefix. After connecting over SSH, <code>Ctrl-k c</code> still created a <strong>local</strong> window. The local tmux consumed the prefix before SSH could send it to the server.</p>
-<p>I wanted <code>Ctrl-k</code> to control the remote when its tmux also accepted <code>Ctrl-k</code>, but stay local for other servers. The working solution uses a pane-local flag and one SSH probe per login. <code>Ctrl-b</code> remains an always-local escape hatch.</p>
+      </div><div class="content" id="content"><blockquote>
+<p><strong>Update 2026-11-21:</strong> I tested real keystrokes through the two-hop login, including the return to the relay shell. Direct logins through my forwarded ports exposed a separate problem: the TCP source port changes in transit, so the observer cannot match the login terminal. See <a href="/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/">the forwarded-port fix for <code>nb</code> and <code>nbx</code></a> for the updated helper and test results.</p>
+</blockquote>
+<blockquote>
+<p><strong>Update 2026-11-15:</strong> there were two corrections. Always forwarding for a relay hostname broke local <code>Ctrl-k</code> when no second hop was active. Watching only remote tmux panes then missed my actual <code>ssh → zsh → nb → ta zsh</code> path: the first hop was a plain shell, not a tmux client. The observer now correlates the interactive SSH connection with its remote login terminal and inspects that terminal&rsquo;s foreground job. Both downloads below are required; reconnect the first SSH login after updating the observer. Hostnames are anonymized.</p>
+</blockquote>
+<p>My local tmux and the tmux behind a second SSH hop both use <code>Ctrl-k</code>. The first remote uses <code>Ctrl-j</code>. I wanted the prefixes to coexist without an extra escape sequence before every command.</p>
+<p>The intended mapping is: <strong><code>Ctrl-k</code> stays local until the first remote&rsquo;s login terminal, or its active tmux pane, runs another SSH connection.</strong> Then <code>Ctrl-b</code> controls local tmux and <code>Ctrl-k</code> goes downstream. If a first-remote tmux is attached, <code>Ctrl-j</code> still controls it. Leaving the second connection returns <code>Ctrl-k</code> to local tmux. The live check verified detection of my nested SSH; it was not a complete keyboard test of every transition.</p>
 <h2 id="the-setup-and-the-behavior-i-wanted" class="heading-element">
-  <a href="#the-setup-and-the-behavior-i-wanted" class="heading-mark"></a>The setup and the behavior I wanted</h2><p>My local setup runs tmux 3.5a with zsh. The connection in question is:</p>
+  <a href="#the-setup-and-the-behavior-i-wanted" class="heading-mark"></a>The setup and the behavior I wanted</h2><p>My local setup runs tmux 3.5a with zsh. The first remote runs tmux 3.4. The route is:</p>
 <div class="highlight" id="id-1"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh william@127.0.0.1 -p62222</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Local tmux (synthetic Ctrl-k dispatcher; actual prefix Ctrl-b)
+</span></span><span class="line"><span class="cl">  -&gt; SSH to relay.example
+</span></span><span class="line"><span class="cl">     First remote tmux (Ctrl-j)
+</span></span><span class="line"><span class="cl">       -&gt; SSH to second host
+</span></span><span class="line"><span class="cl">          Second remote tmux (Ctrl-k)</span></span></code></pre></td></tr></table>
 </div>
-</div><p>The loopback address and port are simply this connection&rsquo;s endpoint. Nothing in the solution hard-codes them; it should also work with an SSH host alias or a normal hostname.</p>
-<p>Before the change, both tmux instances had the equivalent of:</p>
+</div><p><code>relay.example</code> replaces my private hostname. The LAN endpoint below is an example; use your own host and port:</p>
 <div class="highlight" id="id-2"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">set -g prefix C-k</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># From the local zsh shell:</span>
+</span></span><span class="line"><span class="cl">ssh relay.example
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Then, inside the first remote&#39;s tmux:</span>
+</span></span><span class="line"><span class="cl">ssh william@192.168.1.82 -p62223</span></span></code></pre></td></tr></table>
 </div>
-</div><p>The desired routing was:</p>
+</div><p>The route above is supported, but it was not the path I actually used when debugging the remaining failure:</p>
+<div class="highlight" id="id-3"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Local tmux
+</span></span><span class="line"><span class="cl">  -&gt; ssh relay.example
+</span></span><span class="line"><span class="cl">     -&gt; plain zsh shell
+</span></span><span class="line"><span class="cl">        -&gt; nb (SSH to the second host)
+</span></span><span class="line"><span class="cl">           -&gt; ta zsh (attach the second host&#39;s tmux; Ctrl-k)</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The commands I typed were:</p>
+<div class="highlight" id="id-4"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl">ssh relay.example
+</span></span><span class="line"><span class="cl">zsh
+</span></span><span class="line"><span class="cl">nb
+</span></span><span class="line"><span class="cl">ta zsh</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>nb</code> is my shortcut for the second SSH connection; <code>ta zsh</code> attaches the second host&rsquo;s tmux session. These are personal shortcuts, not standard commands. Use <code>ssh william@192.168.1.82 -p62223</code> and <code>tmux attach-session -t zsh</code> for the equivalent explicit operations. <strong>Starting zsh on the first host does not attach its tmux.</strong> A detached <code>Ctrl-j</code> tmux elsewhere on that host cannot tell me what this login terminal is doing.</p>
+<p>The desired mapping when the first tmux is attached is:</p>
 <table>
 <thead>
 <tr>
-<th>Context</th>
-<th><code>Ctrl-k</code></th>
-<th><code>Ctrl-b</code></th>
+<th>State</th>
+<th>Local tmux</th>
+<th>First remote tmux</th>
+<th>Second remote tmux</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Local shell</td>
-<td>Local prefix</td>
-<td>Local prefix</td>
+<td>Local shell, no SSH</td>
+<td><code>Ctrl-k</code></td>
+<td>—</td>
+<td>—</td>
 </tr>
 <tr>
-<td>SSH login; running remote sessions all accept <code>Ctrl-k</code></td>
-<td>Forward to remote</td>
-<td>Local prefix</td>
+<td>First remote only; active pane is a shell/editor</td>
+<td><strong><code>Ctrl-k</code></strong></td>
+<td><code>Ctrl-j</code></td>
+<td>—</td>
 </tr>
 <tr>
-<td>SSH login; remote uses another prefix</td>
-<td>Local prefix</td>
-<td>Local prefix</td>
+<td>Active first-remote pane runs the second SSH</td>
+<td><strong><code>Ctrl-b</code></strong></td>
+<td><code>Ctrl-j</code></td>
+<td><strong><code>Ctrl-k</code></strong></td>
 </tr>
 <tr>
-<td>Probe fails or finds no running tmux</td>
-<td>Local prefix</td>
-<td>Local prefix</td>
+<td>Second SSH exits back to the first remote</td>
+<td><strong><code>Ctrl-k</code> again</strong></td>
+<td><code>Ctrl-j</code></td>
+<td>—</td>
 </tr>
 </tbody>
 </table>
-<p>Here, “accept” means either the remote session&rsquo;s <code>prefix</code> or <code>prefix2</code> is <code>C-k</code>.</p>
-<p><img loading="lazy" src="featured-image.png" alt="Conceptual routing: Ctrl-k selects local tmux or passes through SSH according to a pane flag; Ctrl-b always stays local." srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="Conceptual routing: Ctrl-k selects local tmux or passes through SSH according to a pane flag; Ctrl-b always stays local." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
-<p><em>Conceptual illustration, not a captured terminal trace. The SSH check sets the flag once; pressing a key does not launch another probe.</em></p>
+<p>For the plain-shell path, the local and second-remote columns are the same; there simply is no first-remote tmux to control with <code>Ctrl-j</code>.</p>
+<p><code>Ctrl-b</code> remains available locally in every state. Each prefix is followed directly by its normal command key: <code>Ctrl-k c</code>, for example, creates a local window in the first-remote-only state and a downstream window in the two-hop state.</p>
+<p><img loading="lazy" src="featured-image.png" alt="Conceptual diagram: Ctrl-k controls local tmux before the second SSH hop, forwards downstream while that hop is active, and returns local after exit." srcset="featured-image.png?size=small, featured-image.png?size=medium 1.5x, featured-image.png?size=large 2x" data-title="Conceptual diagram: Ctrl-k controls local tmux before the second SSH hop, forwards downstream while that hop is active, and returns local after exit." style="background: url(/images/loading.min.svg) no-repeat center;" onload="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}this.dataset.lazyloaded='';" onerror="this.title=this.dataset.title;for(const i of ['style', 'data-title','onerror','onload']){this.removeAttribute(i);}"/></p>
+<p><em>Conceptual illustration, not a terminal capture. A background observer updates the pane flag; a key press only evaluates that flag inside local tmux.</em></p>
 <h2 id="why-sending-the-prefix-twice-was-not-enough" class="heading-element">
-  <a href="#why-sending-the-prefix-twice-was-not-enough" class="heading-mark"></a>Why sending the prefix twice was not enough</h2><p>A conventional nested-tmux setup provides a <code>send-prefix</code> binding. The first prefix addresses local tmux; a second key sends a prefix through to the inner tmux.</p>
-<p>That is useful, but it was not the behavior I wanted. I wanted the same single <code>Ctrl-k</code> press to choose the right layer automatically.</p>
-<p>There was another constraint: my existing <code>Ctrl-k Ctrl-k</code> binding resizes a pane upward:</p>
-<div class="highlight" id="id-3"><div class="chroma">
+  <a href="#why-sending-the-prefix-twice-was-not-enough" class="heading-mark"></a>Why sending the prefix twice was not enough</h2><p>A conventional nested-tmux setup provides a <code>send-prefix</code> binding. The first prefix addresses local tmux; another key sends a prefix to the inner tmux.</p>
+<p>That works, but it is not the behavior I wanted. I also already use <code>Ctrl-k Ctrl-k</code> to resize a local pane upward:</p>
+<div class="highlight" id="id-5"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
 <pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">bind -r C-k resize-pane -U 5</span></span></code></pre></td></tr></table>
 </div>
-</div><p>Replacing that with <code>send-prefix</code> would silently remove an existing shortcut. The solution needed to preserve the prefix table, not rebuild it.</p>
-<h2 id="local-tmux-cannot-discover-a-remote-prefix-by-itself" class="heading-element">
-  <a href="#local-tmux-cannot-discover-a-remote-prefix-by-itself" class="heading-mark"></a>Local tmux cannot discover a remote prefix by itself</h2><p>SSH carries terminal input and output. It does not advertise the remote tmux configuration to the local tmux.</p>
-<p>Looking at the local pane&rsquo;s process name only tells me that it is running <code>ssh</code>. It does not tell me whether a remote tmux exists, which session I will attach to, or what that session&rsquo;s prefix is.</p>
-<p><strong>Auto-detection therefore needs a remote query.</strong> The useful query is:</p>
-<div class="highlight" id="id-4"><div class="chroma">
+</div><p>Replacing it with <code>send-prefix</code> would remove an existing shortcut. The solution should preserve the prefix table and only decide <strong>which layer receives the prefix</strong>.</p>
+<h2 id="why-the-static-relay-rule-was-wrong" class="heading-element">
+  <a href="#why-the-static-relay-rule-was-wrong" class="heading-mark"></a>Why the static relay rule was wrong</h2><p>The first implementation probed remote prefixes once at login. That handled a direct <code>Ctrl-k</code> remote, but could not see a second SSH connection started later inside a <code>Ctrl-j</code> tmux.</p>
+<p>The next version hard-coded a relay exception: forward <code>Ctrl-k</code> throughout the entire first SSH login. That made the three-layer route usable, but broke the simpler case. Before the second hop started, and after it ended, <code>Ctrl-k</code> still went to the first remote shell instead of local tmux.</p>
+<p><strong>The hostname does not tell me whether a second hop is active.</strong> Counting SSH connections elsewhere on the host is not enough either: an inactive pane can have an SSH session that should not affect the pane I am using.</p>
+<p>The first dynamic version asked about attached tmux clients and their active panes:</p>
+<div class="highlight" id="id-6"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux list-sessions -F <span class="s1">&#39;#{prefix} #{prefix2}&#39;</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tmux list-clients -F <span class="s1">&#39;#{prefix}|#{prefix2}|#{pane_current_command}&#39;</span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>It reads the effective prefix settings of running sessions on the default remote tmux socket. It does not start a tmux server or parse a configuration file.</p>
-<p>The conservative policy is:</p>
+</div><p>That query remains the fallback when local connection correlation is unavailable. It applies this policy:</p>
 <ul>
-<li>At least one session must be returned.</li>
-<li>Every returned session must accept <code>C-k</code> in either prefix slot.</li>
-<li>Any failure or ambiguous mixture keeps <code>Ctrl-k</code> local.</li>
+<li>A client whose session accepts <code>C-k</code> in <code>prefix</code> or <code>prefix2</code> needs forwarding directly.</li>
+<li>A client whose session accepts <code>C-j</code>, with active command <code>ssh</code> or <code>autossh</code>, needs forwarding for the assumed downstream <code>Ctrl-k</code> tmux.</li>
+<li>A <code>C-j</code> client whose active pane runs a shell, editor, or another command keeps <code>Ctrl-k</code> local.</li>
+<li>Conflicting clients, malformed output, or no usable result fall back to local.</li>
 </ul>
-<p>Checking every session avoids guessing which one a later <code>tmux attach</code> will choose. It still cannot identify the active application inside the remote terminal; that limitation matters later.</p>
+<h3 id="the-remaining-failure-an-unrelated-tmux-client-looked-idle" class="heading-element">
+  <a href="#the-remaining-failure-an-unrelated-tmux-client-looked-idle" class="heading-mark"></a>The remaining failure: an unrelated tmux client looked idle</h3><p>Even after the dynamic version was installed, <code>Ctrl-k</code> did not reach my second remote. Reloading the local configuration was not the fix: the root binding was loaded and observers were already running.</p>
+<p>The first remote had a tmux client whose active command was <code>zsh</code>. But the actual second-hop SSH processes were running on different login terminals, outside that tmux. The observer was looking at the wrong terminal. A successful mocked tmux transition test did not cover that workflow.</p>
+<h3 id="track-the-interactive-ssh-terminal-instead" class="heading-element">
+  <a href="#track-the-interactive-ssh-terminal-instead" class="heading-mark"></a>Track the interactive SSH terminal instead</h3><p>On my direct Linux connection, the updated observer:</p>
+<ol>
+<li>Finds an interactive <code>ssh</code> child of the local Bash wrapper by walking a small number of ancestors through <code>/proc</code>.</li>
+<li>Reads <code>ss -Htnp</code> and extracts its established TCP source port. It retries briefly while the login starts.</li>
+<li>On the first remote, scans readable <code>/proc/&lt;pid&gt;/environ</code> entries for an <code>SSH_CONNECTION</code> source port match and obtains <code>SSH_TTY</code>.</li>
+<li>Examines that terminal&rsquo;s processes using <code>/proc/&lt;pid&gt;/stat</code>. It selects foreground jobs by matching the process group to the terminal&rsquo;s foreground process group.</li>
+<li>For foreground <code>ssh</code> or <code>autossh</code>, enables forwarding. For a shell/editor, keeps it local. If the foreground process is a tmux client, queries only the client whose <code>client_tty</code> matches this login terminal, then applies the prefix policy above.</li>
+</ol>
+<p>Thus <code>zsh → nb</code> works because the actual foreground job becomes <code>ssh</code>, regardless of the shortcut&rsquo;s name. A separate idle tmux client no longer decides this login&rsquo;s route.</p>
+<p>This is <strong>terminal-aware route detection, not recursive prefix discovery</strong>. Seeing <code>ssh</code> still does not prove that the next host has tmux or uses <code>Ctrl-k</code>. That remains an explicit assumption of my two-hop workflow.</p>
 <h2 id="step-1-dispatch-ctrl-k-in-the-local-root-table" class="heading-element">
   <a href="#step-1-dispatch-ctrl-k-in-the-local-root-table" class="heading-mark"></a>Step 1: dispatch Ctrl-k in the local root table</h2><p>Add this block at the <strong>end of the local <code>~/.tmux.conf</code></strong>, after earlier prefix settings and plugin initialization:</p>
-<div class="highlight" id="id-5"><div class="chroma">
+<div class="highlight" id="id-7"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -340,70 +425,122 @@
 </span></span><span class="line"><span class="cl">    &#39;send-keys C-k&#39; \
 </span></span><span class="line"><span class="cl">    &#39;switch-client -T prefix&#39;
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">## Manual override when the probe cannot determine the desired behavior.
+</span></span><span class="line"><span class="cl">## Manual override when detection cannot determine the desired behavior.
 </span></span><span class="line"><span class="cl">bind-key -T prefix F12 if-shell -F &#39;#{==:#{@remote_ctrl_k},1}&#39; \
 </span></span><span class="line"><span class="cl">    &#39;set-option -pu @remote_ctrl_k; display-message &#34;Ctrl-k controls LOCAL tmux&#34;&#39; \
 </span></span><span class="line"><span class="cl">    &#39;set-option -p @remote_ctrl_k 1; display-message &#34;Ctrl-k controls REMOTE tmux; Ctrl-b stays local&#34;&#39;</span></span></code></pre></td></tr></table>
 </div>
-</div><p>The actual tmux <code>prefix</code> becomes <code>C-b</code>. <code>Ctrl-k</code> instead becomes a normal key binding in the <code>root</code> table:</p>
+</div><p>The actual local tmux <code>prefix</code> becomes <code>C-b</code>. <code>Ctrl-k</code> is a normal binding in the <code>root</code> table:</p>
 <ol>
-<li>With <code>@remote_ctrl_k</code> equal to <code>1</code>, <code>send-keys C-k</code> writes the key into the pane. SSH then carries it to the remote.</li>
-<li>Otherwise, <code>switch-client -T prefix</code> makes the next key use the existing local prefix table.</li>
+<li>Flag <code>1</code>: <code>send-keys C-k</code> writes the key into the local pane. SSH carries it onward.</li>
+<li>Flag <code>0</code> or unset: <code>switch-client -T prefix</code> makes the next key use the existing local prefix table.</li>
 </ol>
-<p>Keeping <code>prefix C-k</code> and merely adding a root-table binding would not work: tmux would recognize its prefix first instead of dispatching that root binding.</p>
-<p>The <code>-F</code> option is important. The condition is evaluated as a tmux format; <strong>it does not spawn a shell for each key press</strong>. This follows the same keep-forks-out-of-the-input-path principle from my <a href="/2026-10-02-tmux-lag-round-2/">tmux latency investigation</a>.</p>
-<p>The routing flag is pane-local, not global. Two panes connected to different servers can therefore make different decisions.</p>
-<p>Existing prefix-table commands are untouched. In an ordinary local pane, <code>Ctrl-k Ctrl-k</code> still runs the resize binding. In a forwarding pane, <code>Ctrl-b Ctrl-k</code> addresses that same local resize command.</p>
-<p>Do not copy this block to the remote configuration. The remote can keep its normal <code>prefix C-k</code>.</p>
-<h2 id="step-2-probe-before-an-interactive-ssh-login" class="heading-element">
-  <a href="#step-2-probe-before-an-interactive-ssh-login" class="heading-mark"></a>Step 2: probe before an interactive SSH login</h2><p>The helper is available as a <a href="ssh-auto-prefix.sh">downloadable Bash script</a>. Save it locally as <code>~/.tmux/scripts/ssh-auto-prefix.sh</code>. It is invoked with <code>bash</code>, so an executable bit is not required.</p>
-<p>The central probe is:</p>
-<div class="highlight" id="id-6"><div class="chroma">
+<p>Keeping <code>prefix C-k</code> and merely adding a root-table binding would not work: tmux recognizes its actual prefix before dispatching that root binding.</p>
+<p>The <code>-F</code> condition is evaluated as a tmux format. <strong>There is no shell or network query on each key press.</strong> This follows the same keep-forks-out-of-the-input-path principle from my <a href="/2026-10-02-tmux-lag-round-2/">tmux latency investigation</a>.</p>
+<p>The flag is pane-local, so different local panes can route differently. Existing prefix-table commands remain intact: <code>Ctrl-k Ctrl-k</code> still resizes locally when forwarding is off; <code>Ctrl-b Ctrl-k</code> reaches that same local resize binding when forwarding is on.</p>
+<p>Do not install this dispatcher on either remote. The first remote keeps <code>prefix C-j</code>; the second keeps <code>prefix C-k</code>. The first remote must also let an ordinary <code>C-k</code> pass through rather than intercepting it with another root-table binding.</p>
+<h2 id="step-2-install-the-wrapper-helper-and-observer" class="heading-element">
+  <a href="#step-2-install-the-wrapper-helper-and-observer" class="heading-mark"></a>Step 2: install the wrapper helper and observer</h2><p>Save both downloads under the following local paths:</p>
+<table>
+<thead>
+<tr>
+<th>Download</th>
+<th>Local destination</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="ssh-auto-prefix.sh">Bash login helper</a></td>
+<td><code>~/.tmux/scripts/ssh-auto-prefix.sh</code></td>
+</tr>
+<tr>
+<td><a href="ssh-prefix-watch.py">Python observer</a></td>
+<td><code>~/.tmux/scripts/ssh-prefix-watch.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>Terminal-aware mode requires Linux on both sides, readable same-user <code>/proc</code> metadata, local <code>ss</code> (iproute2), Bash, Python 3.7+ locally, and Python 3.6+ on the first remote. The tmux-client branch also requires remote tmux in the noninteractive PATH. The fallback observer uses remote <code>sh</code>, <code>sleep</code>, and tmux instead. The files are invoked through their interpreters, so executable bits are not required.</p>
+<h3 id="one-observer-connection-not-a-new-login-every-second" class="heading-element">
+  <a href="#one-observer-connection-not-a-new-login-every-second" class="heading-mark"></a>One observer connection, not a new login every second</h3><p>The Bash helper saves the current pane flag, sets it to <code>0</code>, and starts the Python observer in the background. It then runs the normal interactive SSH command immediately. Detection does not block the login, although the flag remains local until the first snapshot arrives.</p>
+<p>The observer opens <strong>one additional, read-only SSH command connection</strong>. With a correlated source port it runs a Python script through standard input:</p>
+<div class="highlight" id="id-8"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">port</span> <span class="o">=</span> <span class="n">interactive_source_port</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">remote_command</span> <span class="o">=</span> <span class="s1">&#39;python3 -u - &#39;</span> <span class="o">+</span> <span class="n">shlex</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">port</span><span class="p">)</span> <span class="k">if</span> <span class="n">port</span> <span class="k">else</span> <span class="s1">&#39;sh -s&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">remote_script</span> <span class="o">=</span> <span class="n">REMOTE_TERMINAL_WATCH</span> <span class="k">if</span> <span class="n">port</span> <span class="k">else</span> <span class="n">REMOTE_WATCH</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>This excerpt is from the downloadable observer; both script constants and the connection-matching function are defined there. Python&rsquo;s unbuffered mode makes snapshots visible promptly. The terminal-aware loop inspects the foreground process group and emits one of these protocol rows, followed by an <code>END</code> marker:</p>
+<table>
+<thead>
+<tr>
+<th>Protocol row</th>
+<th>Meaning</th>
+<th>Local flag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>None|None|ssh-terminal</code></td>
+<td>Foreground SSH on the correlated login terminal</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>None|None|shell-terminal</code></td>
+<td>No foreground SSH or tmux client there</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>C-j|None|ssh</code></td>
+<td>Matching tmux client has an active SSH pane</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>C-j|None|zsh</code></td>
+<td>Matching tmux client has an active shell pane</td>
+<td><code>0</code></td>
+</tr>
+</tbody>
+</table>
+<p>These are protocol examples, not terminal command output. The full script handles primary and secondary prefixes and scans processes approximately once per second.</p>
+<p>If the local source port cannot be identified, it uses the older <code>sh -s</code> tmux-only observer. That fallback queries all attached clients; with none attached, it checks running sessions and their prefixes. A unanimous <code>C-k</code> session result can forward before attachment. <strong>The fallback still cannot detect a second SSH launched from a plain login shell.</strong></p>
+<p>Failure after choosing terminal-aware mode does not automatically retry with the fallback. For example, missing remote Python closes the observer and leaves routing local; an unmatched source port on the remote emits empty snapshots, also keeping routing local.</p>
+<p>The SSH observer uses these protective options before the original login arguments:</p>
+<div class="highlight" id="id-9"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
-</span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">prefixes</span><span class="o">=</span><span class="k">$(</span><span class="nb">command</span> ssh <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -o <span class="nv">BatchMode</span><span class="o">=</span>yes -o <span class="nv">ConnectTimeout</span><span class="o">=</span><span class="m">4</span> -o <span class="nv">ConnectionAttempts</span><span class="o">=</span><span class="m">1</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -o <span class="nv">ClearAllForwardings</span><span class="o">=</span>yes -o <span class="nv">PermitLocalCommand</span><span class="o">=</span>no <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    -o <span class="nv">RemoteCommand</span><span class="o">=</span>none -o <span class="nv">RequestTTY</span><span class="o">=</span>no -o <span class="nv">ControlMaster</span><span class="o">=</span>no <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span> <span class="s2">&#34;tmux list-sessions -F &#39;#{prefix} #{prefix2}&#39; 2&gt;/dev/null&#34;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    2&gt;/dev/null<span class="k">)</span> <span class="o">||</span> <span class="nv">prefixes</span><span class="o">=</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">BatchMode=yes             ConnectTimeout=4
+</span></span><span class="line"><span class="cl">ConnectionAttempts=1      ClearAllForwardings=yes
+</span></span><span class="line"><span class="cl">PermitLocalCommand=no     RemoteCommand=none
+</span></span><span class="line"><span class="cl">RequestTTY=no             ControlMaster=no
+</span></span><span class="line"><span class="cl">ServerAliveInterval=5     ServerAliveCountMax=1</span></span></code></pre></td></tr></table>
 </div>
-</div><p>A few details matter:</p>
+</div><p>These are option values, not captured command output. The full invocation is in the downloadable Python file. Options come first because OpenSSH generally uses the first obtained value.</p>
+<p>A few details matter:</p>
 <ul>
-<li><strong>No second password prompt.</strong> <code>BatchMode=yes</code> makes the probe noninteractive. It needs an identity or an existing connection that can authenticate without prompting. If that is unavailable, the regular SSH login still runs normally, with local key routing.</li>
-<li><strong>Reuse connection settings.</strong> The original arguments carry the host, port, identity, config file, and jump-host options. The probe&rsquo;s protective options come first because OpenSSH generally uses the first obtained value for each option.</li>
-<li><strong>Avoid login side effects where possible.</strong> The probe requests no terminal, clears configured forwarding, disables <code>LocalCommand</code>, and overrides <code>RemoteCommand</code>. It is still a real SSH command: remote shell startup and server-side SSH policy can affect it.</li>
-<li><strong>Do not probe on every key press.</strong> The query runs once before the login. There is no periodic remote polling.</li>
-<li><strong>Preserve ordinary command invocations.</strong> The argument scanner skips detection for explicit remote commands and noninteractive modes such as <code>-N</code>, <code>-T</code>, and <code>-W</code>. It is a small scanner, not a complete replacement for OpenSSH&rsquo;s parser; unusual invocations should bypass the wrapper.</li>
+<li><strong>No extra password prompt.</strong> The observer needs noninteractive authentication, such as a key or a usable existing connection. Otherwise the normal login proceeds, but automatic routing stays local.</li>
+<li><strong>No remote files or hooks.</strong> The loop runs through <code>python3 -u - &lt;source-port&gt;</code> or fallback <code>sh -s</code>; it reads process and tmux state without changing remote configuration.</li>
+<li><strong>No periodic local-server polling.</strong> The observer only calls local <code>tmux set-option</code> when the detected routing value changes. Repeated identical snapshots do not write the option. This matters because option writes can redraw the large local server and disturb terminal selection.</li>
+<li><strong>The extra connection is still real work.</strong> Terminal mode scans remote <code>/proc</code> every cycle, with a tmux query when needed, then sleeps. Fallback mode queries tmux and sleeps. Local socket inspection happens at observer startup, not on each key press. This is not a zero-cost push notification.</li>
+<li><strong>No routing changes for remote commands or tunnels.</strong> The Bash scanner excludes explicit remote commands and modes such as <code>-N</code>, <code>-T</code>, and <code>-W</code>. It is not a complete replacement for OpenSSH&rsquo;s parser.</li>
 </ul>
-<p>After a successful match, the helper sets:</p>
-<div class="highlight" id="id-7"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> tmux set-option -p -t <span class="s2">&#34;</span><span class="nv">$TMUX_PANE</span><span class="s2">&#34;</span> @remote_ctrl_k <span class="m">1</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>For an eligible login whose probe fails or does not match, it sets the flag to <code>0</code>. That prevents an old manual forwarding flag from accidentally carrying over into a different connection.</p>
-<p>The helper saves the previous pane value and uses an <code>EXIT</code> trap to restore it after SSH exits. If there was no previous value, it unsets the pane option. Normal disconnects therefore return the pane to its previous behavior.</p>
-<p>It also prints this notice when forwarding is enabled:</p>
-<div class="highlight" id="id-8"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">[tmux] Remote uses Ctrl-k: forwarding Ctrl-k; Ctrl-b controls local tmux.</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="step-3-wrap-ssh-in-the-local-zsh-configuration" class="heading-element">
+<h3 id="cleanup-and-manual-overrides" class="heading-element">
+  <a href="#cleanup-and-manual-overrides" class="heading-mark"></a>Cleanup and manual overrides</h3><p>After the interactive SSH command exits, the Bash helper stops the observer, waits for it to finish, and restores the previous pane flag. If the flag was originally absent, it unsets it. The helper preserves the interactive SSH exit status.</p>
+<p><code>Ctrl-b F12</code> toggles forwarding manually. The observer remembers its last detected value rather than repeatedly overwriting the option, so <strong>a manual override lasts until the detected routing value changes</strong>. For example, starting or ending a second SSH hop can replace the override.</p>
+<p>If the observer connection closes, it falls back to local routing. It does not reconnect automatically; use the manual toggle or reconnect the interactive login to restart detection. SSH keepalives help detect a dead connection, but there is no independent snapshot freshness deadline while a connection remains open.</p>
+<h2 id="step-3-wrap-ssh-in-the-local-zsh-configuration" class="heading-element">
   <a href="#step-3-wrap-ssh-in-the-local-zsh-configuration" class="heading-mark"></a>Step 3: wrap ssh in the local zsh configuration</h2><p>Add this function to the <strong>local <code>~/.zshrc</code></strong>:</p>
-<div class="highlight" id="id-9"><div class="chroma">
+<div class="highlight" id="id-10"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -416,7 +553,7 @@
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="c1">## SSH: automatically give Ctrl-k to remote tmux when its prefix matches.</span>
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="c1">## SSH: dynamically route Ctrl-k to remote tmux or an active second SSH hop.</span>
 </span></span><span class="line"><span class="cl"><span class="c1">## Use `command ssh ...` to bypass detection; Ctrl-b F12 toggles it manually.</span>
 </span></span><span class="line"><span class="cl">ssh<span class="o">()</span> <span class="o">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[[</span> -n <span class="nv">$TMUX</span> <span class="o">&amp;&amp;</span> -n <span class="nv">$TMUX_PANE</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
@@ -426,104 +563,132 @@
 </span></span><span class="line"><span class="cl">    <span class="k">fi</span>
 </span></span><span class="line"><span class="cl"><span class="o">}</span></span></span></code></pre></td></tr></table>
 </div>
-</div><p><code>command ssh</code> calls the real SSH executable rather than recursively invoking the function. The helper also uses <code>command tmux</code>, which avoids my local oh-my-zsh tmux alias.</p>
-<p>Load the configuration from a local terminal:</p>
-<div class="highlight" id="id-10"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> tmux source-file ~/.tmux.conf
-</span></span><span class="line"><span class="cl"><span class="nb">source</span> ~/.zshrc</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Then connect with the usual command:</p>
+</div><p><code>command ssh</code> calls the executable rather than recursively invoking the function. The Bash helper uses <code>command tmux</code> to avoid my local oh-my-zsh alias; the Python observer calls executables directly.</p>
+<p>Load the configuration from a local zsh terminal:</p>
 <div class="highlight" id="id-11"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh william@127.0.0.1 -p62222</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-zsh" data-lang="zsh"><span class="line"><span class="cl"><span class="nb">command</span> tmux source-file ~/.tmux.conf
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> ~/.zshrc</span></span></code></pre></td></tr></table>
 </div>
-</div><p>There is no special host-specific function to remember. Outside tmux, the wrapper simply calls SSH without a probe.</p>
-<h2 id="checking-the-result" class="heading-element">
-  <a href="#checking-the-result" class="heading-mark"></a>Checking the result</h2><p>These local commands inspect the installed configuration:</p>
+</div><p>Then connect normally:</p>
 <div class="highlight" id="id-12"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> tmux show-options -g prefix
-</span></span><span class="line"><span class="cl"><span class="nb">command</span> tmux list-keys -T root C-k
-</span></span><span class="line"><span class="cl"><span class="nb">command</span> tmux list-keys -T prefix C-k</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ssh relay.example</span></span></code></pre></td></tr></table>
 </div>
-</div><p>In my setup, the checks returned:</p>
+</div><p>There is no hostname allowlist to edit. Outside local tmux, the wrapper calls SSH without an observer. Updating helper files affects new connections; already-open SSH logins must reconnect to start the updated observer. Reloading tmux alone does not retrofit one into an existing login.</p>
+<h3 id="do-i-need-to-reload-tmux-and-zsh" class="heading-element">
+  <a href="#do-i-need-to-reload-tmux-and-zsh" class="heading-mark"></a>Do I need to reload tmux and zsh?</h3><table>
+<thead>
+<tr>
+<th>What changed?</th>
+<th>How it takes effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local tmux dispatcher block</td>
+<td>Reload local <code>~/.tmux.conf</code> once</td>
+</tr>
+<tr>
+<td>Local zsh <code>ssh()</code> wrapper</td>
+<td>Load it into the local shell once, or open a new shell that reads it</td>
+</tr>
+<tr>
+<td>Bash helper or Python observer file</td>
+<td>Reconnect the <strong>first SSH login</strong> so it starts the new code</td>
+</tr>
+<tr>
+<td>A detection bug in an already-running observer</td>
+<td>Reloading tmux/zsh does not replace that process</td>
+</tr>
+</tbody>
+</table>
+<p>For the <code>ssh → zsh → nb → ta zsh</code> failure, the bindings and wrapper were already loaded. Updating the observer and reconnecting the first hop is the relevant step. Running <code>zsh</code> on the first remote does not reload the local wrapper.</p>
+<p>For immediate access from an existing nested connection, press <strong><code>Ctrl-b</code>, then <code>F12</code> in that local pane</strong> to toggle forwarding on. <code>Ctrl-k</code> can then reach downstream tmux, while <code>Ctrl-b</code> stays local. Toggle it back when done if the old observer is still running; reconnect to get automatic detection from the updated code.</p>
+<h2 id="checking-the-result" class="heading-element">
+  <a href="#checking-the-result" class="heading-mark"></a>Checking the result</h2><p>Inspect the local bindings:</p>
 <div class="highlight" id="id-13"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
+</span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">prefix C-b
-</span></span><span class="line"><span class="cl">bind-key -T root C-k if-shell -F &#34;#{==:#{@remote_ctrl_k},1}&#34; &#34;send-keys C-k&#34; &#34;switch-client -T prefix&#34;
-</span></span><span class="line"><span class="cl">bind-key -r -T prefix C-k resize-pane -U 5</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> tmux show-options -gv prefix
+</span></span><span class="line"><span class="cl"><span class="nb">command</span> tmux show-options -gv prefix2
+</span></span><span class="line"><span class="cl"><span class="nb">command</span> tmux list-keys -T root C-k
+</span></span><span class="line"><span class="cl"><span class="nb">command</span> tmux list-keys -T prefix F12</span></span></code></pre></td></tr></table>
 </div>
-</div><p>The important combination is <code>prefix C-b</code>, a conditional root binding for <code>C-k</code>, and the original resize binding still present.</p>
-<p>I checked the helper with <code>bash -n</code> and ShellCheck. Mocked SSH tests covered matching prefixes, different prefixes, a matching secondary prefix, mixed sessions, no tmux, probe failure, remote commands, a tunnel invocation, and SSH config options. A throwaway tmux server verified that the bindings loaded, the resize binding survived, and the manual toggle worked in both directions.</p>
-<p>Those checks were followed by the actual SSH connection: automatic routing worked in that connection. The mocked tests are not evidence that every possible SSH option combination works.</p>
-<p>When forwarding is active:</p>
-<table>
-<thead>
-<tr>
-<th>Keys</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Ctrl-k</code>, then <code>c</code></td>
-<td>Create a remote tmux window</td>
-</tr>
-<tr>
-<td><code>Ctrl-b</code>, then <code>c</code></td>
-<td>Create a local tmux window</td>
-</tr>
-<tr>
-<td><code>Ctrl-b</code>, then <code>F12</code></td>
-<td>Toggle Ctrl-k routing manually</td>
-</tr>
-</tbody>
-</table>
-<p>The <code>c</code> actions assume the usual tmux binding for creating a window.</p>
-<h2 id="limits-worth-keeping-visible" class="heading-element">
-  <a href="#limits-worth-keeping-visible" class="heading-mark"></a>Limits worth keeping visible</h2><p>This is <strong>connection-time prefix detection</strong>, not continuous detection of the foreground remote application.</p>
-<ul>
-<li><strong>Forwarding covers the entire SSH login.</strong> If I detach from remote tmux but keep the SSH connection open, <code>Ctrl-k</code> still goes to the remote shell. <code>Ctrl-b F12</code> switches it back manually.</li>
-<li><strong>No running remote server means no match.</strong> If I start tmux only after logging in, the earlier probe cannot know its prefix. I can use the manual toggle rather than guessing from an unexecuted config file.</li>
-<li><strong>Mixed session prefixes deliberately fall back.</strong> Even if I intend to attach to a matching session, another nonmatching session makes the result ambiguous.</li>
-<li><strong>Custom sockets are not discovered.</strong> Sessions started with <code>tmux -L ...</code> or <code>tmux -S ...</code> need a correspondingly targeted query.</li>
-<li><strong>The remote noninteractive PATH matters.</strong> A tmux binary available only after an interactive shell setup may not be found by the probe.</li>
-<li><strong>There is an extra SSH command before login.</strong> <code>ConnectTimeout=4</code> limits connection establishment, not the complete remote command. Slow jump hosts or shell startup can still add delay.</li>
-<li><strong>Remote policy and output can interfere.</strong> Restricted accounts, forced commands, or shell startup text may prevent a clean prefix result. This helper is for ordinary, trusted login accounts, not a universal SSH frontend.</li>
-<li><strong>Cleanup is best effort.</strong> Normal exits restore the flag. An uncatchable termination such as <code>SIGKILL</code> can leave it set; the manual toggle is the recovery path.</li>
-<li><strong>Copy mode is separate.</strong> These bindings govern normal pane input, not every key table used by local tmux copy mode.</li>
-</ul>
-<p>To skip all detection for a particular invocation:</p>
+</div><p>My checks returned:</p>
 <div class="highlight" id="id-14"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">C-b
+</span></span><span class="line"><span class="cl">None
+</span></span><span class="line"><span class="cl">bind-key -T root C-k if-shell -F &#34;#{==:#{@remote_ctrl_k},1}&#34; &#34;send-keys C-k&#34; &#34;switch-client -T prefix&#34;
+</span></span><span class="line"><span class="cl">bind-key -T prefix F12 if-shell -F &#34;#{==:#{@remote_ctrl_k},1}&#34; &#34;set-option -pu @remote_ctrl_k; display-message \&#34;Ctrl-k controls LOCAL tmux\&#34;&#34; &#34;set-option -p @remote_ctrl_k 1; display-message \&#34;Ctrl-k controls REMOTE tmux; Ctrl-b stays local\&#34;&#34;</span></span></code></pre></td></tr></table>
+</div>
+</div><p>From a separate local pane, inspect the flag for the SSH pane:</p>
+<div class="highlight" id="id-15"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> ssh william@127.0.0.1 -p62222</span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> tmux list-panes -a -F <span class="s1">&#39;#{pane_id}|#{pane_current_command}|#{@remote_ctrl_k}&#39;</span></span></span></code></pre></td></tr></table>
 </div>
-</div><p>Bypassing the wrapper does not itself clear a manually enabled pane flag; use <code>Ctrl-b F12</code> if necessary.</p>
-<p>One more detail: because the actual local <code>prefix</code> is now <code>C-b</code>, plugins or custom bindings that inspect <code>#{prefix}</code> or run <code>send-prefix</code> see <code>C-b</code>, not the synthetic <code>Ctrl-k</code> dispatcher. Check those separately if the configuration relies on them.</p>
+</div><p>The expected flag transitions for this workflow are <code>0 -&gt; 1 -&gt; 0</code>: first remote shell, second SSH active, then back to the first remote shell. These are expected states, not a captured end-to-end trace. Allow about one polling cycle after a pane switch or SSH exit; initial authentication and remote startup can take longer.</p>
+<p>I checked the dynamic implementation with:</p>
+<ul>
+<li>Bash and zsh syntax checks.</li>
+<li>Eleven routing cases, including <code>C-j</code> shell versus SSH, matching primary or secondary <code>C-k</code>, conflicting clients, empty results, and malformed output.</li>
+<li>A mocked observer sequence that switched local → downstream → local and verified that unchanged snapshots did not write options.</li>
+<li>A mocked login verifying observer cleanup, restoration of the previous flag, and preservation of SSH exit status.</li>
+<li>Bypass tests for remote commands, no-TTY logins, and tunnels.</li>
+<li>A live observer against the first remote, targeting an isolated local tmux server. It selected local routing for the observed <code>C-j</code> shell state.</li>
+</ul>
+<p>Those tests covered the tmux-only version, not a nested SSH outside tmux. The initial live check also timed out waiting for its first snapshot; allowing longer for SSH startup passed. <code>ConnectTimeout=4</code> is not a four-second deadline for remote shell startup or the entire command.</p>
+<p>For the terminal-aware correction, I verified the local source-port lookup against the existing interactive SSH connection and ran the remote script against its correlated login terminal. The foreground second SSH produced <code>None|None|ssh-terminal</code>, despite the unrelated idle tmux client. Seven routing cases and the embedded remote script&rsquo;s syntax also passed.</p>
+<p>Two implementation checks failed before that live detection passed: the first remote had Python 3.6.8, so <code>text=True</code> was unsupported there; then its <code>ps -o</code> behavior did not match the assumed output. The final remote loop uses <code>universal_newlines=True</code> for subprocess text output and reads foreground process metadata directly from <code>/proc</code> instead of parsing <code>ps</code>.</p>
+<p><strong>This verifies the source-port lookup and live nested-SSH detection, not every end-to-end keyboard action or every disconnect transition.</strong> The earlier mocked transition and cleanup tests are not a substitute for testing the complete updated route.</p>
+<h2 id="limits-worth-keeping-visible" class="heading-element">
+  <a href="#limits-worth-keeping-visible" class="heading-mark"></a>Limits worth keeping visible</h2><ul>
+<li><strong>Second-hop prefix is assumed.</strong> A foreground <code>ssh</code> or <code>autossh</code> on the correlated terminal, or inside a <code>C-j</code> tmux pane, is treated as a downstream <code>C-k</code> route. A tunnel, remote command, or host using another prefix can be a false positive. The outer Bash scanner cannot inspect a nested SSH command started later.</li>
+<li><strong>Connection correlation has a narrow scope.</strong> The implemented match uses a TCP source port, not the full connection tuple or an authenticated terminal identifier. NAT port rewriting, port collisions from different clients, shared connections, jump hosts, hidden socket metadata, or several SSH children can defeat or confuse it. Do not treat it as general-purpose session identity.</li>
+<li><strong>Fallback is limited.</strong> If no local source port is found, tmux-only detection still considers all clients and can be affected by unrelated sessions. It cannot handle the plain-shell second-hop path. A port found locally but not matched remotely stays local rather than switching modes.</li>
+<li><strong>Detaching differs by mode.</strong> Terminal-aware mode sees the login shell and returns local. The tmux-only fallback can still see unattached <code>C-k</code> sessions and forward to the shell.</li>
+<li><strong>This does not inspect the second host.</strong> The observer tracks the first login terminal and, when attached, its first tmux client. It does not count arbitrary SSH layers or recursively discover remote prefixes; a different tmux relay prefix or deeper nesting needs a different policy.</li>
+<li><strong>Custom sockets are not discovered.</strong> <code>tmux -L ...</code> or <code>tmux -S ...</code> requires a correspondingly targeted query.</li>
+<li><strong>Remote environment and policy matter.</strong> A missing noninteractive PATH entry, forced commands, startup text, or restricted SSH accounts can prevent clean snapshots. This helper is for ordinary trusted login accounts, not a universal SSH frontend.</li>
+<li><strong>An open but stalled observer can leave an old decision.</strong> There is no per-snapshot timeout. A closed or failed observer falls back locally, but a loop stalled while SSH stays responsive may not.</li>
+<li><strong>Cleanup is best effort.</strong> Normal login exits restore the flag. An uncatchable termination such as <code>SIGKILL</code> can leave state or an observer behind; the manual toggle is a recovery path for the flag.</li>
+<li><strong>Copy mode is separate.</strong> The dispatcher governs normal pane input, not every local tmux key table.</li>
+</ul>
+<p>To bypass detection for one invocation:</p>
+<div class="highlight" id="id-16"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">command</span> ssh relay.example</span></span></code></pre></td></tr></table>
+</div>
+</div><p>That does not itself clear a pre-existing manual pane flag. Use <code>Ctrl-b F12</code> if necessary.</p>
+<p>Because the actual local <code>prefix</code> is <code>C-b</code>, plugins inspecting <code>#{prefix}</code> or running <code>send-prefix</code> see <code>C-b</code>, not the synthetic <code>Ctrl-k</code> dispatcher. Check those separately if your configuration relies on them.</p>
 <h2 id="takeaway" class="heading-element">
-  <a href="#takeaway" class="heading-mark"></a>Takeaway</h2><p>The fix was to separate <strong>the key I press</strong> from <strong>tmux&rsquo;s actual prefix setting</strong>. <code>Ctrl-k</code> becomes a conditional dispatcher, while <code>Ctrl-b</code> remains a reliable route to the outer tmux.</p>
-<p>The remote query only decides a pane flag. Keeping that network operation out of the key path makes the behavior simple: unknown means local, a confirmed matching prefix means remote, and the manual override is always reachable.</p>
+  <a href="#takeaway" class="heading-mark"></a>Takeaway</h2><p>Separate <strong>the key I press</strong> from <strong>tmux&rsquo;s actual prefix setting</strong>. <code>Ctrl-k</code> becomes a pane-local dispatcher, and <code>Ctrl-b</code> stays a reliable route to local tmux.</p>
+<p>For the two-hop route, neither a relay hostname nor an unrelated tmux client proves where my input is going. Track the first SSH login terminal: it may run tmux, or it may just run <code>zsh → nb</code>. The intended mapping is the same in both cases: <code>Ctrl-k</code> local before the second SSH; <code>Ctrl-b</code> local and <code>Ctrl-k</code> downstream while it is active; <code>Ctrl-k</code> local again after it exits. Keep the network work in the background, document the connection-matching limits, and keep the downstream-prefix assumption explicit.</p>
 <h2 id="references" class="heading-element">
   <a href="#references" class="heading-mark"></a>References</h2><ul>
 <li><a href="https://man.openbsd.org/tmux"target="_blank" rel="external nofollow noopener noreferrer">tmux manual: key bindings, formats, and options<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden="true"></i></a></li>
@@ -546,16 +711,16 @@
   <div class="post-info">
     <div class="post-info-line">
       <div class="post-info-mod">
-        <span title="更新于 2026-11-14 18:49:28">更新于 2026-11-14&nbsp;</span>
+        <span title="更新于 2026-11-21 16:09:03">更新于 2026-11-21&nbsp;</span>
       </div></div><div class="post-info-line">
         <div class="post-info-md"><span><a href="/2026-11-14-tmux-ssh-auto-prefix/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
         <div class="post-info-share">
-          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: automatically route Ctrl-k to the remote" data-hashtags="tmux,SSH,zsh,Linux,keybindings"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
+          <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: dynamically route Ctrl-k across two hops" data-hashtags="tmux,SSH,zsh,Linux,keybindings"><i class="fa-brands fa-twitter fa-fw" aria-hidden="true"></i></a>
   <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-hashtag="tmux"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: automatically route Ctrl-k to the remote" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 WhatsApp" data-sharer="whatsapp" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: dynamically route Ctrl-k across two hops" data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden="true"></i></a>
   <a href="javascript:void(0);" title="分享到 Reddit" data-sharer="reddit" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/"><i class="fa-brands fa-reddit fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: automatically route Ctrl-k to the remote"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
-  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: automatically route Ctrl-k to the remote"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: dynamically route Ctrl-k across two hops"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Evernote" data-sharer="evernote" data-url="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/" data-title="Nested tmux over SSH: dynamically route Ctrl-k across two hops"><i class="fa-brands fa-evernote fa-fw" aria-hidden="true"></i></a>
   </span>
         </div>
       </div></div>
@@ -567,7 +732,8 @@
     </section>
   </div>
 
-  <div class="post-nav"><a href="/2026-11-14-ssh-linux-mint-lid-closed/" class="post-nav-item" rel="prev" title="Keep SSH reachable with a closed lid on Linux Mint"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Keep SSH reachable with a closed lid on Linux Mint</a></div>
+  <div class="post-nav"><a href="/2026-11-14-ssh-linux-mint-lid-closed/" class="post-nav-item" rel="prev" title="Keep SSH reachable with a closed lid on Linux Mint"><i class="fa-solid fa-angle-left fa-fw" aria-hidden="true"></i>Keep SSH reachable with a closed lid on Linux Mint</a>
+      <a href="/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/" class="post-nav-item" rel="next" title="Nested tmux over SSH: why Ctrl-k worked through a relay but not directly">Nested tmux over SSH: why Ctrl-k worked through a relay but not directly<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
 </div>
 <div id="comments"><div id="giscus">
           <script

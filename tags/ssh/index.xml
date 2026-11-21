@@ -3,14 +3,29 @@
     <title>SSH - 标签 - William</title>
     <link>https://williamlfang.github.io/tags/ssh/</link>
     <description>SSH - 标签 | William</description>
-    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/ssh/" rel="self" type="application/rss+xml" /><item>
-  <title>Nested tmux over SSH: automatically route Ctrl-k to the remote</title>
+    <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 21 Nov 2026 16:09:03 &#43;0800</lastBuildDate><atom:link href="https://williamlfang.github.io/tags/ssh/" rel="self" type="application/rss+xml" /><item>
+  <title>Nested tmux over SSH: why Ctrl-k worked through a relay but not directly</title>
+  <link>https://williamlfang.github.io/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/</link>
+  <pubDate>Sat, 21 Nov 2026 16:09:03 &#43;0800</pubDate>
+  <author>william</author>
+  <guid>https://williamlfang.github.io/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/</guid>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/featured-image.png" alt="Nested tmux over SSH: why Ctrl-k worked through a relay but not directly" title="How forwarded SSH ports broke per-pane Ctrl-k routing in tmux, and how to handle direct logins without breaking the two-hop route." referrerpolicy="no-referrer"/></div><p><code>Ctrl-k</code> reached my remote tmux when I logged in through a relay, but the same key went to <strong>local</strong> tmux when I connected directly. The loopback login, <code>nb</code>, and <code>nbx</code> all reached the intended SSH server. The problem was how my local helper decided where to send the key.</p>
+<p>The fix was to treat known forwarded endpoints differently from a relay. For ports <code>62222</code> and <code>62223</code>, I already knew the destination used <code>Ctrl-k</code>, so I could skip detection. For a relay, I still needed to detect when the second SSH connection started and ended. This follows up on my <a href="/2026-11-14-tmux-ssh-auto-prefix/">two-hop tmux setup</a>.</p>]]></description>
+</item>
+<item>
+  <title>Nested tmux over SSH: dynamically route Ctrl-k across two hops</title>
   <link>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</link>
   <pubDate>Sat, 14 Nov 2026 18:49:28 &#43;0800</pubDate>
   <author>william</author>
   <guid>https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/</guid>
-  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="Nested tmux over SSH: automatically route Ctrl-k to the remote" title="Keep Ctrl-k local by default, forward it to a matching remote tmux over SSH, and reserve Ctrl-b for local control." referrerpolicy="no-referrer"/></div><p>My local tmux and one remote tmux both used <code>Ctrl-k</code> as their prefix. After connecting over SSH, <code>Ctrl-k c</code> still created a <strong>local</strong> window. The local tmux consumed the prefix before SSH could send it to the server.</p>
-<p>I wanted <code>Ctrl-k</code> to control the remote when its tmux also accepted <code>Ctrl-k</code>, but stay local for other servers. The working solution uses a pane-local flag and one SSH probe per login. <code>Ctrl-b</code> remains an always-local escape hatch.</p>]]></description>
+  <description><![CDATA[<div class="featured-image"><img loading="eager" src="https://williamlfang.github.io/2026-11-14-tmux-ssh-auto-prefix/featured-image.png" alt="Nested tmux over SSH: dynamically route Ctrl-k across two hops" title="Keep Ctrl-k local with a Ctrl-j first remote, then forward it to a second SSH hop while Ctrl-b controls local tmux." referrerpolicy="no-referrer"/></div><blockquote>
+<p><strong>Update 2026-11-21:</strong> I tested real keystrokes through the two-hop login, including the return to the relay shell. Direct logins through my forwarded ports exposed a separate problem: the TCP source port changes in transit, so the observer cannot match the login terminal. See <a href="/2026-11-21-tmux-ctrl-k-ssh-forwarded-ports/">the forwarded-port fix for <code>nb</code> and <code>nbx</code></a> for the updated helper and test results.</p>
+</blockquote>
+<blockquote>
+<p><strong>Update 2026-11-15:</strong> there were two corrections. Always forwarding for a relay hostname broke local <code>Ctrl-k</code> when no second hop was active. Watching only remote tmux panes then missed my actual <code>ssh → zsh → nb → ta zsh</code> path: the first hop was a plain shell, not a tmux client. The observer now correlates the interactive SSH connection with its remote login terminal and inspects that terminal&rsquo;s foreground job. Both downloads below are required; reconnect the first SSH login after updating the observer. Hostnames are anonymized.</p>
+</blockquote>
+<p>My local tmux and the tmux behind a second SSH hop both use <code>Ctrl-k</code>. The first remote uses <code>Ctrl-j</code>. I wanted the prefixes to coexist without an extra escape sequence before every command.</p>
+<p>The intended mapping is: <strong><code>Ctrl-k</code> stays local until the first remote&rsquo;s login terminal, or its active tmux pane, runs another SSH connection.</strong> Then <code>Ctrl-b</code> controls local tmux and <code>Ctrl-k</code> goes downstream. If a first-remote tmux is attached, <code>Ctrl-j</code> still controls it. Leaving the second connection returns <code>Ctrl-k</code> to local tmux. The live check verified detection of my nested SSH; it was not a complete keyboard test of every transition.</p>]]></description>
 </item>
 <item>
   <title>Keep SSH reachable with a closed lid on Linux Mint</title>
@@ -91,14 +106,6 @@
   <author>william</author>
   <guid>https://williamlfang.github.io/2022-09-13-git-%E4%BF%AE%E6%94%B9-https-%E4%B8%BA-ssh/</guid>
   <description><![CDATA[<p>把 git 改成 ssh，这样可以直接 push，而不需要输入账户和密码。</p>]]></description>
-</item>
-<item>
-  <title>systemd 实现端口转发</title>
-  <link>https://williamlfang.github.io/2022-04-16-systemd-%E5%AE%9E%E7%8E%B0%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</link>
-  <pubDate>Sat, 16 Apr 2022 21:49:09 &#43;0000</pubDate>
-  <author>william</author>
-  <guid>https://williamlfang.github.io/2022-04-16-systemd-%E5%AE%9E%E7%8E%B0%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</guid>
-  <description><![CDATA[<p>基于 <code>Linux</code> 守护进程服务 <code>systemd</code> 实现了端口转发功能，这里有一个小坑，为了保证系统监控到 <code>ssh</code>，需要程序驻留在主进程，也就是不能添加 <code>-f</code> 这个参数选项。</p>]]></description>
 </item>
 </channel>
 </rss>
